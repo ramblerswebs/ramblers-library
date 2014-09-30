@@ -14,9 +14,9 @@
     </updateservers>
     <fileset>
         <files target="ramblers">
-            <filename>manifest.xml</filename>
-            <filename>JsonWalksFeed Joomlav00.odt</filename>
-            <filename>README.md</filename>
+            <filename>ramblers-manifest.xml</filename>
+            <filename>JsonWalksFeedv00.odt</filename>
+            <filename>readme.md</filename>
             <folder>users</folder>
             <folder>sql</folder>
             <folder>html</folder>
