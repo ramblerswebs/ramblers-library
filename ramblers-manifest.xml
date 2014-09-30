@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="file" method="upgrade" version="3.0.0">
+    <name>Ramblers Library</name>
+    <author>Chris Vaughan Derby and South Derbyshire</author>
+    <creationDate>September 2014</creationDate>
+    <copyright>Copyright (C) 2014</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+    <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
+    <authorUrl>www.ramblers-webs,org.uk</authorUrl>
+    <version>0.4</version>
+    <description>Ramblers classes to process, JSON Walks feeds, Retrieve CB membership information</description>
+    <updateservers>
+        <server type="collection" priority="1" name="Ramblers-webs Update Site">http://updates.ramblers-webs.org.uk/ramblerslibrary.xml</server>
+    </updateservers>
+    <fileset>
+        <files target="ramblers">
+            <filename>manifest.xml</filename>
+            <filename>JsonWalksFeed Joomlav00.odt</filename>
+            <filename>README.md</filename>
+            <folder>users</folder>
+            <folder>sql</folder>
+            <folder>html</folder>
+            <folder>feedhelper</folder>
+            <folder>jsonwalks</folder>
+            <folder>jsonwalks/std</folder>
+            <folder>jsonwalks/de02</folder>
+        </files>
+    </fileset>
+    
+</extension>
