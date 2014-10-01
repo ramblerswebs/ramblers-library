@@ -12,14 +12,14 @@ class  RJsonwalksLocation {
     public $exact;
 
     function __construct($value) {
-        $this->description = $value->Description;
-        $this->gridref = $value->GridRef;
-        $this->latitude = $value->Latitude;
-        $this->longitude = $value->Longitude;
-        $this->postcode = $value->Postcode;
-        $this->postcodeLatitude = $value->PostcodeLatitude;
-        $this->postcodeLongitude = $value->PostcodeLongitude;
-        $this->exact = $value->Display=="true";
+        $this->description = $value->description;
+        $this->gridref = $value->gridRef;
+        $this->latitude = $value->latitude;
+        $this->longitude = $value->longitude;
+        $this->postcode = $value->postcode;
+        $this->postcodeLatitude = $value->postcodeLatitude;
+        $this->postcodeLongitude = $value->postcodeLongitude;
+        $this->exact = $value->showExact=="true";
     }
 
     function __destruct() {

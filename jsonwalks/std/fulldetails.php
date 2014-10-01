@@ -87,62 +87,67 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     }
 
     private function displayWalkDetails($walk) {
-        // $out = "<h2>" . $walk->walkDate->format('l, jS F Y') . "</h2>" . self::BR . PHP_EOL;
-        $out = "";
-        $out.="<table>";
-        $out.= RHtml::addTableRow(array("<b>Title</b>: ", $walk->title));
-        $out.= RHtml::addTableRow(array("<b>Description</b>: ", $walk->description));
-        $out.= RHtml::addTableRow(array("<b>Distance</b>: ", $walk->distanceMiles . "m / " . $walk->distanceKm . "km"));
-        $out.= RHtml::addTableRow(array("<b>Meeting Place</b>: ", ""), "highlightrow");
-        if ($walk->hasMeetingPlace) {
-            $out.= RHtml::addTableRow(array("<b>Time</b>: ", $walk->meetingTime->format('ga')));
-            $out.= RHtml::addTableRow(array("", $this->locationTable($walk->meetingLocation)));
+        
+        echo "<div class='walk'>";
+        echo "<div class='description'><b>Description</b>: " . $walk->description . "</div>";
+        echo "<div class='additionalnotes'><b>Additional Notes</b>: " . $walk->additionalNotes . "</div>";
+        echo "<div class='distance'><b>Distance</b>: " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km" . "</div>";
+
+        if ($walk->hasMeetPlace) {
+            echo  "<div class='meetingplace'><b>Meeting Place</b>";
+            echo  "<div class='meetingtime'><b>Time</b>: " . $walk->meetTime->format('ga') . "</div>";
+            $out=  $this->addLocationInfo($walk->meetLocation);
+            echo $out;
+            echo "</div>";
         } else {
-            $out.= RHtml::addTableRow(array(" ", "No meeting place specified"));
+            echo  "<div class='nomeetingplace'><b>No meeting place specified</b>";
+            echo "</div>";
         }
-        $out.= RHtml::addTableRow(array("<b>Starting Place</b>: ", ""), "highlightrow");
-        if ($walk->startingPlaceExact) {
-            $out .= RHtml::addTableRow(array("<b>Time</b>: ", $walk->startTime->format('ga')));
+        if ($walk->startPlaceExact) {
+            echo  "<div class='startingplace'><b>Starting Place</b>: ";
+            echo  "<div class='startingtime'><b>Time</b>: " . $walk->startTime->format('ga') . "</div>";
         } else {
-            $out.=RHtml::addTableRow(array("", "Not start place - Rough location only"));
+            echo  "<div class='nostartplace'><b>No start place - Rough location only</b>: ";
         }
-        $out.= RHtml::addTableRow(array("", $this->locationTable($walk->startLocation)));
+        echo  $this->addLocationInfo($walk->startLocation);
+
+        echo "</div>";
+
         if ($walk->isLinear) {
-            $out.= RHtml::addTableRow(array("<b>Linear/Circular</b>: ", "Linear walk - End Place"), "highlightrow");
-            $out.= RHtml::addTableRow(array("", $this->locationTable($walk->endLocation)));
+            echo  "<div class='linearwalk'><b>Linear Walk</b>: ";
+            echo  $this->addLocationInfo($walk->finishLocation);
+            echo "</div>";
         } else {
-            $out.= RHtml::addTableRow(array("<b>Linear/Circular</b>: ", "Circular walk"));
+            echo  "<div class='circularwalk'><b>Circular walk</b> ";
+            echo "</div>";
         }
+        echo  "<div class='dificulty'><b>Difficulty</b>: ";
+        echo  "<div class='nationalgrade'><b>National Grade</b>: " . $walk->nationalGrade . "</div>";
+        echo  "<div class='localgrade'><b>Local Grade</b>: " . $walk->localGrade . "</div>";
+        echo  "<div class='pace'><b>Pace</b>: " . $walk->pace . "</div>";
+        echo  "<div class='ascent'><b>Ascent</b>: " . $walk->ascentFeet . " ft " . $walk->ascentMetres . " ms</div>";
+        echo  "</div>";
+  
+        echo  "<div class='Contact'><b>Contact</b>: ";
+        echo  "<div class='contactname'><b>Name</b>: " . $walk->contactName . "</div>";
+        echo  "<div class='email'><b>Email</b>: " . $walk->email . "</div>";
+        echo  "<div class='telphone'><b>Telephone</b>: " . $walk->telephone1 ." ". $walk->telephone2. "</div>";
+        
+        echo  "</div>";
+  
+        echo  "</div>";
 
-        $out.= RHtml::addTableRow(array("<b>Difficulty</b>: ", ""), "highlightrow");
-        $out.= RHtml::addTableRow(array("<b>National Grade</b>: ", $walk->nationalGrade));
-        $out.= RHtml::addTableRow(array("<b>Local Grade</b>: ", $walk->localGrade));
-        $out.= RHtml::addTableRow(array("<b>Pace</b>: ", $walk->pace));
-        $out.= RHtml::addTableRow(array("<b>Ascent<b>: ", $walk->ascentMetres . " metres"));
-        $out.= RHtml::addTableRow(array(" ", $walk->ascentFeet . " feet"));
-        $out.="</table>";
-        // $out .= "<b>Title</b>: " . $walk->title . self::BR . PHP_EOL;
-        //   $out .= "<b>Description</b>: " . $walk->description . self::BR . PHP_EOL;
-        //   $out .= "<b>Distance</b>: " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km" . self::BR . PHP_EOL;
-        //   if ($walk->startingPlaceExact) {
-        //       $out .= "<b>Starting Place</b>: " . $walk->startTime->format('ga') . " at " . $walk->startLocation->description . self::BR . PHP_EOL;
-        //   } else {
-        //       $out.="No starting place specified" . self::BR . PHP_EOL;
-        //   }
-        //   $out .= "<b>National Grade</b>: " . $walk->nationalGrade . self::BR . PHP_EOL;
-        //  $out .= "<b>Local Grade</b>: " . $walk->localGrade . self::BR . PHP_EOL;
-        // $out.="<p></p>";
 
-        echo $out;
+        
     }
 
-    private function locationTable($location) {
-        return "";
-        $out = RHtml::addTableRow(array("<b>Place</b>: ", $location->description));
-        $out.= RHtml::addTableRow(array("<b>Grid Ref</b>: ", $location->gridref));
-        $out.= RHtml::addTableRow(array("<b>Logitude</b>: ", $location->longitude));
-        $out.= RHtml::addTableRow(array("<b>Latitude</b>: ", $location->latitude));
-        $out.= RHtml::addTableRow(array("<b>Postcode</b>: ", $location->postcode));
+    private function addLocationInfo($location) {
+
+        $out = "<div class='place'><b>Place</b>: " . $location->description . "</div>";
+        $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
+        $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude . "</div>";
+        $out.= "<div class='latitude'><b>Latitude</b>: " . $location->latitude . "</div>";
+        $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . "</div>";
 
         return $out;
     }

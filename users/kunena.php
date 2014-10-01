@@ -10,10 +10,10 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-class JRamblersUsersKunena {
+class RUsersKunena {
 
     function Display() {
-        if (JRamblersUtils::tableExists('#__kunena_categories')) {
+        if (RUtils::tableExists('#__kunena_categories')) {
 
             $db = JFactory::getDbo();  // Get a db connection.
 

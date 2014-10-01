@@ -48,12 +48,12 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
         $date = "<b>" . $walk->walkDate->format('l, jS F') . "</b>" . PHP_EOL;
 
-        if ($walk->hasMeetingPlace) {
-            $meet = $walk->meetingTime->format('ga') . " at " . $walk->meetingLocation->description;
+        if ($walk->hasMeetPlace) {
+            $meet = $walk->meetTime->format('ga') . " at " . $walk->meetLocation->description;
         } else {
             $meet = ".";
         }
-        if ($walk->startingPlaceExact) {
+        if ($walk->startPlaceExact) {
             $start = $walk->startTime->format('ga') . " at " . $walk->startLocation->description;
         } else {
             $start = ".";

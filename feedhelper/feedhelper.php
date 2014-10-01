@@ -22,7 +22,7 @@ class RFeedhelper {
             $this->cacheTime = $cacheTime * 60;
             $this->cacheFolderPath = JPATH_SITE . DS . $cacheLocation;
         } else {
-            die("Invalid call to JRamblersFeedhelper");
+            die("Invalid call to RJsonwalksFeedhelper");
         }
     }
 

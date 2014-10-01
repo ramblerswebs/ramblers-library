@@ -18,7 +18,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
 
     function DisplayWalks($walks) {
 
-        $walks->sort(JRamblersWalksfeedWalk::SORT_DATE, NULL, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
         $items = $walks->allWalks();
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         foreach ($items as $walk) {
@@ -44,10 +44,10 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
     private function displayWalk($walk) {
 
         $text = "<b>" . $walk->walkDate->format('l, jS') . "</b>" . PHP_EOL;
-        if ($walk->hasMeetingPlace) {
-            $text .= ", " . $walk->meetingTime->format('ga') . " at " . $walk->meetingLocation->description;
+        if ($walk->hasMeetPlace) {
+            $text .= ", " . $walk->meetTime->format('ga') . " at " . $walk->meetLocation->description;
         }
-        if ($walk->startingPlaceExact) {
+        if ($walk->startPlaceExact) {
             $text .= ", " . $walk->startTime->format('ga') . " at " . $walk->startLocation->description;
         }
 

@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-class JRamblersUsersStatus {
+class RUsersStatus {
 
     private $user;
     private $cbInfo;
@@ -70,7 +70,7 @@ class JRamblersUsersStatus {
         $rafeedurl = "http://members.theramblers.org.uk/index.php?id=" . $id;
 
 // Fetch content
-        $srfr = new JRamblersFeedhelper($cacheLocation, $CacheTime);
+        $srfr = new RFeedhelper($cacheLocation, $CacheTime);
 
         if (isset($ClearCache)) {
             $srfr->clearCache($cacheLocation); // clear cache
@@ -138,7 +138,7 @@ class JRamblersUsersStatus {
 
     function checkMembership() {
         if ($this->loggedon()) {
-            if (JRamblersUtils::tableExists('#__comprofiler')) {
+            if (RUtils::tableExists('#__comprofiler')) {
                 echo '<p>Community Builder installed </p>';
                 $db = JFactory::getDbo();
                 $id = $this->user->id;

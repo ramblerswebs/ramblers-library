@@ -31,7 +31,7 @@ class RJsonwalksFeed {
         if ($contents != "") {
             $json = json_decode($contents);
             unset($contents);
-            $this->walks = new JRamblersWalksfeedWalks($json);
+            $this->walks = new RJsonwalksWalks($json);
             unset($json);
         } else {
             echo '<pre>RA Feed (' . $rafeedurl . ') not found , read error or is empty</pre>';

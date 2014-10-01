@@ -12,7 +12,7 @@ class RJsonwalksStdListleaders extends RJsonwalksDisplaybase {
 
     function DisplayWalks($walks) {
         
-        $walks->sort(JRamblersWalksfeedWalk::SORT_CONTACT, JRamblersWalksfeedWalk::SORT_TELEPHONE1, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_CONTACT, RJsonwalksWalk::SORT_TELEPHONE1, NULL);
         $items = $walks->allWalks();
         $last = "";
         echo "<h2>List of Walks Leaders</h2>" . PHP_EOL;

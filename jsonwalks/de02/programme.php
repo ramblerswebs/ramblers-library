@@ -17,7 +17,7 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
     const BR = "<br />";
 
     function DisplayWalks($walks) {
-        $walks->sort(JRamblersWalksfeedWalk::SORT_DATE, NULL, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
         $items = $walks->allWalks();
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         foreach ($items as $walk) {
@@ -49,10 +49,10 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
         $col1 = $this->getGradeImage($walk->localGrade);
       //  $col1 = '<img border="0" src="http://nextprogramme.derbyramblers.org.uk/images/boots/bootblack.jpg" width="20" height="20">';
         $col2 = "<b>" . $walk->walkDate->format('l, jS') . "</b>" . PHP_EOL;
-        if ($walk->hasMeetingPlace) {
-            $col2 .= ", " . $walk->meetingTime->format('ga') . " at " . $walk->meetingLocation->description;
+        if ($walk->hasMeetPlace) {
+            $col2 .= ", " . $walk->meetTime->format('ga') . " at " . $walk->meetLocation->description;
         }
-        if ($walk->startingPlaceExact) {
+        if ($walk->startPlaceExact) {
             $col2 .= ", " . $walk->startTime->format('ga') . " at " . $walk->startLocation->description;
         }
 
@@ -63,7 +63,7 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
         } else {
             $col2.=", Contact " . $walk->contactName . " " . $walk->telephone1;
         }
-        echo JRamblersHtml::addTableRow(array($col1, $col2));
+        echo RHtml::addTableRow(array($col1, $col2));
     }
 
     private function getGradeImage($grade) {

@@ -9,9 +9,6 @@
     <authorUrl>www.ramblers-webs,org.uk</authorUrl>
     <version>0.4</version>
     <description>Ramblers classes to process, JSON Walks feeds, Retrieve CB membership information</description>
-    <updateservers>
-        <server type="collection" priority="1" name="Ramblers-webs Update Site">http://updates.ramblers-webs.org.uk/ramblerslibrary.xml</server>
-    </updateservers>
     <fileset>
         <files target="ramblers">
             <filename>ramblers-manifest.xml</filename>
@@ -26,5 +23,7 @@
             <folder>jsonwalks/de02</folder>
         </files>
     </fileset>
-    
+    <updateservers>
+        <server type="collection" priority="1" name="Ramblers-webs Update Site">http://updates.ramblers-webs.org.uk/ramblerslibrary.xml</server>
+    </updateservers>  
 </extension>

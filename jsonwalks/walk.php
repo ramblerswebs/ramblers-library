@@ -8,6 +8,7 @@ class  RJsonwalksWalk {
     const GEOSHAPE = 'itemscope itemtype="http://schema.org/GeoShape"';
 
     public $id;       // database ID of walk
+    public $status;
     // admin
     public $groupCode;       // database ID of walk
     public $groupName;       // database ID of walk
@@ -21,6 +22,7 @@ class  RJsonwalksWalk {
     public $month;
     public $title;          // title of the walk
     public $description;    // description of walk
+    public $additionalNotes;
     public $detailsPageUrl; // url to access the ramblers.org.uk page for this walk
     public $isLinear;
     // contact
@@ -30,17 +32,17 @@ class  RJsonwalksWalk {
     public $telephone1;     // first telephone number of contact
     public $telephone2;     // second telephone number of contact
     // meeting place
-    public $hasMeetingPlace;
-    public $meetingTime;
-    public $meetingPlaceExact;
-    public $meetingLocation;
+    public $hasMeetPlace;
+    public $meetTime;
+    public $meetPlaceExact;
+    public $meetLocation;
     // starting place
     public $startTime;
-    public $startingPlaceExact;
+    public $startPlaceExact;
     public $startLocation;
     // finish place
-    public $endTime;
-    public $endLocation;
+    public $finishTime;
+    public $finishLocation;
     // grades length
     public $nationalGrade;
     public $localGrade;
@@ -49,7 +51,7 @@ class  RJsonwalksWalk {
     public $pace;
     Public $ascentMetres;
     Public $ascentFeet;
-    public $finishTime = null;
+   
     // extra derived values
     public $placeTag;
     public $eventTag;
@@ -66,45 +68,45 @@ class  RJsonwalksWalk {
         //  $type = $jsonitem->type;
         if ($jsonitem != NULL) {
             // admin details
-            $this->is = $jsonitem->VersionId;
-            $this->groupCode = $jsonitem->GroupCode;
-            $this->groupName = $jsonitem->GroupName;
-            $this->updateDate = DateTime::createFromFormat(DateTime::ISO8601, $jsonitem->DateUpdated . "+0000");
-            $this->createDate = DateTime::createFromFormat(DateTime::ISO8601, $jsonitem->DateCreated . "+0000");
-            $this->cancellationReason = $jsonitem->CancellationReason;
+            $this->is = $jsonitem->id;
+            $this->status = $jsonitem->status->value;
+            $this->groupCode = $jsonitem->groupCode;
+            $this->groupName = $jsonitem->groupName;
+            $this->updateDate = DateTime::createFromFormat(DateTime::ISO8601, $jsonitem->dateUpdated . "+0000");
+            $this->createDate = DateTime::createFromFormat(DateTime::ISO8601, $jsonitem->dateCreated . "+0000");
+            $this->cancellationReason = $jsonitem->cancellationReason;
             // basic walk details
-            $this->walkDate = DateTime::createFromFormat(DateTime::ISO8601, $jsonitem->Date . "+0000");
-            $this->detailsPageUrl = $jsonitem->Url;
-            $this->title = $jsonitem->Title;
-            $this->description = $jsonitem->Summary;
-            $this->isLinear = $jsonitem->IsLinear == "True";
-            $this->nationalGrade = $jsonitem->Difficulty->Text;
-            $this->localGrade = $jsonitem->GradeLocal;
-            $this->distanceMiles = $jsonitem->DistanceMiles;
-            $this->distanceKm = $jsonitem->DistanceKM;
-            $this->pace = $jsonitem->Pace;
-            $this->ascentFeet = $jsonitem->AscentFeet;
-            $this->ascentMetres = $jsonitem->AscentMetres;
+            $this->walkDate = DateTime::createFromFormat(DateTime::ISO8601, $jsonitem->date . "+0000");
+            $this->detailsPageUrl = $jsonitem->url;
+            $this->title = $jsonitem->title;
+            $this->description = $jsonitem->description;
+            $this->additionalNotes = $jsonitem->additionalNotes;
+            $this->isLinear = $jsonitem->isLinear == "true";
+            $this->nationalGrade = $jsonitem->difficulty->text;
+            $this->localGrade = $jsonitem->gradeLocal;
+            $this->distanceMiles = $jsonitem->distanceMiles;
+            $this->distanceKm = $jsonitem->distanceKM;
+            $this->pace = $jsonitem->pace;
+            $this->ascentFeet = $jsonitem->ascentFeet;
+            $this->ascentMetres = $jsonitem->ascentMetres;
             // contact details
-            $this->isLeader = true;
-            $this->contactName = $jsonitem->WalkContact->Contact->DisplayName;
-            $this->email = $jsonitem->WalkContact->Contact->Email;
-            $this->telephone1 = $jsonitem->WalkContact->Contact->Telephone1;
-            $this->telephone2 = $jsonitem->WalkContact->Contact->Telephone2;
+            $this->isLeader = $jsonitem->walkContact->isWalkLeader=="true";
+            $this->contactName = $jsonitem->walkContact->contact->displayName;
+            $this->email = $jsonitem->walkContact->contact->email;
+            $this->telephone1 = $jsonitem->walkContact->contact->telephone1;
+            $this->telephone2 = $jsonitem->walkContact->contact->telephone2;
             // pocess meeting and starting locations
-            $this->processPoints($jsonitem->Points);
+            $this->processPoints($jsonitem->points);
 
-            $this->meetingTime = DateTime::createFromFormat('H:i:s', "09:00:00");
-            $this->startingPlaceExact = true;
+            $this->meetTime = DateTime::createFromFormat('H:i:s', "09:00:00");
+            $this->startPlaceExact = true;
 
             $this->startTime = DateTime::createFromFormat('H:i:s', "10:00:00");
 
             if ($this->title == null) {
                 $this->title = "???";
             }
-            if ($jsonitem->FinishTime != "null") {
-                $this->finishTime = $jsonitem->FinishTime;
-            }
+           
             $this->createExtraData();
         }
     }
@@ -143,7 +145,7 @@ class  RJsonwalksWalk {
         $tag = "<div itemprop=location " . self::PLACE . " ><div style='display: none;' itemprop=name>" . $this->startDesc . "</div>";
         $latitude = $this->startLocation->latitude;
         $longitude = $this->startLocation->longitude;
-        if ($this->startingPlaceExact) {
+        if ($this->startPlaceExact) {
             $tag.= "<span itemprop=geo " . self::GEOCOORDS . ">  ";
             $tag.= "<meta itemprop=latitude content='" . $latitude . "' />";
             $tag.= "<meta itemprop=longitude content='" . $longitude . "' />";
@@ -158,20 +160,21 @@ class  RJsonwalksWalk {
     }
 
     private function processPoints($points) {
-        $this->hasMeetingPlace = false;
+        $this->hasMeetPlace = false;
         foreach ($points as $value) {
-            if ($value->TypeString == "Meeting") {
-                $this->hasMeetingPlace = true;
-                $this->meetingLocation = new JRamblersWalksfeedLocation($value);
+            if ($value->typeString == "Meeting") {
+                $this->hasMeetPlace = true;
+                   $this->meetTime = DateTime::createFromFormat('H:i:s', $value->time );
+              $this->meetLocation = new RJsonwalksLocation($value);
             }
-            if ($value->TypeString == "Start") {
-                // $this->meetingTime = DateTime::createFromFormat('l, d F Y H:i:s', $jsonitem->date . " 09:00:00");
-                $this->startingPlaceExact = true;
-                $this->startLocation = new JRamblersWalksfeedLocation($value);
+            if ($value->typeString == "Start") {
+                 $this->startTime = DateTime::createFromFormat('H:i:s', $value->time );
+                $this->startPlaceExact = true;
+                $this->startLocation = new RJsonwalksLocation($value);
             }
-            if ($value->TypeString == "End") {
-                // $this->endTime = DateTime::createFromFormat('l, d F Y H:i:s', $jsonitem->date . " 09:00:00");
-                $this->endLocation = new JRamblersWalksfeedLocation($value);
+            if ($value->typeString == "End") {
+                $this->finishTime = DateTime::createFromFormat('H:i:s', $value->time );
+                $this->finishLocation = new RJsonwalksLocation($value);
             }
         }
     }
