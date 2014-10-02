@@ -65,8 +65,8 @@ class  RJsonwalksWalk {
     const SORT_TELEPHONE2 = 6;
 
     function __construct($jsonitem) {
-        //  $type = $jsonitem->type;
-        if ($jsonitem != NULL) {
+      $ok=  $this->checkProperties($jsonitem);
+        if ($jsonitem != NULL and $ok) {
             // admin details
             $this->is = $jsonitem->id;
             $this->status = $jsonitem->status->value;
@@ -108,6 +108,8 @@ class  RJsonwalksWalk {
             }
            
             $this->createExtraData();
+        } else {
+            echo "Walk is either null or has invalid properties";
         }
     }
 
@@ -177,6 +179,11 @@ class  RJsonwalksWalk {
                 $this->finishLocation = new RJsonwalksLocation($value);
             }
         }
+    }
+    private function checkProperties($object){
+        
+      //  property_exists
+        return true;
     }
 
     function __destruct() {

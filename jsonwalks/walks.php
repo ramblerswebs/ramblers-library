@@ -18,7 +18,10 @@ class  RJsonwalksWalks {
         $this->arrayofwalks = array();
         foreach ($json as $value) {
             $walk = new  RJsonwalksWalk($value);
-            $this->arrayofwalks[] = $walk;
+          if (json_last_error() == JSON_ERROR_NONE) {
+              $this->arrayofwalks[] = $walk;
+          }
+            else "Feed is NOT in a JSON format";
         }
     }
 

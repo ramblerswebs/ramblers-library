@@ -94,7 +94,7 @@ class RUsersStatus {
     function displayKunenaSubscriptions() {
         if ($this->loggedon()) {
 
-            if (JRamblersUtils::tableExists('#__kunena_categories')) {
+            if (RSqlUtils::tableExists('#__kunena_categories')) {
 // Get a db connection.
                 $db = JFactory::getDbo();
 
@@ -138,7 +138,7 @@ class RUsersStatus {
 
     function checkMembership() {
         if ($this->loggedon()) {
-            if (RUtils::tableExists('#__comprofiler')) {
+            if (RSqlUtils::tableExists('#__comprofiler')) {
                 echo '<p>Community Builder installed </p>';
                 $db = JFactory::getDbo();
                 $id = $this->user->id;
