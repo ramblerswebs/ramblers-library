@@ -18,9 +18,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     function DisplayWalks($walks) {
         $document = JFactory::getDocument();
         JHtml::_('jquery.framework');
-        $document->addStyleSheet(JURI::base() . 'modules/mod_sp_accordion/style/style2.css');
+        $document->addStyleSheet(JURI::base() . 'modules/mod_sp_accordion/style/style4.css');
         $document->addScript(JURI::base() . 'modules/mod_sp_accordion/js/sp-accordion.js', "text/javascript");
-        echo "</p><h1>", "List of walks </h1>";
         $walks->sort(RJsonwalksWalks::SORT_DATE, NULL, NULL);
         $items = $walks->allWalks();
 
@@ -31,7 +30,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo 'hidefirst: 1 });' . PHP_EOL;
         echo '});' . PHP_EOL;
         echo '</script>' . PHP_EOL;
-        echo '<div id="accordion_sp1_id007" class="sp-accordion sp-accordion-style2 ">';
+        echo '<div id="accordion_sp1_id007" class="sp-accordion sp-accordion-style4 ">';
         foreach ($items as $walk) {
             $thiscontact = $walk->contactName . "  " . $walk->telephone1;
 
