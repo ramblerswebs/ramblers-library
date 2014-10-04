@@ -12,8 +12,8 @@ class RJsonwalksWalk {
     public $status;              // whether the walk is published, cancelled etc
     public $groupCode;           // group code e.g. SR01
     public $groupName;           // the group name e.g. Derby & South Derbyshire
-    public $updateDate;          // date of the walk as a datettime object
-    public $createDate;          // date of the walk as a datettime object
+    public $updateDate;          // date of the walk as a datetime object
+    public $createDate;          // date of the walk as a datetime object
     public $cancellationReason;  // text reason walk cancelled
     // basic walk details
     public $walkDate;            // date of the walk as a datettime object
