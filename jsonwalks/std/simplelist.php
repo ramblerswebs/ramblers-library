@@ -45,10 +45,10 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
 
         $text = "<b>" . $walk->walkDate->format('l, jS') . "</b>" . PHP_EOL;
         if ($walk->hasMeetPlace) {
-            $text .= ", " . $walk->meetTime->format('ga') . " at " . $walk->meetLocation->description;
+            $text .= ", " . $walk->meetLocation->time->format('ga') . " at " . $walk->meetLocation->description;
         }
-        if ($walk->startPlaceExact) {
-            $text .= ", " . $walk->startTime->format('ga') . " at " . $walk->startLocation->description;
+        if ($walk->startLocation->exact) {
+            $text .= ", " . $walk->startLocation->time->format('ga') . " at " . $walk->startLocation->description;
         }
 
         $text .= ", " . $walk->title . " ";

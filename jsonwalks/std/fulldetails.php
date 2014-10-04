@@ -20,7 +20,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         JHtml::_('jquery.framework');
         $document->addStyleSheet(JURI::base() . 'modules/mod_sp_accordion/style/style4.css');
         $document->addScript(JURI::base() . 'modules/mod_sp_accordion/js/sp-accordion.js', "text/javascript");
-        $walks->sort(RJsonwalksWalks::SORT_DATE, NULL, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
         $items = $walks->allWalks();
 
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
@@ -87,7 +87,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "</div>";
         if ($walk->hasMeetPlace) {
             echo "<div class='meetplace'><b>Meeting Place</b>";
-            echo "<div class='meettime'><b>Time</b>: " . $walk->meetTime->format('ga') . "</div>";
+            echo "<div class='meettime'><b>Time</b>: " . $walk->meetLocation->time->format('ga') . "</div>";
             $out = $this->addLocationInfo($walk->meetLocation);
             echo $out;
             echo "</div>";
@@ -95,9 +95,9 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "<div class='nomeetplace'><b>No meeting place specified</b>";
             echo "</div>";
         }
-        if ($walk->startPlaceExact) {
+        if ($walk->startLocation->exact) {
             echo "<div class='startplace'><b>Starting Place</b>: ";
-            echo "<div class='starttime'><b>Time</b>: " . $walk->startTime->format('ga') . "</div>";
+            echo "<div class='starttime'><b>Time</b>: " . $walk->startLocation->time->format('ga') . "</div>";
         } else {
             echo "<div class='nostartplace'><b>No start place - Rough location only</b>: ";
         }

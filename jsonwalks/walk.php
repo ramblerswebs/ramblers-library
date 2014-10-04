@@ -1,6 +1,6 @@
 <?php
 
-class  RJsonwalksWalk {
+class RJsonwalksWalk {
 
     const EVENT = 'itemscope itemprop=event itemtype="http://schema.org/Event"';
     const PLACE = 'itemscope itemprop=event itemtype="http://schema.org/Place"';
@@ -8,23 +8,22 @@ class  RJsonwalksWalk {
     const GEOSHAPE = 'itemscope itemtype="http://schema.org/GeoShape"';
 
     public $id;       // database ID of walk
-    public $status;
+    public $status;  // wether the walk is published, cancelled etc
     // admin
-    public $groupCode;       // database ID of walk
-    public $groupName;       // database ID of walk
+    public $groupCode;       // group code e.g. SR01
+    public $groupName;       // the group name e.g. Derby & South Derbyshire
     public $updateDate;       // date of the walk as a datettime object
     public $createDate;       // date of the walk as a datettime object
-    public $cancellationReason;
+    public $cancellationReason; // text reason walk cancelled
     // basic walk details
     public $walkDate;       // date of the walk as a datettime object
-    Public $dayofweek;
-    public $day;
-    public $month;
+    Public $dayofweek; // day of the week as text
+    public $day; // the day number as text
+    public $month; // the month as text
     public $title;          // title of the walk
     public $description;    // description of walk
-    public $additionalNotes;
+    public $additionalNotes; // the additional notes field as text
     public $detailsPageUrl; // url to access the ramblers.org.uk page for this walk
-    public $isLinear;
     // contact
     public $isLeader;       // is the contact info for the leader of the walk
     public $contactName;    // contact name
@@ -32,16 +31,12 @@ class  RJsonwalksWalk {
     public $telephone1;     // first telephone number of contact
     public $telephone2;     // second telephone number of contact
     // meeting place
-    public $hasMeetPlace;
-    public $meetTime;
-    public $meetPlaceExact;
+    public $hasMeetPlace; // true or false
     public $meetLocation;
     // starting place
-    public $startTime;
-    public $startPlaceExact;
     public $startLocation;
     // finish place
-    public $finishTime;
+    public $isLinear; // true if walk has a finishing place otherwise false
     public $finishLocation;
     // grades length
     public $nationalGrade;
@@ -51,7 +46,6 @@ class  RJsonwalksWalk {
     public $pace;
     Public $ascentMetres;
     Public $ascentFeet;
-   
     // extra derived values
     public $placeTag;
     public $eventTag;
@@ -65,7 +59,7 @@ class  RJsonwalksWalk {
     const SORT_TELEPHONE2 = 6;
 
     function __construct($jsonitem) {
-      $ok=  $this->checkProperties($jsonitem);
+        $ok = $this->checkProperties($jsonitem);
         if ($jsonitem != NULL and $ok) {
             // admin details
             $this->is = $jsonitem->id;
@@ -90,23 +84,13 @@ class  RJsonwalksWalk {
             $this->ascentFeet = $jsonitem->ascentFeet;
             $this->ascentMetres = $jsonitem->ascentMetres;
             // contact details
-            $this->isLeader = $jsonitem->walkContact->isWalkLeader=="true";
+            $this->isLeader = $jsonitem->walkContact->isWalkLeader == "true";
             $this->contactName = $jsonitem->walkContact->contact->displayName;
             $this->email = $jsonitem->walkContact->contact->email;
             $this->telephone1 = $jsonitem->walkContact->contact->telephone1;
             $this->telephone2 = $jsonitem->walkContact->contact->telephone2;
             // pocess meeting and starting locations
             $this->processPoints($jsonitem->points);
-
-            $this->meetTime = DateTime::createFromFormat('H:i:s', "09:00:00");
-            $this->startPlaceExact = true;
-
-            $this->startTime = DateTime::createFromFormat('H:i:s', "10:00:00");
-
-            if ($this->title == null) {
-                $this->title = "???";
-            }
-           
             $this->createExtraData();
         } else {
             echo "Walk is either null or has invalid properties";
@@ -134,7 +118,7 @@ class  RJsonwalksWalk {
         }
     }
 
-    function createExtraData() {
+    private function createExtraData() {
         $this->dayofweek = $this->walkDate->format('l');
         $this->month = $this->walkDate->format('F');
         $this->day = $this->walkDate->format('jS');
@@ -142,7 +126,7 @@ class  RJsonwalksWalk {
         $this->getSchemaPlaceTag();
     }
 
-    function getSchemaPlaceTag() {
+    private function getSchemaPlaceTag() {
         return "";
         $tag = "<div itemprop=location " . self::PLACE . " ><div style='display: none;' itemprop=name>" . $this->startDesc . "</div>";
         $latitude = $this->startLocation->latitude;
@@ -166,23 +150,23 @@ class  RJsonwalksWalk {
         foreach ($points as $value) {
             if ($value->typeString == "Meeting") {
                 $this->hasMeetPlace = true;
-                   $this->meetTime = DateTime::createFromFormat('H:i:s', $value->time );
-              $this->meetLocation = new RJsonwalksLocation($value);
+                // $this->meetTime = DateTime::createFromFormat('H:i:s', $value->time );
+                $this->meetLocation = new RJsonwalksLocation($value);
             }
             if ($value->typeString == "Start") {
-                 $this->startTime = DateTime::createFromFormat('H:i:s', $value->time );
-                $this->startPlaceExact = true;
+                //  $this->startTime = DateTime::createFromFormat('H:i:s', $value->time );
                 $this->startLocation = new RJsonwalksLocation($value);
             }
             if ($value->typeString == "End") {
-                $this->finishTime = DateTime::createFromFormat('H:i:s', $value->time );
+                //  $this->finishTime = DateTime::createFromFormat('H:i:s', $value->time );
                 $this->finishLocation = new RJsonwalksLocation($value);
             }
         }
     }
-    private function checkProperties($object){
-        
-      //  property_exists
+
+    private function checkProperties($object) {
+
+        //  property_exists
         return true;
     }
 

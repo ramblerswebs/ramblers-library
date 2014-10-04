@@ -50,10 +50,10 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
       //  $col1 = '<img border="0" src="http://nextprogramme.derbyramblers.org.uk/images/boots/bootblack.jpg" width="20" height="20">';
         $col2 = "<b>" . $walk->walkDate->format('l, jS') . "</b>" . PHP_EOL;
         if ($walk->hasMeetPlace) {
-            $col2 .= ", " . $walk->meetTime->format('ga') . " at " . $walk->meetLocation->description;
+            $col2 .= ", " . $walk->meetLocation->time->format('ga') . " at " . $walk->meetLocation->description;
         }
-        if ($walk->startPlaceExact) {
-            $col2 .= ", " . $walk->startTime->format('ga') . " at " . $walk->startLocation->description;
+        if ($walk->startLocation->exact) {
+            $col2 .= ", " . $walk->startLocation->time->format('ga') . " at " . $walk->startLocation->description;
         }
 
         $col2 .= ", " . $walk->title . " ";
