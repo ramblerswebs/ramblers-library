@@ -8,7 +8,7 @@ class RJsonwalksWalk {
     const GEOSHAPE = 'itemscope itemtype="http://schema.org/GeoShape"';
 
     // administration items
-    public $id;                  // database ID of walk
+    public $id;                  // database ID of walk on Walks Finder
     public $status;              // whether the walk is published, cancelled etc
     public $groupCode;           // group code e.g. SR01
     public $groupName;           // the group name e.g. Derby & South Derbyshire
@@ -32,20 +32,20 @@ class RJsonwalksWalk {
     public $telephone2;          // second telephone number of contact
     // meeting place
     public $hasMeetPlace;        // true or false
-    public $meetLocation;
+    public $meetLocation;        // a RJsonwalksLocation object if hasMeetPlace=true
     // starting place
-    public $startLocation;
+    public $startLocation;       // a RJsonwalksLocation object for the start
     // finish place
     public $isLinear;            // true if walk has a finishing place otherwise false
-    public $finishLocation;
+    public $finishLocation;      // a RJsonwalksLocation object if isLinear=true
     // grades length
-    public $nationalGrade;
-    public $localGrade;
-    public $distanceMiles;
-    public $distanceKm;
-    public $pace;
-    Public $ascentMetres;
-    Public $ascentFeet;
+    public $nationalGrade;       // national grade as full word
+    public $localGrade;          // local grade
+    public $distanceMiles;       // distance of walk as number in miles
+    public $distanceKm;          // distance of walk as number in kilometres
+    public $pace;                // the pace of the walk or null
+    Public $ascentMetres;        // the ascent in metres or null
+    Public $ascentFeet;          // the ascent in feet or null
     // extra derived values
     public $placeTag;
     public $eventTag;
@@ -122,7 +122,9 @@ class RJsonwalksWalk {
     }
 
     function setNewWalk($date) {
-        // $this->updateDate
+        if ($this->status == "New") {
+            $this->status = "Published";
+        }
         if ($this->status == "Published") {
             if ($this->dateUpdated > $date) {
                 $this->status = "New";

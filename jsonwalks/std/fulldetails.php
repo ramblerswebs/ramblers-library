@@ -68,10 +68,9 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         $text .= ", " . $walk->title . " ";
         $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
-        echo "<div class='". $this->walkClass .$walk->status. "' >" . PHP_EOL;
+        echo "<div class='" . $this->walkClass . $walk->status . "' >" . PHP_EOL;
         echo "<p>" . $text . "</p>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
-       
     }
 
     private function displayWalkDetails($walk) {
@@ -79,7 +78,9 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "<div class='walkstdfulldetails'>";
         echo "<div class='basics'>";
         echo "<div class='description'><b>Description</b>: " . $walk->description . "</div>";
-        echo "<div class='additionalnotes'><b>Additional Notes</b>: " . $walk->additionalNotes . "</div>";
+        if ($walk->additionalNotes != "") {
+            echo "<div class='additionalnotes'><b>Additional Notes</b>: " . $walk->additionalNotes . "</div>";
+        }
         echo "<div class='distance'><b>Distance</b>: " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km" . "</div>";
         if ($walk->isLinear) {
             echo "<b>Linear Walk</b>";
@@ -111,18 +112,39 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "<div class='finishplace'><b>Finish Place</b>: ";
             echo $this->addLocationInfo($walk->finishLocation);
             echo "</div>";
-        } 
+        }
         echo "<div class='difficulty'><b>Difficulty</b>: ";
         echo "<div class='nationalgrade'><b>National Grade</b>: " . $walk->nationalGrade . "</div>";
-        echo "<div class='localgrade'><b>Local Grade</b>: " . $walk->localGrade . "</div>";
-        echo "<div class='pace'><b>Pace</b>: " . $walk->pace . "</div>";
-        echo "<div class='ascent'><b>Ascent</b>: " . $walk->ascentFeet . " ft " . $walk->ascentMetres . " ms</div>";
+        if ($walk->localGrade != "") {
+            echo "<div class='localgrade'><b>Local Grade</b>: " . $walk->localGrade . "</div>";
+        }
+        if ($walk->pace != null) {
+            echo "<div class='pace'><b>Pace</b>: " . $walk->pace . "</div>";
+        }
+        if ($walk->ascentFeet != null) {
+            echo "<div class='ascent'><b>Ascent</b>: " . $walk->ascentFeet . " ft " . $walk->ascentMetres . " ms</div>";
+        }
         echo "</div>";
 
         echo "<div class='walkcontact'><b>Contact</b>: ";
         echo "<div class='contactname'><b>Name</b>: " . $walk->contactName . "</div>";
-        echo "<div class='email'><b>Email</b>: " . $walk->email . "</div>";
-        echo "<div class='telphone'><b>Telephone</b>: " . $walk->telephone1 . " " . $walk->telephone2 . "</div>";
+        if ($walk->email != "") {
+            echo "<div class='email'><b>Email</b>: " . $walk->email . "</div>";
+        }
+        if ($walk->telephone1 . $walk->telephone2 != "") {
+            $text = "<div class='telphone'><b>Telephone</b>: ";
+            If ($walk->telephone1 != "") {
+                $text.= $walk->telephone1;
+                if ($walk->telephone2 != "") {
+                    $text.= ", ";
+                }
+            }
+            if ($walk->telephone2 != "") {
+                $text.= $walk->telephone2;
+            }
+            $text.="</div>";
+            echo $text;
+        }
         echo "</div>";
 
         echo "</div>";
@@ -134,8 +156,9 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
         $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude . "</div>";
         $out.= "<div class='latitude'><b>Latitude</b>: " . $location->latitude . "</div>";
-        $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . "</div>";
-
+        if ($location->postcode != "") {
+            $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . "</div>";
+        }
         return $out;
     }
 
