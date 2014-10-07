@@ -12,8 +12,8 @@ class RJsonwalksWalk {
     public $status;              // whether the walk is published, cancelled etc
     public $groupCode;           // group code e.g. SR01
     public $groupName;           // the group name e.g. Derby & South Derbyshire
-    public $updateDate;          // date of the walk as a datetime object
-    public $createDate;          // date of the walk as a datetime object
+    public $dateUpdated;          // date of the walk as a datetime object
+    public $dateCreated;          // date of the walk as a datetime object
     public $cancellationReason;  // text reason walk cancelled
     // basic walk details
     public $walkDate;            // date of the walk as a datettime object
@@ -57,6 +57,7 @@ class RJsonwalksWalk {
     const SORT_DISTANCE = 4;
     const SORT_TELEPHONE1 = 5;
     const SORT_TELEPHONE2 = 6;
+    const TIMEFORMAT = "Y-m-d\TH:i:s";
 
     function __construct($jsonitem) {
         $ok = $this->checkProperties($jsonitem);
@@ -66,11 +67,13 @@ class RJsonwalksWalk {
             $this->status = $jsonitem->status->value;
             $this->groupCode = $jsonitem->groupCode;
             $this->groupName = $jsonitem->groupName;
-            $this->updateDate = DateTime::createFromFormat(DateTime::ISO8601, $jsonitem->dateUpdated . "+0000");
-            $this->createDate = DateTime::createFromFormat(DateTime::ISO8601, $jsonitem->dateCreated . "+0000");
+            $jsonitem->dateUpdated = substr($jsonitem->dateUpdated, 0, 19);
+            $jsonitem->dateCreated = substr($jsonitem->dateCreated, 0, 19);
+            $this->dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, $jsonitem->dateUpdated);
+            $this->dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, $jsonitem->dateCreated);
             $this->cancellationReason = $jsonitem->cancellationReason;
             // basic walk details
-            $this->walkDate = DateTime::createFromFormat(DateTime::ISO8601, $jsonitem->date . "+0000");
+            $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $jsonitem->date);
             $this->detailsPageUrl = $jsonitem->url;
             $this->title = $jsonitem->title;
             $this->description = $jsonitem->description;
@@ -115,6 +118,15 @@ class RJsonwalksWalk {
                 return $this->telephone2;
             default:
                 return NULL;
+        }
+    }
+
+    function setNewWalk($date) {
+        // $this->updateDate
+        if ($this->status == "Published") {
+            if ($this->dateUpdated > $date) {
+                $this->status = "New";
+            }
         }
     }
 

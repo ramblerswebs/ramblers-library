@@ -68,8 +68,10 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         $text .= ", " . $walk->title . " ";
         $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
-
-        echo $text . PHP_EOL;
+        echo "<div class='". $this->walkClass .$walk->status. "' >" . PHP_EOL;
+        echo "<p>" . $text . "</p>" . PHP_EOL;
+        echo "</div>" . PHP_EOL;
+       
     }
 
     private function displayWalkDetails($walk) {

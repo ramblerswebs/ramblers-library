@@ -58,7 +58,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
         } else {
             $text.=", Contact " . $walk->contactName . " " . $walk->telephone1;
         }
-        echo "<div class='" . $this->walkClass . "' >" . PHP_EOL;
+        echo "<div class='" . $this->walkClass .$walk->status. "' >" . PHP_EOL;
         echo "<p>" . $text . "</p>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
     }

@@ -47,7 +47,7 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
 
     private function displayWalk($walk) {
         $col1 = $this->getGradeImage($walk->localGrade);
-      //  $col1 = '<img border="0" src="http://nextprogramme.derbyramblers.org.uk/images/boots/bootblack.jpg" width="20" height="20">';
+   
         $col2 = "<b>" . $walk->walkDate->format('l, jS') . "</b>" . PHP_EOL;
         if ($walk->hasMeetPlace) {
             $col2 .= ", " . $walk->meetLocation->time->format('ga') . " at " . $walk->meetLocation->description;
@@ -63,6 +63,7 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
         } else {
             $col2.=", Contact " . $walk->contactName . " " . $walk->telephone1;
         }
+        $col2="<div class='" . $this->walkClass .$walk->status. "'>".$col2."</div>";
         echo RHtml::addTableRow(array($col1, $col2));
     }
 

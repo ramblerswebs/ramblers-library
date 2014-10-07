@@ -6,6 +6,7 @@ class RJsonwalksWalks {
     private $sortorder1;
     private $sortorder2;
     private $sortorder3;
+    private $newinterval = 30;
 
     function __construct($json) {
         $this->arrayofwalks = array();
@@ -16,6 +17,19 @@ class RJsonwalksWalks {
             } else {
                 echo "Feed is NOT in a JSON format";
             }
+        }
+        $this->setNewWalks($this->newinterval);
+    }
+
+    function setNewWalks($days) {
+        $interval = "P" . $days . "D";
+        $date = new DateTime(NULL);
+        $interval = new DateInterval($interval);
+        $date->sub($interval);
+        $items = $this->allWalks();
+
+        foreach ($items as $walk) {
+            $walk->setNewWalk($date);
         }
     }
 

@@ -45,8 +45,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     }
 
     private function displayWalkForProgrammeTable($walk) {
-
-        $date = "<b>" . $walk->walkDate->format('l, jS F') . "</b>" . PHP_EOL;
+        $date = "<div class='" . $this->walkClass .$walk->status. "'><b>" . $walk->walkDate->format('l, jS F') . "</b></div>";
 
         if ($walk->hasMeetPlace) {
             $meet = $walk->meetLocation->time->format('ga') . " at " . $walk->meetLocation->description;
@@ -59,7 +58,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $start = ".";
         }
 
-        $title = $walk->title . " ";
+        $title = "<div class='" . $walk->status . "'>" . $walk->title . " </div>";
         $dist = $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
         if ($walk->isLeader) {
             $contact = $walk->contactName . " " . $walk->telephone1;

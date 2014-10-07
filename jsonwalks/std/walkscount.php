@@ -17,7 +17,7 @@ class RJsonwalksStdWalkscount extends RJsonwalksDisplaybase {
     function DisplayWalks($walks) {
 
         $no = $this->nowalks($walks);
-        echo "<" . $this->tag . ">" . $startText . $no . $endText . "</" . $this->tag . ">" . PHP_EOL;
+        echo "<" . $this->tag . ">" . $this->startText . $no . $this->endText . "</" . $this->tag . ">" . PHP_EOL;
     }
 
     private function nowalks($walks) {
