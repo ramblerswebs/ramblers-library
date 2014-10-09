@@ -33,6 +33,50 @@ class RJsonwalksWalks {
         }
     }
 
+    function filterGroups($groups) {
+        foreach ($this->arrayofwalks as $key => $value) {
+            if ($this->notInGroup($value, $groups)) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
+    private function notInGroup($walk, $groups) {
+        foreach ($groups as $value) {
+            if (strtolower($value) == strtolower($walk->groupCode)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function filterDayofweek($days) {
+        foreach ($this->arrayofwalks as $key => $value) {
+            if ($this->notInDayList($value, $days)) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
+    private function notInDayList($walk, $days) {
+        foreach ($days as $value) {
+            if (strtolower($value) == strtolower($walk->dayofweek)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function noWalks($no) {
+        $i = 1;
+        foreach ($this->arrayofwalks as $key => $value) {
+            $i+=1;
+            if ($i > $no) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
     function sort($sortorder1, $sortorder2, $sortorder3) {
         $this->sortorder1 = $sortorder1;
         $this->sortorder2 = $sortorder2;

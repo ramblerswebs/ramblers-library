@@ -13,8 +13,10 @@ defined('_JEXEC') or die('Restricted access');
 class RJsonwalksFeed {
 
     private $walks;
+    private $rafeedurl;
 
     function __construct($rafeedurl) {
+        $this->rafeedurl=$rafeedurl;
         $this->readFeed($rafeedurl);
     }
 
@@ -38,6 +40,21 @@ class RJsonwalksFeed {
         }
     }
 
+    function setNewWalks($days) {
+        $this->walks->setNewWalks($days);
+    }
+
+    function filterGroups($groups) {
+        $this->walks->filterGroups($groups);
+    }
+    function filterDayofweek($days) {
+        $this->walks->filterDayofweek($days);
+    }
+
+    function noWalks($no) {
+        $this->walks->noWalks($no);
+    }
+
     function display($displayclass) {
         if ($this->walks == null) {
             echo "Walks array is empty";
@@ -59,6 +76,8 @@ class RJsonwalksFeed {
                 }
             }
         }
+        // reread feed
+        $this->readFeed($this->rafeedurl);
     }
 
     private function CacheLocation() {
