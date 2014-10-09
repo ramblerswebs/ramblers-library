@@ -13,28 +13,27 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private $walksClass = "walks";
     private $walkClass = "walk";
 
-    const BR = "<br />";
 
     function DisplayWalks($walks) {
         $document = JFactory::getDocument();
         JHtml::_('jquery.framework');
-        $document->addStyleSheet(JURI::base() . 'modules/mod_sp_accordion/style/style4.css');
-        $document->addScript(JURI::base() . 'modules/mod_sp_accordion/js/sp-accordion.js', "text/javascript");
+        $document->addStyleSheet(JURI::base() . 'ramblers/jsonwalks/std/accordian/style/style4.css');
+        $document->addScript(JURI::base() . 'ramblers/jsonwalks/std/accordian/js/ra-accordion.js', "text/javascript");
         $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
         $items = $walks->allWalks();
 
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         echo ' <script type="text/javascript">' . PHP_EOL;
         echo 'jQuery(function($) {' . PHP_EOL;
-        echo "$('#accordion_sp1_id007').spAccordion({" . PHP_EOL;
+        echo "$('#accordion_ra1_id007').raAccordion({" . PHP_EOL;
         echo 'hidefirst: 1 });' . PHP_EOL;
         echo '});' . PHP_EOL;
         echo '</script>' . PHP_EOL;
-        echo '<div id="accordion_sp1_id007" class="sp-accordion sp-accordion-style4 ">';
+        echo '<div id="accordion_ra1_id007" class="ra-accordion ra-accordion-style4 ">';
         foreach ($items as $walk) {
             $thiscontact = $walk->contactName . "  " . $walk->telephone1;
 
-            echo '<div class="sp-accordion-item">';
+            echo '<div class="ra-accordion-item">';
             echo '<div class="toggler">';
             echo '<span><span>';
 
@@ -42,8 +41,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo '</span></span>';
             echo '</div>';
             echo '<div class="clr"></div>';
-            echo '<div class="sp-accordion-container" style="display: none;">';
-            echo '<div class="sp-accordion-inner">';
+            echo '<div class="ra-accordion-container" style="display: none;">';
+            echo '<div class="ra-accordion-inner">';
             $this->displayWalkDetails($walk);
             echo "<hr/>" . PHP_EOL;
             echo '</div></div>';
@@ -68,9 +67,9 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         $text .= ", " . $walk->title . " ";
         $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
-        echo "<div class='" . $this->walkClass . $walk->status . "' >" . PHP_EOL;
-        echo "<p>" . $text . "</p>" . PHP_EOL;
-        echo "</div>" . PHP_EOL;
+        echo "<div class='" . $this->walkClass . $walk->status . "' ><div>" . PHP_EOL;
+        echo  $text . PHP_EOL;
+        echo "</div></div>" . PHP_EOL;
     }
 
     private function displayWalkDetails($walk) {
