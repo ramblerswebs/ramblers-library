@@ -12,15 +12,20 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
 
     private $walkClass = "walk";
     private $feedClass = "walksfeed";
+    private $nowalks = 5;
 
     function DisplayWalks($walks) {
 
         $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
         $items = $walks->allWalks();
+        $no = 0;
         echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;
 
         foreach ($items as $walk) {
-
+            $no+=1;
+            if ($no > $this->nowalks) {
+                break;
+            }
             $date = "<b>" . $walk->walkDate->format('D, jS F') . "</b>";
             $col2 = "<span itemprop=startDate content=" . $walk->walkDate->format(DateTime::ISO8601) . ">" . $date . "</span>";
             $col2 .= ", <span itemprop=name>" . $walk->title;
@@ -34,6 +39,10 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
         }
 
         echo "</ul>" . PHP_EOL;
+    }
+
+    function noWalks($no) {
+        $this->nowalks = $no;
     }
 
 }
