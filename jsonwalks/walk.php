@@ -141,11 +141,11 @@ class RJsonwalksWalk {
     }
 
     private function getSchemaPlaceTag() {
-        return "";
-        $tag = "<div itemprop=location " . self::PLACE . " ><div style='display: none;' itemprop=name>" . $this->startDesc . "</div>";
+        
+        $tag = "<div itemprop=location " . self::PLACE . " ><div style='display: none;' itemprop=name>" . $this->startLocation->description . "</div>";
         $latitude = $this->startLocation->latitude;
         $longitude = $this->startLocation->longitude;
-        if ($this->startPlaceExact) {
+        if ($this->startLocation->exact) {
             $tag.= "<span itemprop=geo " . self::GEOCOORDS . ">  ";
             $tag.= "<meta itemprop=latitude content='" . $latitude . "' />";
             $tag.= "<meta itemprop=longitude content='" . $longitude . "' />";
@@ -164,15 +164,12 @@ class RJsonwalksWalk {
         foreach ($points as $value) {
             if ($value->typeString == "Meeting") {
                 $this->hasMeetPlace = true;
-                // $this->meetTime = DateTime::createFromFormat('H:i:s', $value->time );
                 $this->meetLocation = new RJsonwalksLocation($value);
             }
             if ($value->typeString == "Start") {
-                //  $this->startTime = DateTime::createFromFormat('H:i:s', $value->time );
                 $this->startLocation = new RJsonwalksLocation($value);
             }
             if ($value->typeString == "End") {
-                //  $this->finishTime = DateTime::createFromFormat('H:i:s', $value->time );
                 $this->finishLocation = new RJsonwalksLocation($value);
             }
         }
