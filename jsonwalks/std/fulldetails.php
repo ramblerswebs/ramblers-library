@@ -12,7 +12,11 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
     private $walksClass = "walks";
     private $walkClass = "walk";
-
+    public $nationalGradeHelp = "";
+    public $localGradeHelp = "";
+    public $nationalGradeTarget = "_parent";
+    public $localGradeTarget = "_parent";
+    public $popupLink = true;
 
     function DisplayWalks($walks) {
         $document = JFactory::getDocument();
@@ -68,7 +72,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         $text .= ", " . $walk->title . " ";
         $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
         echo "<div class='" . $this->walkClass . $walk->status . "' ><div>" . PHP_EOL;
-        echo  $text . PHP_EOL;
+        echo $text . PHP_EOL;
         echo "</div></div>" . PHP_EOL;
     }
 
@@ -113,9 +117,16 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "</div>";
         }
         echo "<div class='difficulty'><b>Difficulty</b>: ";
-        echo "<div class='nationalgrade'><b>National Grade</b>: " . $walk->nationalGrade . "</div>";
+        $link = $walk->nationalGrade;
+        if ($this->nationalGradeHelp != "") {
+            $link = "<a href='" . $this->nationalGradeHelp . "' target='" . $this->nationalGradeTarget . "'>" . $link . "</a>";
+        }
+        echo "<div class='nationalgrade'><b>National Grade</b>: " . $link . "</div>";
         if ($walk->localGrade != "") {
-            echo "<div class='localgrade'><b>Local Grade</b>: " . $walk->localGrade . "</div>";
+            $link = $walk->localGrade;
+            if ($this->localGradeHelp != "") {
+                $link = "<a href='" . $this->localGradeHelp . "' target='" . $this->localGradeTarget . "'>" . $link . "</a>";
+            } echo "<div class='localgrade'><b>Local Grade</b>: " . $link . "</div>";
         }
         if ($walk->pace != null) {
             echo "<div class='pace'><b>Pace</b>: " . $walk->pace . "</div>";
@@ -151,13 +162,36 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
     private function addLocationInfo($location) {
 
-        $out = "<div class='place'><b>Place</b>: " . $location->description . "</div>";
-        $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
-        $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude . "</div>";
-        $out.= "<div class='latitude'><b>Latitude</b>: " . $location->latitude . "</div>";
-        if ($location->postcode != "") {
-            $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . "</div>";
+        if ($location->exact) {
+            $out = "<div class='place'><b>Place</b>: " . $location->description . " - ";
+            $out.=$this->getGoogleMapUrl("Google Map", $location->latitude . "," . $location->longitude, "_blank", $this->popupLink);
+            $out.= "</div>";
+            $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
+            $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude . "</div>";
+            $out.= "<div class='latitude'><b>Latitude</b>: " . $location->latitude . "</div>";
+        } else {
+            $out = "<div class='place'>Location shown is an indication of where the walk will be and <b>NOT</b> the start place:  - ";
+            $out.=$this->getGoogleMapUrl("Google Map", $location->latitude . "," . $location->longitude, "_blank", $this->popupLink);
+            $out.= "</div>";
         }
+
+        if ($location->postcode != "") {
+            $note = " - [Postcodes in some areas may not be close to the desired location, please check before using]";
+            $out.= "<div class='postcode'><b>Postcode</b>:";
+            $out.=$this->getGoogleMapUrl("Google Map", $location->postcode, "_blank", $this->popupLink);
+            $out.= $note . "</div>";
+        }
+        return $out;
+    }
+
+    private function getGoogleMapUrl($text, $search, $target, $popup) {
+        if ($popup) {
+            $out = "[<span class='rapopup' onClick=\"javascript:window.open('http://maps.google.com/maps?q=" . $search . "', '_blank','toolbar=yes,left=50,top=50,width=800,height=600');\">" . $text . "</span>]";
+            ;
+        } else {
+            $out = "[<a href='http://maps.google.com/maps?q=" . $search . "' target='" . $target . "'>" . $text . "</a>]</div>";
+        }
+
         return $out;
     }
 
