@@ -10,8 +10,8 @@ defined("_JEXEC") or die("Restricted access");
 
 class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
 
-    private $walkClass = "walk";
-    private $feedClass = "walksfeed";
+    public $walkClass = "walk";
+    public $feedClass = "walksfeed";
     private $nowalks = 5;
 
     function DisplayWalks($walks) {

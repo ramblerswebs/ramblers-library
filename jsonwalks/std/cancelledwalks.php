@@ -10,25 +10,22 @@ defined("_JEXEC") or die("Restricted access");
 
 class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
 
-    private $walksClass = "walks";
-    private $walkClass = "walk";
-    private $walkslist = "";
-    Public $message = "<p>The following walks have been cancelled</p>";
-
-    // const BR = "<br />";
+    private $walksClass = "cancelledWalks";
+    private $walkClass = "cancelledWalk";
+    Public $message = "<h3>Sorry - the following walk(s) have been cancelled</h3>";
 
     function DisplayWalks($walks) {
 
         $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
         $items = $walks->allWalks();
-
+        $walkslist = "";
         foreach ($items as $walk) {
-            $this->displayWalk($walk);
+            $walkslist .= $this->displayWalk($walk);
         }
-        if ($this->walkslist != "") {
-            echo $this->message;
+        if ($walkslist != "") {
             echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
-            echo $this->walkslist;
+            echo $this->message;
+            echo $walkslist;
             echo "</div>" . PHP_EOL;
         }
     }
@@ -42,16 +39,18 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
     }
 
     private function displayWalk($walk) {
+        $out="";
         if ($walk->status == "Cancelled") {
+            $out.= "<div class='" . $this->walkClass . "' >" . PHP_EOL;
 
-            $text = "<b>" . $walk->walkDate->format('F l, jS') . "</b>" . PHP_EOL;
+            $out .= "<b>Walk: " . $walk->walkDate->format('F l, jS') . "</b>";
             if ($walk->hasMeetPlace) {
-                $text .= ", " . $walk->meetLocation->time->format('ga') . " at " . $walk->meetLocation->description;
+                $text = ", " . $walk->meetLocation->time->format('ga') . " at " . $walk->meetLocation->description;
             }
             if ($walk->startLocation->exact) {
-                $text .= ", " . $walk->startLocation->time->format('ga') . " at " . $walk->startLocation->description;
+                $text = ", " . $walk->startLocation->time->format('ga') . " at " . $walk->startLocation->description;
             }
-$this->walkslist.=$text;
+            $out.=$text;
             $text = ", " . $walk->title . " ";
             $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
             if ($walk->isLeader) {
@@ -59,11 +58,11 @@ $this->walkslist.=$text;
             } else {
                 $text.=", Contact " . $walk->contactName . " " . $walk->telephone1;
             }
-            $this->walkslist.= "<div class='" . $this->walkClass .$walk->status. "' >" . PHP_EOL;
-            $this->walkslist.=  $text  . PHP_EOL;
-            $this->walkslist.= "</div>" . PHP_EOL;
-            $this->walkslist.= $walk->cancellationReason  . PHP_EOL;
+            $out.= $text . PHP_EOL;
+            $out.= "</div>" . PHP_EOL;
+            $out.= "<div class='cancelreason' ><b>Reason:</b> " . $walk->cancellationReason . "</div>" . PHP_EOL;
         }
+        return $out;
     }
 
 }
