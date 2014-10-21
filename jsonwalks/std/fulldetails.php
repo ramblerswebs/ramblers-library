@@ -17,6 +17,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $nationalGradeTarget = "_parent";
     public $localGradeTarget = "_parent";
     public $popupLink = true;
+    public $displayGroup = true;  // should the Group name be displayed
 
     function DisplayWalks($walks) {
         $document = JFactory::getDocument();
@@ -79,8 +80,12 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private function displayWalkDetails($walk) {
 
         echo "<div class='walkstdfulldetails'>";
+         if ($this->displayGroup) {
+            echo "<div class='group'><b>Group</b>: " . $walk->groupName . "</div>";
+        }
         echo "<div class='basics'>";
         echo "<div class='description'><b>Description</b>: " . $walk->description . "</div>";
+      
         if ($walk->additionalNotes != "") {
             echo "<div class='additionalnotes'><b>Additional Notes</b>: " . $walk->additionalNotes . "</div>";
         }
@@ -92,9 +97,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         }
         echo "</div>";
         if ($walk->hasMeetPlace) {
-            echo "<div class='meetplace'><b>Meeting Place</b>";
-            echo "<div class='meettime'><b>Time</b>: " . $walk->meetLocation->time->format('ga') . "</div>";
-            $out = $this->addLocationInfo($walk->meetLocation);
+            echo "<div class='meetplace'>";
+            $out = $this->addLocationInfo("Meeting", $walk->meetLocation);
             echo $out;
             echo "</div>";
         } else {
@@ -102,18 +106,17 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "</div>";
         }
         if ($walk->startLocation->exact) {
-            echo "<div class='startplace'><b>Starting Place</b>: ";
-            echo "<div class='starttime'><b>Time</b>: " . $walk->startLocation->time->format('ga') . "</div>";
+            echo "<div class='startplace'>";
         } else {
             echo "<div class='nostartplace'><b>No start place - Rough location only</b>: ";
         }
-        echo $this->addLocationInfo($walk->startLocation);
+        echo $this->addLocationInfo("Start", $walk->startLocation);
 
         echo "</div>";
 
         if ($walk->isLinear) {
-            echo "<div class='finishplace'><b>Finish Place</b>: ";
-            echo $this->addLocationInfo($walk->finishLocation);
+            echo "<div class='finishplace'>";
+            echo $this->addLocationInfo("Finish", $walk->finishLocation);
             echo "</div>";
         }
         echo "<div class='difficulty'><b>Difficulty</b>: ";
@@ -160,12 +163,13 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "</div>";
     }
 
-    private function addLocationInfo($location) {
+    private function addLocationInfo($title, $location) {
 
         if ($location->exact) {
-            $out = "<div class='place'><b>Place</b>: " . $location->description . " - ";
+            $out = "<div class='place'><b>" . $title . " Place</b>: " . $location->description . " - ";
             $out.=$this->getGoogleMapUrl("Map", $location->latitude . "," . $location->longitude, "_blank", $this->popupLink);
             $out.= "</div>";
+            $out.= "<div class='time'><b>Time</b>: " . $location->time->format('ga') . "</div>";
             $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
             $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude . "</div>";
             $out.= "<div class='latitude'><b>Latitude</b>: " . $location->latitude . "</div>";
@@ -177,7 +181,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         if ($location->postcode != "") {
             $note = " - [Postcodes in some areas may not be close to the desired location, please check before using]";
-            $out.= "<div class='postcode'><b>Postcode</b>:";
+            $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . " ";
             $out.=$this->getGoogleMapUrl("Map", $location->postcode, "_blank", $this->popupLink);
             $out.= $note . "</div>";
         }

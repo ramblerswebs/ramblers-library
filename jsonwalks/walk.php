@@ -21,26 +21,26 @@ class RJsonwalksWalk {
     public $day;                 // the day number as text
     public $month;               // the month as text
     public $title;               // title of the walk
-    public $description;         // description of walk
-    public $additionalNotes;     // the additional notes field as text
-    public $detailsPageUrl;      // url to access the ramblers.org.uk page for this walk
+    public $description = "";         // description of walk
+    public $additionalNotes = "";     // the additional notes field as text
+    public $detailsPageUrl = "";      // url to access the ramblers.org.uk page for this walk
     // contact
-    public $isLeader;            // is the contact info for the leader of the walk
-    public $contactName;         // contact name
-    public $email;               // email address for contact
-    public $telephone1;          // first telephone number of contact
-    public $telephone2;          // second telephone number of contact
+    public $isLeader = false;            // is the contact info for the leader of the walk
+    public $contactName = "";         // contact name
+    public $email = "";               // email address for contact
+    public $telephone1 = "";          // first telephone number of contact
+    public $telephone2 = "";          // second telephone number of contact
     // meeting place
-    public $hasMeetPlace;        // true or false
+    public $hasMeetPlace = false;        // true or false
     public $meetLocation;        // a RJsonwalksLocation object if hasMeetPlace=true
     // starting place
     public $startLocation;       // a RJsonwalksLocation object for the start
     // finish place
-    public $isLinear;            // true if walk has a finishing place otherwise false
+    public $isLinear = false;            // true if walk has a finishing place otherwise false
     public $finishLocation;      // a RJsonwalksLocation object if isLinear=true
     // grades length
-    public $nationalGrade;       // national grade as full word
-    public $localGrade;          // local grade
+    public $nationalGrade = "";       // national grade as full word
+    public $localGrade = "";          // local grade
     public $distanceMiles;       // distance of walk as number in miles
     public $distanceKm;          // distance of walk as number in kilometres
     public $pace;                // the pace of the walk or null
@@ -59,44 +59,45 @@ class RJsonwalksWalk {
     const SORT_TELEPHONE2 = 6;
     const TIMEFORMAT = "Y-m-d\TH:i:s";
 
-    function __construct($jsonitem) {
-        $ok = $this->checkProperties($jsonitem);
-        if ($jsonitem != NULL and $ok) {
+    function __construct($item) {
+        $ok = $this->checkProperties($item);
+        if ($item != NULL and $ok) {
             // admin details
-            $this->is = $jsonitem->id;
-            $this->status = $jsonitem->status->value;
-            $this->groupCode = $jsonitem->groupCode;
-            $this->groupName = $jsonitem->groupName;
-            $jsonitem->dateUpdated = substr($jsonitem->dateUpdated, 0, 19);
-            $jsonitem->dateCreated = substr($jsonitem->dateCreated, 0, 19);
-            $this->dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, $jsonitem->dateUpdated);
-            $this->dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, $jsonitem->dateCreated);
-            $this->cancellationReason = $jsonitem->cancellationReason;
-            // basic walk details
-            $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $jsonitem->date);
-            $this->detailsPageUrl = $jsonitem->url;
-            $this->title = $jsonitem->title;
-            $this->description = $jsonitem->description;
-            $this->additionalNotes = $jsonitem->additionalNotes;
-            $this->isLinear = $jsonitem->isLinear == "true";
-            $this->nationalGrade = $jsonitem->difficulty->text;
-            $this->localGrade = $jsonitem->gradeLocal;
-            $this->distanceMiles = $jsonitem->distanceMiles;
-            $this->distanceKm = $jsonitem->distanceKM;
-            $this->pace = $jsonitem->pace;
-            $this->ascentFeet = $jsonitem->ascentFeet;
-            $this->ascentMetres = $jsonitem->ascentMetres;
-            // contact details
-            $this->isLeader = $jsonitem->walkContact->isWalkLeader == "true";
-            $this->contactName = $jsonitem->walkContact->contact->displayName;
-            $this->email = $jsonitem->walkContact->contact->email;
-            $this->telephone1 = $jsonitem->walkContact->contact->telephone1;
-            $this->telephone2 = $jsonitem->walkContact->contact->telephone2;
-            // pocess meeting and starting locations
-            $this->processPoints($jsonitem->points);
-            $this->createExtraData();
-        } else {
-            echo "Walk is either null or has invalid properties";
+                $this->is = $item->id;
+                $this->status = $item->status->value;
+                $this->groupCode = $item->groupCode;
+                $this->groupName = $item->groupName;
+                $item->dateUpdated = substr($item->dateUpdated, 0, 19);
+                $item->dateCreated = substr($item->dateCreated, 0, 19);
+                $this->dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, $item->dateUpdated);
+                $this->dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, $item->dateCreated);
+                $this->cancellationReason = $item->cancellationReason;
+                // basic walk details
+                $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
+                $this->detailsPageUrl = $item->url;
+                $this->title = $item->title;
+                $this->description = $item->description;
+                $this->additionalNotes = $item->additionalNotes;
+                $this->isLinear = $item->isLinear == "true";
+                $this->nationalGrade = $item->difficulty->text;
+                $this->localGrade = $item->gradeLocal;
+                $this->distanceMiles = $item->distanceMiles;
+                $this->distanceKm = $item->distanceKM;
+                $this->pace = $item->pace;
+                $this->ascentFeet = $item->ascentFeet;
+                $this->ascentMetres = $item->ascentMetres;
+                // contact details
+                if ($item->walkContact != null) {
+                    $this->isLeader = $item->walkContact->isWalkLeader == "true";
+                    $this->contactName = $item->walkContact->contact->displayName;
+                    $this->email = $item->walkContact->contact->email;
+                    $this->telephone1 = $item->walkContact->contact->telephone1;
+                    $this->telephone2 = $item->walkContact->contact->telephone2;
+                }
+                // pocess meeting and starting locations
+                $this->processPoints($item->points);
+                $this->createExtraData();
+            
         }
     }
 
@@ -141,7 +142,7 @@ class RJsonwalksWalk {
     }
 
     private function getSchemaPlaceTag() {
-        
+
         $tag = "<div itemprop=location " . self::PLACE . " ><div style='display: none;' itemprop=name>" . $this->startLocation->description . "</div>";
         $latitude = $this->startLocation->latitude;
         $longitude = $this->startLocation->longitude;
