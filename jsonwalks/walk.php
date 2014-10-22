@@ -8,44 +8,44 @@ class RJsonwalksWalk {
     const GEOSHAPE = 'itemscope itemtype="http://schema.org/GeoShape"';
 
     // administration items
-    public $id;                  // database ID of walk on Walks Finder
-    public $status;              // whether the walk is published, cancelled etc
-    public $groupCode;           // group code e.g. SR01
-    public $groupName;           // the group name e.g. Derby & South Derbyshire
-    public $dateUpdated;          // date of the walk as a datetime object
-    public $dateCreated;          // date of the walk as a datetime object
-    public $cancellationReason;  // text reason walk cancelled
+    public $id;                     // database ID of walk on Walks Finder
+    public $status;                 // whether the walk is published, cancelled etc
+    public $groupCode;              // group code e.g. SR01
+    public $groupName;              // the group name e.g. Derby & South Derbyshire
+    public $dateUpdated;            // date of the walk as a datetime object
+    public $dateCreated;            // date of the walk as a datetime object
+    public $cancellationReason;     // text reason walk cancelled
     // basic walk details
-    public $walkDate;            // date of the walk as a datettime object
-    Public $dayofweek;           // day of the week as text
-    public $day;                 // the day number as text
-    public $month;               // the month as text
-    public $title;               // title of the walk
-    public $description = "";         // description of walk
-    public $additionalNotes = "";     // the additional notes field as text
-    public $detailsPageUrl = "";      // url to access the ramblers.org.uk page for this walk
+    public $walkDate;               // date of the walk as a datettime object
+    Public $dayofweek;              // day of the week as text
+    public $day;                    // the day number as text
+    public $month;                  // the month as text
+    public $title;                  // title of the walk
+    public $description = "";       // description of walk
+    public $additionalNotes = "";   // the additional notes field as text
+    public $detailsPageUrl = "";    // url to access the ramblers.org.uk page for this walk
     // contact
-    public $isLeader = false;            // is the contact info for the leader of the walk
-    public $contactName = "";         // contact name
-    public $email = "";               // email address for contact
-    public $telephone1 = "";          // first telephone number of contact
-    public $telephone2 = "";          // second telephone number of contact
+    public $isLeader = false;       // is the contact info for the leader of the walk
+    public $contactName = "";       // contact name
+    public $email = "";             // email address for contact
+    public $telephone1 = "";        // first telephone number of contact
+    public $telephone2 = "";        // second telephone number of contact
     // meeting place
-    public $hasMeetPlace = false;        // true or false
-    public $meetLocation;        // a RJsonwalksLocation object if hasMeetPlace=true
+    public $hasMeetPlace = false;   // true or false
+    public $meetLocation;           // a [[RJsonwalksLocation]] object if hasMeetPlace=true
     // starting place
-    public $startLocation;       // a RJsonwalksLocation object for the start
+    public $startLocation;          // a [[RJsonwalksLocation]] object for the start
     // finish place
-    public $isLinear = false;            // true if walk has a finishing place otherwise false
-    public $finishLocation;      // a RJsonwalksLocation object if isLinear=true
+    public $isLinear = false;       // true if walk has a finishing place otherwise false
+    public $finishLocation;         // a [[RJsonwalksLocation]] object if isLinear=true
     // grades length
-    public $nationalGrade = "";       // national grade as full word
-    public $localGrade = "";          // local grade
-    public $distanceMiles;       // distance of walk as number in miles
-    public $distanceKm;          // distance of walk as number in kilometres
-    public $pace;                // the pace of the walk or null
-    Public $ascentMetres;        // the ascent in metres or null
-    Public $ascentFeet;          // the ascent in feet or null
+    public $nationalGrade = "";     // national grade as full word
+    public $localGrade = "";        // local grade
+    public $distanceMiles;          // distance of walk as number in miles
+    public $distanceKm;             // distance of walk as number in kilometres
+    public $pace;                   // the pace of the walk or null
+    Public $ascentMetres;           // the ascent in metres or null
+    Public $ascentFeet;             // the ascent in feet or null
     // extra derived values
     public $placeTag;
     public $eventTag;

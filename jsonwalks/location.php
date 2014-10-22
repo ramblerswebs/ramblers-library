@@ -2,8 +2,8 @@
 
 class RJsonwalksLocation {
 
-    public $description;        // text desription of the location
-    public $time;               // time as dattime object
+    public $description;        // text description of the location
+    public $time;               // time as datetime object
     public $gridref;            // OS grid reference of the location
     public $longitude;          // Longitude of the location
     public $latitude;           // Latitude of the location

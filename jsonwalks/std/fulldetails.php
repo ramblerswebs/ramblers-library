@@ -17,7 +17,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $nationalGradeTarget = "_parent";
     public $localGradeTarget = "_parent";
     public $popupLink = true;
-    public $displayGroup = true;  // should the Group name be displayed
+    public $displayGroup = false;  // should the Group name be displayed
 
     function DisplayWalks($walks) {
         $document = JFactory::getDocument();
