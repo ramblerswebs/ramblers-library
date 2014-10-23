@@ -80,12 +80,12 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private function displayWalkDetails($walk) {
 
         echo "<div class='walkstdfulldetails'>";
-         if ($this->displayGroup) {
+        if ($this->displayGroup) {
             echo "<div class='group'><b>Group</b>: " . $walk->groupName . "</div>";
         }
         echo "<div class='basics'>";
         echo "<div class='description'><b>Description</b>: " . $walk->description . "</div>";
-      
+
         if ($walk->additionalNotes != "") {
             echo "<div class='additionalnotes'><b>Additional Notes</b>: " . $walk->additionalNotes . "</div>";
         }
@@ -116,9 +116,13 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         if ($walk->isLinear) {
             echo "<div class='finishplace'>";
-            echo $this->addLocationInfo("Finish", $walk->finishLocation);
-            echo "</div>";
-        }
+            if ($walk->finishLocation != null) {
+                echo $this->addLocationInfo("Finish", $walk->finishLocation);
+            } else {
+                echo "<span class='walkerror' >ERROR: No finish location supplied</span>";
+            }
+           echo "</div>";
+        } 
         echo "<div class='difficulty'><b>Difficulty</b>: ";
         $link = $walk->nationalGrade;
         if ($this->nationalGradeHelp != "") {
@@ -145,7 +149,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "<div class='email'><b>Email</b>: " . $walk->email . "</div>";
         }
         if ($walk->telephone1 . $walk->telephone2 != "") {
-            $text = "<div class='telphone'><b>Telephone</b>: ";
+            $text = "<div class='telephone'><b>Telephone</b>: ";
             If ($walk->telephone1 != "") {
                 $text.= $walk->telephone1;
                 if ($walk->telephone2 != "") {
@@ -158,6 +162,13 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $text.="</div>";
             echo $text;
         }
+        echo "</div>";
+
+        echo "<div class='walkdates'>";
+        if ($this->displayGroup==false){
+             echo "<div class='groupfootnote'>Group: " . $walk->groupName . "</div>";
+        }
+        echo "<div class='updated'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>";
         echo "</div>";
 
         echo "</div>";
