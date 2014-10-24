@@ -15,6 +15,8 @@ class RUsersStatus {
     private $user;
     private $cbInfo;
     private $membership;
+    private $membershipno = 0;
+    private $membershipnoValidFormat = false;
 
     function __construct() {
         $this->user = JFactory::getUser(); //gets user object
@@ -62,12 +64,36 @@ class RUsersStatus {
         }
     }
 
+    function displayMembershipNumberStatus() {
+        if ($this->membershipnoValidFormat == false) {
+            $text = 'The format of your Membership number is not correct. It should be of the form <b><i>DE-02-0123456</b></i>';
+            $text .=" - Value in Profile: " . strtoupper($this->cbInfo->cb_membershipno);
+            JFactory::getApplication()->enqueueMessage($text);
+        }
+    }
+
+    private function decodeMembershipNumber($no) {
+        $this->membershipnoValidFormat = false;
+        $pieces = explode("-", $no);
+        If (count($pieces) == 3) {
+            $this->membershipnoValidFormat = true;
+            $this->membershipno = $pieces[2];
+        }
+        If (count($pieces) == 2) {
+            $this->membershipno = $pieces[1];
+        }
+        If (count($pieces) == 1) {
+            $this->membershipno = $pieces[0];
+        }
+    }
+
     function getMembershipInfo($id) {
+        $this->decodeMembershipNumber($id);
         $ClearCache = NULL;
         $feedTimeout = 5;
         $CacheTime = 60; // minutes
         $cacheLocation = $this->CacheLocation();
-        $rafeedurl = "http://members.theramblers.org.uk/index.php?id=" . $id;
+        $rafeedurl = "http://members.theramblers.org.uk/index.php?id=" . $this->membershipno;
 
 // Fetch content
         $srfr = new RFeedhelper($cacheLocation, $CacheTime);
