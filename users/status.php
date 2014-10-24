@@ -79,7 +79,13 @@ class RUsersStatus {
 
         if ($contents != "") {
             $this->membership = json_decode($contents);
+            if (isset($this->membership->error)) {
+                if ($this->membership->error == true) {
+                    $this->membership = NULL;
+                }
+            }
         } else {
+
             $this->membership = NULL;
         }
     }
@@ -184,9 +190,9 @@ class RUsersStatus {
         if ($this->membership == NULL) {
             return true;
         }
-        $email1=strtoupper($this->cbInfo->cb_postcode) ;
+        $email1 = strtoupper($this->cbInfo->cb_postcode);
         $email1 = str_replace(' ', '', $email1);
-        $email2=strtoupper($this->membership->postcode) ;
+        $email2 = strtoupper($this->membership->postcode);
         $email2 = str_replace(' ', '', $email2);
         if ($email1 == $email2) {
             return true;
@@ -196,9 +202,9 @@ class RUsersStatus {
 
     function displayPostcodeStatus() {
         if ($this->postcodeOK() == false) {
-            $text='HAVE YOU MOVED? - Your Postcode held by this site does not agree with that held by the Ramblers London Office';
-           $text .=" - Postcodes: ".strtoupper($this->cbInfo->cb_postcode) ." and ".strtoupper($this->membership->postcode);
-           JFactory::getApplication()->enqueueMessage($text);
+            $text = 'HAVE YOU MOVED? - Your Postcode held by this site does not agree with that held by the Ramblers London Office';
+            $text .=" - Postcodes: " . strtoupper($this->cbInfo->cb_postcode) . " and " . strtoupper($this->membership->postcode);
+            JFactory::getApplication()->enqueueMessage($text);
         }
     }
 
@@ -249,6 +255,7 @@ class RUsersStatus {
             return;
         }
         if ($this->membership == NULL) {
+            Echo "<div class='ra-membership'><b>Ramblers Membership record not found within our Area/Group</b></div>";
             return;
         }
         $val = $this->membership->expiry;
@@ -266,10 +273,10 @@ class RUsersStatus {
             $date->add(new DateInterval('P30D'));
             if ($date < $expiry) {
                 Echo "<div class='ra-membershipexpires'><b>Expires: </b>" . $expiry->format('jS F Y') . "</div>";
-                            }
+            }
         }
-       Echo "<div class='ra-membershipnote'>Note: Our local Membership records are updated monthly and hence may be out of date.</div>";
- 
+        Echo "<div class='ra-membershipnote'>Note: Our local Membership records are updated monthly and hence may be out of date.</div>";
+
         return;
     }
 
