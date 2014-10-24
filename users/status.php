@@ -139,7 +139,7 @@ class RUsersStatus {
     function checkMembership() {
         if ($this->loggedon()) {
             if (RSqlUtils::tableExists('#__comprofiler')) {
-                echo '<p>Community Builder installed </p>';
+                // echo '<p>Community Builder installed </p>';
                 $db = JFactory::getDbo();
                 $id = $this->user->id;
                 $query = $db->getQuery(true);
@@ -154,22 +154,23 @@ class RUsersStatus {
                 $results = $db->loadObjectList();
                 $this->cbInfo = NULL;
                 foreach ($results as $i => $item) :
-                    echo "<p>Membership No: " . $item->cb_membershipno . '</p>';
+                    // echo "<p>Membership No: " . $item->cb_membershipno . '</p>';
                     $this->getMembershipInfo($item->cb_membershipno);
-                    echo "<p>Postcode " . $item->cb_postcode . '</p>';
+                    // echo "<p>Postcode " . $item->cb_postcode . '</p>';
                     $this->cbInfo = $item;
                 endforeach;
-                echo $this->postcodeOK();
-                echo $this->emailOK();
-                echo $this->membershipOK();
+                // echo $this->postcodeOK();
+                //  echo $this->emailOK();
+                // echo $this->membershipOK();
             }
         }
     }
-    function displayMembershipAlert(){
-         if ( $this->postcodeOK() and  $this->emailOK() and $this->membershipOK){
-             return;
-         }
-         // display alert button
+
+    function displayMembershipAlert() {
+        if ($this->postcodeOK() and $this->emailOK() and $this->membershipOK) {
+            return;
+        }
+        // display alert button
     }
 
     function displayMembershipIssues() {
@@ -183,10 +184,22 @@ class RUsersStatus {
         if ($this->membership == NULL) {
             return true;
         }
-        if (strtoupper($this->cbInfo->cb_postcode) == strtoupper($this->membership->postcode)) {
+        $email1=strtoupper($this->cbInfo->cb_postcode) ;
+        $email1 = str_replace(' ', '', $email1);
+        $email2=strtoupper($this->membership->postcode) ;
+        $email2 = str_replace(' ', '', $email2);
+        if ($email1 == $email2) {
             return true;
         }
         return false;
+    }
+
+    function displayPostcodeStatus() {
+        if ($this->postcodeOK() == false) {
+            $text='HAVE YOU MOVED? - Your Postcode held by this site does not agree with that held by the Ramblers London Office';
+           $text .=" - Postcodes: ".strtoupper($this->cbInfo->cb_postcode) ." and ".strtoupper($this->membership->postcode);
+           JFactory::getApplication()->enqueueMessage($text);
+        }
     }
 
     function emailOK() {
@@ -196,7 +209,7 @@ class RUsersStatus {
         if ($this->membership == NULL) {
             return true;
         }
-        if (md5($this->user->email) ==$this->membership->privateemail) {
+        if (md5($this->user->email) == $this->membership->privateemail) {
             return true;
         }
         if (md5($this->user->email) == $this->membership->publicemail) {
@@ -229,6 +242,35 @@ class RUsersStatus {
         }
 
         return false;
+    }
+
+    function displayMembershipStatus() {
+        if ($this->cbInfo == NULL) {
+            return;
+        }
+        if ($this->membership == NULL) {
+            return;
+        }
+        $val = $this->membership->expiry;
+        if ($val == "") {
+            return;
+        }
+        Echo "<div class='ra-membership'><b>Ramblers Membership</b></div>";
+        Echo "<div class='ra-membershipstatus'><b>Status: </b>" . $this->membership->status . "</div>";
+        if (strtoupper($this->membership->status == "LIFE")) {
+            return;
+        }
+        if (trim($val) != "") {
+            $expiry = DateTime::createFromFormat('Y-m-d H:i:s', $val . ' 00:00:00');
+            $date = new DateTime();
+            $date->add(new DateInterval('P30D'));
+            if ($date < $expiry) {
+                Echo "<div class='ra-membershipexpires'><b>Expires: </b>" . $expiry->format('jS F Y') . "</div>";
+                            }
+        }
+       Echo "<div class='ra-membershipnote'>Note: Our local Membership records are updated monthly and hence may be out of date.</div>";
+ 
+        return;
     }
 
 }
