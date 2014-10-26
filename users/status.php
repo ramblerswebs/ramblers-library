@@ -17,6 +17,8 @@ class RUsersStatus {
     private $membership;
     private $membershipno = 0;
     private $membershipnoValidFormat = false;
+    public $postcodeText = 'My Profile - HAVE YOU MOVED? - Your Postcode held by this site does not agree with that sent to us by Ramblers London Office';
+    public $localRecordsText = "Note: Our local Membership records are updated monthly and hence may be out of date.";
 
     function __construct() {
         $this->user = JFactory::getUser(); //gets user object
@@ -28,23 +30,38 @@ class RUsersStatus {
     }
 
     function loggedon() {
-        return $this->user->id != 0;
+        If ($this->user != null) {
+            return $this->user->id != 0;
+        }
+        return false;
     }
 
     function username() {
-        return $this->user->name;
+        If ($this->user != null) {
+            return $this->user->name;
+        }
+        return "";
     }
 
     function useremail() {
-        return $this->user->email;
+        If ($this->user != null) {
+            return $this->user->email;
+        }
+        return null;
     }
 
     function userlastvisitdate() {
-        return $this->user->lastvisitDate;
+        If ($this->user != null) {
+            return $this->user->lastvisitDate;
+        }
+        return null;
     }
 
     function userregisterdate() {
-        return $this->user->registerDate;
+        If ($this->user != null) {
+            return $this->user->registerDate;
+        }
+        return null;
     }
 
     function display() {
@@ -65,10 +82,12 @@ class RUsersStatus {
     }
 
     function displayMembershipNumberStatus() {
-        if ($this->membershipnoValidFormat == false) {
-            $text = 'The format of your Membership number is not correct. It should be of the form <b><i>DE-02-0123456</b></i>';
-            $text .=" - Value in Profile: " . strtoupper($this->cbInfo->cb_membershipno);
-            JFactory::getApplication()->enqueueMessage($text);
+        if ($this->loggedon()) {
+            if ($this->membershipnoValidFormat == false) {
+                $text = 'The format of your Membership number is not correct. It should be of the form <b><i>DE-02-0123456</b></i>';
+                $text .=" - value given in Profile: " . strtoupper($this->cbInfo->cb_membershipno);
+                JFactory::getApplication()->enqueueMessage($text);
+            }
         }
     }
 
@@ -111,7 +130,6 @@ class RUsersStatus {
                 }
             }
         } else {
-
             $this->membership = NULL;
         }
     }
@@ -149,9 +167,9 @@ class RUsersStatus {
 //echo '<pre>results '; var_dump($results); echo '</pre>';
 
                 if (count($results) == 0) {
-                    echo "<h2 class='usersubscribelist'>You are not subscribed to any Forum subjects</h2>";
+                    echo "<div class='usersubscribelist'>You are not subscribed to any Forum subjects</div>";
                 } else {
-                    echo "<h2  class='usersubscribelist'>You are subscribed to the following Forum subjects </h2>";
+                    echo "<div  class='usersubscribelist'>You are subscribed to the following Forum subjects </div>";
                     echo "<ul class='usersubscribelist'>";
                     foreach ($results as $i => $item) :
                         echo '<li>' . $item->catname . '</li>';
@@ -162,12 +180,7 @@ class RUsersStatus {
         }
     }
 
-    function displayKunenaProfileButton($class) {
-        // index.php?option=com_comprofiler&task=userdetails
-        // <a class="link-button button-p0110"
-        // index.php?option=com_kunena&view=user
-    }
-
+    
     function checkMembership() {
         if ($this->loggedon()) {
             if (RSqlUtils::tableExists('#__comprofiler')) {
@@ -186,30 +199,14 @@ class RUsersStatus {
                 $results = $db->loadObjectList();
                 $this->cbInfo = NULL;
                 foreach ($results as $i => $item) :
-                    // echo "<p>Membership No: " . $item->cb_membershipno . '</p>';
                     $this->getMembershipInfo($item->cb_membershipno);
-                    // echo "<p>Postcode " . $item->cb_postcode . '</p>';
                     $this->cbInfo = $item;
                 endforeach;
-                // echo $this->postcodeOK();
-                //  echo $this->emailOK();
-                // echo $this->membershipOK();
             }
         }
     }
 
-    function displayMembershipAlert() {
-        if ($this->postcodeOK() and $this->emailOK() and $this->membershipOK) {
-            return;
-        }
-        // display alert button
-    }
-
-    function displayMembershipIssues() {
-        
-    }
-
-    function postcodeOK() {
+     function postcodeOK() {
         if ($this->cbInfo == NULL) {
             return true;
         }
@@ -227,10 +224,13 @@ class RUsersStatus {
     }
 
     function displayPostcodeStatus() {
-        if ($this->postcodeOK() == false) {
-            $text = 'HAVE YOU MOVED? - Your Postcode held by this site does not agree with that held by the Ramblers London Office';
-            $text .=" - Postcodes: " . strtoupper($this->cbInfo->cb_postcode) . " and " . strtoupper($this->membership->postcode);
-            JFactory::getApplication()->enqueueMessage($text);
+        if ($this->loggedon()) {
+            if ($this->postcodeOK() == false) {
+                $text = $this->postcodeText;
+                $text .=" - Postcodes: " . strtoupper($this->cbInfo->cb_postcode) . " and " . strtoupper($this->membership->postcode);
+                $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->localRecordsText;
+                JFactory::getApplication()->enqueueMessage($text);
+            }
         }
     }
 
@@ -301,7 +301,7 @@ class RUsersStatus {
                 Echo "<div class='ra-membershipexpires'><b>Expires: </b>" . $expiry->format('jS F Y') . "</div>";
             }
         }
-        Echo "<div class='ra-membershipnote'>Note: Our local Membership records are updated monthly and hence may be out of date.</div>";
+        Echo "<div class='ra-membershipnote'>" . $this->localRecordsText . "</div>";
 
         return;
     }

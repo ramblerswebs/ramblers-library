@@ -48,12 +48,12 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         $date = "<div class='" . $this->walkClass .$walk->status. "'><b>" . $walk->walkDate->format('l, jS F') . "</b></div>";
 
         if ($walk->hasMeetPlace) {
-            $meet = $walk->meetLocation->time->format('ga') . " at " . $walk->meetLocation->description;
+            $meet = $walk->meetLocation->time->format('g:i a') . " at " . $walk->meetLocation->description;
         } else {
             $meet = ".";
         }
         if ($walk->startLocation->exact) {
-            $start = $walk->startLocation->time->format('ga') . " at " . $walk->startLocation->description;
+            $start = $walk->startLocation->time->format('g:i a') . " at " . $walk->startLocation->description;
         } else {
             $start = ".";
         }

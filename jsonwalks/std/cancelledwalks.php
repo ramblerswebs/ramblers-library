@@ -45,10 +45,10 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
 
             $out .= "<b>Walk: " . $walk->walkDate->format('F l, jS') . "</b>";
             if ($walk->hasMeetPlace) {
-                $text = ", " . $walk->meetLocation->time->format('ga') . " at " . $walk->meetLocation->description;
+                $text = ", " . $walk->meetLocation->time->format('g:i a') . " at " . $walk->meetLocation->description;
             }
             if ($walk->startLocation->exact) {
-                $text = ", " . $walk->startLocation->time->format('ga') . " at " . $walk->startLocation->description;
+                $text = ", " . $walk->startLocation->time->format('g:i a') . " at " . $walk->startLocation->description;
             }
             $out.=$text;
             $text = ", " . $walk->title . " ";
