@@ -180,7 +180,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $out = "<div class='place'><b>" . $title . " Place</b>: " . $location->description . " - ";
             $out.=$this->getGoogleMapUrl("Map", $location->latitude . "," . $location->longitude, "_blank", $this->popupLink);
             $out.= "</div>";
-            $out.= "<div class='time'><b>Time</b>: " . $location->time->format('g:i a') . "</div>";
+            $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
             $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
             $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude . "</div>";
             $out.= "<div class='latitude'><b>Latitude</b>: " . $location->latitude . "</div>";

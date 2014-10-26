@@ -4,6 +4,8 @@ class RJsonwalksLocation {
 
     public $description;        // text description of the location
     public $time;               // time as datetime object
+    public $timeHHMM;           // time as string hh:mm am/pam
+    public $timeHHMMshort;      // time as $timeHHMM but without minutes if zero
     public $gridref;            // OS grid reference of the location
     public $longitude;          // Longitude of the location
     public $latitude;           // Latitude of the location
@@ -15,6 +17,8 @@ class RJsonwalksLocation {
     function __construct($value) {
         $this->description = $value->description;
         $this->time = DateTime::createFromFormat('H:i:s', $value->time);
+        $this->timeHHMM=$this->time->format('g:i a');
+        $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
         $this->gridref = $value->gridRef;
         $this->latitude = $value->latitude;
         $this->longitude = $value->longitude;
