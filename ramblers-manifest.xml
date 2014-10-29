@@ -23,6 +23,6 @@
         </files>
     </fileset>
     <updateservers>
-        <server type="collection" priority="1" name="Ramblers-webs Update Site">http://updates.ramblers-webs.org.uk/ramblerslibrary.xml</server>
+        <server type="extension" priority="1" name="Ramblers-webs Update Site">http://updates.ramblers-webs.org.uk/ramblerslibrary.xml</server>
     </updateservers>  
 </extension>
