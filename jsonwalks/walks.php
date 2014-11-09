@@ -21,6 +21,15 @@ class RJsonwalksWalks {
         $this->setNewWalks($this->newinterval);
     }
 
+    function hasMeetPlace() {
+        foreach ($this->arrayofwalks as $walk) {
+            if ($walk->hasMeetPlace) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function setNewWalks($days) {
         $interval = "P" . $days . "D";
         $date = new DateTime(NULL);

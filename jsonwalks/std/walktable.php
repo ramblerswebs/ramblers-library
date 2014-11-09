@@ -13,6 +13,8 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     private $tableClass = "";
     private $walksClass = "walks";
     private $walkClass = "walk";
+    public $link = true;
+    public $addDescription = true;
 
     const BR = "<br />";
 
@@ -25,10 +27,18 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         } else {
             echo "<table>";
         }
-        echo RHtml::addTableHeader(array("Date", "Meet", "Start", "Title", "Distance", "Grade", "Leader"));
-        foreach ($items as $walk) {
-            $this->displayWalkForProgrammeTable($walk, false);
+        if ($walks->hasMeetPlace()) {
+            echo RHtml::addTableHeader(array("Date", "Meet", "Start", "Title", "Distance", "Grade", "Contact"));
+            foreach ($items as $walk) {
+                $this->displayWalkForProgrammeTable($walk, true);
+            }
+        } else {
+            echo RHtml::addTableHeader(array("Date", "Start", "Title", "Distance", "Grade", "Contact"));
+            foreach ($items as $walk) {
+                $this->displayWalkForProgrammeTable($walk, false);
+            }
         }
+
         echo "</table>" . PHP_EOL;
     }
 
@@ -44,30 +54,53 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         $this->walkClass = $class;
     }
 
-    private function displayWalkForProgrammeTable($walk) {
-        $date = "<div class='" . $this->walkClass .$walk->status. "'><b>" . $walk->walkDate->format('l, jS F') . "</b></div>";
+    private function displayWalkForProgrammeTable($walk, $hasMeet) {
+        $date = "<div class='" . $this->walkClass . $walk->status . "'><b>" . $walk->walkDate->format('l, jS F') . "</b></div>";
 
         if ($walk->hasMeetPlace) {
             $meet = $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
         } else {
             $meet = ".";
         }
+
         if ($walk->startLocation->exact) {
             $start = $walk->startLocation->timeHHMMshort . " at " . $walk->startLocation->description;
         } else {
             $start = ".";
         }
-
-        $title = "<div class='" . $walk->status . "'>" . $walk->title . " </div>";
-        $dist = $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
-        if ($walk->isLeader) {
-            $contact = $walk->contactName . " " . $walk->telephone1;
+        if ($this->link) {
+            $text = "<a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $walk->title . "</a>";
         } else {
-            $contact = $walk->contactName . " " . $walk->telephone1;
+            $text = $walk->title;
+        }
+        $title = "<div class='" . $walk->status . "'>" . $text . " </div>";
+        if ($this->addDescription) {
+            $title .= $walk->description;
+        }
+
+        $dist = $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
+        $contact = "";
+        if ($walk->isLeader) {
+            $contact = "Leader";
+        }
+        if ($walk->contactName <> "") {
+            $contact .= "<br />" . $walk->contactName;
+        }
+        if ($walk->email <> "") {
+            $contact .= "<br />" . $walk->email;
+        }
+        if ($walk->telephone1 <> "") {
+            $contact .= "<br />" . $walk->telephone1;
+        }
+        if ($walk->telephone2 <> "") {
+            $contact .= "<br />" . $walk->telephone2;
         }
         $grade = $walk->nationalGrade . self::BR . $walk->localGrade;
-
-        echo RHtml::addTableRow(array($date, $meet, $start, $title, $dist, $grade, $contact));
+        if ($hasMeet) {
+            echo RHtml::addTableRow(array($date, $meet, $start, $title, $dist, $grade, $contact));
+        } else {
+            echo RHtml::addTableRow(array($date, $start, $title, $dist, $grade, $contact));
+        }
     }
 
 }
