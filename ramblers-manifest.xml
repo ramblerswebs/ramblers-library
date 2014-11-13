@@ -20,6 +20,7 @@
             <folder>jsonwalks</folder>
             <folder>jsonwalks/std</folder>
             <folder>jsonwalks/de02</folder>
+            <folder>osmap</folder>
         </files>
     </fileset>
     <updateservers>
