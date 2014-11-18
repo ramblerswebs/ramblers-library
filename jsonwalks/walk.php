@@ -57,47 +57,55 @@ class RJsonwalksWalk {
     const SORT_DISTANCE = 4;
     const SORT_TELEPHONE1 = 5;
     const SORT_TELEPHONE2 = 6;
+    const SORT_TIME = 7;
     const TIMEFORMAT = "Y-m-d\TH:i:s";
+
+    private $sortTime;
 
     function __construct($item) {
         $ok = $this->checkProperties($item);
         if ($item != NULL and $ok) {
             // admin details
-                $this->is = $item->id;
-                $this->status = $item->status->value;
-                $this->groupCode = $item->groupCode;
-                $this->groupName = $item->groupName;
-                $item->dateUpdated = substr($item->dateUpdated, 0, 19);
-                $item->dateCreated = substr($item->dateCreated, 0, 19);
-                $this->dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, $item->dateUpdated);
-                $this->dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, $item->dateCreated);
-                $this->cancellationReason = $item->cancellationReason;
-                // basic walk details
-                $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
-                $this->detailsPageUrl = $item->url;
-                $this->title = $item->title;
-                $this->description = $item->description;
-                $this->additionalNotes = $item->additionalNotes;
-                $this->isLinear = $item->isLinear == "true";
-                $this->nationalGrade = $item->difficulty->text;
-                $this->localGrade = $item->gradeLocal;
-                $this->distanceMiles = $item->distanceMiles;
-                $this->distanceKm = $item->distanceKM;
-                $this->pace = $item->pace;
-                $this->ascentFeet = $item->ascentFeet;
-                $this->ascentMetres = $item->ascentMetres;
-                // contact details
-                if ($item->walkContact != null) {
-                    $this->isLeader = $item->walkContact->isWalkLeader == "true";
-                    $this->contactName = $item->walkContact->contact->displayName;
-                    $this->email = $item->walkContact->contact->email;
-                    $this->telephone1 = $item->walkContact->contact->telephone1;
-                    $this->telephone2 = $item->walkContact->contact->telephone2;
-                }
-                // pocess meeting and starting locations
-                $this->processPoints($item->points);
-                $this->createExtraData();
-            
+            $this->id = $item->id;
+            $this->status = $item->status->value;
+            $this->groupCode = $item->groupCode;
+            $this->groupName = $item->groupName;
+            $item->dateUpdated = substr($item->dateUpdated, 0, 19);
+            $item->dateCreated = substr($item->dateCreated, 0, 19);
+            $this->dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, $item->dateUpdated);
+            $this->dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, $item->dateCreated);
+            $this->cancellationReason = $item->cancellationReason;
+            // basic walk details
+            $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
+            $this->detailsPageUrl = $item->url;
+            $this->title = $item->title;
+            $this->description = $item->description;
+            $this->description = str_replace("\r", "", $this->description);
+            $this->description = str_replace("\n", "", $this->description);
+            $this->description = str_replace("<p>", "", $this->description);
+            $this->description = str_replace("</p>", "", $this->description);
+            $this->description = str_replace("&nbsp;", " ", $this->description);
+            $this->description = trim($this->description);
+            $this->additionalNotes = $item->additionalNotes;
+            $this->isLinear = $item->isLinear == "true";
+            $this->nationalGrade = $item->difficulty->text;
+            $this->localGrade = $item->gradeLocal;
+            $this->distanceMiles = $item->distanceMiles;
+            $this->distanceKm = $item->distanceKM;
+            $this->pace = $item->pace;
+            $this->ascentFeet = $item->ascentFeet;
+            $this->ascentMetres = $item->ascentMetres;
+            // contact details
+            if ($item->walkContact != null) {
+                $this->isLeader = $item->walkContact->isWalkLeader == "true";
+                $this->contactName = $item->walkContact->contact->displayName;
+                $this->email = $item->walkContact->contact->email;
+                $this->telephone1 = $item->walkContact->contact->telephone1;
+                $this->telephone2 = $item->walkContact->contact->telephone2;
+            }
+            // pocess meeting and starting locations
+            $this->processPoints($item->points);
+            $this->createExtraData();
         }
     }
 
@@ -117,6 +125,8 @@ class RJsonwalksWalk {
                 return $this->telephone1;
             case self::SORT_TELEPHONE2:
                 return $this->telephone2;
+            case self::SORT_TIME:
+                return $this->sortTime;
             default:
                 return NULL;
         }
@@ -139,6 +149,12 @@ class RJsonwalksWalk {
         $this->day = $this->walkDate->format('jS');
         $this->eventTag = self::EVENT;
         $this->getSchemaPlaceTag();
+        if ($this->meetLocation != NULL) {
+            $this->sortTime = $this->meetLocation->time;
+        }
+        if ($this->sortTime == NULL) {
+            $this->sortTime = $this->startLocation->time;
+        }
     }
 
     private function getSchemaPlaceTag() {

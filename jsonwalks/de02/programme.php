@@ -11,13 +11,14 @@ defined("_JEXEC") or die("Restricted access");
 class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
 
     private $lastValue = "";
-    private $walksClass = "walks";
-    private $walkClass = "walk";
+    private $walksClass = "de02walks";
+    private $walkClass = "de02walk";
+    public $addDescription = true;
 
     const BR = "<br />";
 
     function DisplayWalks($walks) {
-        $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
         $items = $walks->allWalks();
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         foreach ($items as $walk) {
@@ -47,7 +48,7 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
 
     private function displayWalk($walk) {
         $col1 = $this->getGradeImage($walk->localGrade);
-   
+
         $col2 = "<b>" . $walk->walkDate->format('l, jS') . "</b>" . PHP_EOL;
         if ($walk->hasMeetPlace) {
             $col2 .= ", " . $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
@@ -56,14 +57,19 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
             $col2 .= ", " . $walk->startLocation->timeHHMMshort . " at " . $walk->startLocation->description;
         }
 
-        $col2 .= ", " . $walk->title . " ";
+        $col2 .= ", " . $walk->title;
+        if ($this->addDescription) {
+            if ($walk->description != "") {
+                $col2.=", ".$walk->description;
+            }
+        }
         $col2 .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
         if ($walk->isLeader) {
             $col2.=", Leader " . $walk->contactName . " " . $walk->telephone1;
         } else {
             $col2.=", Contact " . $walk->contactName . " " . $walk->telephone1;
         }
-        $col2="<div class='" . $this->walkClass .$walk->status. "'>".$col2."</div>";
+        $col2 = "<div class='" . $this->walkClass . $walk->status . "'>" . $col2 . "</div>";
         echo RHtml::addTableRow(array($col1, $col2));
     }
 
@@ -71,24 +77,25 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
         $g = strtolower($grade);
         $image = "";
         switch ($g) {
-            case $this->contains_substr($g,"white"):
+            case $this->contains_substr($g, "white"):
                 $image = "bootwhite.jpg";
                 break;
-            case $this->contains_substr($g,"gray"):
+            case $this->contains_substr($g, "gray"):
                 $image = "bootgray.jpg";
                 break;
-            case $this->contains_substr($g,"grey"):
+            case $this->contains_substr($g, "grey"):
                 $image = "bootgray.jpg";
                 break;
-            case $this->contains_substr($g,"black"):
+            case $this->contains_substr($g, "black"):
                 $image = "bootblack.jpg";
                 break;
-            case $this->contains_substr($g,"two"):
+            case $this->contains_substr($g, "two"):
                 $image = "boottwoblack.jpg";
                 break;
         }
-        if ($image=="") return $grade;
-        return '<img border="0" src="ramblers/jsonwalks/de02/images/'.$image.'" width="20" height="20">';
+        if ($image == "")
+            return $grade;
+        return '<img border="0" src="ramblers/jsonwalks/de02/images/' . $image . '" width="20" height="20">';
     }
 
     function contains_substr($mainStr, $str, $loc = false) {
