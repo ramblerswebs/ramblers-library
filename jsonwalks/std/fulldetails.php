@@ -77,7 +77,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "</div></div>" . PHP_EOL;
     }
 
-    private function displayWalkDetails($walk) {
+     function displayWalkDetails($walk) {
 
         echo "<div class='walkstdfulldetails'>";
         if ($this->displayGroup) {

@@ -49,5 +49,7 @@ class ROsmapBasic {
         echo '<div id="map" style="'.$this->style.'"></div>';
       
     }
+    
+    
 
 }

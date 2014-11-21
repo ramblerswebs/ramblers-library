@@ -16,7 +16,7 @@ class RJsonwalksFeed {
     private $rafeedurl;
 
     function __construct($rafeedurl) {
-        $this->rafeedurl=$rafeedurl;
+        $this->rafeedurl = $rafeedurl;
         $this->readFeed($rafeedurl);
     }
 
@@ -47,6 +47,7 @@ class RJsonwalksFeed {
     function filterGroups($groups) {
         $this->walks->filterGroups($groups);
     }
+
     function filterDayofweek($days) {
         $this->walks->filterDayofweek($days);
     }
@@ -60,6 +61,25 @@ class RJsonwalksFeed {
             echo "Walks array is empty";
         } else {
             $displayclass->DisplayWalks($this->walks);
+        }
+    }
+    function getWalks(){
+        return $this->walks;
+    }
+
+    function addMapMarkers($map) {
+       
+        foreach ($this->walks as $walk) {
+            If ($walk->startLocation->exact) {
+                $x = $walk->startLocation->easting;
+                $y = $walk->startLocation->northing;
+                $image = "marker-cross-med-blue.png";
+                $html = "";
+                $html.=$walk->walkDate->format('D, jS F');
+                $html.="<br/>".$walk->title;
+                $html.="<br/>".$walk->distanceMiles . "m/" . $walk->distanceKm . "km";;
+                $map->addMarker($x, $y, $image, $html);
+            }
         }
     }
 
