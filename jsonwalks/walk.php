@@ -66,6 +66,8 @@ class RJsonwalksWalk {
         $ok = $this->checkProperties($item);
         if ($item != NULL and $ok) {
             // admin details
+            try {
+           
             $this->id = $item->id;
             $this->status = $item->status->value;
             $this->groupCode = $item->groupCode;
@@ -106,6 +108,10 @@ class RJsonwalksWalk {
             // pocess meeting and starting locations
             $this->processPoints($item->points);
             $this->createExtraData();
+                 
+            } catch (Exception $ex) {
+
+            }
         }
     }
 

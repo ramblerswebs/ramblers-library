@@ -18,30 +18,33 @@ class RJsonwalksStdMapmarker extends RJsonwalksDisplaybase {
         $items = $walks->allWalks();
         $first = true;
 
-
         foreach ($items as $walk) {
-            If ($walk->startLocation->exact) {
-                $x = $walk->startLocation->easting;
-                $y = $walk->startLocation->northing;
-                if ($first) {
-                    $this->xmin = $x;
-                    $this->xmax = $x;
-                    $this->ymin = $y;
-                    $this->ymax = $y;
-                    $first = false;
-                } else {
-                    $this->UpdateLimits($x, $y);
-                }
-                $image = "marker_blue.png";
-                $html = "<b>";
-                $html.="<br/><a href=\'" . $walk->detailsPageUrl . "\' target=\'_blank\'>";
-                $html.=$walk->walkDate->format('D, jS F');
-                $html.="<br/>" . $walk->title;
-                $html.="<br/>" . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
-                $html .= "</b></a>";
 
-                $this->map->addMarker($x, $y, $image, $html);
+            $x = $walk->startLocation->easting;
+            $y = $walk->startLocation->northing;
+            if ($first) {
+                $this->xmin = $x;
+                $this->xmax = $x;
+                $this->ymin = $y;
+                $this->ymax = $y;
+                $first = false;
+            } else {
+                $this->UpdateLimits($x, $y);
             }
+            If ($walk->startLocation->exact) {
+                $image = "marker_blue.png";
+            } else {
+                $image = "round-marker-lrg-red.png";
+            }
+            $html = "<b>";
+            $html.="<a href=\'" . $walk->detailsPageUrl . "\' target=\'_blank\'>";
+            $html.=$walk->walkDate->format('D, jS F');
+            $html.="<br/>" . $walk->title;
+            $html.="<br/>" . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
+            $html .= "</b></a>";
+
+            $this->map->addMarker($x, $y, $image, $html);
+
             if ($first == false) {
                 $zoom = 2;
                 $x = ($this->xmin + $this->xmax) / 2;

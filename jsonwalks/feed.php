@@ -60,7 +60,12 @@ class RJsonwalksFeed {
         if ($this->walks == null) {
             echo "Walks array is empty";
         } else {
-            $displayclass->DisplayWalks($this->walks);
+            //try {
+                $displayclass->DisplayWalks($this->walks);
+            //} catch (Exception $ex) {
+
+            //}
+            
         }
     }
     function getWalks(){
