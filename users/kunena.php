@@ -13,7 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 class RUsersKunena {
 
     function Display() {
-        if (RUtils::tableExists('#__kunena_categories')) {
+        if (RSqlUtils::tableExists('#__kunena_categories')) {
 
             $db = JFactory::getDbo();  // Get a db connection.
 
