@@ -55,6 +55,7 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
         }
         if ($walk->startLocation->exact) {
             $col2 .= ", " . $walk->startLocation->timeHHMMshort . " at " . $walk->startLocation->description;
+            $col2 .= " [". $walk->startLocation->gridref."]";
         }
 
         $col2 .= ", " . $walk->title;
@@ -63,11 +64,19 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
                 $col2.=", ".$walk->description;
             }
         }
-        $col2 .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
+        $col2 .= ", " . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
         if ($walk->isLeader) {
-            $col2.=", Leader " . $walk->contactName . " " . $walk->telephone1;
+            $col2.=", Leader " ;
         } else {
-            $col2.=", Contact " . $walk->contactName . " " . $walk->telephone1;
+            $col2.=", Contact " ;
+        }
+         $col2.= $walk->contactName ;
+         if ($walk->telephone1 != "") {
+            $col2.= " " . $walk->telephone1;
+        } else {
+            if ($walk->telephone2 != "") {
+                $col2.= " " . $walk->telephone2;
+            }
         }
         $col2 = "<div class='" . $this->walkClass . $walk->status . "'>" . $col2 . "</div>";
         echo RHtml::addTableRow(array($col1, $col2));
