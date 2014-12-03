@@ -72,22 +72,6 @@ class RJsonwalksFeed {
         return $this->walks;
     }
 
-    function addMapMarkers($map) {
-       
-        foreach ($this->walks as $walk) {
-            If ($walk->startLocation->exact) {
-                $x = $walk->startLocation->easting;
-                $y = $walk->startLocation->northing;
-                $image = "marker-cross-med-blue.png";
-                $html = "";
-                $html.=$walk->walkDate->format('D, jS F');
-                $html.="<br/>".$walk->title;
-                $html.="<br/>".$walk->distanceMiles . "m/" . $walk->distanceKm . "km";;
-                $map->addMarker($x, $y, $image, $html);
-            }
-        }
-    }
-
     function clearCache() {
         $cacheFolderPath = $this->CacheLocation();
         // Check if the cache folder exists

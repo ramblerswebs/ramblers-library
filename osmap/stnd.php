@@ -79,16 +79,8 @@ function initmapbuilder()
         osMap.setCenter(new OpenSpace.MapPoint(" . $x . "," . $y . ")," . $zoom . ");";
     }
 
-    public function addMarker($x, $y, $image, $html) {
-        $this->mapStyle.="
-        // add a marker
-        pos = new OpenSpace.MapPoint(" . $x . "," . $y . ");
-        size = new OpenLayers.Size(30,39);
-        offset = new OpenLayers.Pixel(-15,-36);
-        infoWindowAnchor = new OpenLayers.Pixel(16,16);
-
-        icon = new OpenSpace.Icon('https://openspace.ordnancesurvey.co.uk/osmapapi/img_versions/img_1.0.1/OS/images/markers/" . $image . "', size, offset, null, infoWindowAnchor);
-        osMap.createMarker(pos, icon, '" . $html . "',  new OpenLayers.Size(200, 200));";
+    public function addMarker($marker) {
+        $this->mapStyle.=$marker->Script();
     }
 
     public function addClustercontrol() {

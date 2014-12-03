@@ -19,7 +19,7 @@ class RFeedhelper {
 
     function __construct($cacheLocation, $cacheTime) {
         if (isset($cacheLocation)) {
-            $this->cacheTime = $cacheTime * 60;
+            $this->cacheTime = $cacheTime * 60; // convert to seconds
             $this->cacheFolderPath = JPATH_SITE . DS . $cacheLocation;
         } else {
             die("Invalid call to RJsonwalksFeedhelper");
@@ -30,7 +30,7 @@ class RFeedhelper {
 
         //echo '<pre>Feed  '; var_dump($feedfilename); echo '</pre>';
         // API
-        $mainframe = JFactory::getApplication();
+        //$mainframe = JFactory::getApplication();
         $this->feedfilename = $feedfilename;
 
         // Check if the cache folder exists

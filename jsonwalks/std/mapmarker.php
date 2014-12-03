@@ -31,27 +31,43 @@ class RJsonwalksStdMapmarker extends RJsonwalksDisplaybase {
             } else {
                 $this->UpdateLimits($x, $y);
             }
-            If ($walk->startLocation->exact) {
-                $image = "marker_blue.png";
-            } else {
-                $image = "round-marker-lrg-red.png";
-            }
-            $html = "<b>";
-            $html.="<a href=\'" . $walk->detailsPageUrl . "\' target=\'_blank\'>";
-            $html.=$walk->walkDate->format('D, jS F');
-            $html.="<br/>" . $walk->title;
-            $html.="<br/>" . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
-            $html .= "</b></a>";
+            $marker = new RJsonwalksMapmarker();
+            $marker->x = $x;
+            $marker->y = $y;
 
-            $this->map->addMarker($x, $y, $image, $html);
+            If ($walk->startLocation->exact) {
+                if ($walk->status == "Cancelled") {
+                    $marker->image = "marker_red.png";
+                } else {
+                    $marker->image = "marker_blue.png";
+                }
+                $marker->xsize = 30;
+                $marker->ysize = 39;
+            } else {
+                if ($walk->status == "Cancelled") {
+                    $marker->image = "round-marker-lrg-red.png";
+                } else {
+                    $marker->image = "round-marker-lrg-blue.png";
+                }
+                $marker->xsize = 30;
+                $marker->ysize = 30;
+            }
+            $marker->html = "<b>";
+            $marker->html.="<a href=\'" . $walk->detailsPageUrl . "\' target=\'_blank\'>";
+            $marker->html.=$walk->walkDate->format('D, jS F');
+            $marker->html.="<br/>" . $walk->title;
+            $marker->html.="<br/>" . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
+            $marker->html .= "</b></a>";
+
+            $this->map->addMarker($marker);
 
             if ($first == false) {
                 $zoom = 2;
                 $x = ($this->xmin + $this->xmax) / 2;
                 $y = ($this->ymin + $this->ymax) / 2;
-                $this->map->setCentremapandzoomlevel($x, $y, $zoom);
             }
         }
+        $this->map->setCentremapandzoomlevel($x, $y, $zoom);
     }
 
     function setMap($map) {

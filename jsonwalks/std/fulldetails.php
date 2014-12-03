@@ -77,7 +77,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "</div></div>" . PHP_EOL;
     }
 
-     function displayWalkDetails($walk) {
+    function displayWalkDetails($walk) {
 
         echo "<div class='walkstdfulldetails'>";
         if ($this->displayGroup) {
@@ -121,8 +121,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             } else {
                 echo "<span class='walkerror' >ERROR: No finish location supplied</span>";
             }
-           echo "</div>";
-        } 
+            echo "</div>";
+        }
         echo "<div class='difficulty'><b>Difficulty</b>: ";
         $link = $walk->nationalGrade;
         if ($this->nationalGradeHelp != "") {
@@ -165,8 +165,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "</div>";
 
         echo "<div class='walkdates'>";
-        if ($this->displayGroup==false){
-             echo "<div class='groupfootnote'>Group: " . $walk->groupName . "</div>";
+        if ($this->displayGroup == false) {
+            echo "<div class='groupfootnote'>Group: " . $walk->groupName . "</div>";
         }
         echo "<div class='updated'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>";
         echo "</div>";
@@ -178,7 +178,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         if ($location->exact) {
             $out = "<div class='place'><b>" . $title . " Place</b>: " . $location->description . " - ";
-            $out.=$this->getGoogleMapUrl("Map", $location->latitude . "," . $location->longitude, "_blank", $this->popupLink);
+            $out.=$this->getGoogleMapUrl("Map", $location->latitude . "," . $location->longitude, $location->exact, "_blank", $this->popupLink);
             $out.= "</div>";
             $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
             $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
@@ -186,25 +186,30 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $out.= "<div class='latitude'><b>Latitude</b>: " . $location->latitude . "</div>";
         } else {
             $out = "<div class='place'>Location shown is an indication of where the walk will be and <b>NOT</b> the start place:  - ";
-            $out.=$this->getGoogleMapUrl("Map", $location->latitude . "," . $location->longitude, "_blank", $this->popupLink);
+            $out.=$this->getGoogleMapUrl("Map", $location->latitude . "," . $location->longitude, $location->exact, "_blank", $this->popupLink);
             $out.= "</div>";
         }
 
         if ($location->postcode != "") {
             $note = " - [Postcodes in some areas may not be close to the desired location, please check before using]";
             $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . " ";
-            $out.=$this->getGoogleMapUrl("Map", $location->postcode, "_blank", $this->popupLink);
+            $out.=$this->getGoogleMapUrl("Map", $location->postcode, true, "_blank", $this->popupLink);
             $out.= $note . "</div>";
         }
         return $out;
     }
 
-    private function getGoogleMapUrl($text, $search, $target, $popup) {
+    private function getGoogleMapUrl($text, $search, $exact, $target, $popup) {
+        If ($exact) {
+            $code = "z=13&q=";
+        } else {
+            $code = "z=13&t=h&ll=";
+        }
         if ($popup) {
-            $out = "[<span class='rapopup' onClick=\"javascript:window.open('http://maps.google.com/maps?q=" . $search . "', '_blank','toolbar=yes,left=50,top=50,width=800,height=600');\">" . $text . "</span>]";
+            $out = "[<span class='rapopup' onClick=\"javascript:window.open('http://maps.google.com/maps?" . $code . $search . "', '_blank','toolbar=yes,left=50,top=50,width=800,height=600');\">" . $text . "</span>]";
             ;
         } else {
-            $out = "[<a href='http://maps.google.com/maps?q=" . $search . "' target='" . $target . "'>" . $text . "</a>]</div>";
+            $out = "[<a href='http://maps.google.com/maps?" . $code . $search . "' target='" . $target . "'>" . $text . "</a>]</div>";
         }
 
         return $out;
