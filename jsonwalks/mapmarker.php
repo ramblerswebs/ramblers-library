@@ -19,13 +19,14 @@ class RJsonwalksMapmarker {
     public function Script() {
         $out = "";
         $out.= "
+        
         // add a marker
-        pos = new OpenSpace.MapPoint(" . $this->x . "," . $this->y . ");
-        size = new OpenLayers.Size(" . $this->xsize . "," . $this->ysize . ");
-        offset = new OpenLayers.Pixel(-15,-36);";
-        $out.=" infoWindowAnchor = new OpenLayers.Pixel(16,16);";
-        $out.=" icon = new OpenSpace.Icon('https://openspace.ordnancesurvey.co.uk/osmapapi/img_versions/img_1.0.1/OS/images/markers/" . $this->image . "', size, offset, null, infoWindowAnchor);";
-        $out.=" osMap.createMarker(pos, icon, '" . $this->html . "',  new OpenLayers.Size(".$this->xpopup.",".$this->ypopup."));";
+        pos = new OpenSpace.MapPoint(" . $this->x . ", " . $this->y . ");
+        size = new OpenLayers.Size(" . $this->xsize . ", " . $this->ysize . ");
+        offset = new OpenLayers.Pixel(-15, -36);
+        infoWindowAnchor = new OpenLayers.Pixel(16, 16);
+        icon = new OpenSpace.Icon('https://openspace.ordnancesurvey.co.uk/osmapapi/img_versions/img_1.0.1/OS/images/markers/" . $this->image . "', size, offset, null, infoWindowAnchor);
+        var mark = osMap.createMarker(pos, icon, '" . $this->html . "',  new OpenLayers.Size(".$this->xpopup.", ".$this->ypopup."));";
         return $out;
     }
 

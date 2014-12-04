@@ -1,26 +1,3 @@
-function displayWalk()
-{
-var xmlhttp;
-if (window.XMLHttpRequest)
-  {// code for IE7+, Firefox, Chrome, Opera, Safari
-  xmlhttp=new XMLHttpRequest();
-  }
-else
-  {// code for IE6, IE5
-  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
-xmlhttp.onreadystatechange=function()
-  {
-  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-    {
-    document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
-    }
-  }
-xmlhttp.open("GET","http://localhost/joomla3/ramblers/jsonwalks/ajax/displayWalk.php",true);
-xmlhttp.send();
-}
-
-
 
 // check number of tiles viewed
 function CheckTileCount() {
@@ -275,7 +252,8 @@ function gridsqPt(zoom, eastMetres, northMetres) {
 }
 
 // get the grid square size relvant to the zoom level
-function gridsqSize(zoom) {
+function gridsqSize(zoom) { 
+ 
     switch (zoom) {
         case 0:
             return 100000;
@@ -294,11 +272,15 @@ function gridsqSize(zoom) {
         case 7:
             return 100;
         case 8:
-            return 100;
-        case 9:
-            return 100;
-        case 10:
             return 10;
+        case 9:
+            return 10;
+        case 10:
+            return 1;
+       case 11:
+            return 1;
+       case 12:
+            return 1;
         default:
             return 1000;
     }
@@ -369,6 +351,10 @@ function toGridRef(zoom, east, north) {
         case 9:
             return this.to6FigGridRef(east, north);
         case 10:
+            return this.to8FigGridRef(east, north);
+        case 11:
+            return this.to8FigGridRef(east, north);
+        case 12:
             return this.to8FigGridRef(east, north);
         default:
             return this.to6FigGridRef(east, north);

@@ -1,5 +1,8 @@
 <?php
 
+// no direct access
+defined('_JEXEC') or die('Restricted access');
+
 class RJsonwalksLocation {
 
     public $description;        // text description of the location
@@ -17,25 +20,25 @@ class RJsonwalksLocation {
     public $exact;              // true or false
 
     function __construct($value) {
-                   $this->description = $value->description;
-            $this->time = DateTime::createFromFormat('H:i:s', $value->time);
-            If ($this->time === false) {
-                $this->time="";
-                $this->timeHHMM = "No time";
-                $this->timeHHMMshort = "No time";
-            } else {
-                $this->timeHHMM = $this->time->format('g:i a');
-                $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
-            }
-            $this->gridref = $value->gridRef;
-            $this->easting = $value->easting;
-            $this->northing = $value->northing;
-            $this->latitude = $value->latitude;
-            $this->longitude = $value->longitude;
-            $this->postcode = $value->postcode;
-            $this->postcodeLatitude = $value->postcodeLatitude;
-            $this->postcodeLongitude = $value->postcodeLongitude;
-            $this->exact = $value->showExact == "true";
+        $this->description = $value->description;
+        $this->time = DateTime::createFromFormat('H:i:s', $value->time);
+        If ($this->time === false) {
+            $this->time = "";
+            $this->timeHHMM = "No time";
+            $this->timeHHMMshort = "No time";
+        } else {
+            $this->timeHHMM = $this->time->format('g:i a');
+            $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
+        }
+        $this->gridref = $value->gridRef;
+        $this->easting = $value->easting;
+        $this->northing = $value->northing;
+        $this->latitude = $value->latitude;
+        $this->longitude = $value->longitude;
+        $this->postcode = $value->postcode;
+        $this->postcodeLatitude = $value->postcodeLatitude;
+        $this->postcodeLongitude = $value->postcodeLongitude;
+        $this->exact = $value->showExact == "true";
     }
 
     function __destruct() {

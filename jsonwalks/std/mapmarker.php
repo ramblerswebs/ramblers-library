@@ -15,25 +15,17 @@ class RJsonwalksStdMapmarker extends RJsonwalksDisplaybase {
     private $ymin, $ymax;
 
     function DisplayWalks($walks) {
+        if (isset($this->map)==false){
+            echo "// RJsonwalksStdMapmarker: No map defined, use setMap function.";
+            return;
+        }
+        $this->setMapLimits($walks);
         $items = $walks->allWalks();
-        $first = true;
 
         foreach ($items as $walk) {
-
-            $x = $walk->startLocation->easting;
-            $y = $walk->startLocation->northing;
-            if ($first) {
-                $this->xmin = $x;
-                $this->xmax = $x;
-                $this->ymin = $y;
-                $this->ymax = $y;
-                $first = false;
-            } else {
-                $this->UpdateLimits($x, $y);
-            }
             $marker = new RJsonwalksMapmarker();
-            $marker->x = $x;
-            $marker->y = $y;
+            $marker->x = $walk->startLocation->easting;
+            $marker->y = $walk->startLocation->northing;
 
             If ($walk->startLocation->exact) {
                 if ($walk->status == "Cancelled") {
@@ -57,17 +49,38 @@ class RJsonwalksStdMapmarker extends RJsonwalksDisplaybase {
             $marker->html.=$walk->walkDate->format('D, jS F');
             $marker->html.="<br/>" . $walk->title;
             $marker->html.="<br/>" . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
-            $marker->html .= "</b></a>";
+            $marker->html .= "</a></b>";
 
             $this->map->addMarker($marker);
+        }
+    }
 
-            if ($first == false) {
-                $zoom = 2;
-                $x = ($this->xmin + $this->xmax) / 2;
-                $y = ($this->ymin + $this->ymax) / 2;
+    private function setMapLimits($walks) {
+        $items = $walks->allWalks();
+        $first = true;
+
+        foreach ($items as $walk) {
+
+            $x = $walk->startLocation->easting;
+            $y = $walk->startLocation->northing;
+            if ($first) {
+                $this->xmin = $x;
+                $this->xmax = $x;
+                $this->ymin = $y;
+                $this->ymax = $y;
+                $first = false;
+            } else {
+                $this->UpdateLimits($x, $y);
             }
         }
-        $this->map->setCentremapandzoomlevel($x, $y, $zoom);
+        if ($first == false) {
+            $zoom = 2;
+            $x = ($this->xmin + $this->xmax) / 2;
+            $y = ($this->ymin + $this->ymax) / 2;
+            $this->map->setCentremapandzoomlevel($x, $y, $zoom);
+        } else {
+            echo "// RJsonwalksStdMapmarker: No walks found";
+        }
     }
 
     function setMap($map) {
@@ -87,7 +100,6 @@ class RJsonwalksStdMapmarker extends RJsonwalksDisplaybase {
         if ($y > $this->ymax) {
             $this->ymax = $y;
         }
-        //  echo $this->xmin."  ".$this->xmax."<br />";
     }
 
 }

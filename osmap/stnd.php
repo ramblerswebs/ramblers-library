@@ -22,13 +22,18 @@ class ROsmapStnd {
 var osMap, screenOverlay, mapOV, postcodeService;
 var pos, size, offset, infoWindowAnchor, icon, content, popUpSize;
 
-function initmapbuilder() 
-    {
+function initmapbuilder() {
+        //initiate the map
+        var options = {resolutions: [2500, 1000, 500, 200, 100, 50, 25, 10, 5, 4, 2.5, 2, 1] };
+        osMap = new OpenSpace.Map("map", options);
+        var e=document.getElementById("map");
+        // Assign a new markers layer to a variable
+    
+        var markers = new OpenLayers.Layer.Markers("Markers");
 
-       //initiate the map
-       var options = {resolutions: [2500, 1000, 500, 200, 100, 50, 25, 10, 5, 4, 2.5, 2, 1] };
-       osMap = new OpenSpace.Map("map", options);
-       var e=document.getElementById("map");';
+        // Add the layer to the map    
+    
+        osMap.addLayer(markers);';
     }
 
     function display() {
@@ -43,8 +48,8 @@ function initmapbuilder()
         //    $document->addScript($loadscript, "text/javascript");
         $document->addScriptDeclaration($this->mapStyle . "\r\n"
                 . "}");
-        echo '<img src="' . JURI::base() . 'ramblers/osmap/osimages.jpg" onload="initmapbuilder()" width="81" height="20">';
-        echo '<div id="map" style="' . $this->style . '"></div>';
+        echo '</p><img src="' . JURI::base() . 'ramblers/osmap/osimages.jpg" onload="initmapbuilder()" width="81" height="20" alt="OS Mapping">';
+        echo '<div id="map" style="' . $this->style . '"></div><p>';
       //  echo '<div id="myDiv"><h2>Let AJAX change this text</h2></div>';
       //  echo '<button type="button" onclick="displayWalk()">Change Content</button>';
     }
