@@ -14,9 +14,13 @@ class RJsonwalksFeed {
 
     private $walks;
     private $rafeedurl;
+    private $feederror;
+    private $feednotfound;
 
     function __construct($rafeedurl) {
         $this->rafeedurl = $rafeedurl;
+        $this->feederror = "Invalid walks feed (invalid json format): " . $this->rafeedurl;
+        $this->feednotfound = "Walks feed error(url not found): " . $this->rafeedurl;
         $this->readFeed($rafeedurl);
     }
 
@@ -29,14 +33,27 @@ class RJsonwalksFeed {
         $srfr = new RFeedhelper($cacheLocation, $CacheTime);
 
         $contents = $srfr->getFeed($rafeedurl);
-
         if ($contents != "") {
             $json = json_decode($contents);
             unset($contents);
-            $this->walks = new RJsonwalksWalks($json);
-            unset($json);
+            $this->walks = new RJsonwalksWalks(NULL);
+            $error = 0;
+            if (json_last_error() == JSON_ERROR_NONE) {
+                foreach ($json as $value) {
+                    $ok = $this->checkJsonProperties($value);
+                    $error+=$ok;
+                }
+                if ($error > 0) {
+                    JError::raiseWarning(102, 'Walks feed: Json file format not supported');
+                } else {
+                    $this->walks = new RJsonwalksWalks($json);
+                }
+                unset($json);
+            } else {
+                JError::raiseWarning(101, $this->feederror);
+            }
         } else {
-            echo '<pre>RA Feed (' . $rafeedurl . ') not found , read error or is empty</pre>';
+            JError::raiseWarning(100, $this->feednotfound);
         }
     }
 
@@ -61,14 +78,13 @@ class RJsonwalksFeed {
             echo "Walks array is empty";
         } else {
             //try {
-                $displayclass->DisplayWalks($this->walks);
+            $displayclass->DisplayWalks($this->walks);
             //} catch (Exception $ex) {
-
             //}
-            
         }
     }
-    function getWalks(){
+
+    function getWalks() {
         return $this->walks;
     }
 
@@ -87,6 +103,30 @@ class RJsonwalksFeed {
         }
         // reread feed
         $this->readFeed($this->rafeedurl);
+    }
+
+    private function checkJsonProperties($item) {
+        $properties = array("id", "status", "difficulty", "strands", "linkedEvent", "festivals",
+            "walkContact", "linkedWalks", "linkedRoute", "title", "description", "groupCode", "groupName",
+            "additionalNotes", "date", "distanceKM", "distanceMiles", "finishTime", "suitability",
+            "surroundings", "theme", "specialStatus", "facilities", "pace", "ascentMetres", "ascentFeet",
+            "gradeLocal", "attendanceMembers", "attendanceNonMembers", "attendanceChildren", "cancellationReason",
+            "dateUpdated", "dateCreated", "media", "points", "groupInvite", "isLinear", "url");
+
+        foreach ($properties as $value) {
+            if (!$this->checkJsonProperty($item, $value)) {
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
+    private function checkJsonProperty($item, $property) {
+        if (property_exists($item, $property)) {
+            return true;
+        }
+        return false;
     }
 
     private function CacheLocation() {

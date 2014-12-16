@@ -163,7 +163,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo $text;
         }
         echo "</div>";
-
+        $this->addItemInfo("strands", "", $walk->strands);
+        $this->addItemInfo("festivals", "Festivals", $walk->festivals);
         echo "<div class='walkdates'>";
         if ($this->displayGroup == false) {
             echo "<div class='groupfootnote'>Group: " . $walk->groupName . "</div>";
@@ -197,6 +198,17 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $out.= $note . "</div>";
         }
         return $out;
+    }
+
+    function addItemInfo($class, $title, $value) {
+        if ($value != null) {
+            $items = $value->getItems();
+            echo "<div class='" . $class . "'><b>" . $title . "</b>";
+            foreach ($items as $item) {
+                echo "<div class='item'><b>" . $item->getName() . "</b></div>";
+            }
+            echo "</div>";
+        }
     }
 
     private function getGoogleMapUrl($text, $search, $exact, $target, $popup) {

@@ -10,15 +10,13 @@ class RJsonwalksWalks {
 
     function __construct($json) {
         $this->arrayofwalks = array();
-        foreach ($json as $value) {
-            $walk = new RJsonwalksWalk($value);
-            if (json_last_error() == JSON_ERROR_NONE) {
+        if ($json != NULL) {
+            foreach ($json as $value) {
+                $walk = new RJsonwalksWalk($value);
                 $this->arrayofwalks[] = $walk;
-            } else {
-                echo "Feed is NOT in a JSON format";
             }
+            $this->setNewWalks($this->newinterval);
         }
-        $this->setNewWalks($this->newinterval);
     }
 
     function hasMeetPlace() {
