@@ -25,18 +25,30 @@ class RJsonwalksDe02Det extends RJsonwalksDisplaybase {
             echo "<p><b>THIS WALK IS CANCELLED</b></p>";
         }
         $out = "<b>" . $walk->walkDate->format('l, jS F Y') . " - " . $walk->title . "</b><br />" . PHP_EOL;
-        $out .= "Join " . $walk->groupName . " Ramblers for a " . $walk->nationalGrade;
+        $out .= "Please join " . $walk->groupName . " Ramblers for a " . $walk->nationalGrade;
         $out .= " " . $walk->distanceMiles . " mile / " . $walk->distanceKm . " km walk<br/>";
         if ($walk->description != "") {
             $out.= $walk->description . "<br/>";
         }
         if ($walk->hasMeetPlace) {
+            if ($walk->meetLocation->postcode <> "") {
+                $postcode = ", Satnav: " . $walk->meetLocation->postcode;
+            } else {
+                $postcode = "";
+            }
             $out .= "Meet at " . $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
-            $out .= " [OS Map Ref: " . $walk->meetLocation->gridref . "]<br />";
+            $out .= " to car share to start of walk. [OS Map Ref: " . $walk->meetLocation->gridref . $postcode . "]<br />";
         }
         if ($walk->startLocation->exact) {
+            if ($walk->startLocation->postcode <> "") {
+                $postcode = ", Satnav: " . $walk->startLocation->postcode;
+            } else {
+                $postcode = "";
+            }
             $out .= "Start at " . $walk->startLocation->timeHHMMshort . " at " . $walk->startLocation->description;
-            $out .= " [OS Map Ref: " . $walk->startLocation->gridref . "]<br />";
+            $out .= " [OS Map Ref: " . $walk->startLocation->gridref . $postcode . "]<br />";
+        } else {
+            $out .= "Contact leader for starting place details <br />";
         }
 
         if ($walk->isLeader) {
@@ -55,8 +67,8 @@ class RJsonwalksDe02Det extends RJsonwalksDisplaybase {
         $out = str_replace(" cp ", " car park ", $out);
         $out = str_replace(" c.p. ", " car park ", $out);
         echo $out;
+        echo "<br/>Contact the leader for details or to check the walk is suitable for you";
         echo "<br/>http://www.derbyramblers.org.uk/";
-        echo "<br/>Contact us to make sure the walk is suitable for you";
 
         echo "<br />";
         echo "<hr />";

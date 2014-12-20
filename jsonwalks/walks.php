@@ -41,8 +41,8 @@ class RJsonwalksWalks {
     }
 
     function filterGroups($groups) {
-        foreach ($this->arrayofwalks as $key => $value) {
-            if ($this->notInGroup($value, $groups)) {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($walk->notInGroup($value, $groups)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -55,6 +55,38 @@ class RJsonwalksWalks {
             }
         }
         return true;
+    }
+
+    function filterStrands($containsText) {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($this->notInItems($walk->strands, $containsText)) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
+    function filterFestivals($containsText) {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($this->notInItems($walk->festivals, $containsText)) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
+    private function notInItems($items, $text) {
+        if ($items == NULL) {
+            return true;
+        }
+        foreach ($items->getItems() as $item) {
+            if ($this->contains(strtolower($text), strtolower($item->getName()))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function contains($needle, $haystack) {
+        return strpos($haystack, $needle) !== false;
     }
 
     function filterDayofweek($days) {

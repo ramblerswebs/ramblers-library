@@ -49,7 +49,7 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
     private function displayWalk($walk) {
         $col1 = $this->getGradeImage($walk->localGrade);
 
-        $col2 = "<b>" . $walk->walkDate->format('l, jS') . "</b>" . PHP_EOL;
+        $col2 = "<b>" . $walk->walkDate->format('l, jS') . "</b>";
         if ($walk->hasMeetPlace) {
             $col2 .= ", " . $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
         }

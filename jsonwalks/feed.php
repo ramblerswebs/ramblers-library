@@ -61,8 +61,14 @@ class RJsonwalksFeed {
         $this->walks->setNewWalks($days);
     }
 
-    function filterGroups($groups) {
-        $this->walks->filterGroups($groups);
+    function filterGroups($filter) {
+        $this->walks->filterGroups($filter);
+    }
+   function filterStrands($filter) {
+        $this->walks->filterStrands($filter);
+    }
+   function filterFestivals($filter) {
+        $this->walks->filterFestivals($filter);
     }
 
     function filterDayofweek($days) {

@@ -58,7 +58,7 @@ class RJsonwalksDe02Tic extends RJsonwalksDisplaybase {
         echo RHtml::addTableRow(array($col1, $col2));
 
         $col1 = "<b>Short description:</b>";
-        $col2 = "Join " . $walk->groupName . " Ramblers for a " . $walk->nationalGrade;
+        $col2 = "Please join " . $walk->groupName . " Ramblers for a " . $walk->nationalGrade;
         $col2 .= " " . $walk->distanceMiles . " mile / " . $walk->distanceKm . " km walk";
         if ($walk->description != "") {
             $col2.=", " . $walk->description;

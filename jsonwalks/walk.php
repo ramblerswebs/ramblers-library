@@ -24,7 +24,8 @@ class RJsonwalksWalk {
     public $day;                    // the day number as text
     public $month;                  // the month as text
     public $title;                  // title of the walk
-    public $description = "";       // description of walk
+    public $description = "";       // description of walk with html tags removed
+    public $descriptionHtml = "";   // description of walk with html tags
     public $additionalNotes = "";   // the additional notes field as text
     public $detailsPageUrl = "";    // url to access the ramblers.org.uk page for this walk
     // contact
@@ -87,10 +88,9 @@ class RJsonwalksWalk {
             $this->description = $item->description;
             $this->description = str_replace("\r", "", $this->description);
             $this->description = str_replace("\n", "", $this->description);
-            $this->description = str_replace("<p>", "", $this->description);
-            $this->description = str_replace("</p>", "", $this->description);
-            $this->description = str_replace("&nbsp;", " ", $this->description);
+            $this->description = strip_tags($this->description);
             $this->description = trim($this->description);
+            $this->descriptionHtml = $item->description;
             $this->additionalNotes = $item->additionalNotes;
             $this->isLinear = $item->isLinear == "true";
             $this->nationalGrade = $item->difficulty->text;

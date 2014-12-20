@@ -183,8 +183,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $out.= "</div>";
             $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
             $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
-            $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude . "</div>";
-            $out.= "<div class='latitude'><b>Latitude</b>: " . $location->latitude . "</div>";
+            $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude ;
+            $out.= " , <b>Latitude</b>: " . $location->latitude . "</div>";
         } else {
             $out = "<div class='place'>Location shown is an indication of where the walk will be and <b>NOT</b> the start place:  - ";
             $out.=$this->getGoogleMapUrl("Map", $location->latitude . "," . $location->longitude, $location->exact, "_blank", $this->popupLink);

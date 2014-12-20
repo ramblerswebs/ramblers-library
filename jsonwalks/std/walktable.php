@@ -82,6 +82,8 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         $contact = "";
         if ($walk->isLeader) {
             $contact = "Leader";
+        } else {
+            $contact = "Contact";
         }
         if ($walk->contactName <> "") {
             $contact .= "<br />" . $walk->contactName;
