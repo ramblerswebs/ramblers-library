@@ -15,6 +15,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     private $walkClass = "walk";
     public $link = true;
     public $addDescription = true;
+    public $addGroupName = false;
 
     const BR = "<br />";
 
@@ -55,7 +56,11 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     }
 
     private function displayWalkForProgrammeTable($walk, $hasMeet) {
-        $date = "<div class='" . $this->walkClass . $walk->status . "'><b>" . $walk->walkDate->format('l, jS F') . "</b></div>";
+        $group="";
+        if ($this->addGroupName){
+            $group="<br />". $walk->groupName;
+        }
+        $date = "<div class='" . $this->walkClass . $walk->status . "'><b>" . $walk->walkDate->format('l, jS F') . "</b>".$group."</div>";
 
         if ($walk->hasMeetPlace) {
             $meet = $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
