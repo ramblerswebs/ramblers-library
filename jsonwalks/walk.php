@@ -84,7 +84,8 @@ class RJsonwalksWalk {
             // basic walk details
             $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
             $this->detailsPageUrl = $item->url;
-            $this->title = $item->title;
+            $this->title = htmlspecialchars($item->title);
+            $this->title = str_replace("'","&apos;",$item->title);
             $this->description = $item->description;
             $this->description = str_replace("\r", "", $this->description);
             $this->description = str_replace("\n", "", $this->description);
