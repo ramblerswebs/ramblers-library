@@ -180,7 +180,6 @@ class RUsersStatus {
         }
     }
 
-    
     function checkMembership() {
         if ($this->loggedon()) {
             if (RSqlUtils::tableExists('#__comprofiler')) {
@@ -206,7 +205,7 @@ class RUsersStatus {
         }
     }
 
-     function postcodeOK() {
+    function postcodeOK() {
         if ($this->cbInfo == NULL) {
             return true;
         }
@@ -295,11 +294,11 @@ class RUsersStatus {
         }
         if (trim($val) != "") {
             $expiry = DateTime::createFromFormat('Y-m-d H:i:s', $val . ' 00:00:00');
-            $date = new DateTime();
-            $date->add(new DateInterval('P30D'));
-            if ($date < $expiry) {
-                Echo "<div class='ra-membershipexpires'><b>Expires: </b>" . $expiry->format('jS F Y') . "</div>";
-            }
+            //   $date = new DateTime();
+            //   $date->add(new DateInterval('P30D'));
+            //   if ($date < $expiry) {
+            Echo "<div class='ra-membershipexpires'><b>Expires: </b>" . $expiry->format('jS F Y') . "</div>";
+            //  }
         }
         Echo "<div class='ra-membershipnote'>" . $this->localRecordsText . "</div>";
 

@@ -13,14 +13,18 @@
         <files target="ramblers">
             <filename>ramblers-manifest.xml</filename>
             <filename>readme.md</filename>
-            <folder>users</folder>
-            <folder>sql</folder>
-            <folder>html</folder>
+            <folder>css</folder>
             <folder>feedhelper</folder>
+            <folder>html</folder>
+            <folder>images</folder>
+            <folder>js</folder>
             <folder>jsonwalks</folder>
-            <folder>jsonwalks/std</folder>
             <folder>jsonwalks/de02</folder>
+            <folder>jsonwalks/leaflet</folder>
+            <folder>jsonwalks/std</folder>
             <folder>osmap</folder>
+            <folder>sql</folder>
+            <folder>users</folder>
         </files>
     </fileset>
     <updateservers>

@@ -85,7 +85,7 @@ function initmapbuilder() {
     }
 
     public function addMarker($marker) {
-        $this->mapStyle.=$marker->Script();
+        $this->mapStyle.=$marker->osScript();
     }
 
     public function addClustercontrol() {

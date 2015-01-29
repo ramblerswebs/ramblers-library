@@ -16,7 +16,7 @@ class RJsonwalksMapmarker {
     public $xpopup = 200;  // width of popup
     public $ypopup = 200;  // height of popup
 
-    public function Script() {
+    public function osScript() {
         $out = "";
         $out.= "
         

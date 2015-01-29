@@ -8,6 +8,9 @@ class RJsonwalksWalks {
     private $sortorder3;
     private $newinterval = 30;
 
+    const LATLONG = 0;
+    const GRIDREF = 1;
+
     function __construct($json) {
         $this->arrayofwalks = array();
         if ($json != NULL) {
@@ -148,6 +151,48 @@ class RJsonwalksWalks {
             return 0;
         }
         return ($val1 < $val2 ) ? -1 : 1;
+    }
+
+    public function getBounds($type) {
+        $items = $this->allWalks();
+        $bounds = array();
+        $bounds['xmin'] = 49.860440;
+        $bounds['xmax'] = 59.676368;
+        $bounds['ymin'] = 2.076597;
+        $bounds['ymax'] = -6.041947;
+        $first = true;
+
+        foreach ($items as $walk) {
+            if ($type == self::GRIDREF) {
+                $x = $walk->startLocation->easting;
+                $y = $walk->startLocation->northing;
+            } else {
+                $x = $walk->startLocation->latitude;
+                $y = $walk->startLocation->longitude;
+            }
+
+            if ($first) {
+                $bounds['xmin'] = $x;
+                $bounds['xmax'] = $x;
+                $bounds['ymin'] = $y;
+                $bounds['ymax'] = $y;
+                $first = false;
+            } else {
+                if ($x < $bounds['xmin']) {
+                    $bounds['xmin'] = $x;
+                }
+                if ($x > $bounds['xmax']) {
+                    $bounds['xmax'] = $x;
+                }
+                if ($y < $bounds['ymin']) {
+                    $bounds['ymin'] = $y;
+                }
+                if ($y > $bounds['ymax']) {
+                    $bounds['ymax'] = $y;
+                }
+            }
+        }
+        return $bounds;
     }
 
     public function allWalks() {
