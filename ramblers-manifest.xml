@@ -7,9 +7,9 @@
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>www.ramblers-webs,org.uk</authorUrl>
-    <version>0.9.3</version>
+    <version>0.9.4</version>
     <description>Ramblers classes to process, JSON Walks feeds, Retrieve CB membership information</description>
-    <fileset>3
+    <fileset>
         <files target="ramblers">
             <filename>ramblers-manifest.xml</filename>
             <filename>readme.md</filename>
