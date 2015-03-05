@@ -36,7 +36,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo '</script>' . PHP_EOL;
         echo '<div id="accordion_ra1_id007" class="ra-accordion ra-accordion-style4 ">';
         foreach ($items as $walk) {
-            $thiscontact = $walk->contactName . "  " . $walk->telephone1;
+            //  $thiscontact = $walk->contactName . "  " . $walk->telephone1;
 
             echo '<div class="ra-accordion-item">';
             echo '<div class="toggler">';
@@ -142,8 +142,11 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "<div class='ascent'><b>Ascent</b>: " . $walk->ascentFeet . " ft " . $walk->ascentMetres . " ms</div>";
         }
         echo "</div>";
-
-        echo "<div class='walkcontact'><b>Contact</b>: ";
+        if ($walk->isLeader == false) {
+            echo "<div class='walkcontact'><b>Contact</b>: ";
+        } else {
+            echo "<div class='walkcontact'><b>Contact Leader</b>: ";
+        }
         echo "<div class='contactname'><b>Name</b>: " . $walk->contactName . "</div>";
         if ($walk->email != "") {
             echo "<div class='email'><b>Email</b>: " . $walk->email . "</div>";
@@ -162,6 +165,11 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $text.="</div>";
             echo $text;
         }
+        if ($walk->isLeader == false) {
+            if ($walk->walkLeader != "") {
+                echo "<div class='walkleader'><b>Walk Leader</b>: " . $walk->walkLeader . "</div>";
+            }
+        }
         echo "</div>";
         $this->addItemInfo("strands", "", $walk->strands);
         $this->addItemInfo("festivals", "Festivals", $walk->festivals);
@@ -179,24 +187,24 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         if ($location->exact) {
             $out = "<div class='place'><b>" . $title . " Place</b>: " . $location->description . " - ";
-            $out.=$this->getGoogleMapUrl("Map", $location->latitude . "," . $location->longitude, $location->exact, "_blank", $this->popupLink);
+            $out.=$this->getMapUrl("Map", $location->latitude . "," . $location->longitude, $location->exact, "_blank", $this->popupLink);
             $out.= "</div>";
             $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
             $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
-            $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude ;
+            $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude;
             $out.= " , <b>Latitude</b>: " . $location->latitude . "</div>";
+            if ($location->postcode != "") {
+                $note = " - [Postcodes in some areas may not be close to the desired location, please check before using]";
+                $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . " ";
+                $out.=$this->getMapUrl("Map", $location->postcode, true, "_blank", $this->popupLink);
+                $out.= $note . "</div>";
+            }
         } else {
             $out = "<div class='place'>Location shown is an indication of where the walk will be and <b>NOT</b> the start place:  - ";
-            $out.=$this->getGoogleMapUrl("Map", $location->latitude . "," . $location->longitude, $location->exact, "_blank", $this->popupLink);
+            $out.=$this->getMapUrl("Map", $location->latitude . "," . $location->longitude, $location->exact, "_blank", $this->popupLink);
             $out.= "</div>";
         }
 
-        if ($location->postcode != "") {
-            $note = " - [Postcodes in some areas may not be close to the desired location, please check before using]";
-            $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . " ";
-            $out.=$this->getGoogleMapUrl("Map", $location->postcode, true, "_blank", $this->popupLink);
-            $out.= $note . "</div>";
-        }
         return $out;
     }
 
@@ -209,6 +217,11 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             }
             echo "</div>";
         }
+    }
+
+    private function getMapUrl($text, $search, $exact, $target, $popup) {
+        $out = $this->getGoogleMapUrl($text, $search, $exact, $target, $popup);
+        return $out;
     }
 
     private function getGoogleMapUrl($text, $search, $exact, $target, $popup) {

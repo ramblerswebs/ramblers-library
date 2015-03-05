@@ -30,6 +30,7 @@ class RJsonwalksWalk {
     public $detailsPageUrl = "";    // url to access the ramblers.org.uk page for this walk
     // contact
     public $isLeader = false;       // is the contact info for the leader of the walk
+    public $walkLeader = "";        // walk leader if isLeader is false
     public $contactName = "";       // contact name
     public $email = "";             // email address for contact
     public $telephone1 = "";        // first telephone number of contact
@@ -52,7 +53,6 @@ class RJsonwalksWalk {
     Public $ascentFeet;             // the ascent in feet or null
     Public $strands;                // RJsonwalksItems object or null 
     Public $festivals;              // RJsonwalksItems object or null 
-    
     // extra derived values
     public $placeTag;
     public $eventTag;
@@ -85,7 +85,7 @@ class RJsonwalksWalk {
             $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
             $this->detailsPageUrl = $item->url;
             $this->title = htmlspecialchars($item->title);
-            $this->title = str_replace("'","&apos;",$item->title);
+            $this->title = str_replace("'", "&apos;", $item->title);
             $this->description = $item->description;
             $this->description = str_replace("\r", "", $this->description);
             $this->description = str_replace("\n", "", $this->description);
@@ -109,14 +109,15 @@ class RJsonwalksWalk {
                 $this->telephone1 = $item->walkContact->contact->telephone1;
                 $this->telephone2 = $item->walkContact->contact->telephone2;
             }
+            $this->walkLeader=$item->walkLeader;
             // read strands
             if (count($item->strands->items) > 0) {
                 $this->strands = new RJsonwalksItems($item->strands);
-            } 
-              // read festivals
+            }
+            // read festivals
             if (count($item->festivals->items) > 0) {
                 $this->festivals = new RJsonwalksItems($item->festivals);
-            } 
+            }
             // pocess meeting and starting locations
             $this->processPoints($item->points);
             $this->createExtraData();
