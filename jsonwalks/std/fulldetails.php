@@ -277,7 +277,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     }
 
     private function getPostcodeMap($text, $location) {
-        $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&size=512x512&path=color:0xff0000ff|weight:5|[lat1],[long1]|[lat2],[long2]&markers=color:blue|label:P|[lat1],[long1]&markers=color:green|label:[Lab]|[lat2],[long2]";
+       // $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&size=512x512&path=color:0xff0000ff|weight:5|[lat1],[long1]|[lat2],[long2]&markers=color:blue|label:P|[lat1],[long1]&markers=color:green|label:[Lab]|[lat2],[long2]";
+       $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&size=512x512&markers=color:blue|label:P|[lat1],[long1]&markers=color:green|label:[Lab]|[lat2],[long2]";
         $centreLatitude = ($location->latitude + $location->postcodeLatitude) / 2;
         $centreLongitude = ($location->longitude + $location->postcodeLongitude) / 2;
         $code = str_replace("[lat1]", $location->postcodeLatitude, $code);
