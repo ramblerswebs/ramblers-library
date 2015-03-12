@@ -16,7 +16,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $localGradeHelp = "";
     public $nationalGradeTarget = "_parent";
     public $localGradeTarget = "_parent";
-    public $popupLink = true;
+    public $popupLink = true; // not used now!
     public $displayGroup = false;  // should the Group name be displayed
 
     function DisplayWalks($walks) {
@@ -186,25 +186,56 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private function addLocationInfo($title, $location) {
 
         if ($location->exact) {
-            $out = "<div class='place'><b>" . $title . " Place</b>: " . $location->description . " - ";
-            $out.=$this->getMapUrl("Map", $location->latitude . "," . $location->longitude, $location->exact, "_blank", $this->popupLink);
+            $out = "<div class='place'><b>" . $title . " Place</b>: " . $location->description . " ";
+            $out.=$this->getDirectionsMap("Directions", $location);
             $out.= "</div>";
             $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
-            $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . "</div>";
+            $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . " ";
+            $out.=$this->getOSMap("Location", $location->latitude, $location->longitude);
+            $out.= "</div>";
+
             $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude;
             $out.= " , <b>Latitude</b>: " . $location->latitude . "</div>";
             if ($location->postcode != "") {
-                $note = " - [Postcodes in some areas may not be close to the desired location, please check before using]";
-                $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . " ";
-                $out.=$this->getMapUrl("Map", $location->postcode, true, "_blank", $this->popupLink);
-                $out.= $note . "</div>";
+                $out.= $this->displayPostcode($location);
+                //   $note = " - [Postcodes in some areas may not be close to the desired location, please check before using]";
+                //   $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . " ";
+                //   $out.=$this->getMapUrl("Map", $location->postcode, true, "_blank", $this->popupLink);
+                //   $out.= $note . "</div>";
             }
         } else {
-            $out = "<div class='place'>Location shown is an indication of where the walk will be and <b>NOT</b> the start place:  - ";
-            $out.=$this->getMapUrl("Map", $location->latitude . "," . $location->longitude, $location->exact, "_blank", $this->popupLink);
+            $out = "<div class='place'>Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
+            $out.=$this->getAreaMap("Map of area", $location);
             $out.= "</div>";
         }
 
+        return $out;
+    }
+
+    function displayPostcode($location) {
+        $lat1 = $location->postcodeLatitude;
+        $lon1 = $location->postcodeLongitude;
+        $lat2 = $location->latitude;
+        $lon2 = $location->longitude;
+        $dist = 1000 * round(RGeometryGreatcircle::distance($lat1, $lon1, $lat2, $lon2, "KM"), 3); // metres
+        $direction = RGeometryGreatcircle::direction($lat1, $lon1, $lat2, $lon2);
+        If ($dist < 100) {
+            $note = "Postcode is within 100m of location";
+            $link = "";
+            $distclass = " distclose";
+        } else {
+            if ($dist < 500) {
+                $distclass = " distnear";
+            } else {
+                $distclass = " distfar";
+            }
+            $note = $location->type." place is " . $dist . " metres " . $direction . " of postcode. ";
+            $note.= "Show displays the Postcode(P) and ".$location->type." positions";
+            $link = $this->getPostcodeMap("Show", $location);
+        }
+        $out = "<div class='postcode " . $distclass . "'><abbr title='" . $note . "'><b>Postcode</b>: " . $location->postcode . " ";
+        $out.=$link;
+        $out.= "</abbr></div>";
         return $out;
     }
 
@@ -219,24 +250,46 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         }
     }
 
-    private function getMapUrl($text, $search, $exact, $target, $popup) {
-        $out = $this->getGoogleMapUrl($text, $search, $exact, $target, $popup);
+    private function getDirectionsMap($text, $location) {
+        $code = "https://www.google.com/maps/dir/Current+Location/[lat],[long]";
+       // $code="https://www.google.com/maps/embed/v1/directions?key=API_KEY&origin=[Current+Location]&destination=[lat],[long]";
+        $code = str_replace("[lat]", $location->latitude, $code);
+        $code = str_replace("[long]", $location->longitude, $code);
+        
+        $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" . $text . "]</span>";
         return $out;
     }
 
-    private function getGoogleMapUrl($text, $search, $exact, $target, $popup) {
-        If ($exact) {
-            $code = "z=13&q=";
-        } else {
-            $code = "z=13&t=h&ll=";
-        }
-        if ($popup) {
-            $out = "[<span class='rapopup' onClick=\"javascript:window.open('http://maps.google.com/maps?" . $code . $search . "', '_blank','toolbar=yes,left=50,top=50,width=800,height=600');\">" . $text . "</span>]";
-            ;
-        } else {
-            $out = "[<a href='http://maps.google.com/maps?" . $code . $search . "' target='" . $target . "'>" . $text . "</a>]</div>";
-        }
+    private function getOSMap($text, $latitude, $longitude) {
+        $code = "http://streetmap.co.uk/loc/[lat],[long]&Z=115";
+        $code = str_replace("[lat]", $latitude, $code);
+        $code = str_replace("[long]", $longitude, $code);
+        $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" . $text . "]</span>";
+        return $out;
+    }
 
+    private function getAreaMap($text, $location) {
+        $code = "http://maps.google.com/maps?z=13&t=h&ll=[lat],[long]";
+        $code = str_replace("[lat]", $location->latitude, $code);
+        $code = str_replace("[long]", $location->longitude, $code);
+        $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" . $text . "]</span>";
+        return $out;
+    }
+
+    private function getPostcodeMap($text, $location) {
+        $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&size=512x512&path=color:0xff0000ff|weight:5|[lat1],[long1]|[lat2],[long2]&markers=color:blue|label:P|[lat1],[long1]&markers=color:green|label:[Lab]|[lat2],[long2]";
+        $centreLatitude = ($location->latitude + $location->postcodeLatitude) / 2;
+        $centreLongitude = ($location->longitude + $location->postcodeLongitude) / 2;
+        $code = str_replace("[lat1]", $location->postcodeLatitude, $code);
+        $code = str_replace("[long1]", $location->postcodeLongitude, $code);
+        $code = str_replace("[lat2]", $location->latitude, $code);
+        $code = str_replace("[long2]", $location->longitude, $code);
+        $code = str_replace("[latcentre]", $centreLatitude, $code);
+        $code = str_replace("[longcentre]", $centreLongitude, $code);
+        $lab = substr($location->type, 0, 1);
+        $code = str_replace("[Lab]", $lab, $code);
+
+        $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=600,height=600');\">[" . $text . "]</span>";
         return $out;
     }
 

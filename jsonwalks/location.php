@@ -17,6 +17,7 @@ class RJsonwalksLocation {
     public $postcode;           // either a postcode or null
     public $postcodeLatitude;   // Longitude of the postcode or null
     public $postcodeLongitude;  // Latitude of the postcode or null
+    public $type;               // type of location, meet,start,finish
     public $exact;              // true or false
 
     function __construct($value) {
@@ -38,6 +39,7 @@ class RJsonwalksLocation {
         $this->postcode = $value->postcode;
         $this->postcodeLatitude = $value->postcodeLatitude;
         $this->postcodeLongitude = $value->postcodeLongitude;
+        $this->type = $value->typeString;
         $this->exact = $value->showExact == "true";
     }
 
