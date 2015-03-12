@@ -191,11 +191,11 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $out.= "</div>";
             $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
             $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . " ";
-            $out.=$this->getOSMap("Location", $location->latitude, $location->longitude);
+            $out.=$this->getOSMap("Location", $location);
             $out.= "</div>";
 
-            $out.= "<div class='logitude'><b>Logitude</b>: " . $location->longitude;
-            $out.= " , <b>Latitude</b>: " . $location->latitude . "</div>";
+            $out.= "<div class='latlong'><b>Latitude</b>: " . $location->latitude;
+            $out.= " , <b>Longitude</b>: " . $location->longitude . "</div>";
             if ($location->postcode != "") {
                 $out.= $this->displayPostcode($location);
                 //   $note = " - [Postcodes in some areas may not be close to the desired location, please check before using]";
@@ -260,10 +260,10 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         return $out;
     }
 
-    private function getOSMap($text, $latitude, $longitude) {
+    private function getOSMap($text, $location) {
         $code = "http://streetmap.co.uk/loc/[lat],[long]&Z=115";
-        $code = str_replace("[lat]", $latitude, $code);
-        $code = str_replace("[long]", $longitude, $code);
+        $code = str_replace("[lat]", $location->latitude, $code);
+        $code = str_replace("[long]", $location->longitude, $code);
         $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" . $text . "]</span>";
         return $out;
     }
