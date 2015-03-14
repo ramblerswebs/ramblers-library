@@ -86,12 +86,14 @@ class RJsonwalksWalk {
             $this->detailsPageUrl = $item->url;
             $this->title = htmlspecialchars($item->title);
             $this->title = str_replace("'", "&apos;", $item->title);
+            $this->descriptionHtml = $item->description;
             $this->description = $item->description;
             $this->description = str_replace("\r", "", $this->description);
             $this->description = str_replace("\n", "", $this->description);
+            $this->description = str_replace("&nbsp;", " ", $this->description);
             $this->description = strip_tags($this->description);
             $this->description = trim($this->description);
-            $this->descriptionHtml = $item->description;
+
             $this->additionalNotes = $item->additionalNotes;
             $this->isLinear = $item->isLinear == "true";
             $this->nationalGrade = $item->difficulty->text;
@@ -109,7 +111,7 @@ class RJsonwalksWalk {
                 $this->telephone1 = $item->walkContact->contact->telephone1;
                 $this->telephone2 = $item->walkContact->contact->telephone2;
             }
-            $this->walkLeader=$item->walkLeader;
+            $this->walkLeader = $item->walkLeader;
             // read strands
             if (count($item->strands->items) > 0) {
                 $this->strands = new RJsonwalksItems($item->strands);

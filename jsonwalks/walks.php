@@ -6,7 +6,7 @@ class RJsonwalksWalks {
     private $sortorder1;
     private $sortorder2;
     private $sortorder3;
-    private $newinterval = 30;
+    private $newinterval = 7;
 
     const LATLONG = 0;
     const GRIDREF = 1;

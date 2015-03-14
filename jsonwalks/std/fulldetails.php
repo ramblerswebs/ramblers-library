@@ -84,12 +84,14 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "<div class='group'><b>Group</b>: " . $walk->groupName . "</div>";
         }
         echo "<div class='basics'>";
-        echo "<div class='description'><b>Description</b>: " . $walk->description . "</div>";
-
+        echo "<div class='description'><b>" . $walk->walkDate->format('l, jS F Y') . PHP_EOL;
+        echo "<br/>" . $walk->title . "</b></div>";
+        if ($walk->description != "") {
+            echo "<div class='description'> " . $walk->description . "</div>";
+        }
         if ($walk->additionalNotes != "") {
             echo "<div class='additionalnotes'><b>Additional Notes</b>: " . $walk->additionalNotes . "</div>";
         }
-        echo "<div class='distance'><b>Distance</b>: " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km" . "</div>";
         if ($walk->isLinear) {
             echo "<b>Linear Walk</b>";
         } else {
@@ -124,6 +126,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "</div>";
         }
         echo "<div class='difficulty'><b>Difficulty</b>: ";
+        echo "<div class='distance'><b>Distance</b>: " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km" . "</div>";
         $link = $walk->nationalGrade;
         if ($this->nationalGradeHelp != "") {
             $link = "<a href='" . $this->nationalGradeHelp . "' target='" . $this->nationalGradeTarget . "'>" . $link . "</a>";
@@ -186,22 +189,20 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private function addLocationInfo($title, $location) {
 
         if ($location->exact) {
-            $out = "<div class='place'><b>" . $title . " Place</b>: " . $location->description . " ";
+            $note = "Click Directions to see Google map of directions from your current location";
+            $out = "<div class='place'><b>" . $title . " Place</b>:<abbr title='" . $note . "'> " . $location->description . " ";
             $out.=$this->getDirectionsMap("Directions", $location);
-            $out.= "</div>";
+            $out.= "</abbr></div>";
             $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
-            $out.= "<div class='gridref'><b>Grid Ref</b>: " . $location->gridref . " ";
+            $note = "Click Location to see OS Map of location";
+            $out.= "<div class='gridref'><abbr title='" . $note . "'><b>Grid Ref</b>: " . $location->gridref . " ";
             $out.=$this->getOSMap("Location", $location);
-            $out.= "</div>";
+            $out.= "</abbr></div>";
 
             $out.= "<div class='latlong'><b>Latitude</b>: " . $location->latitude;
             $out.= " , <b>Longitude</b>: " . $location->longitude . "</div>";
             if ($location->postcode != "") {
                 $out.= $this->displayPostcode($location);
-                //   $note = " - [Postcodes in some areas may not be close to the desired location, please check before using]";
-                //   $out.= "<div class='postcode'><b>Postcode</b>: " . $location->postcode . " ";
-                //   $out.=$this->getMapUrl("Map", $location->postcode, true, "_blank", $this->popupLink);
-                //   $out.= $note . "</div>";
             }
         } else {
             $out = "<div class='place'>Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
@@ -229,8 +230,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             } else {
                 $distclass = " distfar";
             }
-            $note = $location->type." place is " . $dist . " metres " . $direction . " of postcode. ";
-            $note.= "Show displays the Postcode(P) and ".$location->type." positions";
+            $note = $location->type . " place is " . $dist . " metres " . $direction . " of postcode. ";
+            $note.= "Show displays the Postcode(P) and " . $location->type . " positions";
             $link = $this->getPostcodeMap("Show", $location);
         }
         $out = "<div class='postcode " . $distclass . "'><abbr title='" . $note . "'><b>Postcode</b>: " . $location->postcode . " ";
@@ -252,10 +253,10 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
     private function getDirectionsMap($text, $location) {
         $code = "https://www.google.com/maps/dir/Current+Location/[lat],[long]";
-       // $code="https://www.google.com/maps/embed/v1/directions?key=API_KEY&origin=[Current+Location]&destination=[lat],[long]";
+        // $code="https://www.google.com/maps/embed/v1/directions?key=API_KEY&origin=[Current+Location]&destination=[lat],[long]";
         $code = str_replace("[lat]", $location->latitude, $code);
         $code = str_replace("[long]", $location->longitude, $code);
-        
+
         $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" . $text . "]</span>";
         return $out;
     }
@@ -277,8 +278,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     }
 
     private function getPostcodeMap($text, $location) {
-       // $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&size=512x512&path=color:0xff0000ff|weight:5|[lat1],[long1]|[lat2],[long2]&markers=color:blue|label:P|[lat1],[long1]&markers=color:green|label:[Lab]|[lat2],[long2]";
-       $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&size=512x512&markers=color:blue|label:P|[lat1],[long1]&markers=color:green|label:[Lab]|[lat2],[long2]";
+        // $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&size=512x512&path=color:0xff0000ff|weight:5|[lat1],[long1]|[lat2],[long2]&markers=color:blue|label:P|[lat1],[long1]&markers=color:green|label:[Lab]|[lat2],[long2]";
+        $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&size=512x512&markers=color:blue|label:P|[lat1],[long1]&markers=color:green|label:[Lab]|[lat2],[long2]";
         $centreLatitude = ($location->latitude + $location->postcodeLatitude) / 2;
         $centreLongitude = ($location->longitude + $location->postcodeLongitude) / 2;
         $code = str_replace("[lat1]", $location->postcodeLatitude, $code);
