@@ -191,12 +191,12 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         if ($location->exact) {
             $note = "Click Directions to see Google map of directions from your current location";
             $out = "<div class='place'><b>" . $title . " Place</b>:<abbr title='" . $note . "'> " . $location->description . " ";
-            $out.=$this->getDirectionsMap("Directions", $location);
+            $out.=$this->getDirectionsMap("Map & Directions", $location);
             $out.= "</abbr></div>";
             $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
             $note = "Click Location to see OS Map of location";
             $out.= "<div class='gridref'><abbr title='" . $note . "'><b>Grid Ref</b>: " . $location->gridref . " ";
-            $out.=$this->getOSMap("Location", $location);
+            $out.=$this->getOSMap("OS Map", $location);
             $out.= "</abbr></div>";
 
             $out.= "<div class='latlong'><b>Latitude</b>: " . $location->latitude;
