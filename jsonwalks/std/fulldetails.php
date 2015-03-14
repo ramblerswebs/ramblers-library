@@ -194,7 +194,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $out.=$this->getDirectionsMap("Map & Directions", $location);
             $out.= "</abbr></div>";
             $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
-            $note = "Click Map to see Ordnance Survey Map of location";
+            $note = "Click Map to see Ordnance Survey map of location";
             $out.= "<div class='gridref'><abbr title='" . $note . "'><b>Grid Ref</b>: " . $location->gridref . " ";
             $out.=$this->getOSMap("OS Map", $location);
             $out.= "</abbr></div>";
