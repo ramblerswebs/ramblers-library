@@ -189,12 +189,12 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private function addLocationInfo($title, $location) {
 
         if ($location->exact) {
-            $note = "Click Directions to see Google map of directions from your current location";
+            $note = "Click Map & Directions to see Google map of directions from your current location";
             $out = "<div class='place'><b>" . $title . " Place</b>:<abbr title='" . $note . "'> " . $location->description . " ";
             $out.=$this->getDirectionsMap("Map & Directions", $location);
             $out.= "</abbr></div>";
             $out.= "<div class='time'><b>Time</b>: " . $location->timeHHMMshort . "</div>";
-            $note = "Click Location to see OS Map of location";
+            $note = "Click Map to see Ordnance Survey Map of location";
             $out.= "<div class='gridref'><abbr title='" . $note . "'><b>Grid Ref</b>: " . $location->gridref . " ";
             $out.=$this->getOSMap("OS Map", $location);
             $out.= "</abbr></div>";
@@ -231,7 +231,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
                 $distclass = " distfar";
             }
             $note = $location->type . " place is " . $dist . " metres " . $direction . " of postcode. ";
-            $note.= "Show displays the Postcode(P) and " . $location->type . " positions";
+            $note.= "Click Show to display the locations of the Postcode(P) and " . $location->type . " locations";
             $link = $this->getPostcodeMap("Show", $location);
         }
         $out = "<div class='postcode " . $distclass . "'><abbr title='" . $note . "'><b>Postcode</b>: " . $location->postcode . " ";
