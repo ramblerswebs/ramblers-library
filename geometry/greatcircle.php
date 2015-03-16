@@ -71,7 +71,7 @@ Class RGeometryGreatcircle {
    public static function direction($lat1, $lon1, $lat2, $lon2) {
         $bearing = RGeometryGreatcircle::bearing($lat1, $lon1, $lat2, $lon2);
         $inc = 22.5;
-        $direction = array("North", "North/East", "East", "South/East", "South", "South/West", "West", "North/West","North");
+        $direction = array("North", "North East", "East", "South East", "South", "South West", "West", "North West","North");
         $i = 0;
         for ($ang = 0; $ang <= 360; $ang+=45) {
             if ($bearing >= $ang - $inc and $bearing <= $ang + $inc) {
@@ -82,6 +82,17 @@ Class RGeometryGreatcircle {
 
 
         return "direction error";
+    }
+     public static function directionAbbr($item) {
+        
+        $direction = array("North", "North East", "East", "South East", "South", "South West", "West", "North West");
+        $dir = array("N", "NE", "E", "SE", "S", "SW", "W", "NW");
+        foreach ($direction as $key => $value) {
+            if ($item==$value){
+                return $dir[$key];
+            }
+        }
+        return "direction abbrevation error";
     }
      static function test() {
    
