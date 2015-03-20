@@ -208,7 +208,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private function addLocationInfo($title, $location) {
 
         if ($location->exact) {
-            $note = "Click Map & Directions to see Google map of directions from your current location";
+            $note = "Click Google Directions to see map and directions from your current location";
             $out = "<div class='place'><b>" . $title . " Place</b>:<abbr title='" . $note . "'> " . $location->description . " ";
             if (!$this->printOn) {
                 $out.=$this->getDirectionsMap("Google directions", $location);
