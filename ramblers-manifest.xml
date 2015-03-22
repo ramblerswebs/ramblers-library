@@ -14,6 +14,7 @@
             <filename>ramblers-manifest.xml</filename>
             <filename>readme.md</filename>
             <folder>css</folder>
+            <folder>directory</folder>
             <folder>feedhelper</folder>
             <folder>geometry</folder>
             <folder>html</folder>
