@@ -11,7 +11,6 @@ defined("_JEXEC") or die("Restricted access");
 class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
     private $tableClass = "";
-    private $walksClass = "walks";
     private $walkClass = "walk";
     public $link = true;
     public $addDescription = true;
