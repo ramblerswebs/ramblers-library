@@ -43,7 +43,10 @@ class RDirectoryList {
         foreach ($this->names as $value) {
             foreach ($this->fileTypes as $type) {
                 if ($this->endsWith($value, $type)) {
-                    echo "<li><a href='" . JURI::base() . $folder . "/" . $value . "' target='_blank'>" . $value . "</a></li>\n";
+                    $text=$value;
+                    $text=str_replace("-"," ",$text);
+                    $text=str_replace("_"," ",$text);
+                    echo "<li><a href='" . JURI::base() . $folder . "/" . $value . "' target='_blank'>" . $text . "</a></li>\n";
                 }
             }
         }
