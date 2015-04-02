@@ -76,10 +76,13 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
     private function displayWalkSummary($walk) {
 
-        $text = "<b>" . $walk->walkDate->format('l, jS F Y') . "</b>" . PHP_EOL;
+        $text = "<b>" . $walk->walkDate->format('l, jS F Y') . "</b>";
 
         $text .= ", " . $walk->title . " ";
-        $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
+        if ($walk->distanceMiles > 0) {
+            $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
+        }
+
         //  echo "<div class='" . $this->walkClass . $walk->status . "' ><div>" . PHP_EOL;
         echo $text . PHP_EOL;
         //  echo "</div></div>" . PHP_EOL;
@@ -100,7 +103,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         }
 
         if ($walk->description != "") {
-            echo "<div class='description'> " . $walk->description . "</div>";
+            echo "<div class='description'> " . $walk->descriptionHtml . "</div>";
         }
         if ($walk->additionalNotes != "") {
             echo "<div class='additionalnotes'><b>Additional Notes</b>: " . $walk->additionalNotes . "</div>";
@@ -117,8 +120,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo $out;
             echo "</div>";
         } else {
-            echo "<div class='nomeetplace'><b>No meeting place specified</b>";
-            echo "</div>";
+            //echo "<div class='nomeetplace'><b>No meeting place specified</b>";
+            //echo "</div>";
         }
         if ($walk->startLocation->exact) {
             echo "<div class='startplace'>";
@@ -139,7 +142,9 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "</div>";
         }
         echo "<div class='difficulty'><b>Difficulty</b>: ";
-        echo $this->withDiv("distance", "<b>Distance</b>: " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km");
+        if ($walk->distanceMiles > 0) {
+            echo $this->withDiv("distance", "<b>Distance</b>: " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km");
+        }
         $link = $walk->nationalGrade;
         if ($this->nationalGradeHelp != "") {
             $link = "<a href='" . $this->nationalGradeHelp . "' target='" . $this->nationalGradeTarget . "'>" . $link . "</a>";
