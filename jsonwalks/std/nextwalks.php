@@ -29,7 +29,10 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             $date = "<b>" . $walk->walkDate->format('D, jS F') . "</b>";
             $col2 = "<span itemprop=startDate content=" . $walk->walkDate->format(DateTime::ISO8601) . ">" . $date . "</span>";
             $col2 .= ", <span itemprop=name>" . $walk->title;
-            $col2 .= ", " . $walk->distanceMiles . "m/" . $walk->distanceKm . "km</span>";
+            if ($walk->distanceMiles > 0) {
+                $col2 .= ", " . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
+            }
+            $col2 .= "</span>";
             $tag = $walk->placeTag;
 
             echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . $walk->eventTag . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $col2 . $tag . "</a></div>" . PHP_EOL;
