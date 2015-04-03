@@ -78,7 +78,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         $text = "<b>" . $walk->walkDate->format('l, jS F Y') . "</b>";
 
-        $text .= ", " . $walk->title . " ";
+        $text .= ", " . $walk->title;
         if ($walk->distanceMiles > 0) {
             $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
         }
