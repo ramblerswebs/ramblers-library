@@ -13,10 +13,10 @@ class RDirectoryList {
         $this->fileTypes = $fileTypes;
     }
 
-    public function listItems($folder, $sort=self::ASC) {
+    public function listItems($folder, $sort = self::ASC) {
         $this->names = array();
-        if (!file_exists($folder)){
-            $text= "Folder does not exist: ".$folder.". Unable to list contents";
+        if (!file_exists($folder)) {
+            $text = "Folder does not exist: " . $folder . ". Unable to list contents";
             JFactory::getApplication()->enqueueMessage($text);
             echo "<b>Not able to list contents of folder<b>";
             return;
@@ -33,20 +33,26 @@ class RDirectoryList {
             }
             closedir($handle);
         }
-    if ($sort==self::ASC){
-        asort($this->names);
-    }
-    if ($sort==self::DESC){
-        arsort($this->names);
-    }
+        if ($sort == self::ASC) {
+            asort($this->names);
+        }
+        if ($sort == self::DESC) {
+            arsort($this->names);
+        }
         echo "<ul>";
         foreach ($this->names as $value) {
             foreach ($this->fileTypes as $type) {
+                $desc = "";
+                $descfile=$folder."/".$value . ".text";
+                if (file_exists($descfile)) {
+                    $desc = " - " . file_get_contents($descfile);
+                    $desc=strip_tags($desc,'<b><i><br><br/>');
+                }
                 if ($this->endsWith($value, $type)) {
-                    $text=$value;
-                    $text=str_replace("-"," ",$text);
-                    $text=str_replace("_"," ",$text);
-                    echo "<li><a href='" . JURI::base() . $folder . "/" . $value . "' target='_blank'>" . $text . "</a></li>\n";
+                    $text = $value;
+                    $text = str_replace("-", " ", $text);
+                    $text = str_replace("_", " ", $text);
+                    echo "<li><a href='" . JURI::base() . $folder . "/" . $value . "' target='_blank'>" . $text . "</a>" . $desc . "</li>\n";
                 }
             }
         }
