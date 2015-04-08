@@ -138,7 +138,7 @@ class RUsersStatus {
         if (!defined('DS')) {
             define('DS', DIRECTORY_SEPARATOR);
         }
-        return 'cache' . DS . 'ra_feed/members';
+        return 'cache' . DS . 'ra_members';
     }
 
     function displayKunenaSubscriptions() {
