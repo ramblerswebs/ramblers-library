@@ -19,12 +19,6 @@ class RUsersKunena {
 
             $query = $db->getQuery(true);  // Create a new query object.
 
-           // $query->select(array('b.name', 'b.username', 'b.email'))
-             //       ->select($db->quoteName('c.name', 'catname'))
-               //     ->from($db->quoteName('#__kunena_user_categories', 'a'))
-                 //   ->join('LEFT', $db->quoteName('#__users', 'b') . ' ON (' . $db->quoteName('a.user_id') . ' = ' . $db->quoteName('b.id') . ')')
-                   // ->join('LEFT', $db->quoteName('#__kunena_categories', 'c') . ' ON (' . $db->quoteName('a.category_id') . ' = ' . $db->quoteName('c.id') . ')')
-                   // ->order('catname ASC');
             $query->select(array('b.name', 'b.username', 'b.email', 'a.subscribed'))
                     ->select($db->quoteName('c.name', 'catname'))
                     ->from($db->quoteName('#__kunena_user_categories', 'a'))
