@@ -151,12 +151,12 @@ class RUsersStatus {
 // Create a new query object.
                 $query = $db->getQuery(true);
 
-                $query->select(array('b.name', 'b.username', 'b.email'))
+                $query->select(array('b.name', 'b.username', 'b.email', 'a.subscribed'))
                         ->select($db->quoteName('c.name', 'catname'))
                         ->from($db->quoteName('#__kunena_user_categories', 'a'))
                         ->join('LEFT', $db->quoteName('#__users', 'b') . ' ON (' . $db->quoteName('a.user_id') . ' = ' . $db->quoteName('b.id') . ')')
                         ->join('LEFT', $db->quoteName('#__kunena_categories', 'c') . ' ON (' . $db->quoteName('a.category_id') . ' = ' . $db->quoteName('c.id') . ')')
-                        ->where($db->quoteName('a.user_id') . " = " . $db->quote($this->user->id))
+                        ->where($db->quoteName('a.user_id') . " = " . $db->quote($this->user->id) . ' AND ' . $db->quoteName('a.subscribed') . " <> " . $db->quote(0))
                         ->order('catname ASC');
 
 // Reset the query using our newly populated query object.
@@ -167,10 +167,10 @@ class RUsersStatus {
 //echo '<pre>results '; var_dump($results); echo '</pre>';
 
                 if (count($results) == 0) {
-                    echo "<div class='usersubscribelist'>You are not subscribed to any Forum subjects</div>";
+                    echo "<div class='userkunenalistempty'>You are not subscribed to any Forum categories</div>";
                 } else {
-                    echo "<div  class='usersubscribelist'>You are subscribed to the following Forum subjects </div>";
-                    echo "<ul class='usersubscribelist'>";
+                    echo "<div  class='userkunenalist'>You are subscribed to the following Forum categories </div>";
+                    echo "<ul class='userkunenacatorgories'>";
                     foreach ($results as $i => $item) :
                         echo '<li>' . $item->catname . '</li>';
                     endforeach;
