@@ -93,9 +93,9 @@ class RUsersStatus {
 
     private function decodeMembershipNumber($no) {
         $this->membershipnoValidFormat = false;
+        $this->membershipno = $no;
         $pieces = explode("-", $no);
         If (count($pieces) == 3) {
-            $this->membershipnoValidFormat = true;
             $this->membershipno = $pieces[2];
         }
         If (count($pieces) == 2) {
@@ -103,6 +103,9 @@ class RUsersStatus {
         }
         If (count($pieces) == 1) {
             $this->membershipno = $pieces[0];
+        }
+        if (is_numeric($this->membershipno)) {
+            $this->membershipnoValidFormat = true;
         }
     }
 
