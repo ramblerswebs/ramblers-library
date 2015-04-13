@@ -20,6 +20,12 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
     function DisplayWalks($walks) {
         echo "</p>";
+         $printOn = JRequest::getVar('print') == 1;
+            if ($printOn) {
+                $doc = JFactory::getDocument();
+                $style = 'table { border-collapse: collapse;} table, td, th { border: 1px solid #657291;}td { padding: 5px;}';
+                $doc->addStyleDeclaration($style);
+            }
         $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
         $items = $walks->allWalks();
         if ($this->tableClass != "") {

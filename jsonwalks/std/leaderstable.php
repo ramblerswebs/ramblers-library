@@ -13,6 +13,12 @@ class RJsonwalksStdLeaderstable extends RJsonwalksDisplaybase {
     private $tableClass = "";
 
     function DisplayWalks($walks) {
+        $printOn = JRequest::getVar('print') == 1;
+            if ($printOn) {
+                $doc = JFactory::getDocument();
+                $style = 'table { border-collapse: collapse;} table, td, th { border: 1px solid #657291;}td { padding: 5px;}';
+                $doc->addStyleDeclaration($style);
+            }
 
         $walks->sort(RJsonwalksWalk::SORT_CONTACT, RJsonwalksWalk::SORT_TELEPHONE1, NULL);
         $items = $walks->allWalks();
