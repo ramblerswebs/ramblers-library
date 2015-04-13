@@ -92,7 +92,7 @@ class RJsonwalksFeed {
             $printOn = JRequest::getVar('print') == 1;
             if ($printOn) {
                 $doc = JFactory::getDocument();
-                $style = 'BODY {color: #000000);}';
+                $style = 'BODY {color: #000000;}';
                 $doc->addStyleDeclaration($style);
             }
             $displayclass->DisplayWalks($this->walks);
