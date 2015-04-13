@@ -17,7 +17,6 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
    // const BR = "<br />";
 
     function DisplayWalks($walks) {
-
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
         $items = $walks->allWalks();
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;

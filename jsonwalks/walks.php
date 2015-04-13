@@ -119,6 +119,18 @@ class RJsonwalksWalks {
         }
     }
 
+    function walksNoOlder($period) {
+        $today = new DateTime(NULL);
+        $interval = new DateInterval($period);
+        $today->add($interval);
+        foreach ($this->arrayofwalks as $key => $value) {
+            $date = $value->walkDate;
+            if ($date > $today) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
     function sort($sortorder1, $sortorder2, $sortorder3) {
         $this->sortorder1 = $sortorder1;
         $this->sortorder2 = $sortorder2;

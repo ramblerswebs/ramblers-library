@@ -64,10 +64,12 @@ class RJsonwalksFeed {
     function filterGroups($filter) {
         $this->walks->filterGroups($filter);
     }
-   function filterStrands($filter) {
+
+    function filterStrands($filter) {
         $this->walks->filterStrands($filter);
     }
-   function filterFestivals($filter) {
+
+    function filterFestivals($filter) {
         $this->walks->filterFestivals($filter);
     }
 
@@ -78,12 +80,21 @@ class RJsonwalksFeed {
     function noWalks($no) {
         $this->walks->noWalks($no);
     }
+     function walksNoOlder($period) {
+        $this->walks->walksNoOlder($period);
+    }
 
     function display($displayclass) {
         if ($this->walks == null) {
             echo "Walks array is empty";
         } else {
             //try {
+            $printOn = JRequest::getVar('print') == 1;
+            if ($printOn) {
+                $doc = JFactory::getDocument();
+                $style = 'BODY {color: #000000);}';
+                $doc->addStyleDeclaration($style);
+            }
             $displayclass->DisplayWalks($this->walks);
             //} catch (Exception $ex) {
             //}
