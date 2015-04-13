@@ -80,8 +80,8 @@ class RJsonwalksFeed {
     function noWalks($no) {
         $this->walks->noWalks($no);
     }
-     function walksNoOlder($period) {
-        $this->walks->walksNoOlder($period);
+     function walksInFuture($period) {
+        $this->walks->walksInFuture($period);
     }
 
     function display($displayclass) {

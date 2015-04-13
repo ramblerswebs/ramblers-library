@@ -119,7 +119,7 @@ class RJsonwalksWalks {
         }
     }
 
-    function walksNoOlder($period) {
+    function walksInFuture($period) {
         $today = new DateTime(NULL);
         $interval = new DateInterval($period);
         $today->add($interval);
