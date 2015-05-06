@@ -20,13 +20,13 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
     function DisplayWalks($walks) {
         echo "</p>";
-         $printOn = JRequest::getVar('print') == 1;
-            if ($printOn) {
-                $doc = JFactory::getDocument();
-                $style = 'table { border-collapse: collapse;} table, td, th { border: 1px solid #657291;}td { padding: 5px;}';
-                $doc->addStyleDeclaration($style);
-            }
-        $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
+        $printOn = JRequest::getVar('print') == 1;
+        if ($printOn) {
+            $doc = JFactory::getDocument();
+            $style = 'table { border-collapse: collapse;} table, td, th { border: 1px solid #657291;}td { padding: 5px;}';
+            $doc->addStyleDeclaration($style);
+        }
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
         $items = $walks->allWalks();
         if ($this->tableClass != "") {
             echo "<table class='$this->tableClass'>";
@@ -61,11 +61,11 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     }
 
     private function displayWalkForProgrammeTable($walk, $hasMeet) {
-        $group="";
-        if ($this->addGroupName){
-            $group="<br />". $walk->groupName;
+        $group = "";
+        if ($this->addGroupName) {
+            $group = "<br />" . $walk->groupName;
         }
-        $date = "<div class='" . $this->walkClass . $walk->status . "'><b>" . $walk->walkDate->format('l, jS F') . "</b>".$group."</div>";
+        $date = "<div class='" . $this->walkClass . $walk->status . "'><b>" . $walk->walkDate->format('l, jS F') . "</b>" . $group . "</div>";
 
         if ($walk->hasMeetPlace) {
             $meet = $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
