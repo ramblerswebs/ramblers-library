@@ -26,7 +26,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         JHtml::_('jquery.framework');
         $document->addStyleSheet(JURI::base() . 'ramblers/jsonwalks/std/accordian/style/style4.css');
         $document->addScript(JURI::base() . 'ramblers/jsonwalks/std/accordian/js/ra-accordion.js', "text/javascript");
-        $walks->sort(RJsonwalksWalk::SORT_DATE, NULL, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
         $items = $walks->allWalks();
 
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
