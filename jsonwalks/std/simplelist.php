@@ -14,10 +14,10 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
     private $walksClass = "walks";
     private $walkClass = "walk";
 
-   // const BR = "<br />";
+    // const BR = "<br />";
 
     function DisplayWalks($walks) {
-        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         foreach ($items as $walk) {
@@ -57,7 +57,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
         } else {
             $text.=", Contact " . $walk->contactName . " " . $walk->telephone1;
         }
-        echo "<div class='" . $this->walkClass .$walk->status. "' >" . PHP_EOL;
+        echo "<div class='" . $this->walkClass . $walk->status . "' >" . PHP_EOL;
         echo "<p>" . $text . "</p>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
     }

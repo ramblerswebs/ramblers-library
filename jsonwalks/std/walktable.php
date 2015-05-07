@@ -26,7 +26,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $style = 'table { border-collapse: collapse;} table, td, th { border: 1px solid #657291;}td { padding: 5px;}';
             $doc->addStyleDeclaration($style);
         }
-        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         if ($this->tableClass != "") {
             echo "<table class='$this->tableClass'>";

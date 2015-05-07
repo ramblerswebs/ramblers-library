@@ -16,7 +16,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
 
     function DisplayWalks($walks) {
 
-        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         $no = 0;
         echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;

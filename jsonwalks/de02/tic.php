@@ -10,11 +10,12 @@ defined("_JEXEC") or die("Restricted access");
 
 class RJsonwalksDe02Tic extends RJsonwalksDisplaybase {
 
-    public $groupwebsite="http://www.derbyramblers.org.uk";
+    public $groupwebsite = "http://www.derbyramblers.org.uk";
+
     const BR = "<br />";
 
     function DisplayWalks($walks) {
-        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
 
         foreach ($items as $walk) {
@@ -88,7 +89,7 @@ class RJsonwalksDe02Tic extends RJsonwalksDisplaybase {
         echo RHtml::addTableRow(array($col1, $col2));
 
         $col1 = "<b>Website:</b>";
-        $col2 = $this->groupwebsite."<br />".$walk->detailsPageUrl;
+        $col2 = $this->groupwebsite . "<br />" . $walk->detailsPageUrl;
         echo RHtml::addTableRow(array($col1, $col2));
 
         $col1 = "<b>Email:</b>";

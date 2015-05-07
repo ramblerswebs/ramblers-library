@@ -18,8 +18,8 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
     const BR = "<br />";
 
     function DisplayWalks($walks) {
-        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
-        $items = $walks->allWalks();
+      $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
+         $items = $walks->allWalks();
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         foreach ($items as $walk) {
             $thismonth = $walk->walkDate->format('F');

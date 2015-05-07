@@ -16,7 +16,7 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
 
     function DisplayWalks($walks) {
 
-        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         $walkslist = "";
         foreach ($items as $walk) {
@@ -39,7 +39,7 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
     }
 
     private function displayWalk($walk) {
-        $out="";
+        $out = "";
         if ($walk->status == "Cancelled") {
             $out.= "<div class='" . $this->walkClass . "' >" . PHP_EOL;
 

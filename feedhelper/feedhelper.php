@@ -16,8 +16,10 @@ class RFeedhelper {
     private $cacheFolderPath;
     private $cacheTime;
     private $feedfilename;
+    private $feederror;
 
     function __construct($cacheLocation, $cacheTime) {
+        $this->feederror = "Unable to read feed: ";
         if (isset($cacheLocation)) {
             $this->cacheTime = $cacheTime * 60; // convert to seconds
             $this->cacheFolderPath = JPATH_SITE . DS . $cacheLocation;
@@ -51,8 +53,11 @@ class RFeedhelper {
         //echo '<pre>open '; var_dump($feedfilename); echo '</pre>';
         $feed = self::getFile();
         //echo '<pre>feed'; var_dump($feed); echo '</pre>';
-        $result = JFile::read($feed);
-
+        $result = file_get_contents($feed);
+        if ($result === false) {
+            JError::raiseWarning(104, "Unable to read cached file of feed:". $this->feedfilename);
+            return "";
+        }
         return $result;
     }
 
@@ -60,8 +65,6 @@ class RFeedhelper {
     function getFile() {
 
         jimport('joomla.filesystem.file');
-
-
 
         if (file_exists($this->cacheFolderPath) && is_dir($this->cacheFolderPath)) {
             // all OK
@@ -102,9 +105,11 @@ class RFeedhelper {
                 if (ini_get('allow_url_fopen')) {
                     // file_get_contents
                     $fgcOutput = file_get_contents($url);
-                    //echo '<pre>fgcOutput '; var_dump($fgcOutput ); echo '</pre>';
-
-                    JFile::write($tmpFile, $fgcOutput);
+                    if ($fgcOutput === false) {
+                        JError::raiseWarning(103, $this->feederror . $url);
+                    } else {
+                        JFile::write($tmpFile, $fgcOutput);
+                    }
                 } elseif (in_array('curl', get_loaded_extensions())) {
                     // cURL
                     $ch = curl_init();

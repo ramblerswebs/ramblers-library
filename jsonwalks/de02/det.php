@@ -13,7 +13,7 @@ class RJsonwalksDe02Det extends RJsonwalksDisplaybase {
     const BR = "<br />";
 
     function DisplayWalks($walks) {
-        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_DISTANCE, NULL);
+       $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         foreach ($items as $walk) {
             $this->displayWalk($walk);
