@@ -15,6 +15,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     public $link = true;
     public $addDescription = true;
     public $addGroupName = false;
+    public $addLocation = true;
 
     const BR = "<br />";
 
@@ -63,18 +64,24 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     private function displayWalkForProgrammeTable($walk, $hasMeet) {
         $group = "";
         if ($this->addGroupName) {
-            $group = "<br />" . $walk->groupName;
+            $group =  self::BR . $walk->groupName;
         }
         $date = "<div class='" . $this->walkClass . $walk->status . "'><b>" . $walk->walkDate->format('l, jS F') . "</b>" . $group . "</div>";
 
         if ($walk->hasMeetPlace) {
             $meet = $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
+            if ($this->addLocation) {
+                $meet .= $this->addLocation($walk->meetLocation);
+            }
         } else {
             $meet = ".";
         }
 
         if ($walk->startLocation->exact) {
             $start = $walk->startLocation->timeHHMMshort . " at " . $walk->startLocation->description;
+            if ($this->addLocation) {
+                $start .= $this->addLocation($walk->startLocation);
+            }
         } else {
             $start = ".";
         }
@@ -96,16 +103,16 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $contact = "Contact";
         }
         if ($walk->contactName <> "") {
-            $contact .= "<br />" . $walk->contactName;
+            $contact .=   self::BR. $walk->contactName;
         }
         if ($walk->email <> "") {
-            $contact .= "<br />" . $walk->email;
+            $contact .=  self::BR . $walk->email;
         }
         if ($walk->telephone1 <> "") {
-            $contact .= "<br />" . $walk->telephone1;
+            $contact .=  self::BR . $walk->telephone1;
         }
         if ($walk->telephone2 <> "") {
-            $contact .= "<br />" . $walk->telephone2;
+            $contact .=  self::BR. $walk->telephone2;
         }
         $grade = $walk->nationalGrade . self::BR . $walk->localGrade;
         if ($hasMeet) {
@@ -113,6 +120,11 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         } else {
             echo RHtml::addTableRow(array($date, $start, $title, $dist, $grade, $contact));
         }
+    }
+
+    private function addLocation($location) {
+        $text =  self::BR.$location->gridref . " / " . $location->postcode;
+        return $text;
     }
 
 }
