@@ -24,7 +24,7 @@ class RUsersKunena {
                     ->from($db->quoteName('#__kunena_user_categories', 'a'))
                     ->join('LEFT', $db->quoteName('#__users', 'b') . ' ON (' . $db->quoteName('a.user_id') . ' = ' . $db->quoteName('b.id') . ')')
                     ->join('LEFT', $db->quoteName('#__kunena_categories', 'c') . ' ON (' . $db->quoteName('a.category_id') . ' = ' . $db->quoteName('c.id') . ')')
-                    ->where($db->quoteName('a.subscribed') . " <> " . $db->quote(0))
+                    ->where($db->quoteName('a.subscribed') . " <> " . $db->quote(0). ' AND ' . $db->quoteName('c.published') . " = " . $db->quote(1))
                     ->order('catname ASC');
 
 
