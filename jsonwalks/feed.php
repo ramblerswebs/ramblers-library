@@ -21,39 +21,45 @@ class RJsonwalksFeed {
         $this->rafeedurl = $rafeedurl;
         $this->feederror = "Invalid walks feed (invalid json format): " . $this->rafeedurl;
         $this->feednotfound = "Walks feed error(url not found): " . $this->rafeedurl;
+        $this->walks = new RJsonwalksWalks(NULL);
         $this->readFeed($rafeedurl);
     }
 
     private function readFeed($rafeedurl) {
-        // $feedTimeout = 5;
         $CacheTime = 60; // minutes
         $cacheLocation = $this->CacheLocation();
-
-// Fetch content
         $srfr = new RFeedhelper($cacheLocation, $CacheTime);
-
         $contents = $srfr->getFeed($rafeedurl);
-        if ($contents != "") {
-            $json = json_decode($contents);
-            unset($contents);
-            $this->walks = new RJsonwalksWalks(NULL);
-            $error = 0;
-            if (json_last_error() == JSON_ERROR_NONE) {
-                foreach ($json as $value) {
-                    $ok = $this->checkJsonProperties($value);
-                    $error+=$ok;
+        switch ($contents) {
+            case NULL:
+                echo '<b>Walks feed: Unable to read feed: ' . $rafeedurl . '</b>';
+                break;
+            case "":
+                echo '<b>Walks feed: No walks found</b>';
+                break;
+           case "[]":
+                echo '<b>Walks feed empty: No walks found</b>';
+                break;
+            default:
+                $json = json_decode($contents);
+                unset($contents);
+                $error = 0;
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    foreach ($json as $value) {
+                        $ok = $this->checkJsonProperties($value);
+                        $error+=$ok;
+                    }
+                    if ($error > 0) {
+                        echo '<br/><b>Walks feed: Json file format not supported</b>';
+                    } else {
+                        $this->walks = new RJsonwalksWalks($json);
+                    }
+                    unset($json);
+                    break;
                 }
-                if ($error > 0) {
-                    JError::raiseWarning(102, 'Walks feed: Json file format not supported');
-                } else {
-                    $this->walks = new RJsonwalksWalks($json);
+                else {
+                    echo '<br/><b>Walks feed: feed is not in Json format</b>';
                 }
-                unset($json);
-            } else {
-                JError::raiseWarning(101, $this->feederror);
-            }
-        } else {
-            JError::raiseWarning(100, $this->feednotfound);
         }
     }
 
@@ -80,25 +86,25 @@ class RJsonwalksFeed {
     function noWalks($no) {
         $this->walks->noWalks($no);
     }
-     function walksInFuture($period) {
+
+    function walksInFuture($period) {
         $this->walks->walksInFuture($period);
     }
 
     function display($displayclass) {
         if ($this->walks == null) {
-            echo "Walks array is empty";
-        } else {
-            //try {
-            $printOn = JRequest::getVar('print') == 1;
-            if ($printOn) {
-                $doc = JFactory::getDocument();
-                $style = 'BODY {color: #000000;}';
-                $doc->addStyleDeclaration($style);
-            }
-            $displayclass->DisplayWalks($this->walks);
-            //} catch (Exception $ex) {
-            //}
+            return;
         }
+        if ($this->walks->totalWalks() == 0) {
+            return;
+        }
+        $printOn = JRequest::getVar('print') == 1;
+        if ($printOn) {
+            $doc = JFactory::getDocument();
+            $style = 'BODY {color: #000000;}';
+            $doc->addStyleDeclaration($style);
+        }
+        $displayclass->DisplayWalks($this->walks);
     }
 
     function getWalks() {
@@ -107,9 +113,9 @@ class RJsonwalksFeed {
 
     function clearCache() {
         $cacheFolderPath = $this->CacheLocation();
-        // Check if the cache folder exists
+// Check if the cache folder exists
         if (file_exists($cacheFolderPath) && is_dir($cacheFolderPath)) {
-            // clear files from folder
+// clear files from folder
             $files = glob($cacheFolderPath . '/*'); // get all file names
             echo "<h2>Feed cache has been cleared</h2>";
             foreach ($files as $file) { // iterate files
@@ -118,7 +124,7 @@ class RJsonwalksFeed {
                 }
             }
         }
-        // reread feed
+// reread feed
         $this->readFeed($this->rafeedurl);
     }
 
