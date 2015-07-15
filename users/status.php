@@ -124,16 +124,34 @@ class RUsersStatus {
             $srfr->clearCache($cacheLocation); // clear cache
         }
         $contents = $srfr->getFeed($rafeedurl);
+        $this->membership = NULL;
 
-        if ($contents != "") {
-            $this->membership = json_decode($contents);
-            if (isset($this->membership->error)) {
-                if ($this->membership->error == true) {
-                    $this->membership = NULL;
+        switch ($contents) {
+            case NULL:
+                echo '<b>Membership feed: Unable to read feed: ' . $rafeedurl . '</b>';
+                break;
+            case "":
+                // echo '<b>Membership feed: Member not found</b>';
+                break;
+            case "[]":
+                // echo '<b>Membership feed empty: Member not found</b>';
+                break;
+            default:
+                $json = json_decode($contents);
+                unset($contents);
+                $error = 0;
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    $this->membership = $json;
+                    if (isset($this->membership->error)) {
+                        if ($this->membership->error == true) {
+                            $this->membership = NULL;
+                        }
+                    }
+                    unset($json);
+                    break;
+                } else {
+                    echo '<br/><b>Membership feed: feed is not in Json format</b>';
                 }
-            }
-        } else {
-            $this->membership = NULL;
         }
     }
 
@@ -159,7 +177,7 @@ class RUsersStatus {
                         ->from($db->quoteName('#__kunena_user_categories', 'a'))
                         ->join('LEFT', $db->quoteName('#__users', 'b') . ' ON (' . $db->quoteName('a.user_id') . ' = ' . $db->quoteName('b.id') . ')')
                         ->join('LEFT', $db->quoteName('#__kunena_categories', 'c') . ' ON (' . $db->quoteName('a.category_id') . ' = ' . $db->quoteName('c.id') . ')')
-                        ->where($db->quoteName('a.user_id') . " = " . $db->quote($this->user->id) . ' AND ' . $db->quoteName('a.subscribed') . " <> " . $db->quote(0). ' AND ' . $db->quoteName('c.published') . " = " . $db->quote(1))
+                        ->where($db->quoteName('a.user_id') . " = " . $db->quote($this->user->id) . ' AND ' . $db->quoteName('a.subscribed') . " <> " . $db->quote(0) . ' AND ' . $db->quoteName('c.published') . " = " . $db->quote(1))
                         ->order('catname ASC');
 
 // Reset the query using our newly populated query object.
