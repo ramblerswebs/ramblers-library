@@ -19,7 +19,7 @@ class RUsersStatus {
     private $membershipnoValidFormat = false;
     public $postcodeText = 'HAVE YOU MOVED? - Your Postcode held by this site does not agree with that sent to us by Ramblers London Office';
     public $localRecordsText = "Note: Our local Membership records are updated monthly and hence may be out of date.";
-    public $ramblersmembership="Note: To update your Ramblers membership information log on to the <a href='http://www.ramblers.org.uk/' target='_blank'>www.ramblers.org.uk</a> and access your Profile via My Account";
+    public $ramblersmembership = "Note: To update your Ramblers membership information log on to the <a href='http://www.ramblers.org.uk/' target='_blank'>www.ramblers.org.uk</a> and access your Profile via My Account";
 
     function __construct() {
         $this->user = JFactory::getUser(); //gets user object
@@ -223,11 +223,11 @@ class RUsersStatus {
             }
         }
     }
-    
-     function displayEmailStatus() {
+
+    function displayEmailStatus() {
         if ($this->loggedon()) {
             if ($this->emailOK() == false) {
-                $text ="INFORMATION: You are logged on to this site with a different email address than held by Ramblers Central Office";
+                $text = "INFORMATION: You are logged on to this site with a different email address than held by Ramblers Central Office";
                 $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
                 JFactory::getApplication()->enqueueMessage($text);
             }
@@ -304,6 +304,30 @@ class RUsersStatus {
         Echo "<div class='ra-membershipnote'>" . $this->localRecordsText . "</div>";
 
         return;
+    }
+
+    function lastnameOK() {
+        if ($this->cbInfo == NULL) {
+            return true;
+        }
+        if ($this->membership == NULL) {
+            return true;
+        }
+
+        if (strtoupper($this->cbInfo->lastname) == $this->membership->surname) {
+            return true;
+        }
+        return false;
+    }
+
+    function displayLastnameStatus() {
+        if ($this->loggedon()) {
+            if ($this->lastnameOK() == false) {
+                $text = "INFORMATION: You are logged on to this site with a different LASTNAME than held by Ramblers Central Office";
+                $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
+                JFactory::getApplication()->enqueueMessage($text);
+            }
+        }
     }
 
 }
