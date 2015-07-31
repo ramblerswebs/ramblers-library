@@ -227,7 +227,7 @@ class RUsersStatus {
      function displayEmailStatus() {
         if ($this->loggedon()) {
             if ($this->emailOK() == false) {
-                $text .="INFORMATION: You are logged on to this site with a different email address than held by Ramblers Central Office";
+                $text ="INFORMATION: You are logged on to this site with a different email address than held by Ramblers Central Office";
                 $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
                 JFactory::getApplication()->enqueueMessage($text);
             }
