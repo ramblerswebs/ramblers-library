@@ -17,8 +17,9 @@ class RUsersStatus {
     private $membership;
     private $membershipno = 0;
     private $membershipnoValidFormat = false;
-    public $postcodeText = 'My Profile - HAVE YOU MOVED? - Your Postcode held by this site does not agree with that sent to us by Ramblers London Office';
+    public $postcodeText = 'HAVE YOU MOVED? - Your Postcode held by this site does not agree with that sent to us by Ramblers London Office';
     public $localRecordsText = "Note: Our local Membership records are updated monthly and hence may be out of date.";
+    public $ramblersmembership="Note: To update your Ramblers membership information log on to the <a href='http://www.ramblers.org.uk/' target='_blank'>www.ramblers.org.uk</a> and access your Profile via My Account";
 
     function __construct() {
         $this->user = JFactory::getUser(); //gets user object
@@ -164,40 +165,8 @@ class RUsersStatus {
 
     function displayKunenaSubscriptions() {
         if ($this->loggedon()) {
-
-            if (RSqlUtils::tableExists('#__kunena_categories')) {
-// Get a db connection.
-                $db = JFactory::getDbo();
-
-// Create a new query object.
-                $query = $db->getQuery(true);
-
-                $query->select(array('b.name', 'b.username', 'b.email', 'a.subscribed'))
-                        ->select($db->quoteName('c.name', 'catname'))
-                        ->from($db->quoteName('#__kunena_user_categories', 'a'))
-                        ->join('LEFT', $db->quoteName('#__users', 'b') . ' ON (' . $db->quoteName('a.user_id') . ' = ' . $db->quoteName('b.id') . ')')
-                        ->join('LEFT', $db->quoteName('#__kunena_categories', 'c') . ' ON (' . $db->quoteName('a.category_id') . ' = ' . $db->quoteName('c.id') . ')')
-                        ->where($db->quoteName('a.user_id') . " = " . $db->quote($this->user->id) . ' AND ' . $db->quoteName('a.subscribed') . " <> " . $db->quote(0) . ' AND ' . $db->quoteName('c.published') . " = " . $db->quote(1))
-                        ->order('catname ASC');
-
-// Reset the query using our newly populated query object.
-                $db->setQuery($query);
-
-// Load the results as a list of stdClass objects (see later for more options on retrieving data).
-                $results = $db->loadObjectList();
-//echo '<pre>results '; var_dump($results); echo '</pre>';
-
-                if (count($results) == 0) {
-                    echo "<div class='userkunenalistempty'>You are not subscribed to any Forum categories</div>";
-                } else {
-                    echo "<div  class='userkunenalist'>You are subscribed to the following Forum categories </div>";
-                    echo "<ul class='userkunenacatorgories'>";
-                    foreach ($results as $i => $item) :
-                        echo '<li>' . $item->catname . '</li>';
-                    endforeach;
-                    echo '</ul>';
-                }
-            }
+            $kunena = new RUsersKunena();
+            $kunena->displaySubscriptions($this->user->id);
         }
     }
 
@@ -249,6 +218,17 @@ class RUsersStatus {
                 $text = $this->postcodeText;
                 $text .=" - Postcodes: " . strtoupper($this->cbInfo->cb_postcode) . " and " . strtoupper($this->membership->postcode);
                 $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->localRecordsText;
+                $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
+                JFactory::getApplication()->enqueueMessage($text);
+            }
+        }
+    }
+    
+     function displayEmailStatus() {
+        if ($this->loggedon()) {
+            if ($this->emailOK() == false) {
+                $text .="INFORMATION: You are logged on to this site with a different email address than held by Ramblers Central Office";
+                $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
                 JFactory::getApplication()->enqueueMessage($text);
             }
         }

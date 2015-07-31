@@ -24,7 +24,7 @@ class RUsersKunena {
                     ->from($db->quoteName('#__kunena_user_categories', 'a'))
                     ->join('LEFT', $db->quoteName('#__users', 'b') . ' ON (' . $db->quoteName('a.user_id') . ' = ' . $db->quoteName('b.id') . ')')
                     ->join('LEFT', $db->quoteName('#__kunena_categories', 'c') . ' ON (' . $db->quoteName('a.category_id') . ' = ' . $db->quoteName('c.id') . ')')
-                    ->where($db->quoteName('a.subscribed') . " <> " . $db->quote(0). ' AND ' . $db->quoteName('c.published') . " = " . $db->quote(1))
+                    ->where($db->quoteName('a.subscribed') . " <> " . $db->quote(0) . ' AND ' . $db->quoteName('c.published') . " = " . $db->quote(1))
                     ->order('catname ASC');
 
 
@@ -52,6 +52,42 @@ class RUsersKunena {
             }
             echo '</tbody>';
             echo '</table>';
+        }
+    }
+
+    function displaySubscriptions($id) {
+        if (RSqlUtils::tableExists('#__kunena_categories')) {
+// Get a db connection.
+            $db = JFactory::getDbo();
+
+// Create a new query object.
+            $query = $db->getQuery(true);
+
+            $query->select(array('b.name', 'b.username', 'b.email', 'a.subscribed'))
+                    ->select($db->quoteName('c.name', 'catname'))
+                    ->from($db->quoteName('#__kunena_user_categories', 'a'))
+                    ->join('LEFT', $db->quoteName('#__users', 'b') . ' ON (' . $db->quoteName('a.user_id') . ' = ' . $db->quoteName('b.id') . ')')
+                    ->join('LEFT', $db->quoteName('#__kunena_categories', 'c') . ' ON (' . $db->quoteName('a.category_id') . ' = ' . $db->quoteName('c.id') . ')')
+                    ->where($db->quoteName('a.user_id') . " = " . $db->quote($id) . ' AND ' . $db->quoteName('a.subscribed') . " <> " . $db->quote(0) . ' AND ' . $db->quoteName('c.published') . " = " . $db->quote(1))
+                    ->order('catname ASC');
+
+// Reset the query using our newly populated query object.
+            $db->setQuery($query);
+
+// Load the results as a list of stdClass objects (see later for more options on retrieving data).
+            $results = $db->loadObjectList();
+//echo '<pre>results '; var_dump($results); echo '</pre>';
+
+            if (count($results) == 0) {
+                echo "<div class='userkunenalistempty'>You are not subscribed to any Forum categories</div>";
+            } else {
+                echo "<div  class='userkunenalist'>You are subscribed to the following Forum categories </div>";
+                echo "<ul class='userkunenacatorgories'>";
+                foreach ($results as $i => $item) :
+                    echo '<li>' . $item->catname . '</li>';
+                endforeach;
+                echo '</ul>';
+            }
         }
     }
 
