@@ -178,7 +178,7 @@ class RUsersStatus {
                 $id = $this->user->id;
                 $query = $db->getQuery(true);
 
-                $query->select($db->quoteName(array('cb_membershipno', 'cb_postcode')));
+                $query->select($db->quoteName(array('cb_membershipno', 'cb_postcode','lastname')));
                 $query->from($db->quoteName('#__comprofiler'));
                 $query->where($db->quoteName('id') . ' = ' . $id);
 // Reset the query using our newly populated query object.
@@ -314,7 +314,7 @@ class RUsersStatus {
             return true;
         }
 
-        if (strtoupper($this->cbInfo->lastname) == $this->membership->surname) {
+        if (md5($this->cbInfo->lastname) == $this->membership->surname) {
             return true;
         }
         return false;
