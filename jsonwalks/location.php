@@ -22,8 +22,6 @@ class RJsonwalksLocation {
 
     function __construct($value) {
         $this->description = $value->description;
-        if ($value->time == "PT0S")
-            $value->time = "";
         $this->time = DateTime::createFromFormat('H:i:s', $value->time);
         If ($this->time === false) {
             $this->time = "";
@@ -32,6 +30,10 @@ class RJsonwalksLocation {
         } else {
             $this->timeHHMM = $this->time->format('g:i a');
             $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
+            if ($value->timeHHMMshort == "12am") {
+                $value->timeHHMM = "";
+                $value->timeHHMMshort = "";
+            }
         }
         $this->gridref = $value->gridRef;
         $this->easting = $value->easting;
