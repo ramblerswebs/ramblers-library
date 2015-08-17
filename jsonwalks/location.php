@@ -22,6 +22,8 @@ class RJsonwalksLocation {
 
     function __construct($value) {
         $this->description = $value->description;
+        if ($value->time == "PT0S")
+            $value->time = "";
         $this->time = DateTime::createFromFormat('H:i:s', $value->time);
         If ($this->time === false) {
             $this->time = "";
