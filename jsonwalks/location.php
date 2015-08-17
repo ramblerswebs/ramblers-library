@@ -30,9 +30,10 @@ class RJsonwalksLocation {
         } else {
             $this->timeHHMM = $this->time->format('g:i a');
             $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
-            if ($value->timeHHMMshort == "12 am") {
-                $value->timeHHMM = "";
-                $value->timeHHMMshort = "";
+            if ($this->timeHHMMshort == "12 am") {
+                $this->time = "";
+                $this->timeHHMM = "No time";
+                $this->timeHHMMshort = "No time";
             }
         }
         $this->gridref = $value->gridRef;
