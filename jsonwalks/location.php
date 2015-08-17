@@ -30,7 +30,7 @@ class RJsonwalksLocation {
         } else {
             $this->timeHHMM = $this->time->format('g:i a');
             $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
-            if ($value->timeHHMMshort == "12am") {
+            if ($value->timeHHMMshort == "12 am") {
                 $value->timeHHMM = "";
                 $value->timeHHMMshort = "";
             }
