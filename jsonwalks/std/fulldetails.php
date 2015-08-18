@@ -219,13 +219,16 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
                 $out.=$this->getDirectionsMap("Google directions", $location);
             }
             if ($this->printOn) {
-                $out.= $this->withDiv("time", "<b>Time</b>: " . $location->timeHHMMshort);
+                if ($location->time <> "") {
+                    $out.= $this->withDiv("time", "<b>Time</b>: " . $location->timeHHMMshort);
+                }
             }
             $out.= "</abbr></div>";
             if (!$this->printOn) {
-                $out.= $this->withDiv("time", "<b>Time</b>: " . $location->timeHHMMshort);
+                if ($location->time <> "") {
+                    $out.= $this->withDiv("time", "<b>Time</b>: " . $location->timeHHMMshort);
+                }
             }
-
             $gr = "<abbr title='Click Map to see Ordnance Survey map of location'><b>Grid Ref</b>: " . $location->gridref . " ";
             if (!$this->printOn) {
                 $gr.=$this->getOSMap("OS Map", $location);
