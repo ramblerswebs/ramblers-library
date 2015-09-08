@@ -95,7 +95,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $title .= $walk->description;
         }
 
-        $dist = $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
+        $dist = $walk->distanceMiles . "mile / " . $walk->distanceKm . "km";
         $contact = "";
         if ($walk->isLeader) {
             $contact = "Leader";

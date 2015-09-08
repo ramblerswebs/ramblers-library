@@ -52,7 +52,7 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
             }
             $out.=$text;
             $text = ", " . $walk->title . " ";
-            $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
+            $text .= ", " . $walk->distanceMiles . "mi / " . $walk->distanceKm . "km";
             if ($walk->isLeader) {
                 $text.=", Leader " . $walk->contactName . " " . $walk->telephone1;
             } else {

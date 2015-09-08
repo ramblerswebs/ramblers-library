@@ -80,7 +80,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         $text .= ", " . $walk->title;
         if ($walk->distanceMiles > 0) {
-            $text .= ", " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
+            $text .= ", " . $walk->distanceMiles . "mile / " . $walk->distanceKm . "km";
         }
 
         //  echo "<div class='" . $this->walkClass . $walk->status . "' ><div>" . PHP_EOL;
@@ -143,7 +143,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         }
         echo "<div class='difficulty'><b>Difficulty</b>: ";
         if ($walk->distanceMiles > 0) {
-            echo $this->withDiv("distance", "<b>Distance</b>: " . $walk->distanceMiles . "m / " . $walk->distanceKm . "km");
+            echo $this->withDiv("distance", "<b>Distance</b>: " . $walk->distanceMiles . "mile / " . $walk->distanceKm . "km");
         }
         $link = $walk->nationalGrade;
         if ($this->nationalGradeHelp != "") {

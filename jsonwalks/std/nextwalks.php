@@ -30,7 +30,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             $col2 = "<span itemprop=startDate content=" . $walk->walkDate->format(DateTime::ISO8601) . ">" . $date . "</span>";
             $col2 .= ", <span itemprop=name>" . $walk->title;
             if ($walk->distanceMiles > 0) {
-                $col2 .= ", " . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
+                $col2 .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
             }
             $col2 .= "</span>";
             $tag = $walk->placeTag;

@@ -48,7 +48,7 @@ class RJsonwalksStdMapmarker extends RJsonwalksDisplaybase {
             $marker->html.="<a href=\'" . $walk->detailsPageUrl . "\' target=\'_blank\'>";
             $marker->html.=$walk->walkDate->format('D, jS F');
             $marker->html.="<br/>" . $walk->title;
-            $marker->html.="<br/>" . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
+            $marker->html.="<br/>" . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
             $marker->html .= "</a></b>";
 
             $this->map->addMarker($marker);

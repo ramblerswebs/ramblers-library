@@ -64,7 +64,7 @@ class RJsonwalksDe02Programme extends RJsonwalksDisplaybase {
                 $col2.=", ".$walk->description;
             }
         }
-        $col2 .= ", " . $walk->distanceMiles . "m/" . $walk->distanceKm . "km";
+        $col2 .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
         if ($walk->isLeader) {
             $col2.=", Leader " ;
         } else {

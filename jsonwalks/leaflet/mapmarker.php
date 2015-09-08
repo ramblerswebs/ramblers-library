@@ -42,7 +42,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
 
         $date = $walk->walkDate->format('l, jS F');
         $title = $walk->title;
-        $dist = $walk->distanceMiles . "m / " . $walk->distanceKm . "km";
+        $dist = $walk->distanceMiles . "mile / " . $walk->distanceKm . "km";
         $gr = $walk->startLocation->gridref;
         $long = $walk->startLocation->longitude;
         $lat = $walk->startLocation->latitude;
