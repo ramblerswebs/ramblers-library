@@ -18,7 +18,7 @@ class RJsonwalksFeed {
     private $feednotfound;
 
     function __construct($rafeedurl) {
-        $this->rafeedurl = $rafeedurl;
+        $this->rafeedurl = strtolower($rafeedurl);
         $this->feederror = "Invalid walks feed (invalid json format): " . $this->rafeedurl;
         $this->feednotfound = "Walks feed error(url not found): " . $this->rafeedurl;
         $this->walks = new RJsonwalksWalks(NULL);
@@ -37,7 +37,7 @@ class RJsonwalksFeed {
             case "":
                 echo '<b>Walks feed: No walks found</b>';
                 break;
-           case "[]":
+            case "[]":
                 echo '<b>Walks feed empty: No walks found</b>';
                 break;
             default:
@@ -56,8 +56,7 @@ class RJsonwalksFeed {
                     }
                     unset($json);
                     break;
-                }
-                else {
+                } else {
                     echo '<br/><b>Walks feed: feed is not in Json format</b>';
                 }
         }
@@ -158,5 +157,4 @@ class RJsonwalksFeed {
         }
         return 'cache' . DS . 'ra_feed';
     }
-
 }

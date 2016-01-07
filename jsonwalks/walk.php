@@ -3,7 +3,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-class RJsonwalksWalk {
+class RJsonwalksWalk extends REvent {
 
     const EVENT = 'itemscope itemprop=event itemtype="http://schema.org/Event"';
     const PLACE = 'itemscope itemprop=event itemtype="http://schema.org/Place"';
@@ -209,6 +209,32 @@ class RJsonwalksWalk {
                 $this->finishLocation = new RJsonwalksLocation($value);
             }
         }
+    }
+
+    function EventDate() {
+        return $this->walkDate;
+    }
+
+    function EventText() {
+        $times="";
+        if ($this->hasMeetPlace){
+            $times.=$this->meetLocation->timeHHMMshort;
+                    }
+        if ($this->startLocation->time!=""){
+            if ($times!=""){
+                $times.="/";
+            }
+            $times.=$this->startLocation->timeHHMMshort;
+                    }
+        $text = $times.", " .$this->title;
+        if ($this->distanceMiles > 0) {
+            $text .=", " .  $this->distanceMiles . "mile / " . $this->distanceKm . "km";
+        }
+        return $text;
+    }
+
+    function EventLink() {
+        return $this->detailsPageUrl;
     }
 
     function __destruct() {

@@ -210,9 +210,18 @@ class RJsonwalksWalks {
     public function allWalks() {
         return $this->arrayofwalks;
     }
-    public function totalWalks(){
-        $no= count($this->arrayofwalks);
+
+    public function totalWalks() {
+        $no = count($this->arrayofwalks);
         return $no;
+    }
+
+    function events() {
+        $arrayevents = array();
+        foreach ($this->arrayofwalks as $key => $value) {
+            $arrayevents[] = $value->event();
+        }
+        return $arrayevents;
     }
 
     function __destruct() {
