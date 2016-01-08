@@ -37,7 +37,11 @@ class RCalendar {
         $i = 0;
         do {
             if (substr($lastdate, 0, 7) == substr($enddate, 0, 7)) {
-                $navtype = navigationtype::last;
+                if ($i == 0) {
+                     $navtype = navigationtype::neither;
+                } else {
+                   $navtype = navigationtype::last;
+                }
             }
             $this->showMonth($navtype);
             $i+=1;
@@ -60,10 +64,16 @@ class RCalendar {
     private function showMonth($navtype) {
         $this->currentDay = 0;
         $this->daysInMonth = $this->_daysInMonth($this->currentMonth, $this->currentYear);
-        if ($navtype == navigationtype::first) {
-            $disp = ' style="display: block;"';
-        } else {
-            $disp = ' style="display: none;"';
+        switch ($navtype) {
+            case navigationtype::first:
+                $disp = ' style="display: block;"';
+                break;
+            case navigationtype::neither:
+                $disp = ' style="display: block;"';
+                break;
+            default:
+                $disp = ' style="display: none;"';
+                break;
         }
         $class = "ra_calendar250";
         if ($this->size == 400) {
@@ -128,11 +138,11 @@ class RCalendar {
         $preMonth = $this->currentMonth == 1 ? 12 : intval($this->currentMonth) - 1;
         // $preYear = $this->currentMonth == 1 ? intval($this->currentYear) - 1 : $this->currentYear;
         $out = '<div class="header">';
-        if ($navtype != navigationtype::first) {
+        if ($navtype == navigationtype::last or $navtype == navigationtype::both ) {
             $out.= '<a class="prev" ' . $this->getTogglePair($preMonth, $this->currentMonth) . ' >Prev</a>';
         }
         $out.= '<span class="title">' . date('Y M', strtotime($this->currentYear . '-' . $this->currentMonth . '-1')) . '</span>';
-        if ($navtype != navigationtype::last) {
+        if ($navtype == navigationtype::first or $navtype == navigationtype::both ) {
             $out.= '<a class="next" ' . $this->getTogglePair($nextMonth, $this->currentMonth) . ' >Next</a>';
         }
         $out.= '</div>';
@@ -197,6 +207,7 @@ abstract class navigationtype {
     const first = 0;
     const both = 1;
     const last = 2;
+    const neither = 3;
 
 }
 
