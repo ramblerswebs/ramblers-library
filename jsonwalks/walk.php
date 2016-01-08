@@ -216,25 +216,29 @@ class RJsonwalksWalk extends REvent {
     }
 
     function EventText() {
-        $times="";
-        if ($this->hasMeetPlace){
-            $times.=$this->meetLocation->timeHHMMshort;
-                    }
-        if ($this->startLocation->time!=""){
-            if ($times!=""){
-                $times.="/";
+        $text = "";
+        if ($this->hasMeetPlace) {
+            $text.=$this->meetLocation->timeHHMMshort;
+        }
+        if ($this->startLocation->time != "") {
+            if ($text != "") {
+                $text.="/";
             }
-            $times.=$this->startLocation->timeHHMMshort;
-                    }
-        $text = $times.", " .$this->title;
+            $text.=$this->startLocation->timeHHMMshort;
+        }
+        $text = $text . ", " . $this->title;
         if ($this->distanceMiles > 0) {
-            $text .=", " .  $this->distanceMiles . "mile / " . $this->distanceKm . "km";
+            $text .=", " . $this->distanceMiles . "mile / " . $this->distanceKm . "km";
         }
         return $text;
     }
 
     function EventLink() {
         return $this->detailsPageUrl;
+    }
+
+    function EventStatus() {
+        return "walk" . $this->status;
     }
 
     function __destruct() {

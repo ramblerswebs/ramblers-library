@@ -1,3 +1,17 @@
+/******************************* Common *********************************/
+
+div.event-list-cal-event-single-link hr {
+     margin-top: 2px;
+    margin-bottom: 0px;
+}
+
+div.event-list-cal-event-single-link.eventwalkPublished a {
+   text-decoration: none;
+}
+
+div.event-list-cal-event-single-link.eventwalkCancelled a {
+   text-decoration: line-through;
+}
 /******************************* 400 *********************************/
 /*******************************Calendar Top Navigation*********************************/
 div.ra_calendar400{
@@ -319,9 +333,4 @@ div.ra_calendar250 .event-list-cal-event {
     font-weight: bold;
 }
 
-
-div.event-list-cal-event-single-link hr {
-    margin-top: 2px;
-    margin-bottom: 0px;
-}
 /**- See more at: http://www.startutorial.com/articles/view/how-to-build-a-web-calendar-in-php#sthash.dyuf6D75.dpuf **/

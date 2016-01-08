@@ -14,9 +14,14 @@
 class REventGroup {
 
     private $arrayofevents;
-
+    private $class = "event";
+  
     function __construct() {
         $this->arrayofevents = array();
+    }
+
+    public function setWalkClass($class) {
+        $this->walkClass = $class;
     }
 
     public function addWalks($feed) {
@@ -55,7 +60,7 @@ class REventGroup {
                     $out.= $event->EventDate()->format('l, jS');
                 }
                 $found = true;
-                $out.= $event->EventList();
+                $out.= $event->EventList($this->class);
             }
         }
         if ($found) {

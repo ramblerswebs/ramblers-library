@@ -19,19 +19,22 @@ abstract class REvent {
 
     abstract protected function EventLink(); // as url
 
+    abstract protected function EventStatus(); //  published,cancelled etc
+
     public function EventDateYYYYMMDD() {
         $out = $this->EventDate()->format('Y-m-d');
         return $out;
     }
 
-    public function EventList() {
+    public function EventList($class) {
         $link = $this->EventLink();
-        $text=$this->EventText();
+        $text = $this->EventText();
         $out = "";
-        $out.= "<div class='event-list-cal-event-single-link'>";
-        $out.= "<a href='".$link."' target='_blank'>" . $text . "</a>";
-       // $out.=  $text ;
+        $out.= "<div class='event-list-cal-event-single-link " . $class . $this->EventStatus() . "'>";
+        $out.= "<a href='" . $link . "' target='_blank'>" . $text . "</a>";
+
         $out.= "<hr/></div>";
         return $out;
     }
+
 }

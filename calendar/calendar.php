@@ -8,16 +8,6 @@
 class RCalendar {
 
     private $size;
-
-    /**
-     * Constructor
-     */
-    public function __construct($size) {
-        $this->size = $size;
-    }
-
-    /*     * ******************* PROPERTY ******************* */
-
     private $dayLabels = array("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun");
     private $currentYear = 2000;
     private $currentMonth = 1;
@@ -28,7 +18,9 @@ class RCalendar {
     static $copyno = 0;
     private $baseno = 1;
 
-    /*     * ******************* PUBLIC ********************* */
+    public function __construct($size) {
+        $this->size = $size;
+    }
 
     public function show($events) {
         self::$copyno += 1;
@@ -77,7 +69,7 @@ class RCalendar {
         if ($this->size == 400) {
             $class = "ra_calendar400";
         }
-        $content = '<div class=' . $class . ' id='. $this->getDivId($this->baseno + $this->currentMonth)  . $disp . '>' .
+        $content = '<div class=' . $class . ' id=' . $this->getDivId($this->baseno + $this->currentMonth) . $disp . '>' .
                 '<div class="box">' .
                 $this->_createNavi($navtype) .
                 '</div>' .
@@ -151,11 +143,12 @@ class RCalendar {
 
     private function getTogglePair($one, $two) {
         $idone = $this->getDivId($this->baseno + $one);
-        $idtwo = $this->getDivId( $this->baseno + $two);
-        return ' onclick="ra_toggle_visibilities('. $idone . ',' . $idtwo .')"';
+        $idtwo = $this->getDivId($this->baseno + $two);
+        return ' onclick="ra_toggle_visibilities(' . $idone . ',' . $idtwo . ')"';
     }
-    private function getDivId($no){
-        return "'ra_cal" .sprintf("%04d", $this->baseno + $no)."'";
+
+    private function getDivId($no) {
+        return "'ra_cal" . sprintf("%04d", $this->baseno + $no) . "'";
     }
 
     /**
