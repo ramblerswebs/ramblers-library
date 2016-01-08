@@ -228,7 +228,7 @@ class RJsonwalksWalk extends REvent {
         }
         $text = $text . ", " . $this->title;
         if ($this->distanceMiles > 0) {
-            $text .=", " . $this->distanceMiles . "mi / " . $this->distanceKm . "km";
+            $text .=", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
         }
         return $text;
     }
