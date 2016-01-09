@@ -1,82 +1,69 @@
 /******************************* Common *********************************/
 
 div.event-list-cal-event-single-link hr {
-     margin-top: 2px;
+    margin-top: 2px;
     margin-bottom: 0px;
 }
 
 div.event-list-cal-event-single-link.eventwalkPublished a {
-   text-decoration: none;
+    text-decoration: none;
 }
 
 div.event-list-cal-event-single-link.eventwalkCancelled a {
-   text-decoration: line-through;
+    text-decoration: line-through;
 }
-/******************************* 400 *********************************/
 /*******************************Calendar Top Navigation*********************************/
-div.ra_calendar400{
+div.ra_calendar{
     margin:0px auto;
     padding:0px;
-    width: 400px;
+    margin-bottom:5px;
 }
-
-div.ra_calendar400 div.box{
+div.ra_calendar div.box{
     position:relative;
     top:0px;
     left:0px;
     width:100%;
-    height:40px;
     background-color: #787878 ;  
     border-radius: 5px 5px 0px 0px;    
 }
-
-div.ra_calendar400 div.header{
-    line-height:40px;  
+div.ra_calendar div.header{
     vertical-align:middle;
     position:absolute;
     left:11px;
-    top:0px;
-    width:372px;
-    height:40px;   
+    top:0px;   
     text-align:center;
 }
-
-div.ra_calendar400 div.header a.prev,div.ra_calendar400 div.header a.next{ 
+div.ra_calendar div.header a.prev,div.ra_calendar div.header a.next{ 
     position:absolute;
     top:0px;   
-    height: 17px;
     display:block;
     cursor:pointer;
     text-decoration:none;
     color:#FFF;
 }
-
-div.ra_calendar400 div.header span.title{
+div.ra_calendar div.header span.title{
     color:#FFF;
-    font-size:18px;
     text-shadow: none;
     font-weight: bold;
     border: 0px;
-    box-shadow: 0px;
+    box-shadow: none;
+    margin: 0px;
 }
-
-div.ra_calendar400 div.header a.prev{
+div.ra_calendar div.header a.prev{
     left:0px;
 }
 
-div.ra_calendar400 div.header a.next{
+div.ra_calendar div.header a.next{
     right:0px;
 }
-
 /*******************************Calendar Content Cells*********************************/
-div.ra_calendar400 div.box-content{
+div.ra_calendar div.box-content{
     border:1px solid #787878 ;
     border-top:none;
     border-radius: 0px 0px 5px 5px ;
     background-color: #eeeeee;
 }
-
-div.ra_calendar400 ul.label{
+div.ra_calendar ul.label{
     float:left;
     margin: 0px;
     padding: 0px;
@@ -84,26 +71,20 @@ div.ra_calendar400 ul.label{
     margin-left: 5px;
     background-color: #eeeeee;
 }
-
-div.ra_calendar400 ul.label li,div.ra_calendar400 ul.label li a{
+div.ra_calendar ul.label li,div.ra_calendar ul.label li a{
     margin:0px;
     padding:0px;
     margin-right:5px;  
     float:left;
     list-style-type:none;
     text-shadow: none;
-    width:51px;
-    height:40px;
-    line-height:40px;
     vertical-align:middle;
     text-align:center;
     color:#000;
-    font-size: 15px;
     background-color: #aaaaaa;
     border-radius: 5px;
 }
-
-div.ra_calendar400 ul.dates{
+div.ra_calendar ul.dates{
     float:left;
     margin: 0px;
     padding: 0px;
@@ -111,35 +92,28 @@ div.ra_calendar400 ul.dates{
     margin-bottom: 5px;
 }
 
-/** overall width = width+padding-right**/
-div.ra_calendar400 ul.dates li{
+div.ra_calendar ul.dates li{
     margin:0px;
     padding:0px;
-    margin-right:5px;
-    margin-top: 5px;
-    line-height:50px;
+    margin-right:4px;
+    margin-top: 4px;
     vertical-align:middle;
     float:left;
     list-style-type:none;
-    width:51px;
-    height:50px;
-    font-size:25px;
     background-color: #DDD;
     border-radius: 5px;
     color:#999999;
     text-align:center; 
 }
-
 :focus{
     outline:none;
 }
 
 div.clear{
     clear:both;
-}     
-
+}
 /* mini calendar */
-div.ra_calendar400 div.event-list-cal-hover {
+div.ra_calendar div.event-list-cal-hover {
     position: relative;
     top: -40px;
     width: 300px;
@@ -154,185 +128,132 @@ div.ra_calendar400 div.event-list-cal-hover {
     box-shadow: 2px 2px 5px #aaa;
     display: none;
 }
-
-div.ra_calendar400 li div.event-list-cal-hover {
+div.ra_calendar li div.event-list-cal-hover {
     left: -200px;
     text-align: right;
 }
 
-div.ra_calendar400 .event-list-cal-event-single-link {
-    padding: 0.3em 0;
-}
-
-div.ra_calendar400 li:hover div.event-list-cal-hover {
-    display: block !important;
-    z-index: 9999;
-}
-
-div.ra_calendar400 .event-list-cal-event {
-    color: #000;
-    font-weight: bold;
-}
-
-
-/******************************* 250 *********************************/
-
-/*******************************Calendar Top Navigation*********************************/
-div.ra_calendar250{
-    margin:0px auto;
-    padding:0px;
-    width: 250px;
-}
-
-div.ra_calendar250 div.box{
-    position:relative;
-    top:0px;
-    left:0px;
-    width:100%;
-    height:20px;
-    background-color: #787878 ;  
-    border-radius: 5px 5px 0px 0px;    
-}
-
-div.ra_calendar250 div.header{
-    line-height:20px;  
-    vertical-align:middle;
-    position:absolute;
-    left:11px;
-    top:0px;
-    width:220px;
-    height:20px;   
-    text-align:center;
-}
-
-div.ra_calendar250 div.header a.prev,div.ra_calendar250 div.header a.next{ 
-    position:absolute;
-    top:0px;   
-    height: 9px;
-    display:block;
-    cursor:pointer;
-    text-decoration:none;
-    color:#FFF;
-}
-
-div.ra_calendar250 div.header span.title{
-    color:#FFF;
-    font-size:13px;
-    line-height: 13px;
-    text-shadow: none;
-    font-weight: bold;
-    border: 0px;
-    box-shadow: none;
-}
-
-div.ra_calendar250 div.header a.prev{
-    left:0px;
-}
-
-div.ra_calendar250 div.header a.next{
-    right:0px;
-}
-
-/*******************************Calendar Content Cells*********************************/
-div.ra_calendar250 div.box-content{
-    border:1px solid #787878 ;
-    border-top:none;
-    border-radius: 0px 0px 5px 5px ;
-    background-color: #eeeeee;
-}
-
-div.ra_calendar250 ul.label{
-    float:left;
-    margin: 0px;
-    padding: 0px;
-    margin-top:5px;
-    margin-left: 8px;
-    background-color: #eeeeee;
-}
-
-div.ra_calendar250 ul.label li,div.ra_calendar250 ul.label li a{
-    margin:0px;
-    padding:0px;
-    margin-right:4px;  
-    float:left;
-    list-style-type:none;
-    text-shadow: none;
-    width:30px;
-    height:30px;
-    line-height:30px;
-    vertical-align:middle;
-    text-align:center;
-    color:#000;
-    font-size: 13px;
-    background-color: #aaaaaa;
-    border-radius: 5px;
-}
-
-div.ra_calendar250 ul.dates{
-    float:left;
-    margin: 0px;
-    padding: 0px;
-    margin-left: 5px;
-    margin-bottom: 5px;
-}
-
-/** overall width = width+padding-right**/
-div.ra_calendar250 ul.dates li{
-    margin:0px;
-    padding:0px;
-    margin-right:4px;
-    margin-top: 4px;
-    line-height:30px;
-    vertical-align:middle;
-    float:left;
-    list-style-type:none;
-    width:30px;
-    height:30px;
-    font-size:13px;
-    background-color: #DDD;
-    border-radius: 5px;
-    color:#999999;
-    text-align:center; 
-}
-
-div.ra_calendar250 ul.dates li.start{
-     margin-left: 3px;
-}
-
-/* mini calendar */
-div.ra_calendar250 div.event-list-cal-hover {
-    position: relative;
-    top: -20px;
-    width: 250px;
-    padding: 5px 10px;
-    font-weight: bold;
-    line-height: normal;
-    text-align: left;
-    font-size: 100%;
-    background: #FFFFFF;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 2px 2px 5px #aaa;
-    display: none;
-}
-
-div.ra_calendar250 li div.event-list-cal-hover {
-    left: -200px;
-    text-align: right;
-}
-
-div.ra_calendar250 .event-list-cal-event-single-link {
+div.ra_calendar .event-list-cal-event-single-link {
     padding: 0.5em 0;
 }
 
-div.ra_calendar250 li:hover div.event-list-cal-hover {
+div.ra_calendar li:hover div.event-list-cal-hover {
     display: block !important;
     z-index: 9999;
 }
 
-div.ra_calendar250 .event-list-cal-event {
+div.ra_calendar .event-list-cal-event {
     color: #000;
     font-weight: bold;
 }
+/******************************* 250 *********************************/
+/*******************************Calendar Top Navigation***********************/
+div.ra_calsize250{
+    width: 250px;
+}
+
+div.ra_calsize250 div.box{
+    height:20px;
+}
+
+div.ra_calsize250 div.header{
+    line-height:20px;  
+    width:220px;
+    height:20px;   
+
+}
+
+div.ra_calsize250 div.header a.prev,div.ra_calsize250 div.header a.next{ 
+    height: 9px;
+}
+
+div.ra_calsize250 div.header span.title{
+
+    font-size:13px;
+    line-height: 13px;
+
+}
+
+/*******************************Calendar Content Cells*********************************/
+
+div.ra_calsize250 ul.dates li.start{
+    margin-left: 3px;
+}
+div.ra_calsize250 ul.label li,div.ra_calsize250 ul.label li a{
+    width:30px;
+    height:30px;
+    line-height:30px;
+    font-size: 13px;
+    margin-left: 3px;
+    margin-right: 1px;
+}
+
+/** overall width = width+padding-right**/
+div.ra_calsize250 ul.dates li{
+    line-height:30px;
+    width:30px;
+    height:30px;
+    font-size:13px;
+}
+
+
+/* mini calendar */
+div.ra_calsize250 div.event-list-cal-hover {
+    width: 250px;
+    font-size: 100%;
+}
+
+div.ra_calsize250 .event-list-cal-event-single-link {
+    padding: 0.5em 0;
+}
+
+
+/******************************* 400 *********************************/
+div.ra_calsize400{
+    width: 400px;
+}
+div.ra_calsize400 div.box{
+    height:40px;    
+}
+
+div.ra_calsize400 div.header{
+    line-height:40px;  
+    width:372px;
+    height:40px;   
+}
+
+div.ra_calsize400 div.header a.prev,div.ra_calsize400 div.header a.next{ 
+    height: 17px;
+}
+
+div.ra_calsize400 div.header span.title{
+    font-size:18px;
+    line-height: 18px;
+}
+
+/*******************************Calendar Content Cells*********************************/
+
+div.ra_calsize400 ul.label li,div.ra_calsize400 ul.label li a{
+    width:51px;
+    height:40px;
+    line-height:40px;
+    font-size: 15px;
+}
+
+
+/** overall width = width+padding-right**/
+div.ra_calsize400 ul.dates li{
+    line-height:50px;
+    width:51px;
+    height:50px;
+    font-size:25px;
+    margin-right: 5px;
+}
+
+div.ra_calsize400 .event-list-cal-event-single-link {
+    padding: 0.3em 0;
+}
+
+
 
 /**- See more at: http://www.startutorial.com/articles/view/how-to-build-a-web-calendar-in-php#sthash.dyuf6D75.dpuf **/

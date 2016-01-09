@@ -17,9 +17,11 @@ class RCalendar {
     private $events;
     static $copyno = 0;
     private $baseno = 1;
+    private $displayAll = false;
 
-    public function __construct($size) {
+    public function __construct($size, $mdisplayAll) {
         $this->size = $size;
+        $this->displayAll = $mdisplayAll;
     }
 
     public function show($events) {
@@ -38,10 +40,13 @@ class RCalendar {
         do {
             if (substr($lastdate, 0, 7) == substr($enddate, 0, 7)) {
                 if ($i == 0) {
-                     $navtype = navigationtype::neither;
+                    $navtype = navigationtype::neither;
                 } else {
-                   $navtype = navigationtype::last;
+                    $navtype = navigationtype::last;
                 }
+            }
+            if ($this->displayAll) {
+                $navtype = navigationtype::none;
             }
             $this->showMonth($navtype);
             $i+=1;
@@ -71,15 +76,18 @@ class RCalendar {
             case navigationtype::neither:
                 $disp = ' style="display: block;"';
                 break;
+            case navigationtype::none:
+                $disp = ' style="display: block;"';
+                break;
             default:
                 $disp = ' style="display: none;"';
                 break;
         }
-        $class = "ra_calendar250";
+        $class = "ra_calendar ra_calsize250";
         if ($this->size == 400) {
-            $class = "ra_calendar400";
+            $class = "ra_calendar ra_calsize400";
         }
-        $content = '<div class=' . $class . ' id=' . $this->getDivId($this->baseno + $this->currentMonth) . $disp . '>' .
+        $content = '<div class="' . $class . '" id=' . $this->getDivId($this->baseno + $this->currentMonth) . $disp . '>' .
                 '<div class="box">' .
                 $this->_createNavi($navtype) .
                 '</div>' .
@@ -138,11 +146,11 @@ class RCalendar {
         $preMonth = $this->currentMonth == 1 ? 12 : intval($this->currentMonth) - 1;
         // $preYear = $this->currentMonth == 1 ? intval($this->currentYear) - 1 : $this->currentYear;
         $out = '<div class="header">';
-        if ($navtype == navigationtype::last or $navtype == navigationtype::both ) {
+        if ($navtype == navigationtype::last or $navtype == navigationtype::both) {
             $out.= '<a class="prev" ' . $this->getTogglePair($preMonth, $this->currentMonth) . ' >Prev</a>';
         }
         $out.= '<span class="title">' . date('Y M', strtotime($this->currentYear . '-' . $this->currentMonth . '-1')) . '</span>';
-        if ($navtype == navigationtype::first or $navtype == navigationtype::both ) {
+        if ($navtype == navigationtype::first or $navtype == navigationtype::both) {
             $out.= '<a class="next" ' . $this->getTogglePair($nextMonth, $this->currentMonth) . ' >Next</a>';
         }
         $out.= '</div>';
@@ -208,6 +216,7 @@ abstract class navigationtype {
     const both = 1;
     const last = 2;
     const neither = 3;
+    const none = 4;
 
 }
 

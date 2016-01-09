@@ -15,7 +15,7 @@ class REventGroup {
 
     private $arrayofevents;
     private $class = "event";
-  
+
     function __construct() {
         $this->arrayofevents = array();
     }
@@ -44,7 +44,6 @@ class REventGroup {
     }
 
     public function addEvent($text, $currentDate) {
-
         $found = false;
         $out = "";
         foreach ($this->arrayofevents as $event) {
