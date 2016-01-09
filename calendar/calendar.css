@@ -73,6 +73,7 @@ div.ra_calendar400 div.box-content{
     border:1px solid #787878 ;
     border-top:none;
     border-radius: 0px 0px 5px 5px ;
+    background-color: #eeeeee;
 }
 
 div.ra_calendar400 ul.label{
@@ -237,6 +238,7 @@ div.ra_calendar250 div.box-content{
     border:1px solid #787878 ;
     border-top:none;
     border-radius: 0px 0px 5px 5px ;
+    background-color: #eeeeee;
 }
 
 div.ra_calendar250 ul.label{
