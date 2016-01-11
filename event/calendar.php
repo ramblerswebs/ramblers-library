@@ -14,13 +14,7 @@ class REventCalendar extends RJsonwalksDisplaybase {
     private $mDisplayAll = false;
 
     function __construct($size) {
-        $this->size = 250;
-        If ($size == 250) {
-            $this->size = 250;
-        }
-        If ($size == 400) {
-            $this->size = 400;
-        }
+        $this->size = $size;
     }
 
     function DisplayWalks($walks) {
