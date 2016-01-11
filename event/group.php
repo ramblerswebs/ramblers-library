@@ -15,6 +15,7 @@ class REventGroup {
 
     private $arrayofevents;
     private $class = "event";
+    static $id=0;
 
     function __construct() {
         $this->arrayofevents = array();
@@ -53,9 +54,11 @@ class REventGroup {
                     // $out.= "<a class='tooltip' href='#'>";
                     // $out.= $text;
                     //  $out.= "<span class='classic'>";
+                    self::$id+=1;
+                    $ident="ev".strval(self::$id);
                     $out.="<span class='event-list-cal-event'>";
-                    $out.= "<div class='event-list-cal-day'>" . $text . "</div>";
-                    $out.="<div class='event-list-cal-hover'>";
+                    $out.= "<div class='event-list-cal-day'><a onclick=\"ra_toggle_visibility('".$ident."')\">". $text . "</a></div>";
+                    $out.="<div class='event-list-cal-hover' id='".$ident."'>";
                     $out.= $event->EventDate()->format('l, jS');
                 }
                 $found = true;
