@@ -85,7 +85,7 @@ class RCalendar {
         }
         $class = "ra_calendar ra_calsize250";
         if ($this->size == 0) {
-            $class = "ra_calendar";
+            $class = "ra_calendar  ra_calsize0";
         }
           if ($this->size == 200) {
             $class = "ra_calendar ra_calsize200";
