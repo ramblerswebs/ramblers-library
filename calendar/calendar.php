@@ -125,6 +125,11 @@ class RCalendar {
      * create the li element for ul
      */
     private function _showDay($cellNumber) {
+        $today = date("Y-m-d");
+        $todayclass="";
+        if ($this->currentDate==$today){
+            $todayclass=" today";
+        }
         if ($this->currentDay == 0) {
             $firstDayOfTheWeek = date('N', strtotime($this->currentYear . '-' . $this->currentMonth . '-01'));
             if (intval($cellNumber) == intval($firstDayOfTheWeek)) {
@@ -142,8 +147,11 @@ class RCalendar {
         if ($cellContent != null) {
             $cellContent = $this->addEvents($cellContent, $this->currentDate);
         }
-        return '<li id="li-' . $this->currentDate . '" class="' . ($cellNumber % 7 == 1 ? ' start ' : ($cellNumber % 7 == 0 ? ' end ' : ' ')) .
+        return '<li class="' .$todayclass. ($cellNumber % 7 == 1 ? ' start ' : ($cellNumber % 7 == 0 ? ' end ' : ' ')) .
                 ($cellContent == null ? 'mask' : '') . '">' . $cellContent . '</li>';
+ //       return '<li id="li-' . $this->currentDate . '" class="' . ($cellNumber % 7 == 1 ? ' start ' : ($cellNumber % 7 == 0 ? ' end ' : ' ')) .
+  
+        //($cellContent == null ? 'mask' : '') . '">' . $cellContent . '</li>';
     }
 
     /**

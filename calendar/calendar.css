@@ -113,6 +113,12 @@ div.ra_calendar ul.dates li{
     color:#999999;
     text-align:center; 
 }
+
+div.ra_calendar ul.dates li.today{
+    background-color: #aaaaaa;
+    color: #ffffff;
+}
+
 :focus{
     outline:none;
 }
