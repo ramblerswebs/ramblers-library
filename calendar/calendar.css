@@ -71,6 +71,7 @@ div.ra_calendar div.box-content{
     border-top:none;
     border-radius: 0px 0px 5px 5px ;
     background-color: #eeeeee;
+
 }
 div.ra_calendar ul.label{
     float:left;
@@ -92,6 +93,8 @@ div.ra_calendar ul.label li,div.ra_calendar ul.label li a{
     color:#000;
     background-color: #aaaaaa;
     border-radius: 5px;
+            box-shadow: none;
+    border: 0px;
 }
 div.ra_calendar ul.dates{
     float:left;
@@ -464,7 +467,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
 }
 @media only screen and (min-width: 768px) and (max-width: 959px) {
     /* 159 150 */
-     /*******************************Calendar Top Navigation***********************/
+    /*******************************Calendar Top Navigation***********************/
 
     div.ra_calsize0{
         width: 158px;
