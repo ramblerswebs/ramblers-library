@@ -87,7 +87,7 @@ class RCalendar {
         if ($this->size == 0) {
             $class = "ra_calendar  ra_calsize0";
         }
-          if ($this->size == 200) {
+        if ($this->size == 200) {
             $class = "ra_calendar ra_calsize200";
         }
         if ($this->size == 250) {
@@ -125,11 +125,7 @@ class RCalendar {
      * create the li element for ul
      */
     private function _showDay($cellNumber) {
-        $today = date("Y-m-d");
-        $todayclass="";
-        if ($this->currentDate==$today){
-            $todayclass=" today";
-        }
+        $todayclass = "";
         if ($this->currentDay == 0) {
             $firstDayOfTheWeek = date('N', strtotime($this->currentYear . '-' . $this->currentMonth . '-01'));
             if (intval($cellNumber) == intval($firstDayOfTheWeek)) {
@@ -145,12 +141,15 @@ class RCalendar {
             $cellContent = null;
         }
         if ($cellContent != null) {
+            $today = date("Y-m-d");
+            if ($this->currentDate == $today) {
+                $todayclass = " today";
+            }
             $cellContent = $this->addEvents($cellContent, $this->currentDate);
         }
-        return '<li class="' .$todayclass. ($cellNumber % 7 == 1 ? ' start ' : ($cellNumber % 7 == 0 ? ' end ' : ' ')) .
+        return '<li class="' . $todayclass . ($cellNumber % 7 == 1 ? ' start ' : ($cellNumber % 7 == 0 ? ' end ' : ' ')) .
                 ($cellContent == null ? 'mask' : '') . '">' . $cellContent . '</li>';
- //       return '<li id="li-' . $this->currentDate . '" class="' . ($cellNumber % 7 == 1 ? ' start ' : ($cellNumber % 7 == 0 ? ' end ' : ' ')) .
-  
+        //       return '<li id="li-' . $this->currentDate . '" class="' . ($cellNumber % 7 == 1 ? ' start ' : ($cellNumber % 7 == 0 ? ' end ' : ' ')) .
         //($cellContent == null ? 'mask' : '') . '">' . $cellContent . '</li>';
     }
 

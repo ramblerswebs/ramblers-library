@@ -157,4 +157,5 @@ class RJsonwalksFeed {
         }
         return 'cache' . DS . 'ra_feed';
     }
+
 }
