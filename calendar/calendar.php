@@ -18,10 +18,15 @@ class RCalendar {
     static $copyno = 0;
     private $baseno = 1;
     private $displayAll = false;
+    private $monthFormat = "Y M";
 
     public function __construct($size, $mdisplayAll) {
         $this->size = $size;
         $this->displayAll = $mdisplayAll;
+    }
+
+    public function setMonthFormat($format) {
+        $this->monthFormat = $format;
     }
 
     public function show($events) {
@@ -165,7 +170,7 @@ class RCalendar {
         if ($navtype == navigationtype::last or $navtype == navigationtype::both) {
             $out.= '<a class="prev" ' . $this->getTogglePair($preMonth, $this->currentMonth) . ' >Prev</a>';
         }
-        $out.= '<span class="title">' . date('Y M', strtotime($this->currentYear . '-' . $this->currentMonth . '-1')) . '</span>';
+        $out.= '<span class="title">' . date($this->monthFormat, strtotime($this->currentYear . '-' . $this->currentMonth . '-1')) . '</span>';
         if ($navtype == navigationtype::first or $navtype == navigationtype::both) {
             $out.= '<a class="next" ' . $this->getTogglePair($nextMonth, $this->currentMonth) . ' >Next</a>';
         }
