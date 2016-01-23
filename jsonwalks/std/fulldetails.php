@@ -19,8 +19,10 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $popupLink = true; // not used now!
     public $displayGroup = false;  // should the Group name be displayed
     private $printOn = false;
+    private static $accordianId = 100;
 
     function DisplayWalks($walks) {
+        self::$accordianId +=1;
         $document = JFactory::getDocument();
         $this->printOn = JRequest::getVar('print') == 1;
         JHtml::_('jquery.framework');
@@ -28,42 +30,42 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         $document->addScript(JURI::base() . 'ramblers/jsonwalks/std/accordian/js/ra-accordion.js', "text/javascript");
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
-
-        echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
-        echo ' <script type="text/javascript">' . PHP_EOL;
+        $id = "accordion_ra1_id" . self::$accordianId;
+        echo "<div class='" . $this->walksClass . "' >" ;
+        echo '<script type="text/javascript">' . PHP_EOL;
         echo 'jQuery(function($) {' . PHP_EOL;
-        echo "$('#accordion_ra1_id007').raAccordion({" . PHP_EOL;
+        echo "$('#".$id."').raAccordion({" . PHP_EOL;
         echo 'hidefirst: 1 });' . PHP_EOL;
         echo '});' . PHP_EOL;
         echo '</script>' . PHP_EOL;
-        echo '<div id="accordion_ra1_id007" class="ra-accordion ra-accordion-style4 ">';
+        echo '<div id="'.$id.'" class="ra-accordion ra-accordion-style4 ">';
         foreach ($items as $walk) {
-            echo '<div class="ra-accordion-item ' . $this->walkClass . $walk->status . '">';
+            echo '<div class="ra-accordion-item ' . $this->walkClass . $walk->status . '">'. PHP_EOL;
             if ($this->printOn) {
-                echo '<div class="printfulldetails">';
+                echo '<div class="printfulldetails">'. PHP_EOL;
             } else {
-                echo '<div class="toggler">';
+                echo '<div class="toggler">'. PHP_EOL;
             }
-            echo '<span><span>';
+            echo '<span><span>'. PHP_EOL;
 
             $this->displayWalkSummary($walk);
-            echo '</span></span>';
-            echo '</div>';
-            echo '<div class="clr"></div>';
+            echo '</span></span>'. PHP_EOL;
+            echo '</div>'. PHP_EOL;
+            echo '<div class="clr"></div>'. PHP_EOL;
             if ($this->printOn) {
-                echo '<div class="ra-fulldetails-container style="display: block;">';
-                echo '<div class="ra-fulldetails-inner">';
+                echo '<div class="ra-fulldetails-container style="display: block;">'. PHP_EOL;
+                echo '<div class="ra-fulldetails-inner">'. PHP_EOL;
             } else {
-                echo '<div class="ra-accordion-container" style="display: none;">';
-                echo '<div class="ra-accordion-inner">';
+                echo '<div class="ra-accordion-container" style="display: none;">'. PHP_EOL;
+                echo '<div class="ra-accordion-inner">'. PHP_EOL;
             }
             $this->displayWalkDetails($walk);
-            echo '</div></div>';
+            echo '</div></div>'. PHP_EOL;
 
             echo "</div>" . PHP_EOL;
         }
-        echo "</div>" . PHP_EOL;
-        echo '</div></div>';
+       // echo "</div>" . PHP_EOL;
+        echo '</div></div>'. PHP_EOL;
     }
 
     function setWalksClass($class) {
@@ -83,30 +85,32 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $text .= ", " . $walk->distanceMiles . "mile / " . $walk->distanceKm . "km";
         }
 
-        //  echo "<div class='" . $this->walkClass . $walk->status . "' ><div>" . PHP_EOL;
         echo $text . PHP_EOL;
-        //  echo "</div></div>" . PHP_EOL;
     }
 
     function displayWalkDetails($walk) {
 
-        echo "<div class='walkstdfulldetails'>";
+        echo "<div class='walkstdfulldetails'>". PHP_EOL;
         if ($this->displayGroup) {
-            echo "<div class='group'><b>Group</b>: " . $walk->groupName . "</div>";
+            echo "<div class='group'><b>Group</b>: " . $walk->groupName . "</div>". PHP_EOL;
         }
-        echo "<div class='basics'>";
+        if ($walk->isCancelled()) {
+            echo "<div class='reason'>WALK CANCELLED: " . $walk->cancellationReason . "</div>". PHP_EOL;
+        }
+        echo "<div class='basics'>". PHP_EOL;
         if ($this->printOn) {
             
         } else {
             echo "<div class='description'><b>" . $walk->walkDate->format('l, jS F Y') . PHP_EOL;
-            echo "<br/>" . $walk->title . "</b></div>";
+            echo "<br/>" . $walk->title . "</b></div>". PHP_EOL;
         }
 
+
         if ($walk->description != "") {
-            echo "<div class='description'> " . $walk->descriptionHtml . "</div>";
+            echo "<div class='description'> " . $walk->descriptionHtml . "</div>". PHP_EOL;
         }
         if ($walk->additionalNotes != "") {
-            echo "<div class='additionalnotes'><b>Additional Notes</b>: " . $walk->additionalNotes . "</div>";
+            echo "<div class='additionalnotes'><b>Additional Notes</b>: " . $walk->additionalNotes . "</div>". PHP_EOL;
         }
         if ($walk->isLinear) {
             echo "<b>Linear Walk</b>";
@@ -118,7 +122,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "<div class='meetplace'>";
             $out = $this->addLocationInfo("Meeting", $walk->meetLocation);
             echo $out;
-            echo "</div>";
+            echo "</div>". PHP_EOL;
         } else {
             //echo "<div class='nomeetplace'><b>No meeting place specified</b>";
             //echo "</div>";
@@ -130,7 +134,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         }
         echo $this->addLocationInfo("Start", $walk->startLocation);
 
-        echo "</div>";
+        echo "</div>". PHP_EOL;
 
         if ($walk->isLinear) {
             echo "<div class='finishplace'>";
@@ -139,7 +143,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             } else {
                 echo "<span class='walkerror' >ERROR: No finish location supplied</span>";
             }
-            echo "</div>";
+            echo "</div>". PHP_EOL;
         }
         echo "<div class='difficulty'><b>Difficulty</b>: ";
         if ($walk->distanceMiles > 0) {
@@ -164,7 +168,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         if ($walk->ascentFeet != null) {
             echo $this->withDiv("ascent", "<b>Ascent</b>: " . $walk->ascentFeet . " ft " . $walk->ascentMetres . " ms");
         }
-        echo "</div>";
+        echo "</div>". PHP_EOL;
         if ($walk->isLeader == false) {
             echo "<div class='walkcontact'><b>Contact</b>: ";
         } else {
@@ -190,24 +194,24 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         }
         if ($walk->isLeader == false) {
             if ($walk->walkLeader != "") {
-                echo "<div class='walkleader'><b>Walk Leader</b>: " . $walk->walkLeader . "</div>";
+                echo "<div class='walkleader'><b>Walk Leader</b>: " . $walk->walkLeader . "</div>". PHP_EOL;
             }
         }
-        echo "</div>";
+        echo "</div>". PHP_EOL;
         $this->addItemInfo("strands", "", $walk->strands);
         $this->addItemInfo("festivals", "Festivals", $walk->festivals);
-        echo "<div class='walkdates'>";
+        echo "<div class='walkdates'>". PHP_EOL;
         $class = "";
         if ($this->printOn) {
             $class = "printon";
         }
         if ($this->displayGroup == false) {
-            echo "<div class='groupfootnote " . $class . "'>Group: " . $walk->groupName . "</div>";
+            echo "<div class='groupfootnote " . $class . "'>Group: " . $walk->groupName . "</div>". PHP_EOL;
         }
-        echo "<div class='updated " . $class . "'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>";
-        echo "</div>";
+        echo "<div class='updated " . $class . "'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>". PHP_EOL;
+        echo "</div>". PHP_EOL;
 
-        echo "</div>";
+        echo "</div>". PHP_EOL;
     }
 
     private function addLocationInfo($title, $location) {

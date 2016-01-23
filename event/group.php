@@ -56,9 +56,9 @@ class REventGroup {
                     //  $out.= "<span class='classic'>";
                     self::$id+=1;
                     $ident="ev".strval(self::$id);
-                    $out.="<span class='event-list-cal-event'>";
-                    $out.= "<div class='event-list-cal-day'><a onclick=\"ra_toggle_visibility('".$ident."')\">". $text . "</a></div>";
-                    $out.="<div class='event-list-cal-hover' id='".$ident."'>";
+                    $out.="<div class='event-list-cal-event'>". PHP_EOL;
+                    $out.= "<div class='event-list-cal-day'><a onclick=\"ra_toggle_visibility('".$ident."')\">". $text . "</a></div>". PHP_EOL;
+                    $out.="<div class='event-list-cal-hover' id='".$ident."'>". PHP_EOL;
                     $out.= $event->EventDate()->format('l, jS');
                 }
                 $found = true;
@@ -67,7 +67,7 @@ class REventGroup {
         }
         if ($found) {
             $out.= "</div>";
-            $out.= "</span>";
+            $out.= "</div>";
             //$out.= "</a>";
         } else {
             $out.= "<div class='event-list-cal-day'>" . $text . "</div>";

@@ -37,8 +37,6 @@ class RCalendar {
         $today = getdate();
         $this->currentYear = $today["year"];
         $this->currentMonth = $today["mon"];
-        // $year = date("Y", time());
-        // $month = date("m", time());
         $enddate = sprintf("%04d", $this->currentYear) . "-" . sprintf("%02d", $this->currentMonth) . "-01";
         $navtype = navigationtype::first;
         $i = 0;
@@ -104,11 +102,11 @@ class RCalendar {
         $content = '<div class="' . $class . '" id=' . $this->getDivId($this->baseno + $this->currentMonth) . $disp . '>' .
                 '<div class="box">' .
                 $this->_createNavi($navtype) .
-                '</div>' .
-                '<div class="box-content">' .
-                '<ul class="label">' . $this->_createLabels() . '</ul>';
-        $content.='<div class="clear"></div>';
-        $content.='<ul class="dates">';
+                '</div>' . PHP_EOL .
+                '<div class="box-content">' . PHP_EOL .
+                '<ul class="label">' . $this->_createLabels() . '</ul>' . PHP_EOL;
+        $content.='<div class="clear"></div>' . PHP_EOL;
+        $content.='<ul class="dates">' . PHP_EOL;
         $weeksInMonth = $this->_weeksInMonth($this->currentYear, $this->currentYear);
         // Create weeks in a month
         for ($i = 0; $i < $weeksInMonth; $i++) {
@@ -117,10 +115,10 @@ class RCalendar {
                 $content.=$this->_showDay($i * 7 + $j);
             }
         }
-        $content.='</ul>';
-        $content.='<div class="clear"></div>';
-        $content.='</div>';
-        $content.='</div>';
+        $content.='</ul>' . PHP_EOL;
+        $content.='<div class="clear"></div>' . PHP_EOL;
+        $content.='</div>' . PHP_EOL;
+        $content.='</div>' . PHP_EOL;
         echo $content;
     }
 
@@ -153,9 +151,7 @@ class RCalendar {
             $cellContent = $this->addEvents($cellContent, $this->currentDate);
         }
         return '<li class="' . $todayclass . ($cellNumber % 7 == 1 ? ' start ' : ($cellNumber % 7 == 0 ? ' end ' : ' ')) .
-                ($cellContent == null ? 'mask' : '') . '">' . $cellContent . '</li>';
-        //       return '<li id="li-' . $this->currentDate . '" class="' . ($cellNumber % 7 == 1 ? ' start ' : ($cellNumber % 7 == 0 ? ' end ' : ' ')) .
-        //($cellContent == null ? 'mask' : '') . '">' . $cellContent . '</li>';
+                ($cellContent == null ? 'mask' : '') . '">' . $cellContent . '</li>' . PHP_EOL;
     }
 
     /**

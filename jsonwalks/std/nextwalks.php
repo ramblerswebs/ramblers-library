@@ -36,7 +36,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             $tag = $walk->placeTag;
 
             echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . $walk->eventTag . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $col2 . $tag . "</a></div>" . PHP_EOL;
-            if ($walk->status == "Cancelled") {
+            if ($walk->isCancelled()) {
                 echo "CANCELLED: " . $walk->cancellationReason;
             }
         }

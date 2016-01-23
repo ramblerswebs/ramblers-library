@@ -30,10 +30,10 @@ abstract class REvent {
         $link = $this->EventLink();
         $text = $this->EventText();
         $out = "";
-        $out.= "<div class='event-list-cal-event-single-link " . $class . $this->EventStatus() . "'>";
-        $out.= "<a href='" . $link . "' target='_blank'>" . $text . "</a>";
+        $out.= "<div class='event-list-cal-event-single-link " . $class . $this->EventStatus() . "'>". PHP_EOL;
+        $out.= "<a href='" . $link . "' target='_blank'>" . $text . "</a>". PHP_EOL;
 
-        $out.= "<hr/></div>";
+        $out.= "<hr/></div>". PHP_EOL;
         return $out;
     }
 

@@ -28,7 +28,7 @@ class RJsonwalksStdMapmarker extends RJsonwalksDisplaybase {
             $marker->y = $walk->startLocation->northing;
 
             If ($walk->startLocation->exact) {
-                if ($walk->status == "Cancelled") {
+                if ($walk->isCancelled()) {
                     $marker->image = "marker_red.png";
                 } else {
                     $marker->image = "marker_blue.png";
@@ -36,7 +36,7 @@ class RJsonwalksStdMapmarker extends RJsonwalksDisplaybase {
                 $marker->xsize = 30;
                 $marker->ysize = 39;
             } else {
-                if ($walk->status == "Cancelled") {
+                if ($walk->isCancelled()) {
                     $marker->image = "round-marker-lrg-red.png";
                 } else {
                     $marker->image = "round-marker-lrg-blue.png";

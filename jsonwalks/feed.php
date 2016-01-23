@@ -16,8 +16,9 @@ class RJsonwalksFeed {
     private $rafeedurl;
     private $feederror;
     private $feednotfound;
+    private $displayLimit = 0;
 
-    function __construct($rafeedurl) {
+    public function __construct($rafeedurl) {
         $this->rafeedurl = strtolower($rafeedurl);
         $this->feederror = "Invalid walks feed (invalid json format): " . $this->rafeedurl;
         $this->feednotfound = "Walks feed error(url not found): " . $this->rafeedurl;
@@ -62,35 +63,39 @@ class RJsonwalksFeed {
         }
     }
 
-    function setNewWalks($days) {
+    public function setNewWalks($days) {
         $this->walks->setNewWalks($days);
     }
 
-    function filterGroups($filter) {
+    public function setDisplayLimit($no) {
+        $this->displayLimit = $no;
+    }
+
+    public function filterGroups($filter) {
         $this->walks->filterGroups($filter);
     }
 
-    function filterStrands($filter) {
+    public function filterStrands($filter) {
         $this->walks->filterStrands($filter);
     }
 
-    function filterFestivals($filter) {
+    public function filterFestivals($filter) {
         $this->walks->filterFestivals($filter);
     }
 
-    function filterDayofweek($days) {
+    public function filterDayofweek($days) {
         $this->walks->filterDayofweek($days);
     }
 
-    function noWalks($no) {
+    public function noWalks($no) {
         $this->walks->noWalks($no);
     }
 
-    function walksInFuture($period) {
+    public function walksInFuture($period) {
         $this->walks->walksInFuture($period);
     }
 
-    function display($displayclass) {
+    public function display($displayclass) {
         if ($this->walks == null) {
             return;
         }
@@ -103,14 +108,47 @@ class RJsonwalksFeed {
             $style = 'BODY {color: #000000;}';
             $doc->addStyleDeclaration($style);
         }
-        $displayclass->DisplayWalks($this->walks);
+        if ($this->displayLimit == 0 OR $printOn) {
+            $displayclass->DisplayWalks($this->walks);
+        } else {
+            $document = JFactory::getDocument();
+            $document->addScript("ramblers/js/racalendar.js", "text/javascript");
+
+            $groups = $this->createGroupsOfWalks();
+            $numItems = count($groups);
+            $i = 1;
+            $blockId = 1;
+            $block = "ra_block" . $blockId;
+            foreach ($groups as $walks) {
+                if ($i == 1) {
+                    echo "<div id='" . $block . "' style='display: block'>" . PHP_EOL;
+                } else {
+                    echo "<div id='" . $block . "' style='display: none'>" . PHP_EOL;
+                }
+                $displayclass->DisplayWalks($walks);
+                if ($i === $numItems) {
+                    echo "<p><b>End of list</b></p>";
+                } else {
+                    $more = "ra_more" . $blockId;
+                    $blockId+=1;
+                    $block = "ra_block" . $blockId;
+                    echo "<div class='ra_walks_more' id='" . $more . "' ><p></p><a " . $this->getTogglePair($block, $more) . " >Display more walks ...</a><p>&nbsp;</p><p>&nbsp;</p></div>";
+                }
+                echo "</div>" . PHP_EOL;
+                $i+=1;
+            }
+        }
     }
 
-    function getWalks() {
+    private function getTogglePair($one, $two) {
+        return ' onclick="ra_toggle_visibilities(\'' . $one . '\',\'' . $two . '\')"';
+    }
+
+    public function getWalks() {
         return $this->walks;
     }
 
-    function clearCache() {
+    public function clearCache() {
         $cacheFolderPath = $this->CacheLocation();
 // Check if the cache folder exists
         if (file_exists($cacheFolderPath) && is_dir($cacheFolderPath)) {
@@ -156,6 +194,24 @@ class RJsonwalksFeed {
             define('DS', DIRECTORY_SEPARATOR);
         }
         return 'cache' . DS . 'ra_feed';
+    }
+
+    private function createGroupsOfWalks() {
+        $groups = array();
+        $allwalks = $this->walks->allWalks();
+        $no = 0;
+        $walks = new RJsonwalksWalks(null);
+        $groups[] = $walks;
+        foreach ($allwalks as $walk) {
+            $no +=1;
+            $walks->addWalk($walk);
+            if ($no >= $this->displayLimit) {
+                $no = 0;
+                $walks = new RJsonwalksWalks(null);
+                $groups[] = $walks;
+            }
+        }
+        return $groups;
     }
 
 }

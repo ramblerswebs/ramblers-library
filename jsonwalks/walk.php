@@ -69,7 +69,7 @@ class RJsonwalksWalk extends REvent {
 
     private $sortTime;
 
-    function __construct($item) {
+  public  function __construct($item) {
 
         try {
             $this->id = $item->id; // admin details
@@ -128,7 +128,7 @@ class RJsonwalksWalk extends REvent {
         }
     }
 
-    function getValue($type) {
+  public  function getValue($type) {
         switch ($type) {
             case self::SORT_CONTACT :
                 return $this->contactName;
@@ -150,8 +150,12 @@ class RJsonwalksWalk extends REvent {
                 return NULL;
         }
     }
+    
+    public function isCancelled(){
+        return strtolower($this->status) == "cancelled";
+    }
 
-    function setNewWalk($date) {
+  public  function setNewWalk($date) {
         if ($this->status == "New") {
             $this->status = "Published";
         }
@@ -230,7 +234,7 @@ class RJsonwalksWalk extends REvent {
         if ($this->distanceMiles > 0) {
             $text .=", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
         }
-        return $text;
+        return $text. PHP_EOL;
     }
 
     function EventLink() {

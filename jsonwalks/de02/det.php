@@ -21,7 +21,7 @@ class RJsonwalksDe02Det extends RJsonwalksDisplaybase {
     }
 
     private function displayWalk($walk) {
-        If ($walk->status == "cancelled") {
+        If ($walk->isCancelled()) {
             echo "<p><b>THIS WALK IS CANCELLED</b></p>";
         }
         $out = "<b>" . $walk->walkDate->format('l, jS F Y') . " - " . $walk->title . "</b><br />" . PHP_EOL;

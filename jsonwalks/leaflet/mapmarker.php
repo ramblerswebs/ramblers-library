@@ -52,7 +52,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         } else {
             $icon = "markerArea";
         }
-        if ($walk->status == "Cancelled") {
+        if ($walk->isCancelled()) {
             $icon = "markerCancelled";
         }
         $marker = "addWalk(markerList,'" . $this->walkClass . $walk->status . "', '" . $date . "', '" . $title . "', '" . $dist . "', '" . $gr . "', " . $lat . ", " . $long . ", '" . $url . "', " . $icon . ");";

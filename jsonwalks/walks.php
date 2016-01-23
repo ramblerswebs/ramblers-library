@@ -11,7 +11,7 @@ class RJsonwalksWalks {
     const LATLONG = 0;
     const GRIDREF = 1;
 
-    function __construct($json) {
+    public function __construct($json) {
         $this->arrayofwalks = array();
         if ($json != NULL) {
             foreach ($json as $value) {
@@ -22,7 +22,11 @@ class RJsonwalksWalks {
         }
     }
 
-    function hasMeetPlace() {
+    public function addWalk($walk) {
+        $this->arrayofwalks[] = $walk;
+    }
+
+    public function hasMeetPlace() {
         foreach ($this->arrayofwalks as $walk) {
             if ($walk->hasMeetPlace) {
                 return true;
@@ -31,7 +35,7 @@ class RJsonwalksWalks {
         return false;
     }
 
-    function setNewWalks($days) {
+    public function setNewWalks($days) {
         $interval = "P" . $days . "D";
         $date = new DateTime(NULL);
         $interval = new DateInterval($interval);
@@ -43,7 +47,7 @@ class RJsonwalksWalks {
         }
     }
 
-    function filterGroups($groups) {
+    public function filterGroups($groups) {
         foreach ($this->arrayofwalks as $key => $walk) {
             if ($walk->notInGroup($value, $groups)) {
                 unset($this->arrayofwalks[$key]);
@@ -60,7 +64,7 @@ class RJsonwalksWalks {
         return true;
     }
 
-    function filterStrands($containsText) {
+    public function filterStrands($containsText) {
         foreach ($this->arrayofwalks as $key => $walk) {
             if ($this->notInItems($walk->strands, $containsText)) {
                 unset($this->arrayofwalks[$key]);
@@ -68,7 +72,7 @@ class RJsonwalksWalks {
         }
     }
 
-    function filterFestivals($containsText) {
+    public function filterFestivals($containsText) {
         foreach ($this->arrayofwalks as $key => $walk) {
             if ($this->notInItems($walk->festivals, $containsText)) {
                 unset($this->arrayofwalks[$key]);
@@ -88,11 +92,11 @@ class RJsonwalksWalks {
         return true;
     }
 
-    function contains($needle, $haystack) {
+    private function contains($needle, $haystack) {
         return strpos($haystack, $needle) !== false;
     }
 
-    function filterDayofweek($days) {
+    public function filterDayofweek($days) {
         foreach ($this->arrayofwalks as $key => $value) {
             if ($this->notInDayList($value, $days)) {
                 unset($this->arrayofwalks[$key]);
@@ -109,7 +113,7 @@ class RJsonwalksWalks {
         return true;
     }
 
-    function noWalks($no) {
+    public function noWalks($no) {
         $i = 1;
         foreach ($this->arrayofwalks as $key => $value) {
             $i+=1;
@@ -119,7 +123,7 @@ class RJsonwalksWalks {
         }
     }
 
-    function walksInFuture($period) {
+    public function walksInFuture($period) {
         $today = new DateTime(NULL);
         $interval = new DateInterval($period);
         $today->add($interval);
@@ -131,7 +135,7 @@ class RJsonwalksWalks {
         }
     }
 
-    function sort($sortorder1, $sortorder2, $sortorder3) {
+    public function sort($sortorder1, $sortorder2, $sortorder3) {
         $this->sortorder1 = $sortorder1;
         $this->sortorder2 = $sortorder2;
         $this->sortorder3 = $sortorder3;
@@ -216,7 +220,7 @@ class RJsonwalksWalks {
         return $no;
     }
 
-    function events() {
+    public function events() {
         $arrayevents = array();
         foreach ($this->arrayofwalks as $key => $value) {
             $arrayevents[] = $value->event();
@@ -224,7 +228,7 @@ class RJsonwalksWalks {
         return $arrayevents;
     }
 
-    function __destruct() {
+    public function __destruct() {
         
     }
 

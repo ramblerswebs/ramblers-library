@@ -19,7 +19,7 @@ class RJsonwalksDe02Tic extends RJsonwalksDisplaybase {
         $items = $walks->allWalks();
 
         foreach ($items as $walk) {
-            If ($walk->status <> "cancelled") {
+            If ($walk->isCancelled() == false) {
                 $this->displayWalk($walk);
             }
         }

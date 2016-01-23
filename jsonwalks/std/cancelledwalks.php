@@ -40,7 +40,7 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
 
     private function displayWalk($walk) {
         $out = "";
-        if ($walk->status == "Cancelled") {
+        if ($walk->isCancelled()) {
             $out.= "<div class='" . $this->walkClass . "' >" . PHP_EOL;
 
             $out .= "<b>Walk: " . $walk->walkDate->format('F l, jS') . "</b>";
