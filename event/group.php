@@ -15,7 +15,7 @@ class REventGroup {
 
     private $arrayofevents;
     private $class = "event";
-    static $id=0;
+    static $id = 0;
 
     function __construct() {
         $this->arrayofevents = array();
@@ -31,6 +31,10 @@ class REventGroup {
         foreach ($arrayofwalks as $walk) {
             $this->arrayofevents[] = $walk;
         }
+    }
+
+    public function getEvents() {
+        return $this->arrayofevents;
     }
 
     public function getLastDate() {
@@ -51,14 +55,11 @@ class REventGroup {
             if ($event->EventDateYYYYMMDD() === $currentDate) {
                 // echo "found";
                 if ($found == false) {
-                    // $out.= "<a class='tooltip' href='#'>";
-                    // $out.= $text;
-                    //  $out.= "<span class='classic'>";
                     self::$id+=1;
-                    $ident="ev".strval(self::$id);
-                    $out.="<div class='event-list-cal-event'>". PHP_EOL;
-                    $out.= "<div class='event-list-cal-day'><a onclick=\"ra_toggle_visibility('".$ident."')\">". $text . "</a></div>". PHP_EOL;
-                    $out.="<div class='event-list-cal-hover' id='".$ident."'>". PHP_EOL;
+                    $ident = "ev" . strval(self::$id);
+                    $out.="<div class='event-list-cal-event'>" . PHP_EOL;
+                    $out.= "<div class='event-list-cal-day'><a onclick=\"ra_toggle_visibility('" . $ident . "')\">" . $text . "</a></div>" . PHP_EOL;
+                    $out.="<div class='event-list-cal-hover' id='" . $ident . "'>" . PHP_EOL;
                     $out.= $event->EventDate()->format('l, jS');
                 }
                 $found = true;
@@ -74,6 +75,12 @@ class REventGroup {
             // $out.= $text;
         }
         return $out;
+    }
+
+    public function getIcalendarFile($icsfile) {
+        foreach ($this->arrayofevents as $event) {
+            $isc.=$event->Event_ics($icsfile);
+        }
     }
 
 }

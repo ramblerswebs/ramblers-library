@@ -133,7 +133,7 @@ div.clear{
 div.ra_calendar div.event-list-cal-hover {
     position: relative;
     top: -10px;
-    width: 300px;
+    width: 400px;
     padding: 5px 10px;
     font-weight: bold;
     line-height: normal;
@@ -216,7 +216,7 @@ div.ra_calsize200 ul.dates li{
 /* mini calendar */
 div.ra_calsize200 div.event-list-cal-hover {
     top: -5px;
-    width: 250px;
+    width: 300px;
     font-size: 100%;
 }
 
@@ -276,7 +276,7 @@ div.ra_calsize250 ul.dates li{
 /* mini calendar */
 div.ra_calsize250 div.event-list-cal-hover {
     top: -5px;
-    width: 250px;
+    width: 300px;
     font-size: 100%;
 }
 
@@ -391,7 +391,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     /* mini calendar */
     div.ra_calsize0 div.event-list-cal-hover {
         top: -5px;
-        width: 250px;
+        width: 300px;
         font-size: 100%;
     }
 
@@ -455,7 +455,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     /* mini calendar */
     div.ra_calsize0 div.event-list-cal-hover {
         top: -5px;
-        width: 250px;
+        width: 300px;
         font-size: 100%;
     }
 
@@ -520,7 +520,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     /* mini calendar */
     div.ra_calsize0 div.event-list-cal-hover {
         top: -5px;
-        width: 250px;
+        width: 300px;
         font-size: 100%;
     }
 
@@ -632,7 +632,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     /* mini calendar */
     div.ra_calsize0 div.event-list-cal-hover {
         top: -5px;
-        width: 250px;
+        width: 300px;
         font-size: 100%;
     }
 

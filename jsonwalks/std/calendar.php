@@ -18,12 +18,11 @@ class RJsonwalksStdCalendar extends RJsonwalksDisplaybase {
         define('CR', ' - ');
 
 //set error handler
-        set_error_handler("customError");
-
+        //     set_error_handler("customError");
 // $event->show();
 
         $output = "BEGIN:VCALENDAR\nVERSION:2.0\nMETHOD:PUBLISH\n";
-
+        $items = $walks->allWalks();
         foreach ($items as $walk) {
             $startTime = $walk->walkDate->format('d F Y') . " " . $walk->startLocation->time->format('H:i');
             $durationFullMins = round($walk->distanceMiles * 60 / 2);
@@ -81,7 +80,7 @@ class EVENT {
         $this->data = $this->data . "LOCATION:" . $location . "\n";
         $this->data = $this->data . "TRANSP: OPAQUE\n";
         $this->data = $this->data . "SEQUENCE:0\n";
-        $this->data = $this->data . "ID:\n";
+        // $this->data = $this->data . "ID:" . $id . "\n";
         $this->data = $this->data . "DTSTAMP:" . date("Ymd\THis\Z") . "\n";
         $this->data = $this->data . "SUMMARY:" . $name . "\n";
         $this->data = $this->data . "DESCRIPTION:" . $description . "\n";
@@ -118,4 +117,3 @@ class EVENT {
 function customError($errno, $errstr) {
     echo "<b>Error:</b> [$errno] $errstr";
 }
-

@@ -19,7 +19,11 @@ abstract class REvent {
 
     abstract protected function EventLink(); // as url
 
+    abstract protected function EventLinks(); // as url
+
     abstract protected function EventStatus(); //  published,cancelled etc
+
+    abstract protected function Event_ics($icsfile); //  ics icalandar format
 
     public function EventDateYYYYMMDD() {
         $out = $this->EventDate()->format('Y-m-d');
@@ -30,10 +34,12 @@ abstract class REvent {
         $link = $this->EventLink();
         $text = $this->EventText();
         $out = "";
-        $out.= "<div class='event-list-cal-event-single-link " . $class . $this->EventStatus() . "'>". PHP_EOL;
-        $out.= "<a href='" . $link . "' target='_blank'>" . $text . "</a>". PHP_EOL;
-
-        $out.= "<hr/></div>". PHP_EOL;
+        $out.= "<div class='event-list-cal-event-single-link " . $class . $this->EventStatus() . "'>" . PHP_EOL;
+        $out.= "<a href='" . $link . "' target='_blank'>" . $text . "</a>" . PHP_EOL;
+        $out.="<div class='events links'>";
+        $out.=$this->EventLinks();
+        $out.="</div>";
+        $out.= "<hr/></div>" . PHP_EOL;
         return $out;
     }
 

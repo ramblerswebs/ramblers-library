@@ -63,7 +63,6 @@ class RFeedhelper {
         return NULL;
     }
 
-
     // Get remote file
     private function createCachedFileFromUrl($feedfilename) {
         // Check if the cache folder exists

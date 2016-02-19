@@ -15,14 +15,14 @@ class RHtml {
         }
     }
 
-    static function addTableRow($cols,$class="") {
+    static function addTableRow($cols, $class = "") {
         if (is_array($cols)) {
-            if ($class=="") {
+            if ($class == "") {
                 $out = "<tr>";
-            }else {
-                  $out = "<tr class='".$class."'>";
-                  }
-          
+            } else {
+                $out = "<tr class='" . $class . "'>";
+            }
+
             foreach ($cols as $value) {
                 $out.="<td>" . $value . "</td>";
             }
@@ -31,6 +31,18 @@ class RHtml {
         } else {
             return "<tr><td>invalid argument in html::addTableRows</td></tr>";
         }
+    }
+
+    static function withDiv($class, $text, $printOn) {
+        $out = "";
+        if ($printOn) {
+            $out.="&nbsp;&nbsp;&nbsp;" . $text;
+        } else {
+            $out.= "<div class='" . $class . "'>";
+            $out.=$text;
+            $out.= "</div>";
+        }
+        return $out;
     }
 
 }

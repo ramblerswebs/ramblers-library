@@ -10,7 +10,7 @@ class RJsonwalksWalk extends REvent {
     const GEOCOORDS = 'itemscope itemtype="http://schema.org/GeoCoordinates"';
     const GEOSHAPE = 'itemscope itemtype="http://schema.org/GeoShape"';
 
-    // administration items
+// administration items
     public $id;                     // database ID of walk on Walks Finder
     public $status;                 // whether the walk is published, cancelled etc
     public $groupCode;              // group code e.g. SR01
@@ -18,7 +18,7 @@ class RJsonwalksWalk extends REvent {
     public $dateUpdated;            // date of the walk as a datetime object
     public $dateCreated;            // date of the walk as a datetime object
     public $cancellationReason;     // text reason walk cancelled
-    // basic walk details
+// basic walk details
     public $walkDate;               // date of the walk as a datettime object
     Public $dayofweek;              // day of the week as text
     public $day;                    // the day number as text
@@ -28,22 +28,23 @@ class RJsonwalksWalk extends REvent {
     public $descriptionHtml = "";   // description of walk with html tags
     public $additionalNotes = "";   // the additional notes field as text
     public $detailsPageUrl = "";    // url to access the ramblers.org.uk page for this walk
-    // contact
+// contact
     public $isLeader = false;       // is the contact info for the leader of the walk
     public $walkLeader = "";        // walk leader if isLeader is false
     public $contactName = "";       // contact name
     public $email = "";             // email address for contact
     public $telephone1 = "";        // first telephone number of contact
     public $telephone2 = "";        // second telephone number of contact
-    // meeting place
+// meeting place
     public $hasMeetPlace = false;   // true or false
     public $meetLocation;           // a [[RJsonwalksLocation]] object if hasMeetPlace=true
-    // starting place
+// starting place
     public $startLocation;          // a [[RJsonwalksLocation]] object for the start
-    // finish place
+// finish place
     public $isLinear = false;       // true if walk has a finishing place otherwise false
     public $finishLocation;         // a [[RJsonwalksLocation]] object if isLinear=true
-    // grades length
+    public $finishTime;      // finishTime as dateTime or null
+// grades length
     public $nationalGrade = "";     // national grade as full word
     public $localGrade = "";        // local grade
     public $distanceMiles;          // distance of walk as number in miles
@@ -53,7 +54,7 @@ class RJsonwalksWalk extends REvent {
     Public $ascentFeet;             // the ascent in feet or null
     Public $strands;                // RJsonwalksItems object or null 
     Public $festivals;              // RJsonwalksItems object or null 
-    // extra derived values
+// extra derived values
     public $placeTag;
     public $eventTag;
 
@@ -69,7 +70,7 @@ class RJsonwalksWalk extends REvent {
 
     private $sortTime;
 
-  public  function __construct($item) {
+    public function __construct($item) {
 
         try {
             $this->id = $item->id; // admin details
@@ -81,7 +82,7 @@ class RJsonwalksWalk extends REvent {
             $this->dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, $item->dateUpdated);
             $this->dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, $item->dateCreated);
             $this->cancellationReason = $item->cancellationReason;
-            // basic walk details
+// basic walk details
             $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
             $this->detailsPageUrl = $item->url;
             $this->title = htmlspecialchars($item->title);
@@ -96,6 +97,19 @@ class RJsonwalksWalk extends REvent {
 
             $this->additionalNotes = $item->additionalNotes;
             $this->isLinear = $item->isLinear == "true";
+            switch ($item->finishTime) {
+                case null:
+                    $this->finishTime = null;
+                    break;
+                case "00:00:00":
+                    $this->finishTime = null;
+                    break;
+                default:
+                    $day = $this->walkDate->format('Ymd ');
+                    $this->finishTime = DateTime::createFromFormat('Ymd H:i:s', $day . $item->finishTime);
+                    break;
+            }
+
             $this->nationalGrade = $item->difficulty->text;
             $this->localGrade = $item->gradeLocal;
             $this->distanceMiles = $item->distanceMiles;
@@ -103,7 +117,7 @@ class RJsonwalksWalk extends REvent {
             $this->pace = $item->pace;
             $this->ascentFeet = $item->ascentFeet;
             $this->ascentMetres = $item->ascentMetres;
-            // contact details
+// contact details
             if ($item->walkContact != null) {
                 $this->isLeader = $item->walkContact->isWalkLeader == "true";
                 $this->contactName = $item->walkContact->contact->displayName;
@@ -112,15 +126,15 @@ class RJsonwalksWalk extends REvent {
                 $this->telephone2 = $item->walkContact->contact->telephone2;
             }
             $this->walkLeader = $item->walkLeader;
-            // read strands
+// read strands
             if (count($item->strands->items) > 0) {
                 $this->strands = new RJsonwalksItems($item->strands);
             }
-            // read festivals
+// read festivals
             if (count($item->festivals->items) > 0) {
                 $this->festivals = new RJsonwalksItems($item->festivals);
             }
-            // pocess meeting and starting locations
+// pocess meeting and starting locations
             $this->processPoints($item->points);
             $this->createExtraData();
         } catch (Exception $ex) {
@@ -128,7 +142,7 @@ class RJsonwalksWalk extends REvent {
         }
     }
 
-  public  function getValue($type) {
+    public function getValue($type) {
         switch ($type) {
             case self::SORT_CONTACT :
                 return $this->contactName;
@@ -150,12 +164,12 @@ class RJsonwalksWalk extends REvent {
                 return NULL;
         }
     }
-    
-    public function isCancelled(){
+
+    public function isCancelled() {
         return strtolower($this->status) == "cancelled";
     }
 
-  public  function setNewWalk($date) {
+    public function setNewWalk($date) {
         if ($this->status == "New") {
             $this->status = "Published";
         }
@@ -204,22 +218,22 @@ class RJsonwalksWalk extends REvent {
         foreach ($points as $value) {
             if ($value->typeString == "Meeting") {
                 $this->hasMeetPlace = true;
-                $this->meetLocation = new RJsonwalksLocation($value);
+                $this->meetLocation = new RJsonwalksLocation($value, $this->walkDate);
             }
             if ($value->typeString == "Start") {
-                $this->startLocation = new RJsonwalksLocation($value);
+                $this->startLocation = new RJsonwalksLocation($value, $this->walkDate);
             }
             if ($value->typeString == "End") {
-                $this->finishLocation = new RJsonwalksLocation($value);
+                $this->finishLocation = new RJsonwalksLocation($value, $this->walkDate);
             }
         }
     }
 
-    function EventDate() {
+    public function EventDate() {
         return $this->walkDate;
     }
 
-    function EventText() {
+    public function EventText() {
         $text = "";
         if ($this->hasMeetPlace) {
             $text.=$this->meetLocation->timeHHMMshort;
@@ -234,15 +248,106 @@ class RJsonwalksWalk extends REvent {
         if ($this->distanceMiles > 0) {
             $text .=", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
         }
-        return $text. PHP_EOL;
+        return $text;
     }
 
-    function EventLink() {
+    public function EventLink() {
         return $this->detailsPageUrl;
     }
 
-    function EventStatus() {
+    public function EventLinks() {
+        $out = "";
+        If ($this->hasMeetPlace) {
+            $out.="Meet:" . $this->meetLocation->getOSMap("OS Map");
+            $out.=" " . $this->meetLocation->getDirectionsMap("Directions");
+        }
+
+        $out.=" Start:" . $this->startLocation->getOSMap("OS Map");
+        $out.=" " . $this->startLocation->getMap("Directions", "Area Map");
+        return $out;
+    }
+
+    public function EventStatus() {
         return "walk" . $this->status;
+    }
+
+    public function Event_ics($icsfile) {
+        $CR = "\r\n";
+        $startLocation = $this->startLocation->getTextDescription();
+        if ($this->hasMeetPlace) {
+            $meetLocation = $this->meetLocation->getTextDescription();
+        } else {
+            $meetLocation = "";
+        }
+
+        if (trim($this->description) == "") {
+            $description = $meetLocation . "; " . $startLocation . ";  ";
+        } else {
+            $description = $meetLocation . "; " . $startLocation . $this->description . ";  ";
+        }
+        $description .= $this->contactName . " (" . $this->telephone1 . " " . $this->telephone2 . ");  " .
+                $this->localGrade . "/" . $this->nationalGrade;
+        $description .=";  " . $this->detailsPageUrl;
+
+        if ($this->additionalNotes != '') {
+            $description .= " - " . strip_tags($this->additionalNotes);
+        }
+        $description .="; Note: Finish times are very approximate!";
+
+        $now = new datetime();
+        $icsfile->addRecord("BEGIN:VEVENT");
+        $this->addIcsTimes($icsfile);
+        $icsfile->addRecord("LOCATION:" . $startLocation);
+        $icsfile->addRecord("TRANSP:OPAQUE");
+        $icsfile->addSequence($this->dateUpdated);
+        $icsfile->addRecord("UID: walk" . $this->id . "-isc@ramblers-webs.org.uk");
+        if ($this->isCancelled()) {
+            $icsfile->addRecord("METHOD:CANCEL");
+            $icsfile->addRecord("SUMMARY: CANCELLED " . $this->EventText());
+            $icsfile->addRecord("DESCRIPTION: CANCELLED - REASON: " . $this->cancellationReason . " (" . $description . ")");
+        } else {
+            $icsfile->addRecord("SUMMARY:" . $this->EventText());
+            $icsfile->addRecord("DESCRIPTION:" . $description);
+        }
+        $icsfile->addRecord("CATEGORIES: Walk," . $this->groupName);
+        $icsfile->addRecord("DTSTAMP;VALUE=DATE-TIME:" . $now->format('Ymd\THis'));
+        $icsfile->addRecord("CREATED;VALUE=DATE-TIME:" . $this->dateCreated->format('Ymd\THis'));
+        $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:" . $this->dateUpdated->format('Ymd\THis'));
+        $icsfile->addRecord("PRIORITY:1");
+        $icsfile->addRecord("URL;VALUE=URI:" . $this->detailsPageUrl);
+        $icsfile->addRecord("CLASS:PUBLIC");
+        $icsfile->addRecord("END:VEVENT");
+        return;
+    }
+
+    private function addIcsTimes($icsfile) {
+        if ($icsDayEvents) {
+            $icsfile->addRecord("DTSTART;VALUE=DATE:" . $this->walkDate->format('Ymd'));
+        } else {
+            $icsfile->addRecord("DTSTART;VALUE=DATE-TIME:" . $this->getFirstTime()->format('Ymd\THis'));
+            $icsfile->addRecord("DTEND;VALUE=DATE-TIME:" . $this->getFinishTime()->format('Ymd\THis'));
+        }
+    }
+
+    private function getFirstTime() {
+        $starttime = RJsonwalksLocation::firstTime($this->meetLocation, $this->startLocation);
+        return $starttime;
+    }
+
+    private function getFinishTime() {
+        if ($this->finishTime != null) {
+            return $this->finishTime;
+        }
+        // calculate end time
+        $lasttime = RJsonwalksLocation::lastTime($this->meetLocation, $this->startLocation);
+        $durationFullMins = ceil($this->distanceMiles / 2) * 60;
+        if ($this->startLocation->exact == false) {
+            $durationFullMins += 60;
+        }
+        $intervalFormat = "PT" . $durationFullMins . "M";
+        $interval = new DateInterval($intervalFormat);
+        $lasttime = $lasttime->add($interval);
+        return $lasttime;
     }
 
     function __destruct() {

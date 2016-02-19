@@ -22,6 +22,7 @@ class RCalendar {
 
     public function __construct($size, $mdisplayAll) {
         $this->size = $size;
+        self::$copyno += 1;
         $this->displayAll = $mdisplayAll;
     }
 
@@ -30,7 +31,7 @@ class RCalendar {
     }
 
     public function show($events) {
-        self::$copyno += 1;
+
         $lastdate = $events->getLastDate();
         $this->events = $events;
         $this->baseno = self::$copyno * 20;
@@ -66,7 +67,7 @@ class RCalendar {
         } while ($lastdate > $enddate);
     }
 
-    /**
+     /**
      * print out the calendar
      */
     private function showMonth($navtype) {
