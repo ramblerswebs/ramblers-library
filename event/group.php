@@ -79,7 +79,7 @@ class REventGroup {
 
     public function getIcalendarFile($icsfile) {
         foreach ($this->arrayofevents as $event) {
-            $isc.=$event->Event_ics($icsfile);
+            $event->Event_ics($icsfile);
         }
     }
 

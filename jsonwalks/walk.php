@@ -69,6 +69,7 @@ class RJsonwalksWalk extends REvent {
     const TIMEFORMAT = "Y-m-d\TH:i:s";
 
     private $sortTime;
+    private $icsDayEvents = false;
 
     public function __construct($item) {
 
@@ -321,7 +322,7 @@ class RJsonwalksWalk extends REvent {
     }
 
     private function addIcsTimes($icsfile) {
-        if ($icsDayEvents) {
+        if ($this->icsDayEvents) {
             $icsfile->addRecord("DTSTART;VALUE=DATE:" . $this->walkDate->format('Ymd'));
         } else {
             $icsfile->addRecord("DTSTART;VALUE=DATE-TIME:" . $this->getFirstTime()->format('Ymd\THis'));
