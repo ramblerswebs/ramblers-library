@@ -146,7 +146,6 @@ div.ra_calendar div.event-list-cal-hover {
     display: none;
 }
 div.ra_calendar li div.event-list-cal-hover {
-    left: -200px;
     text-align: right;
 }
 
@@ -216,6 +215,7 @@ div.ra_calsize200 ul.dates li{
 /* mini calendar */
 div.ra_calsize200 div.event-list-cal-hover {
     top: -5px;
+    left: -300px;
     width: 300px;
     font-size: 100%;
 }
@@ -276,6 +276,7 @@ div.ra_calsize250 ul.dates li{
 /* mini calendar */
 div.ra_calsize250 div.event-list-cal-hover {
     top: -5px;
+    left: -300px;
     width: 300px;
     font-size: 100%;
 }
@@ -391,6 +392,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     /* mini calendar */
     div.ra_calsize0 div.event-list-cal-hover {
         top: -5px;
+        left: -300px;
         width: 300px;
         font-size: 100%;
     }
@@ -455,6 +457,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     /* mini calendar */
     div.ra_calsize0 div.event-list-cal-hover {
         top: -5px;
+        left: -300px;
         width: 300px;
         font-size: 100%;
     }
@@ -520,6 +523,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     /* mini calendar */
     div.ra_calsize0 div.event-list-cal-hover {
         top: -5px;
+        left: -300px;
         width: 300px;
         font-size: 100%;
     }
@@ -632,6 +636,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     /* mini calendar */
     div.ra_calsize0 div.event-list-cal-hover {
         top: -5px;
+        left: -300px;
         width: 300px;
         font-size: 100%;
     }
