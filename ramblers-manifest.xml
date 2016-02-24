@@ -27,7 +27,9 @@
             <folder>jsonwalks/de02</folder>
             <folder>jsonwalks/leaflet</folder>
             <folder>jsonwalks/std</folder>
-            <folder>osmap</folder>
+            <folder>leaflet</folder>
+            <folder>organisation</folder>
+             <folder>osmap</folder>
             <folder>sql</folder>
             <folder>users</folder>
         </files>

@@ -10,20 +10,21 @@ class RJsonwalksLeafletMap {
     private $map;
     public $mapStyle;
 
-    function __construct() {
+    public function __construct() {
         $template = "ramblers/jsonwalks/leaflet/mapTemplate.html";
         $this->map = new RHtmlTemplate($template);
         $this->mapStyle = " #leafletmap { height: 500px; width:100%;}";
     }
 
-    function addMarkers($text) {
+    public function addMarkers($text) {
         $this->map->replaceString("// [[Add markers here]]", $text);
-    } 
-    function addBounds($text) {
+    }
+
+    public function addBounds($text) {
         $this->map->replaceString("// [FitBounds]", $text);
     }
 
-    function display() {
+    public function display() {
         $document = JFactory::getDocument();
 
         $document->addStyleSheet("http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css", "text/css");
