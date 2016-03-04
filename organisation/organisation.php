@@ -18,6 +18,8 @@ class ROrganisation {
     public $showLinks = true;
     public $showCodes = true;
     public $showGroups = true;
+    Public $centreGroup = "";
+    public $mapZoom = -1;
 
     function __construct() {
         $this->load();
@@ -126,20 +128,39 @@ class ROrganisation {
 
     public function addMapMarkers($map) {
         if (isset($map)) {
-            //   $this->bounds = $walks->getBounds(RJsonwalksWalks::LATLONG);
+            // Set Centre and zoom level
+            $bounds = "";
+            if ($this->mapZoom >= 0 and $this->mapZoom <= 18) {
+                $bounds.="map.setZoom(" . $this->mapZoom . ");\r\n";
+            }
+            If ($this->centreGroup <> "") {
+                if (isset($this->groups[$this->centreGroup])) {
+                    $group = $this->groups[$this->centreGroup];
+                    $bounds.="var latlng = new L.LatLng(" . $group->latitude . "," . $group->longitude . ");\r\n map.panTo(latlng);\r\n";
+                }
+            }
+            $map->addBounds($bounds);
             $text = "";
             foreach ($this->groups as $key => $group) {
-                $marker = $group->addMapMarker();
+                $areatext = "";
+                if ($group->scope <> "A") {
+                    $areacode = substr($key, 0, 2);
+                    $area = $this->areas[$areacode];
+                    $areatext = "Area <br/><a href='" . $area->url . "' target='_blank'>" . $area->name . "</a><br/>";
+                }
+                $marker = $group->addMapMarker($areatext);
                 $text.=$marker . PHP_EOL;
             }
             $map->addMarkers($text);
-            //    $boundstext = "
-            // var bounds = [[" . $this->bounds['xmin'] . "," . $this->bounds['ymin'] . "],[" . $this->bounds['xmax'] . "," . $this->bounds['ymax'] . ",]];
-            //  // zoom the map to the rectangle bounds
-            //  map.fitBounds(bounds);";
-            //        $this->map->addBounds($boundstext);
-            //   $map->display();
         }
+    }
+
+    public function centreMap($centreGroup) {
+        $this->centreGroup = strtoupper($centreGroup);
+    }
+
+    public function setZoom($zoom) {
+        $this->mapZoom = $zoom;
     }
 
     private function checkJsonProperties($item) {

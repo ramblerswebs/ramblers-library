@@ -43,10 +43,10 @@ class RDirectoryList {
         foreach ($this->names as $value) {
             foreach ($this->fileTypes as $type) {
                 $desc = "";
-                $descfile=$folder."/".$value . ".text";
+                $descfile = $folder . "/" . $value . ".text";
                 if (file_exists($descfile)) {
                     $desc = " - " . file_get_contents($descfile);
-                    $desc=strip_tags($desc,'<b><i><br><br/>');
+                    $desc = strip_tags($desc, '<b><i><br><br/>');
                 }
                 if ($this->endsWith($value, $type)) {
                     $text = $value;
@@ -59,7 +59,7 @@ class RDirectoryList {
         echo "</ul>";
     }
 
-    function endsWith($haystack, $needle) {
+    private function endsWith($haystack, $needle) {
         // search forward starting from end minus needle length characters
         return $needle === "" || strpos($haystack, $needle, strlen($haystack) - strlen($needle)) !== FALSE;
     }

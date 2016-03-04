@@ -1,16 +1,15 @@
-function addWalk($list, $class, $date, $title, $dist, $gr, $lat, $long, $url, $icon)
-{
+function addMarker($list, $popup, $lat, $long, $icon) {
     var marker = L.marker([$lat, $long], {icon: $icon});
-   // var $walk = "<div class='" + $class + "'><b><a href='" + $url + "' target='_blank'>" + $date + "<br/>" + $title + "<br/>" + $dist + "</a></b></div>";
-    var $walk = "<div class='" + $class + "'><b><a href=\"javascript:walkdetails('" + $url + "')\" >" + $date + "<br/>" + $title + "<br/>" + $dist + "</a></b></div>";
-    var $map = "<a href=\"javascript:streetmap('" + $gr + "')\" >[OS Map]</a>";
-    var $directions = "<a href=\"javascript:directions(" + $lat + "," + $long + ")\" >[Directions]</a>";
-    //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
-    var $photos = "<a href=\"javascript:photos('" + $gr + "')\" >[Photos]</a>";
-    var $popup = $walk + $map + $directions + $photos;
-    marker.bindPopup($popup);
+    $pop = $popup.replace(/&quot;/g, '"'); 
+    marker.bindPopup($pop);
     $list.push(marker);
+}
 
+function addMarkerToLayer($layer, $popup, $lat, $long, $icon) {
+    var marker = L.marker([$lat, $long], {icon: $icon});
+    $pop = $popup.replace(/&quot;/g, '"'); 
+    marker.bindPopup($pop);
+    $layer.add.push(marker);
 }
 
 function walkdetails($url) {
@@ -31,19 +30,4 @@ function directions($lat, $long) {
 
     page = "https://maps.google.com?saddr=Current+Location&daddr=" + $lat.toString() + "," + $long.toString();
     window2 = open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
-}
-
-function addGroup($list, $class, $title,  $lat, $long, $url, $icon)
-{
-    var marker = L.marker([$lat, $long], {icon: $icon});
-    var $group = "<div class='" + $class + "'><b><a href='" + $url + "' target='_blank'>" + "<br/>" + $title + "<br/>" + "</a></b></div>";
-  //  var $walk = "<div class='" + $class + "'><b><a href=\"javascript:walkdetails('" + $url + "')\" >" + $date + "<br/>" + $title + "<br/>" + $dist + "</a></b></div>";
-  //  var $map = "<a href=\"javascript:streetmap('" + $gr + "')\" >[OS Map]</a>";
-  //  var $directions = "<a href=\"javascript:directions(" + $lat + "," + $long + ")\" >[Directions]</a>";
-    //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
-  //  var $photos = "<a href=\"javascript:photos('" + $gr + "')\" >[Photos]</a>";
-    var $popup = $group;
-    marker.bindPopup($popup);
-    $list.push(marker);
-
 }

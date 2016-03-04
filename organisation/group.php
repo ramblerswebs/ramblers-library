@@ -20,7 +20,6 @@ class ROrganisationGroup {
     public $description;
     public $latitude;
     public $longitude;
-    public $markerClass = "group";
 
     public function __construct($item) {
         $this->scope = $item->scope;
@@ -40,27 +39,30 @@ class ROrganisationGroup {
         }
     }
 
-    public function addMapMarker() {
+    public function addMapMarker($areatext) {
 
         $title = str_replace("'", "", $this->name);
-        if ($title <> $this->name) {
-            $a = 1;
-        }
+        $text = "Unknown group";
         $long = $this->longitude;
         $lat = $this->latitude;
         $url = $this->url;
         switch ($this->scope) {
             case "A":
                 $icon = "walkingarea";
+                $text = "Ramblers Area";
                 break;
             case "G":
                 $icon = "walkinggroup";
+                $text = $areatext."Group [".$this->code."]";
                 break;
             default:
                 $icon = "walkingspecial";
+                $text = $areatext."Special Group [".$this->code."]";
                 break;
         }
-        $marker = "addGroup(markerList,'" . $this->markerClass . $this->scope . "', '" . $title . "', " . $lat . ", " . $long . ", '" . $url . "', " . $icon . ");";
+        $class = "group" . $this->scope;
+        $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" .  $title .  "</a></div>";
+        $marker = "addMarker(markerList,\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
 
         return $marker;
     }

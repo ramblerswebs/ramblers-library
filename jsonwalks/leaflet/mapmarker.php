@@ -11,11 +11,19 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
     private $bounds;
     private $walkClass = "walk";
 
-    function __construct() {
-        $this->map = new RJsonwalksLeafletMap;
+    public function __construct() {
+        $this->map = new RLeafletMap;
     }
 
-    function DisplayWalks($walks) {
+    public function mapHeight($height) {
+        $this->map->mapHeight = $height;
+    }
+
+    public function mapWidth($width) {
+        $this->map->mapWidth = $width;
+    }
+
+    public function DisplayWalks($walks) {
         if (isset($this->map)) {
             $items = $walks->allWalks();
             $this->bounds = $walks->getBounds(RJsonwalksWalks::LATLONG);
@@ -34,10 +42,6 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         }
     }
 
-    //  function setMap($map) {
-    //      $this->map = $map;
-    //  }
-
     private function addMarker($walk) {
 
         $date = $walk->walkDate->format('l, jS F');
@@ -55,7 +59,16 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         if ($walk->isCancelled()) {
             $icon = "markerCancelled";
         }
-        $marker = "addWalk(markerList,'" . $this->walkClass . $walk->status . "', '" . $date . "', '" . $title . "', '" . $dist . "', '" . $gr . "', " . $lat . ", " . $long . ", '" . $url . "', " . $icon . ");";
+        $class = $this->walkClass . $walk->status;
+        $walk = "<div class='" . $class . "'><b><a href=&quot;javascript:walkdetails('" . $url . "')&quot; >" . $date . "<br/>" . $title . "<br/>" . $dist . "</a></b></div>";
+        $map = "<a href=&quot;javascript:streetmap('" . $gr . "')&quot; >[OS Map]</a>";
+        $directions = "<a href=&quot;javascript:directions(" . $lat . "," . $long . ")&quot; >[Directions]</a>";
+        //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
+        $photos = "<a href=&quot;javascript:photos('" . $gr . "')&quot; >[Photos]</a>";
+        $popup = $walk . $map . $directions . $photos;
+        // $popup = str_replace('"', "&quot;", $popup);
+        $marker = 'addMarker(markerList,"' . $popup . '", ' . $lat . ', ' . $long . ', ' . $icon . ');';
+        //     $marker = "addWalk(markerList,'" . $this->walkClass . $walk->status . "', '" . $date . "', '" . $title . "', '" . $dist . "', '" . $gr . "', " . $lat . ", " . $long . ", '" . $url . "', " . $icon . ");";
         return $marker;
     }
 
