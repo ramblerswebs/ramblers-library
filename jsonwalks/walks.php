@@ -104,6 +104,14 @@ class RJsonwalksWalks {
         }
     }
 
+    public function filterDateRange($fromdate, $todate) {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($walk->walkDate < $fromdate || $walk->walkDate > $todate) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
     private function notInDayList($walk, $days) {
         foreach ($days as $value) {
             if (strtolower($value) == strtolower($walk->dayofweek)) {
