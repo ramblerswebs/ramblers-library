@@ -24,7 +24,14 @@ class RIcsOutput {
     }
 
     public function addRecord($content) {
-        $this->isc.=$this->fold($content);
+        $lines = str_split($content, 73);
+        $blank = "";
+        foreach ($lines as $line) {
+            if (trim($line) <> "") {
+                $this->isc.=$blank . $line . "\r\n";
+                $blank = " ";
+            }
+        }
     }
 
     public function addSequence($dateUpdated) {
@@ -39,14 +46,6 @@ class RIcsOutput {
         $this->isc = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nMETHOD:PUBLISH\r\n";
         $this->isc.= "PRODID:ramblers-webs v1.0\r\n";
         $this->isc.= "VERSION:2.0\r\n";
-    }
-
-    private function fold($text) {
-        if (strlen($text) <= 75) {
-            return $text . "\r\n";
-        }
-        // split, wrap and trim trailing separator
-        return substr(chunk_split($text, 73, "\r\n "), 0, -3) . "\r\n";
     }
 
     function __destruct() {

@@ -95,6 +95,7 @@ class RJsonwalksWalk extends REvent {
             $this->description = str_replace("&nbsp;", " ", $this->description);
             $this->description = strip_tags($this->description);
             $this->description = trim($this->description);
+            $this->description = htmlspecialchars_decode($this->description, ENT_QUOTES);
 
             $this->additionalNotes = $item->additionalNotes;
             $this->isLinear = $item->isLinear == "true";
@@ -121,7 +122,7 @@ class RJsonwalksWalk extends REvent {
 // contact details
             if ($item->walkContact != null) {
                 $this->isLeader = $item->walkContact->isWalkLeader == "true";
-                $this->contactName = $item->walkContact->contact->displayName;
+                $this->contactName = trim($item->walkContact->contact->displayName);
                 $this->email = $item->walkContact->contact->email;
                 $this->telephone1 = $item->walkContact->contact->telephone1;
                 $this->telephone2 = $item->walkContact->contact->telephone2;
@@ -273,28 +274,35 @@ class RJsonwalksWalk extends REvent {
     }
 
     public function Event_ics($icsfile) {
-        $CR = "\r\n";
-        $startLocation = $this->startLocation->getTextDescription();
         if ($this->hasMeetPlace) {
             $meetLocation = $this->meetLocation->getTextDescription();
+            $meetLocation .="; \\n";
         } else {
             $meetLocation = "";
         }
-
-        if (trim($this->description) == "") {
-            $description = $meetLocation . "; " . $startLocation . ";  ";
+        $startLocation = $this->startLocation->getTextDescription();
+        $description = $this->descriptionHtml;
+        $description = str_replace("&nbsp;", " ", $description);
+        $description = str_replace("<p>", "", $description);
+        $description = str_replace("</p>", "\\n", $description);
+        $description = strip_tags($description);
+        $description = htmlspecialchars_decode($description, ENT_QUOTES);
+        $description = trim($description);
+        if (!$this->endsWith($description, "\\n")) {
+            $description.="\\n ";
+        }
+        $description = $meetLocation . $startLocation . "\\nDescription: " . $description;
+        $description .= "Contact: " . $this->contactName . " (" . $this->telephone1 . " " . $this->telephone2 . "); \\n";
+        if ($this->localGrade <> "") {
+            $description .= "Grade: " . $this->localGrade . "/" . $this->nationalGrade . "; \\n ";
         } else {
-            $description = $meetLocation . "; " . $startLocation . $this->description . ";  ";
+            $description .= "Grade: " . $this->nationalGrade . "; \\n ";
         }
-        $description .= $this->contactName . " (" . $this->telephone1 . " " . $this->telephone2 . ");  " .
-                $this->localGrade . "/" . $this->nationalGrade;
-        $description .=";  " . $this->detailsPageUrl;
-
+        $description .= $this->detailsPageUrl;
+        $description .="\\nNote: Finish times are very approximate!";
         if ($this->additionalNotes != '') {
-            $description .= " - " . strip_tags($this->additionalNotes);
+            $description .= "\\nNotes: " . strip_tags($this->additionalNotes);
         }
-        $description .="; Note: Finish times are very approximate!";
-
         $now = new datetime();
         $icsfile->addRecord("BEGIN:VEVENT");
         $this->addIcsTimes($icsfile);
@@ -349,6 +357,11 @@ class RJsonwalksWalk extends REvent {
         $interval = new DateInterval($intervalFormat);
         $lasttime = $lasttime->add($interval);
         return $lasttime;
+    }
+
+    function endsWith($haystack, $needle) {
+        // search forward starting from end minus needle length characters
+        return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
     }
 
     function __destruct() {
