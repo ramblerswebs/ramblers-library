@@ -286,7 +286,7 @@ class RJsonwalksWalk extends REvent {
         $description = str_replace("<p>", "", $description);
         $description = str_replace("</p>", "\\n", $description);
         $description = strip_tags($description);
-        $description = htmlspecialchars_decode($description, ENT_QUOTES);
+        // $description = htmlspecialchars_decode($description, ENT_QUOTES);
         $description = trim($description);
         if (!$this->endsWith($description, "\\n")) {
             $description.="\\n ";

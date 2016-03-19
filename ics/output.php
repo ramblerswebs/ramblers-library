@@ -24,7 +24,8 @@ class RIcsOutput {
     }
 
     public function addRecord($content) {
-        $lines = str_split($content, 73);
+        $record = htmlspecialchars_decode($content, ENT_QUOTES);
+        $lines = str_split($record, 73);
         $blank = "";
         foreach ($lines as $line) {
             if (trim($line) <> "") {
