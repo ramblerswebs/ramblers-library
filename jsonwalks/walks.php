@@ -112,6 +112,33 @@ class RJsonwalksWalks {
         }
     }
 
+    public function filterNationalGrade($grades) {
+        foreach ($this->arrayofwalks as $key => $value) {
+            if ($this->notInGradeList($value, $grades)) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
+    public function filterDistance($distanceMin, $distanceMax)
+    {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            // if outside of the range then remove the walk
+            if ($walk->distanceMiles < $distanceMin || $walk->distanceMiles > $distanceMax) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
+    private function notInGradeList($walk, $grades) {
+        foreach ($grades as $value) {
+            if (strtolower($value) == strtolower($walk->nationalGrade)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private function notInDayList($walk, $days) {
         foreach ($days as $value) {
             if (strtolower($value) == strtolower($walk->dayofweek)) {
@@ -237,7 +264,7 @@ class RJsonwalksWalks {
     }
 
     public function __destruct() {
-        
+
     }
 
 }
