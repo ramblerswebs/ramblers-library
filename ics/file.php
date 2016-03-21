@@ -40,7 +40,7 @@ class RIcsFile extends RIcsOutput {
     }
 
     public function getFileLink($text) {
-        return "<div class='icsdownload'><a href='" . $this->cacheLinkname . "' target='_blank'>" . $text . "</a></div>";
+        return "<a href='" . $this->cacheLinkname . "' target='_blank'>" . $text . "</a>";
     }
 
     private function CacheLocation($filename) {

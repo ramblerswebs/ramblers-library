@@ -23,9 +23,20 @@ class RIcsOutput {
         return $this->isc . "END:VCALENDAR";
     }
 
-    public function addRecord($content) {
-        $record = htmlspecialchars_decode($content, ENT_QUOTES);
-        $lines = str_split($record, 73);
+    public function addRecord($command, $content = "", $html = false) {
+        if ($html) {
+            $before = "<!DOCTYPE html><html><head><title></title></head><body>";
+            $after = "</body></html>";
+            $content = str_replace("\\n", "<br/>", $content);
+            $lines = str_split($command . $before . $content . $after, 73);
+        } else {
+            $content = str_replace("<p>", "", $content);
+            $content = str_replace("</p>", "\\n", $content);
+            $content = str_replace("&ndash;", "-", $content);
+            $content = strip_tags($content);
+            $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5);
+            $lines = str_split($command . $content, 73);
+        }
         $blank = "";
         foreach ($lines as $line) {
             if (trim($line) <> "") {

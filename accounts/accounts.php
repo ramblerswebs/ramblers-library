@@ -23,6 +23,16 @@ class RAccounts {
         $this->updateDatabase($org);
     }
 
+    public function processJsonLogFiles() {
+        $this->getAccounts();
+        foreach ($this->dbresults as $item) :
+            $domain = $item->domain;
+            $ip = $item->ipaddr;
+            $status = $item->status;
+            $site = new RAccountsSite($domain, $ip, $status);
+        endforeach;
+    }
+
     public function addMapMarkers($map) {
         $this->readAccounts();
         $text = "";
@@ -83,7 +93,7 @@ class RAccounts {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $query->select($db->quoteName(array('id', 'code', 'domain')));
+            $query->select($db->quoteName(array('id', 'code', 'domain', 'ipaddr', 'status')));
             $query->from($db->quoteName(ACCOUNTTABLE));
 
             // Reset the query using our newly populated query object.

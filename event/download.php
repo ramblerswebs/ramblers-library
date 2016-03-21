@@ -42,9 +42,11 @@ class REventDownload extends RJsonwalksDisplaybase {
             $events->getIcalendarFile($icsfile);
             $icsfile->write();
         }
+        echo "<div class='icsdownload'>";
         echo $this->pretext;
         echo $icsfile->getFileLink($this->linktext);
         echo $this->posttext;
+        echo "</div>";
     }
 
     public function getText($events) {

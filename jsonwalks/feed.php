@@ -140,6 +140,16 @@ class RJsonwalksFeed {
         }
     }
 
+    public function displayIcsDownload($name, $pretext, $linktext, $posttext) {
+        $events = new REventGroup(); // create a group of events
+        $events->addWalks($this); // add walks to the group of events
+        $display = new REventDownload();
+        $display->setPreText($pretext);
+        $display->setLinkText($linktext);
+        $display->setPostText($posttext);
+        $display->Display("de02walks", $events); // display walks information
+    }
+
     private function getTogglePair($one, $two) {
         return ' onclick="ra_toggle_visibilities(\'' . $one . '\',\'' . $two . '\')"';
     }

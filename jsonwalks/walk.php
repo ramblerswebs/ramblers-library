@@ -282,48 +282,44 @@ class RJsonwalksWalk extends REvent {
         }
         $startLocation = $this->startLocation->getTextDescription();
         $description = $this->descriptionHtml;
-        $description = str_replace("&nbsp;", " ", $description);
-        $description = str_replace("<p>", "", $description);
-        $description = str_replace("</p>", "\\n", $description);
-        $description = strip_tags($description);
-        // $description = htmlspecialchars_decode($description, ENT_QUOTES);
-        $description = trim($description);
-        if (!$this->endsWith($description, "\\n")) {
-            $description.="\\n ";
-        }
-        $description = $meetLocation . $startLocation . "\\nDescription: " . $description;
-        $description .= "Contact: " . $this->contactName . " (" . $this->telephone1 . " " . $this->telephone2 . "); \\n";
+        $before = $meetLocation . $startLocation . "\\nDescription: ";
+        $after = "Contact: " . $this->contactName . " (" . $this->telephone1 . " " . $this->telephone2 . "); \\n";
         if ($this->localGrade <> "") {
-            $description .= "Grade: " . $this->localGrade . "/" . $this->nationalGrade . "; \\n ";
+            $after .= "Grade: " . $this->localGrade . "/" . $this->nationalGrade . "; \\n ";
         } else {
-            $description .= "Grade: " . $this->nationalGrade . "; \\n ";
+            $after .= "Grade: " . $this->nationalGrade . "; \\n ";
         }
-        $description .= $this->detailsPageUrl;
-        $description .="\\nNote: Finish times are very approximate!";
+        $after .= $this->detailsPageUrl;
+        $after .="\\nNote: Finish times are very approximate!";
         if ($this->additionalNotes != '') {
-            $description .= "\\nNotes: " . strip_tags($this->additionalNotes);
+            $after .= "\\nNotes: " . strip_tags($this->additionalNotes);
+        }
+        $summary = $this->title;
+        if ($this->distanceMiles > 0) {
+            $summary .=", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
         }
         $now = new datetime();
         $icsfile->addRecord("BEGIN:VEVENT");
         $this->addIcsTimes($icsfile);
-        $icsfile->addRecord("LOCATION:" . $startLocation);
+        $icsfile->addRecord("LOCATION:", $startLocation);
         $icsfile->addRecord("TRANSP:OPAQUE");
         $icsfile->addSequence($this->dateUpdated);
-        $icsfile->addRecord("UID: walk" . $this->id . "-isc@ramblers-webs.org.uk");
+        $icsfile->addRecord("UID: walk" . $this->id, "-isc@ramblers-webs.org.uk");
         if ($this->isCancelled()) {
             $icsfile->addRecord("METHOD:CANCEL");
-            $icsfile->addRecord("SUMMARY: CANCELLED " . $this->EventText());
-            $icsfile->addRecord("DESCRIPTION: CANCELLED - REASON: " . $this->cancellationReason . " (" . $description . ")");
+            $icsfile->addRecord("SUMMARY: CANCELLED ", $summary);
+            $icsfile->addRecord("DESCRIPTION: CANCELLED - REASON: ", $this->cancellationReason . " (" . $description . ")");
         } else {
-            $icsfile->addRecord("SUMMARY:" . $this->EventText());
-            $icsfile->addRecord("DESCRIPTION:" . $description);
+            $icsfile->addRecord("SUMMARY:", $summary);
+            $icsfile->addRecord("DESCRIPTION:", $before . $description . $after);
+            $icsfile->addRecord("X-ALT-DESC;FMTTYPE=text/html:", $before . $description . $after, true);
         }
-        $icsfile->addRecord("CATEGORIES: Walk," . $this->groupName);
-        $icsfile->addRecord("DTSTAMP;VALUE=DATE-TIME:" . $now->format('Ymd\THis'));
-        $icsfile->addRecord("CREATED;VALUE=DATE-TIME:" . $this->dateCreated->format('Ymd\THis'));
-        $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:" . $this->dateUpdated->format('Ymd\THis'));
+        $icsfile->addRecord("CATEGORIES:", "Walk," . $this->groupName);
+        $icsfile->addRecord("DTSTAMP;VALUE=DATE-TIME:", $now->format('Ymd\THis'));
+        $icsfile->addRecord("CREATED;VALUE=DATE-TIME:", $this->dateCreated->format('Ymd\THis'));
+        $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:" , $this->dateUpdated->format('Ymd\THis'));
         $icsfile->addRecord("PRIORITY:1");
-        $icsfile->addRecord("URL;VALUE=URI:" . $this->detailsPageUrl);
+        $icsfile->addRecord("URL;VALUE=URI:" , $this->detailsPageUrl);
         $icsfile->addRecord("CLASS:PUBLIC");
         $icsfile->addRecord("END:VEVENT");
         return;
