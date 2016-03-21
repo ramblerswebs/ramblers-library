@@ -30,6 +30,7 @@ class RIcsOutput {
             $content = str_replace("\\n", "<br/>", $content);
             $lines = str_split($command . $before . $content . $after, 73);
         } else {
+            $content = str_replace("&nbsp;", " ", $content);
             $content = str_replace("<p>", "", $content);
             $content = str_replace("</p>", "\\n", $content);
             $content = str_replace("&ndash;", "-", $content);
