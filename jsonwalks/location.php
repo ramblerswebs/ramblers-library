@@ -86,6 +86,12 @@ class RJsonwalksLocation {
         if ($loc2 == null) {
             return $loc1->time;
         }
+        if ($loc1->time == null) {
+            return $loc2->time;
+        }
+        if ($loc2->time == null) {
+            return $loc1->time;
+        }
         if (!$loc1->exact) {
             return $loc2->time;
         }

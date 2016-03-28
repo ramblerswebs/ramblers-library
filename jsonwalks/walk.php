@@ -317,9 +317,9 @@ class RJsonwalksWalk extends REvent {
         $icsfile->addRecord("CATEGORIES:", "Walk," . $this->groupName);
         $icsfile->addRecord("DTSTAMP;VALUE=DATE-TIME:", $now->format('Ymd\THis'));
         $icsfile->addRecord("CREATED;VALUE=DATE-TIME:", $this->dateCreated->format('Ymd\THis'));
-        $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:" , $this->dateUpdated->format('Ymd\THis'));
+        $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:", $this->dateUpdated->format('Ymd\THis'));
         $icsfile->addRecord("PRIORITY:1");
-        $icsfile->addRecord("URL;VALUE=URI:" , $this->detailsPageUrl);
+        $icsfile->addRecord("URL;VALUE=URI:", $this->detailsPageUrl);
         $icsfile->addRecord("CLASS:PUBLIC");
         $icsfile->addRecord("END:VEVENT");
         return;
@@ -329,8 +329,14 @@ class RJsonwalksWalk extends REvent {
         if ($this->icsDayEvents) {
             $icsfile->addRecord("DTSTART;VALUE=DATE:" . $this->walkDate->format('Ymd'));
         } else {
-            $icsfile->addRecord("DTSTART;VALUE=DATE-TIME:" . $this->getFirstTime()->format('Ymd\THis'));
-            $icsfile->addRecord("DTEND;VALUE=DATE-TIME:" . $this->getFinishTime()->format('Ymd\THis'));
+            $time = $this->getFirstTime();
+            if ($time <> null) {
+                $icsfile->addRecord("DTSTART;VALUE=DATE-TIME:" . $time->format('Ymd\THis'));
+            }
+            $time = $this->getFinishTime();
+            if ($time <> null) {
+                $icsfile->addRecord("DTEND;VALUE=DATE-TIME:" . $time->format('Ymd\THis'));
+            }
         }
     }
 
