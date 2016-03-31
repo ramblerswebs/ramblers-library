@@ -68,13 +68,17 @@ class RJsonwalksLocation {
         }
         if ($this->exact) {
             if ($this->time != "") {
-                $textdescription.=$this->timeHHMMshort . " @ ";
+                $textdescription .= $this->timeHHMMshort . " @ ";
             }
         }
+        $place = $this->gridref;
+        if ($this->postcode <> null) {
+            $place .= ", " . $this->postcode;
+        }
         if ($this->description != '') {
-            $textdescription .= $this->description . ' (' . $this->gridref . ')';
+            $textdescription .= $this->description . ' (' . $place . ')';
         } else {
-            $textdescription .= $this->gridref;
+            $textdescription .= $place;
         }
         return $textdescription;
     }
