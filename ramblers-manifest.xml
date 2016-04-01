@@ -2,12 +2,12 @@
 <extension type="file"  version="3.0" client="site" method="upgrade">
     <name>Ramblers Library</name>
     <author>Chris Vaughan Derby and South Derbyshire</author>
-    <creationDate>8 Sept 2015</creationDate>
-    <copyright>Copyright (C) 2014</copyright>
+    <creationDate>1 April 2016</creationDate>
+    <copyright>Copyright (C) 2016</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>www.ramblers-webs.org.uk</authorUrl>
-    <version>1.3.2</version>
+    <version>1.4.0</version>
     <description>Ramblers classes to process, JSON Walks feeds, Retrieve CB membership information</description>
     <fileset>
         <files target="ramblers">
