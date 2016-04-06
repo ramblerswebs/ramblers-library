@@ -86,8 +86,9 @@ class RJsonwalksWalk extends REvent {
 // basic walk details
             $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
             $this->detailsPageUrl = $item->url;
-            $this->title = htmlspecialchars($item->title);
-            $this->title = str_replace("'", "&apos;", $item->title);
+            $this->title = strip_tags($item->title);
+            $this->title = htmlspecialchars ($this->title, ENT_QUOTES);
+           // $this->title = str_replace("'", "&apos;", $this->title);
             $this->descriptionHtml = $item->description;
             $this->description = $item->description;
             $this->description = str_replace("\r", "", $this->description);

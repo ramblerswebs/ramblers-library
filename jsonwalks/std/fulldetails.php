@@ -16,6 +16,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $localGradeHelp = "";
     public $nationalGradeTarget = "_parent";
     public $localGradeTarget = "_parent";
+    public $addContacttoHeader = false;
     public $popupLink = true; // not used now!
     public $displayGroup = false;  // should the Group name be displayed
     private $printOn = false;
@@ -84,6 +85,14 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         if ($walk->distanceMiles > 0) {
             $text .= ", " . $walk->distanceMiles . "mile / " . $walk->distanceKm . "km";
         }
+        if ($this->addContacttoHeader) {
+            if ($walk->contactName <> "") {
+                $text .= ", " . $walk->contactName;
+            }
+            if ($walk->telephone1 <> "") {
+                $text .= ", " . $walk->telephone1;
+            }
+        }
 
         echo $text . PHP_EOL;
     }
@@ -147,26 +156,26 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         }
         echo "<div class='difficulty'><b>Difficulty</b>: ";
         if ($walk->distanceMiles > 0) {
-            echo RHtml::withDiv("distance", "<b>Distance</b>: " . $walk->distanceMiles . "mile / " . $walk->distanceKm . "km",$this->printOn);
+            echo RHtml::withDiv("distance", "<b>Distance</b>: " . $walk->distanceMiles . "mile / " . $walk->distanceKm . "km", $this->printOn);
         }
         $link = $walk->nationalGrade;
         if ($this->nationalGradeHelp != "") {
             $link = "<a href='" . $this->nationalGradeHelp . "' target='" . $this->nationalGradeTarget . "'>" . $link . "</a>";
         }
-        echo RHtml::withDiv("nationalgrade", "<b>National Grade</b>: " . $link,$this->printOn);
+        echo RHtml::withDiv("nationalgrade", "<b>National Grade</b>: " . $link, $this->printOn);
 
         if ($walk->localGrade != "") {
             $link = $walk->localGrade;
             if ($this->localGradeHelp != "") {
                 $link = "<a href='" . $this->localGradeHelp . "' target='" . $this->localGradeTarget . "'>" . $link . "</a>";
             }
-            echo RHtml::withDiv("localgrade", "<b>Local Grade</b>: " . $link,$this->printOn);
+            echo RHtml::withDiv("localgrade", "<b>Local Grade</b>: " . $link, $this->printOn);
         }
         if ($walk->pace != null) {
-            echo RHtml::withDiv("pace", "<b>Pace</b>: " . $walk->pace,$this->printOn);
+            echo RHtml::withDiv("pace", "<b>Pace</b>: " . $walk->pace, $this->printOn);
         }
         if ($walk->ascentFeet != null) {
-            echo RHtml::withDiv("ascent", "<b>Ascent</b>: " . $walk->ascentFeet . " ft " . $walk->ascentMetres . " ms",$this->printOn);
+            echo RHtml::withDiv("ascent", "<b>Ascent</b>: " . $walk->ascentFeet . " ft " . $walk->ascentMetres . " ms", $this->printOn);
         }
         echo "</div>" . PHP_EOL;
         if ($walk->isLeader == false) {
@@ -174,10 +183,10 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         } else {
             echo "<div class='walkcontact'><b>Contact Leader</b>: ";
         }
-        echo RHtml::withDiv("contactname", "<b>Name</b>: " . $walk->contactName,$this->printOn);
+        echo RHtml::withDiv("contactname", "<b>Name</b>: " . $walk->contactName, $this->printOn);
         if ($walk->email != "") {
 
-            echo RHtml::withDiv("email", "<b>Email</b>: " . $walk->email,$this->printOn);
+            echo RHtml::withDiv("email", "<b>Email</b>: " . $walk->email, $this->printOn);
         }
         if ($walk->telephone1 . $walk->telephone2 != "") {
             $text = "<b>Telephone</b>: ";
@@ -190,7 +199,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             if ($walk->telephone2 != "") {
                 $text.= $walk->telephone2;
             }
-            echo RHtml::withDiv("telephone", $text,$this->printOn);
+            echo RHtml::withDiv("telephone", $text, $this->printOn);
         }
         if ($walk->isLeader == false) {
             if ($walk->walkLeader != "") {
@@ -224,13 +233,13 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             }
             if ($this->printOn) {
                 if ($location->time <> "") {
-                    $out.= RHtml::withDiv("time", "<b>Time</b>: " . $location->timeHHMMshort,$this->printOn);
+                    $out.= RHtml::withDiv("time", "<b>Time</b>: " . $location->timeHHMMshort, $this->printOn);
                 }
             }
             $out.= "</abbr></div>";
             if (!$this->printOn) {
                 if ($location->time <> "") {
-                    $out.= RHtml::withDiv("time", "<b>Time</b>: " . $location->timeHHMMshort,$this->printOn);
+                    $out.= RHtml::withDiv("time", "<b>Time</b>: " . $location->timeHHMMshort, $this->printOn);
                 }
             }
             $gr = "<abbr title='Click Map to see Ordnance Survey map of location'><b>Grid Ref</b>: " . $location->gridref . " ";
@@ -238,8 +247,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
                 $gr.=$location->getOSMap("OS Map");
             }
             $gr.= "</abbr>";
-            $out.= RHtml::withDiv("gridref", $gr,$this->printOn);
-            $out.= RHtml::withDiv("latlong", "<b>Latitude</b>: " . $location->latitude . " , <b>Longitude</b>: " . $location->longitude,$this->printOn);
+            $out.= RHtml::withDiv("gridref", $gr, $this->printOn);
+            $out.= RHtml::withDiv("latlong", "<b>Latitude</b>: " . $location->latitude . " , <b>Longitude</b>: " . $location->longitude, $this->printOn);
 
             if ($location->postcode != "") {
                 $out.= $location->displayPostcode();
