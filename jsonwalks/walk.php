@@ -88,7 +88,6 @@ class RJsonwalksWalk extends REvent {
             $this->detailsPageUrl = $item->url;
             $this->title = strip_tags($item->title);
             $this->title = htmlspecialchars ($this->title, ENT_QUOTES);
-           // $this->title = str_replace("'", "&apos;", $this->title);
             $this->descriptionHtml = $item->description;
             $this->description = $item->description;
             $this->description = str_replace("\r", "", $this->description);
