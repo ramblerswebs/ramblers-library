@@ -67,7 +67,7 @@ class RCalendar {
         } while ($lastdate > $enddate);
     }
 
-     /**
+    /**
      * print out the calendar
      */
     private function showMonth($navtype) {
@@ -108,7 +108,7 @@ class RCalendar {
                 '<ul class="label">' . $this->_createLabels() . '</ul>' . PHP_EOL;
         $content.='<div class="clear"></div>' . PHP_EOL;
         $content.='<ul class="dates">' . PHP_EOL;
-        $weeksInMonth = $this->_weeksInMonth($this->currentYear, $this->currentYear);
+        $weeksInMonth = $this->_weeksInMonth($this->currentMonth, $this->currentYear);
         // Create weeks in a month
         for ($i = 0; $i < $weeksInMonth; $i++) {
             //Create days in a week
@@ -217,7 +217,7 @@ class RCalendar {
      * calculate number of days in a particular month
      */
     private function _daysInMonth($month, $year) {
-        return date('t', strtotime($year . '-' . $month . '-01'));
+        return $number = cal_days_in_month(CAL_GREGORIAN, $month, $year);
     }
 
     private function addEvents($cellContent, $currentDate) {
