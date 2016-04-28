@@ -83,6 +83,18 @@ class RJsonwalksFeed {
         $this->walks->filterFestivals($filter);
     }
 
+    public function filterDateRange($datefrom, $dateto) {
+        if (!is_a($datefrom, 'DateTime')) {
+            echo "filterDateRange: first parameter is NOT Datetime";
+            return;
+        }
+        if (!is_a($dateto, 'DateTime')) {
+            echo "filterDateRange: second parameter is NOT Datetime";
+            return;
+        }
+        $this->walks->filterDateRange($datefrom, $dateto);
+    }
+
     public function filterDayofweek($days) {
         $this->walks->filterDayofweek($days);
     }
