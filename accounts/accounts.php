@@ -23,7 +23,22 @@ class RAccounts {
         $this->updateDatabase($org);
     }
 
-   
+    public function listLogDetails($format) {
+        $this->getAccounts();
+        echo "<table>";
+        echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
+        foreach ($this->dbresults as $item) :
+            $domain = $item->domain;
+            $status = $item->status;
+            $account = new RAccountsAccount($domain, $status);
+            $cols = $account->getColumns($format);
+            if ($cols <> null) {
+                echo RHtml::addTableRow($cols);
+            }
+        endforeach;
+        echo "</table>";
+    }
+
     public function addMapMarkers($map) {
         $this->readAccounts();
         $text = "";
