@@ -71,15 +71,12 @@ class RAccountsAccount {
         $array = array();
         switch ($format) {
             case self::FORMAT_NOLOGFILE:
-                echo "<h2>Domains without a logfile</h2>";
                 return ["Domain", "Status"];
                 break;
             case self::FORMAT_OLDLOGFILE:
-                echo "<h2>Domains with an OLD logfile</h2>";
                 return ["Domain", "Status", "Date"];
                 break;
             case self::FORMAT_EXISTS:
-                echo "<h2>Domains - basic files</h2>";
                 return ["Domain<br/>  Status<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
                 break;
 
