@@ -84,7 +84,7 @@ class RAccounts {
 
             $query->select("*");
             $query->from($db->quoteName(ACCOUNTTABLE));
-
+            
             // Reset the query using our newly populated query object.
             $db->setQuery($query);
 
@@ -101,6 +101,7 @@ class RAccounts {
 
             $query->select($db->quoteName(array('id', 'code', 'domain', 'status')));
             $query->from($db->quoteName(ACCOUNTTABLE));
+            $query->order('domain ASC');
 
             // Reset the query using our newly populated query object.
             $db->setQuery($query);
