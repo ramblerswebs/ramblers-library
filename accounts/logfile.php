@@ -28,7 +28,6 @@ class RAccountsLogfile {
         } else {
             $file = self::CACHE . "/webstatus." . $domain . ".json.log";
         }
-
         $this->exists = file_exists($file);
         $this->readFile($file);
         $this->today = new datetime();
@@ -44,10 +43,8 @@ class RAccountsLogfile {
         }
         switch ($content) {
             case NULL:
-
                 break;
             case "[]":
-
                 break;
             default:
                 $json = json_decode($content);
@@ -61,16 +58,23 @@ class RAccountsLogfile {
 
     public function getFileDate() {
         if ($this->jsonobject <> NULL) {
-            return $this->jsonobject->creationdate;
+            if (isset($this->jsonobject->creationdate)) {
+                return $this->jsonobject->creationdate;
+            }
+            return "Unknown";
         }
         return "...";
     }
 
     public function isOlder($interval) {
         if ($this->jsonobject <> NULL) {
-            $datetext = $this->jsonobject->creationdate;
-            $created = DateTime::createFromFormat("Y-m-d H:i:s", $datetext);
-            if ($created->add($interval) < $this->today) {
+            if (isset($this->jsonobject->creationdate)) {
+                $datetext = $this->jsonobject->creationdate;
+                $created = DateTime::createFromFormat("Y-m-d H:i:s", $datetext);
+                if ($created->add($interval) < $this->today) {
+                    return true;
+                }
+            } else {
                 return true;
             }
         }

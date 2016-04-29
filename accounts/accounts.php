@@ -25,7 +25,7 @@ class RAccounts {
 
     public function listLogDetails($format) {
         $this->getAccounts();
-        echo "<table>";
+        echo "<table style='font-size: 85%'>";
         echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
         foreach ($this->dbresults as $item) :
             $domain = $item->domain;
