@@ -149,7 +149,7 @@ class RJsonwalksWalks {
     }
 
     public function noWalks($no) {
-        $i = 1;
+        $i = 0;
         foreach ($this->arrayofwalks as $key => $value) {
             $i+=1;
             if ($i > $no) {
