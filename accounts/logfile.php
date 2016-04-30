@@ -15,6 +15,10 @@ class RAccountsLogfile {
 
     const CACHE = "../cache01/cache";
     const RW = "ramblers-webs.org.uk";
+    const FILE_PHPINI = 0;
+    const FILE_HTACCESS = 1;
+    const FILE_PUBLICPHPINI = 2;
+    const FILE_PUBLICHTACCESS = 3;
 
     private $exists = false;
     private $jsonobject = null;
@@ -81,14 +85,52 @@ class RAccountsLogfile {
         return false;
     }
 
-    public function getFile($file) {
+    public function getFile($which) {
+
+        switch ($which) {
+            case self::FILE_PHPINI:
+                $file = "php.ini";
+                $expected = "";
+                break;
+            case self::FILE_HTACCESS:
+                $file = ".htaccess";
+                $expected = "SetEnv DEFAULT_PHP_VERSION 55\n";
+                break;
+            case self::FILE_PUBLICPHPINI:
+                $file = "public_html/php.ini";
+                $expected = "upload_max_filesize = 20M;\npost_max_size = 20M;\nmax_execution_time = 60;\noutput_buffering=0;";
+                break;
+            case self::FILE_PUBLICHTACCESS:
+                $file = "public_html/.htaccess";
+                $expected = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !\.(cgi)$\nRewritecond %{http_host} ^" . $this->domain . "\nRewriteRule ^(.*) http://www." . $this->domain . "/$1";
+                break;
+
+            default:
+                return "Error";
+                break;
+        }
         $key = $this->jsonobject->path . $file;
         if ($this->jsonobject <> NULL) {
             if (isset($this->jsonobject->files->$key)) {
-                return self::process($this->jsonobject->files->$key, 200);
+                $value = $this->jsonobject->files->$key;
+                return self::isSame($value, $expected);
             }
         }
         return "...";
+    }
+
+    static function isSame($value, $expected) {
+         if ($value === $expected) {
+            return "Identical";
+        }
+        $value=str_replace(" ;",";",$value);
+        if (trim($value) === trim($expected)) {
+            return "As expected";
+        }
+        if (strtolower(trim($value)) == strtolower(trim($expected))) {
+            return "As expected - case difference";
+        }
+        return self::process($value, 200);;
     }
 
     public function Exists() {

@@ -54,11 +54,11 @@ class RAccountsAccount {
                 if (!$this->log->Exists()) {
                     return null;
                 }
-                $array[] = $this->domain . "<br/>  " . $this->status . "<br/>  " . $this->log->getFileDate();
-                $array[] = $this->log->getFile(".htaccess");
-                $array[] = $this->log->getFile("php.ini");
-                $array[] = $this->log->getFile("public_html/.htaccess");
-                $array[] = $this->log->getFile("public_html/php.ini");
+                $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_HTACCESS);
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PHPINI);
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLICHTACCESS);
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLICPHPINI);
                 break;
             default:
                 return Null;
@@ -77,7 +77,7 @@ class RAccountsAccount {
                 return ["Domain", "Status", "Date"];
                 break;
             case self::FORMAT_EXISTS:
-                return ["Domain<br/>  Status<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
+                return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
                 break;
 
             default:
