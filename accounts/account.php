@@ -14,8 +14,11 @@
 class RAccountsAccount {
 
     const FORMAT_NOLOGFILE = 1;
-    const FORMAT_OLDLOGFILE = 2;
-    const FORMAT_EXISTS = 3;
+    const FORMAT_LOGFILE = 2;
+    const FORMAT_BASIC = 3;
+    const FORMAT_FOLDERS = 4;
+    const FORMAT_AKEEBA = 5;
+    const FORMAT_CONFIG = 6;
 
     private $status;
     private $domain;
@@ -39,18 +42,20 @@ class RAccountsAccount {
                 $array[] = $this->domain;
                 $array[] = $this->status;
                 break;
-            case self::FORMAT_OLDLOGFILE:
+            case self::FORMAT_LOGFILE:
                 if (!$this->log->Exists()) {
-                    return null;
-                }
-                if (!$this->log->isOlder($this->timeperiod)) {
                     return null;
                 }
                 $array[] = $this->domain;
                 $array[] = $this->status;
+                $array[] = $this->log->getWebMonitorVersion();
+                $array[] = $this->log->getReportFormat();
+                $array[] = $this->log->getFileSize();
                 $array[] = $this->log->getFileDate();
+                $array[] = $this->log->getNoFilesScanned();
+                $array[] = $this->log->getTotalSizeScanned();
                 break;
-            case self::FORMAT_EXISTS:
+            case self::FORMAT_BASIC:
                 if (!$this->log->Exists()) {
                     return null;
                 }
@@ -59,6 +64,42 @@ class RAccountsAccount {
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_PHPINI);
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLICHTACCESS);
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLICPHPINI);
+                break;
+            case self::FORMAT_FOLDERS:
+                if (!$this->log->Exists()) {
+                    return null;
+                }
+                $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                $folders = $this->log->getFolders();
+                $array[] = implode(", ", $folders);
+                break;
+            case self::FORMAT_AKEEBA:
+                if (!$this->log->Exists()) {
+                    return null;
+                }
+                $report = $this->log->getReportFormat();
+                if ($report = 1.02) {
+                    $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                    $array[] = $this->log->getBackupFolder();
+                    $array[] = $this->log->getBackupNo();
+                    $array[] = $this->log->getBackupSize();
+                    $array[] = $this->log->getBackupFile();
+                }
+                break;
+            case self::FORMAT_CONFIG:
+                if (!$this->log->Exists()) {
+                    return null;
+                }
+                $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                $array[] = $this->status;
+                $array[] = $this->log->getConfigFolder();
+                $array[] = $this->log->getConfigSitename();
+                $array[] = $this->log->getConfigCaching();
+                $array[] = $this->log->getConfigGZip();
+                $array[] = $this->log->getConfigSef();
+                $array[] = $this->log->getConfigSef_rewrite();
+                $array[] = $this->log->getConfigSef_suffix();
+
                 break;
             default:
                 return Null;
@@ -73,13 +114,21 @@ class RAccountsAccount {
             case self::FORMAT_NOLOGFILE:
                 return ["Domain", "Status"];
                 break;
-            case self::FORMAT_OLDLOGFILE:
-                return ["Domain", "Status", "Date"];
+            case self::FORMAT_LOGFILE:
+                return ["Domain", "Status", "Web Monitor", "Report Format", "File size", "Date", "Files scanned", "Total size scanned"];
                 break;
-            case self::FORMAT_EXISTS:
+            case self::FORMAT_BASIC:
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
                 break;
-
+            case self::FORMAT_FOLDERS:
+                return ["Domain<br/>  Date", "Public_html/Folders"];
+                break;
+            case self::FORMAT_AKEEBA:
+                return ["Domain<br/>  Date", "Folder", "No", "Size", "File"];
+                break;
+            case self::FORMAT_CONFIG:
+                return ["Domain<br/>  Date", "Status", "Folder", "Site name", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix"];
+                break;
             default:
                 return Null;
                 break;
