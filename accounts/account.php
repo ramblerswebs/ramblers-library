@@ -19,6 +19,7 @@ class RAccountsAccount {
     const FORMAT_FOLDERS = 4;
     const FORMAT_AKEEBA = 5;
     const FORMAT_CONFIG = 6;
+    const FORMAT_NOJOOMLA = 7;
 
     private $status;
     private $domain;
@@ -51,11 +52,11 @@ class RAccountsAccount {
                 $array[] = $this->log->getWebMonitorVersion();
                 $array[] = $this->log->getReportFormat();
                 $array[] = $this->log->getIP();
-               $array[] = $this->log->getFileSize();
+                $array[] = $this->log->getFileSize();
                 $array[] = $this->log->getFileDate();
                 $array[] = $this->log->getNoFilesScanned();
                 $array[] = $this->log->getTotalSizeScanned();
-               $array[] = $this->log->getLatestFile();
+                $array[] = $this->log->getLatestFile();
                 break;
             case self::FORMAT_BASIC:
                 if (!$this->log->Exists()) {
@@ -106,6 +107,15 @@ class RAccountsAccount {
                     $array[] = $this->log->getConfigSef_suffix();
                 }
                 break;
+            case self::FORMAT_NOJOOMLA:
+                if (!$this->log->Exists()) {
+                    return null;
+                }
+                if (!$this->log->hasJoomla()) {
+                    $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                    $array[] = $this->status;
+                }
+                break;
             default:
                 return Null;
                 break;
@@ -120,7 +130,7 @@ class RAccountsAccount {
                 return ["Domain", "Status"];
                 break;
             case self::FORMAT_LOGFILE:
-                return ["Domain", "Status", "Web Monitor", "Report Format","IP", "File size", "Date", "Files scanned", "Total size scanned","Latest File"];
+                return ["Domain", "Status", "Web Monitor", "Report Format", "IP", "File size", "Date", "Files scanned", "Total size scanned", "Latest File"];
                 break;
             case self::FORMAT_BASIC:
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
@@ -133,6 +143,9 @@ class RAccountsAccount {
                 break;
             case self::FORMAT_CONFIG:
                 return ["Domain<br/>  Date", "Status", "Folder", "Site name", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix"];
+                break;
+            case self::FORMAT_NOJOOMLA:
+                return ["Domain<br/>  Date", "Status"];
                 break;
             default:
                 return Null;
