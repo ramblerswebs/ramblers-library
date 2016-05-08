@@ -217,9 +217,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         if ($this->displayGroup == false) {
             echo "<div class='groupfootnote " . $class . "'>Group: " . $walk->groupName . "</div>" . PHP_EOL;
         }
-        echo "<div class='updated " . $class . "'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>" . PHP_EOL;
+        echo "<div class='updated " . $class . "'><a href='" . $walk->detailsPageUrl . "' target='_blank' >Walks Finder</a> Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
-
         echo "</div>" . PHP_EOL;
     }
 

@@ -50,10 +50,12 @@ class RAccountsAccount {
                 $array[] = $this->status;
                 $array[] = $this->log->getWebMonitorVersion();
                 $array[] = $this->log->getReportFormat();
-                $array[] = $this->log->getFileSize();
+                $array[] = $this->log->getIP();
+               $array[] = $this->log->getFileSize();
                 $array[] = $this->log->getFileDate();
                 $array[] = $this->log->getNoFilesScanned();
                 $array[] = $this->log->getTotalSizeScanned();
+               $array[] = $this->log->getLatestFile();
                 break;
             case self::FORMAT_BASIC:
                 if (!$this->log->Exists()) {
@@ -77,29 +79,32 @@ class RAccountsAccount {
                 if (!$this->log->Exists()) {
                     return null;
                 }
-                $report = $this->log->getReportFormat();
-                if ($report = 1.02) {
-                    $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
-                    $array[] = $this->log->getBackupFolder();
-                    $array[] = $this->log->getBackupNo();
-                    $array[] = $this->log->getBackupSize();
-                    $array[] = $this->log->getBackupFile();
+                if ($this->log->hasJoomla()) {
+                    $report = $this->log->getReportFormat();
+                    if ($report = 1.02) {
+                        $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                        $array[] = $this->log->getBackupFolder();
+                        $array[] = $this->log->getBackupNo();
+                        $array[] = $this->log->getBackupSize();
+                        $array[] = $this->log->getBackupFile();
+                    }
                 }
                 break;
             case self::FORMAT_CONFIG:
                 if (!$this->log->Exists()) {
                     return null;
                 }
-                $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
-                $array[] = $this->status;
-                $array[] = $this->log->getConfigFolder();
-                $array[] = $this->log->getConfigSitename();
-                $array[] = $this->log->getConfigCaching();
-                $array[] = $this->log->getConfigGZip();
-                $array[] = $this->log->getConfigSef();
-                $array[] = $this->log->getConfigSef_rewrite();
-                $array[] = $this->log->getConfigSef_suffix();
-
+                if ($this->log->hasJoomla()) {
+                    $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                    $array[] = $this->status;
+                    $array[] = $this->log->getConfigFolder();
+                    $array[] = $this->log->getConfigSitename();
+                    $array[] = $this->log->getConfigCaching();
+                    $array[] = $this->log->getConfigGZip();
+                    $array[] = $this->log->getConfigSef();
+                    $array[] = $this->log->getConfigSef_rewrite();
+                    $array[] = $this->log->getConfigSef_suffix();
+                }
                 break;
             default:
                 return Null;
@@ -115,7 +120,7 @@ class RAccountsAccount {
                 return ["Domain", "Status"];
                 break;
             case self::FORMAT_LOGFILE:
-                return ["Domain", "Status", "Web Monitor", "Report Format", "File size", "Date", "Files scanned", "Total size scanned"];
+                return ["Domain", "Status", "Web Monitor", "Report Format","IP", "File size", "Date", "Files scanned", "Total size scanned","Latest File"];
                 break;
             case self::FORMAT_BASIC:
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];

@@ -14,7 +14,6 @@
 class RAccountsLogfile {
 
     const CACHE = "../cache01/cache";
-    const RW = "ramblers-webs.org.uk";
     const FILE_PHPINI = 0;
     const FILE_HTACCESS = 1;
     const FILE_PUBLICPHPINI = 2;
@@ -28,11 +27,7 @@ class RAccountsLogfile {
 
     public function __construct($domain) {
         $this->domain = $domain;
-        if ($domain == self::RW) {
-            $file = "../webstatus.ramblers.webs.json.log";
-        } else {
-            $file = self::CACHE . "/webstatus." . $domain . ".json.log";
-        }
+        $file = self::CACHE . "/webstatus." . $domain . ".json.log";
         $this->exists = file_exists($file);
         $this->readFile($file);
         $this->today = new datetime();
@@ -80,6 +75,13 @@ class RAccountsLogfile {
         return "...";
     }
 
+    public function getIP() {
+        if (isset($this->jsonobject->ip)) {
+            return $this->jsonobject->ip;
+        }
+        return "...";
+    }
+
     public function getNoFilesScanned() {
         if (isset($this->jsonobject->nofilesscanned)) {
             return number_format($this->jsonobject->nofilesscanned);
@@ -90,6 +92,13 @@ class RAccountsLogfile {
     public function getTotalSizeScanned() {
         if (isset($this->jsonobject->totalsizescanned)) {
             return number_format($this->jsonobject->totalsizescanned);
+        }
+        return "...";
+    }
+
+    public function getLatestFile() {
+        if (isset($this->jsonobject->latestfile)) {
+            return $this->jsonobject->latestfile;
         }
         return "...";
     }
@@ -125,6 +134,21 @@ class RAccountsLogfile {
             return ["None"];
         }
         return ["..."];
+    }
+
+    public function hasJoomla() {
+        if ($this->jsonobject == NULL) {
+            return false;
+        }
+        if (!isset($this->jsonobject->config)) {
+            return false;
+        }
+        $count = 0;
+        foreach ($this->jsonobject->config as $item) {
+            $count+=1;
+        }
+        return $count <> 0;
+        ;
     }
 
     public function getConfigFolder() {
