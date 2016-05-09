@@ -27,7 +27,7 @@ class RAccountsAccount {
     private $timeperiod;
 
     public function __construct($domain, $status) {
-        $this->domain = $domain;
+        $this->domain = trim($domain);
         $this->status = $status;
         $this->log = new RAccountsLogfile($domain);
         $this->timeperiod = new DateInterval("P2D");
@@ -42,6 +42,7 @@ class RAccountsAccount {
                 }
                 $array[] = $this->domain;
                 $array[] = $this->status;
+                $array[] = gethostbyname($this->domain);
                 break;
             case self::FORMAT_LOGFILE:
                 if (!$this->log->Exists()) {
@@ -127,7 +128,7 @@ class RAccountsAccount {
         $array = array();
         switch ($format) {
             case self::FORMAT_NOLOGFILE:
-                return ["Domain", "Status"];
+                return ["Domain", "Status", "IP"];
                 break;
             case self::FORMAT_LOGFILE:
                 return ["Domain", "Status", "Web Monitor", "Report Format", "IP", "File size", "Date", "Files scanned", "Total size scanned", "Latest File"];

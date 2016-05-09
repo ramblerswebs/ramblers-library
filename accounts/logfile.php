@@ -76,10 +76,15 @@ class RAccountsLogfile {
     }
 
     public function getIP() {
+        $ipfromdomain = gethostbyname($this->domain);
+        $ip = "...";
         if (isset($this->jsonobject->ip)) {
-            return $this->jsonobject->ip;
+            $ip = $this->jsonobject->ip;
         }
-        return "...";
+        If ($ip == $ipfromdomain) {
+            return $ip;
+        }
+        return $ip . "/" . $ipfromdomain;
     }
 
     public function getNoFilesScanned() {
@@ -356,6 +361,8 @@ class RAccountsLogfile {
         $item = $file;
         if ($datecreated < $date) {
             $item = "<div style='color:#ababab'>" . $file . "</div>";
+        } else {
+            $item = "<div>" . $file . "</div>";
         }
         $interval = new DateInterval('P113D');
         $date->sub($interval);
