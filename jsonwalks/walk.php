@@ -52,8 +52,8 @@ class RJsonwalksWalk extends REvent {
     public $pace;                   // the pace of the walk or null
     Public $ascentMetres;           // the ascent in metres or null
     Public $ascentFeet;             // the ascent in feet or null
-    Public $strands;                // RJsonwalksItems object or null 
-    Public $festivals;              // RJsonwalksItems object or null 
+    Public $strands;                // RJsonwalksItems object or null
+    Public $festivals;              // RJsonwalksItems object or null
 // extra derived values
     public $placeTag;
     public $eventTag;
@@ -310,6 +310,7 @@ class RJsonwalksWalk extends REvent {
         $icsfile->addRecord("TRANSP:OPAQUE");
         $icsfile->addSequence($this->dateUpdated);
         $icsfile->addRecord("UID: walk" . $this->id . "-isc@ramblers-webs.org.uk");
+        $icsfile->addRecord("ORGANIZER: webmaster@ramblers-webs.org.uk");
         if ($this->isCancelled()) {
             $icsfile->addRecord("METHOD:CANCEL");
             $icsfile->addRecord("SUMMARY: CANCELLED " . $this->EventText());
@@ -365,7 +366,7 @@ class RJsonwalksWalk extends REvent {
     }
 
     function __destruct() {
-        
+
     }
 
 }
