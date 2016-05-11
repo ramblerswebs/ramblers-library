@@ -47,7 +47,7 @@ class RAccountsAccount {
             case self::FORMAT_LOGFILE:
                 if (!$this->log->Exists()) {
                     return null;
-                }
+                }  
                 $array[] = $this->domain;
                 $array[] = $this->status;
                 $array[] = $this->log->getWebMonitorVersion();

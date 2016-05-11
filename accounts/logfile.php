@@ -73,7 +73,7 @@ class RAccountsLogfile {
             return $this->jsonobject->webmonitorversion;
         }
         return "...";
-    }
+    }  
 
     public function getIP() {
         $ipfromdomain = gethostbyname($this->domain);
