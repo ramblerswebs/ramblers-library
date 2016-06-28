@@ -15,7 +15,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
     private $nowalks = 5;
 
     function DisplayWalks($walks) {
-
+        $schemawalks = array();
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         $no = 0;
@@ -38,10 +38,28 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . $walk->eventTag . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $col2 . $tag . "</a></div>" . PHP_EOL;
             if ($walk->isCancelled()) {
                 echo "CANCELLED: " . $walk->cancellationReason;
+            } else {
+                $performer = new RJsonwalksStructuredperformer($walk->groupName);
+                $location = new RJsonwalksStructuredlocation($walk->startLocation->description, $walk->startLocation->postcode);
+                $schemawalk = new RJsonwalksStructuredevent($performer, $location);
+                $schemawalk->description = $walk->description;
+                $schemawalk->enddate = $walk->walkDate->format('Y-m-d');
+                $schemawalk->image = "http://www.ramblers-webs.org.uk/images/ra-images/logos/standard/logo92.png";
+                $schemawalk->name = $walk->title;
+                $schemawalk->startdate = $schemawalk->enddate;
+                $schemawalk->url = $walk->detailsPageUrl;
+
+                $schemawalks[] = $schemawalk;
             }
         }
 
         echo "</ul>" . PHP_EOL;
+        $script = json_encode($schemawalks);
+        $script = str_replace('context', '@context', $script);
+        $script = str_replace('type', '@type', $script);
+        $script = str_replace('\/', '/', $script);
+        $script = '<script type="application/ld+json">' . $script . '</script>';
+        echo $script;
     }
 
     function noWalks($no) {

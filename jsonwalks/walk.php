@@ -5,10 +5,10 @@ defined('_JEXEC') or die('Restricted access');
 
 class RJsonwalksWalk extends REvent {
 
-    const EVENT = 'itemscope itemprop=event itemtype="http://schema.org/Event"';
-    const PLACE = 'itemscope itemprop=event itemtype="http://schema.org/Place"';
-    const GEOCOORDS = 'itemscope itemtype="http://schema.org/GeoCoordinates"';
-    const GEOSHAPE = 'itemscope itemtype="http://schema.org/GeoShape"';
+  //  const EVENT = 'itemscope itemprop=event itemtype="http://schema.org/Event"';
+  //  const PLACE = 'itemscope itemtype="http://schema.org/Place"';
+  //  const GEOCOORDS = 'itemscope itemtype="http://schema.org/GeoCoordinates"';
+  //  const GEOSHAPE = 'itemscope itemtype="http://schema.org/GeoShape"';
 
 // administration items
     public $id;                     // database ID of walk on Walks Finder
@@ -138,7 +138,7 @@ class RJsonwalksWalk extends REvent {
             }
 // pocess meeting and starting locations
             $this->processPoints($item->points);
-            $this->createExtraData();
+           // $this->createExtraData();
         } catch (Exception $ex) {
             $this->errorFound = 2;
         }
@@ -198,20 +198,22 @@ class RJsonwalksWalk extends REvent {
 
     private function getSchemaPlaceTag() {
 
-        $tag = "<div itemprop=location " . self::PLACE . " ><div style='display: none;' itemprop=name>" . $this->startLocation->description . "</div>";
-        $latitude = $this->startLocation->latitude;
-        $longitude = $this->startLocation->longitude;
-        if ($this->startLocation->exact) {
-            $tag.= "<span itemprop=geo " . self::GEOCOORDS . ">  ";
-            $tag.= "<meta itemprop=latitude content='" . $latitude . "' />";
-            $tag.= "<meta itemprop=longitude content='" . $longitude . "' />";
-        } else {
-            $tag.= "<span itemprop=geo " . self::GEOSHAPE . ">  ";
-            $tag.= "<meta itemprop=circle content='" . $latitude . "," . $longitude . ",1000' /> ";
-        }
+     //   $tag = "<div itemprop=location " . self::PLACE . " ><div style='display: none;' itemprop=name>" . $this->startLocation->description . "</div>";
+       $tag = "<div >" . $this->startLocation->description ;
+      //  $latitude = $this->startLocation->latitude;
+      //  $longitude = $this->startLocation->longitude;
+      //  if ($this->startLocation->exact) {
+          //  $tag.= "<span itemprop=geo " . self::GEOCOORDS . ">  ";
+          //  $tag.= "<meta itemprop=latitude content='" . $latitude . "' />";
+          //  $tag.= "<meta itemprop=longitude content='" . $longitude . "' />";
+     //   } else {
+          //  $tag.= "<span itemprop=geo " . self::GEOSHAPE . ">  ";
+          //  $tag.= "<meta itemprop=circle content='" . $latitude . "," . $longitude . ",1000' /> ";
+      //  }
 
         $tag.= "</span> ";
         $tag.= "</div>";
+        $tag="";
         $this->placeTag = $tag;
     }
 
