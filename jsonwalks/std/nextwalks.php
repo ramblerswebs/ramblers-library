@@ -27,25 +27,27 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
                 break;
             }
             $date = "<b>" . $walk->walkDate->format('D, jS F') . "</b>";
-            $col2 = "<span itemprop=startDate content=" . $walk->walkDate->format(DateTime::ISO8601) . ">" . $date . "</span>";
-            $col2 .= ", <span itemprop=name>" . $walk->title;
+            $desc = $date . ", " . $walk->title;
             if ($walk->distanceMiles > 0) {
-                $col2 .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
+                $desc .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
             }
-            $col2 .= "</span>";
             $tag = $walk->placeTag;
 
-            echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . $walk->eventTag . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $col2 . $tag . "</a></div>" . PHP_EOL;
+            echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . $walk->eventTag . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $desc . $tag . "</a></div>" . PHP_EOL;
             if ($walk->isCancelled()) {
                 echo "CANCELLED: " . $walk->cancellationReason;
             } else {
                 $performer = new RJsonwalksStructuredperformer($walk->groupName);
                 $location = new RJsonwalksStructuredlocation($walk->startLocation->description, $walk->startLocation->postcode);
                 $schemawalk = new RJsonwalksStructuredevent($performer, $location);
-                $schemawalk->description = $walk->description;
+                if ($walk->description == "") {
+                    $schemawalk->description = $desc;
+                } else {
+                    $schemawalk->description = $walk->description;
+                }
                 $schemawalk->enddate = $walk->walkDate->format('Y-m-d');
                 $schemawalk->image = "http://www.ramblers-webs.org.uk/images/ra-images/logos/standard/logo92.png";
-                $schemawalk->name = $walk->title;
+                $schemawalk->name = $desc;
                 $schemawalk->startdate = $schemawalk->enddate;
                 $schemawalk->url = $walk->detailsPageUrl;
 
