@@ -23,7 +23,7 @@ class RJsonwalksFeed {
         $this->feederror = "Invalid walks feed (invalid json format): " . $this->rafeedurl;
         $this->feednotfound = "Walks feed error(url not found): " . $this->rafeedurl;
         $this->walks = new RJsonwalksWalks(NULL);
-        $this->readFeed($rafeedurl);
+        $this->readFeed($this->rafeedurl);
     }
 
     private function readFeed($rafeedurl) {
