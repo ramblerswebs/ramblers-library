@@ -31,9 +31,8 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             if ($walk->distanceMiles > 0) {
                 $desc .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
             }
-            $tag = $walk->placeTag;
-
-            echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . $walk->eventTag . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $desc . $tag . "</a></div>" . PHP_EOL;
+           
+            echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $desc . "</a></div>" . PHP_EOL;
             if ($walk->isCancelled()) {
                 echo "CANCELLED: " . $walk->cancellationReason;
             } else {

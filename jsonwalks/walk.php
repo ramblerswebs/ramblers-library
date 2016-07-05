@@ -5,11 +5,6 @@ defined('_JEXEC') or die('Restricted access');
 
 class RJsonwalksWalk extends REvent {
 
-  //  const EVENT = 'itemscope itemprop=event itemtype="http://schema.org/Event"';
-  //  const PLACE = 'itemscope itemtype="http://schema.org/Place"';
-  //  const GEOCOORDS = 'itemscope itemtype="http://schema.org/GeoCoordinates"';
-  //  const GEOSHAPE = 'itemscope itemtype="http://schema.org/GeoShape"';
-
 // administration items
     public $id;                     // database ID of walk on Walks Finder
     public $status;                 // whether the walk is published, cancelled etc
@@ -55,9 +50,9 @@ class RJsonwalksWalk extends REvent {
     Public $strands;                // RJsonwalksItems object or null
     Public $festivals;              // RJsonwalksItems object or null
 // extra derived values
-    public $placeTag;
-    public $eventTag;
-
+    private $sortTime;
+    private $icsDayEvents = false;
+    
     const SORT_DATE = 0;
     const SORT_CONTACT = 1;
     const SORT_NATIONALGRADE = 2;
@@ -67,9 +62,6 @@ class RJsonwalksWalk extends REvent {
     const SORT_TELEPHONE2 = 6;
     const SORT_TIME = 7;
     const TIMEFORMAT = "Y-m-d\TH:i:s";
-
-    private $sortTime;
-    private $icsDayEvents = false;
 
     public function __construct($item) {
 
@@ -87,7 +79,7 @@ class RJsonwalksWalk extends REvent {
             $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
             $this->detailsPageUrl = $item->url;
             $this->title = strip_tags($item->title);
-            $this->title = htmlspecialchars ($this->title, ENT_QUOTES);
+            $this->title = htmlspecialchars($this->title, ENT_QUOTES);
             $this->descriptionHtml = $item->description;
             $this->description = $item->description;
             $this->description = str_replace("\r", "", $this->description);
@@ -138,7 +130,7 @@ class RJsonwalksWalk extends REvent {
             }
 // pocess meeting and starting locations
             $this->processPoints($item->points);
-           // $this->createExtraData();
+            $this->createExtraData();
         } catch (Exception $ex) {
             $this->errorFound = 2;
         }
@@ -186,35 +178,12 @@ class RJsonwalksWalk extends REvent {
         $this->dayofweek = $this->walkDate->format('l');
         $this->month = $this->walkDate->format('F');
         $this->day = $this->walkDate->format('jS');
-        $this->eventTag = self::EVENT;
-        $this->getSchemaPlaceTag();
         if ($this->meetLocation != NULL) {
             $this->sortTime = $this->meetLocation->time;
         }
         if ($this->sortTime == NULL) {
             $this->sortTime = $this->startLocation->time;
         }
-    }
-
-    private function getSchemaPlaceTag() {
-
-     //   $tag = "<div itemprop=location " . self::PLACE . " ><div style='display: none;' itemprop=name>" . $this->startLocation->description . "</div>";
-       $tag = "<div >" . $this->startLocation->description ;
-      //  $latitude = $this->startLocation->latitude;
-      //  $longitude = $this->startLocation->longitude;
-      //  if ($this->startLocation->exact) {
-          //  $tag.= "<span itemprop=geo " . self::GEOCOORDS . ">  ";
-          //  $tag.= "<meta itemprop=latitude content='" . $latitude . "' />";
-          //  $tag.= "<meta itemprop=longitude content='" . $longitude . "' />";
-     //   } else {
-          //  $tag.= "<span itemprop=geo " . self::GEOSHAPE . ">  ";
-          //  $tag.= "<meta itemprop=circle content='" . $latitude . "," . $longitude . ",1000' /> ";
-      //  }
-
-        $tag.= "</span> ";
-        $tag.= "</div>";
-        $tag="";
-        $this->placeTag = $tag;
     }
 
     private function processPoints($points) {
@@ -370,7 +339,7 @@ class RJsonwalksWalk extends REvent {
     }
 
     function __destruct() {
-
+        
     }
 
 }
