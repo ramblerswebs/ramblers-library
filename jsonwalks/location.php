@@ -21,7 +21,7 @@ class RJsonwalksLocation {
     public $exact;              // true or false
 
     function __construct($value, $walkDate) {
-        $this->description = $value->description;
+        $this->description = RHtml::convertToText($value->description);
         $day = $walkDate->format('Ymd ');
         $this->time = DateTime::createFromFormat('Ymd H:i:s', $day . $value->time);
         If ($this->time === false) {

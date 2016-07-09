@@ -31,7 +31,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             if ($walk->distanceMiles > 0) {
                 $desc .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
             }
-           
+
             echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $desc . "</a></div>" . PHP_EOL;
             if ($walk->isCancelled()) {
                 echo "CANCELLED: " . $walk->cancellationReason;
@@ -56,11 +56,11 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
 
         echo "</ul>" . PHP_EOL;
         $script = json_encode($schemawalks);
-        $script = str_replace('context', '@context', $script);
-        $script = str_replace('type', '@type', $script);
+        $script = str_replace('"context":', '"@context":', $script);
+        $script = str_replace('"type":', '"@type":', $script);
         $script = str_replace('\/', '/', $script);
-        $script = '<script type="application/ld+json">' . $script . '</script>';
-        echo $script;
+        $doc = JFactory::getDocument();
+        $doc->addScriptDeclaration($script, "application/ld+json");
     }
 
     function noWalks($no) {

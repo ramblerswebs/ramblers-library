@@ -47,6 +47,11 @@ class RIcsOutput {
         }
     }
 
+    // Escapes a string of characters
+    public static function escapeString($string) {
+        return preg_replace('/([\,;])/', '\\\$1', $string);
+    }
+
     public function addSequence($dateUpdated) {
         $date = new DateTime('2010-01-01');
         $interval = $date->diff($dateUpdated);
@@ -57,8 +62,7 @@ class RIcsOutput {
 
     private function addHeader() {
         $this->isc = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nMETHOD:PUBLISH\r\n";
-        $this->isc.= "PRODID:ramblers-webs v1.0\r\n";
-        $this->isc.= "VERSION:2.0\r\n";
+        $this->isc.= "PRODID:ramblers-webs v1.1\r\n";
     }
 
     function __destruct() {

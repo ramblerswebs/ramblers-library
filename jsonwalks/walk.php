@@ -52,7 +52,7 @@ class RJsonwalksWalk extends REvent {
 // extra derived values
     private $sortTime;
     private $icsDayEvents = false;
-    
+
     const SORT_DATE = 0;
     const SORT_CONTACT = 1;
     const SORT_NATIONALGRADE = 2;
@@ -78,17 +78,10 @@ class RJsonwalksWalk extends REvent {
 // basic walk details
             $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
             $this->detailsPageUrl = $item->url;
-            $this->title = strip_tags($item->title);
-            $this->title = htmlspecialchars($this->title, ENT_QUOTES);
+            $this->title = RHtml::convertToText($item->title);
             $this->descriptionHtml = $item->description;
-            $this->description = $item->description;
-            $this->description = str_replace("\r", "", $this->description);
-            $this->description = str_replace("\n", "", $this->description);
-            $this->description = str_replace("&nbsp;", " ", $this->description);
-            $this->description = strip_tags($this->description);
-            $this->description = trim($this->description);
-            $this->description = htmlspecialchars_decode($this->description, ENT_QUOTES);
-
+            $this->description = RHtml::convertToText($item->description);
+            
             $this->additionalNotes = $item->additionalNotes;
             $this->isLinear = $item->isLinear == "true";
             switch ($item->finishTime) {
@@ -252,9 +245,8 @@ class RJsonwalksWalk extends REvent {
             $meetLocation = "";
         }
         $startLocation = $this->startLocation->getTextDescription();
-        $description = $this->descriptionHtml;
         $before = $meetLocation . $startLocation . "\\nDescription: ";
-        $after = "Contact: " . $this->contactName . " (" . $this->telephone1 . " " . $this->telephone2 . "); \\n";
+        $after = "\\nContact: " . $this->contactName . " (" . $this->telephone1 . " " . $this->telephone2 . "); \\n";
         if ($this->localGrade <> "") {
             $after .= "Grade: " . $this->localGrade . "/" . $this->nationalGrade . "; \\n ";
         } else {
@@ -272,26 +264,26 @@ class RJsonwalksWalk extends REvent {
         $now = new datetime();
         $icsfile->addRecord("BEGIN:VEVENT");
         $this->addIcsTimes($icsfile);
-        $icsfile->addRecord("LOCATION:", $startLocation);
+        $icsfile->addRecord("LOCATION:", RIcsOutput::escapeString($startLocation));
         $icsfile->addRecord("TRANSP:OPAQUE");
         $icsfile->addSequence($this->dateUpdated);
         $icsfile->addRecord("UID: walk" . $this->id . "-isc@ramblers-webs.org.uk");
-        $icsfile->addRecord("ORGANIZER: webmaster@ramblers-webs.org.uk");
+        $icsfile->addRecord("ORGANIZER;CN=" . $this->groupName . ":mailto:ignore@ramblers-webs.org.uk");
         if ($this->isCancelled()) {
             $icsfile->addRecord("METHOD:CANCEL");
-            $icsfile->addRecord("SUMMARY: CANCELLED ", $summary);
-            $icsfile->addRecord("DESCRIPTION: CANCELLED - REASON: ", $this->cancellationReason . " (" . $description . ")");
+            $icsfile->addRecord("SUMMARY: CANCELLED ", RIcsOutput::escapeString($summary));
+            $icsfile->addRecord("DESCRIPTION: CANCELLED - REASON: ", RIcsOutput::escapeString(RHtml::convertToText($this->cancellationReason)) . " (" . RIcsOutput::escapeString($this->description) . ")");
         } else {
-            $icsfile->addRecord("SUMMARY:", $summary);
-            $icsfile->addRecord("DESCRIPTION:", $before . $description . $after);
-            $icsfile->addRecord("X-ALT-DESC;FMTTYPE=text/html:", $before . $description . $after, true);
+            $icsfile->addRecord("SUMMARY:", RIcsOutput::escapeString($summary));
+            $icsfile->addRecord("DESCRIPTION:", RIcsOutput::escapeString($before . $this->description . $after));
+            $icsfile->addRecord("X-ALT-DESC;FMTTYPE=text/html:", $before . $this->descriptionHtml . $after, true);
         }
-        $icsfile->addRecord("CATEGORIES:", "Walk," . $this->groupName);
+        $icsfile->addRecord("CATEGORIES:", "Walk," . RIcsOutput::escapeString($this->groupName));
         $icsfile->addRecord("DTSTAMP;VALUE=DATE-TIME:", $now->format('Ymd\THis'));
         $icsfile->addRecord("CREATED;VALUE=DATE-TIME:", $this->dateCreated->format('Ymd\THis'));
         $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:", $this->dateUpdated->format('Ymd\THis'));
         $icsfile->addRecord("PRIORITY:1");
-        $icsfile->addRecord("URL;VALUE=URI:", $this->detailsPageUrl);
+        $icsfile->addRecord("URL;VALUE=URI:", RIcsOutput::escapeString($this->detailsPageUrl));
         $icsfile->addRecord("CLASS:PUBLIC");
         $icsfile->addRecord("END:VEVENT");
         return;
