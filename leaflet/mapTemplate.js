@@ -1,6 +1,6 @@
 
-function raLoadLeaflet(){
-var map = new L.Map('leafletmap', {center: new L.LatLng(54.221592, -3.355007), zoom: 5});
+function raLoadLeaflet() {
+    var map = new L.Map('leafletmap', {center: new L.LatLng(54.221592, -3.355007), zoom: 5});
     var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> '});
@@ -20,7 +20,7 @@ var map = new L.Map('leafletmap', {center: new L.LatLng(54.221592, -3.355007), z
         position: 'topright',
         showMarker: false
     }).addTo(map);
-    mapLayers = {'Open Street Map': osm,'Google': ggl, 'Google Satellite': ggl3, 'Google Hybrid': ggl2};
+    mapLayers = {'Open Street Map': osm, 'Google': ggl, 'Google Satellite': ggl3, 'Google Hybrid': ggl2};
     var progress = document.getElementById('progress');
     var progressBar = document.getElementById('progress-bar');
 
@@ -74,7 +74,8 @@ var map = new L.Map('leafletmap', {center: new L.LatLng(54.221592, -3.355007), z
     markersCG.addLayers(markerList);
     map.addLayer(markersCG);
     map.addControl(new L.Control.Layers(mapLayers));
-    };
-    document.onload = function() {
-       raLoadLeaflet();
-    };
+}
+;
+window.onload = function () {
+    raLoadLeaflet();
+};
