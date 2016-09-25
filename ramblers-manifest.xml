@@ -7,13 +7,12 @@
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>www.ramblers-webs.org.uk</authorUrl>
-    <version>1.4.8</version>
+    <version>1.5.0</version>
     <description>Ramblers classes to process, JSON Walks feeds, Retrieve CB membership information</description>
     <fileset>
         <files target="ramblers">
             <filename>ramblers-manifest.xml</filename>
             <filename>readme.md</filename>
-            <folder>css</folder>
             <folder>accounts</folder>
             <folder>calendar</folder>
             <folder>directory</folder>
@@ -29,6 +28,13 @@
             <folder>jsonwalks/leaflet</folder>
             <folder>jsonwalks/std</folder>
             <folder>leaflet</folder>
+            <folder>leaflet/cluster</folder>
+            <folder>leaflet/geodesy</folder>
+            <folder>leaflet/geosearch</folder>
+            <folder>leaflet/google</folder>
+            <folder>leaflet/images</folder>
+            <folder>leaflet/leaflet</folder>
+            <folder>leaflet/mouseposition</folder>
             <folder>organisation</folder>
              <folder>osmap</folder>
             <folder>sql</folder>

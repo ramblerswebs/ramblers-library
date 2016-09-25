@@ -40,7 +40,7 @@ class RAccountsAccount {
                 if ($this->log->Exists()) {
                     return Null;
                 }
-                $array[] = $this->domain;
+                $array[] = $this->domainLink();
                 $array[] = $this->status;
                 $array[] = gethostbyname($this->domain);
                 break;
@@ -48,7 +48,7 @@ class RAccountsAccount {
                 if (!$this->log->Exists()) {
                     return null;
                 }  
-                $array[] = $this->domain;
+                $array[] = $this->domainLink();
                 $array[] = $this->status;
                 $array[] = $this->log->getWebMonitorVersion();
                 $array[] = $this->log->getReportFormat();
@@ -63,7 +63,7 @@ class RAccountsAccount {
                 if (!$this->log->Exists()) {
                     return null;
                 }
-                $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_HTACCESS);
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_PHPINI);
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLICHTACCESS);
@@ -73,7 +73,7 @@ class RAccountsAccount {
                 if (!$this->log->Exists()) {
                     return null;
                 }
-                $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                 $folders = $this->log->getFolders();
                 $array[] = implode(", ", $folders);
                 break;
@@ -84,7 +84,7 @@ class RAccountsAccount {
                 if ($this->log->hasJoomla()) {
                     $report = $this->log->getReportFormat();
                     if ($report = 1.02) {
-                        $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                        $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                         $array[] = $this->log->getBackupFolder();
                         $array[] = $this->log->getBackupNo();
                         $array[] = $this->log->getBackupSize();
@@ -97,7 +97,7 @@ class RAccountsAccount {
                     return null;
                 }
                 if ($this->log->hasJoomla()) {
-                    $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                    $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                     $array[] = $this->status;
                     $array[] = $this->log->getConfigFolder();
                     $array[] = $this->log->getConfigSitename();
@@ -113,7 +113,7 @@ class RAccountsAccount {
                     return null;
                 }
                 if (!$this->log->hasJoomla()) {
-                    $array[] = $this->domain . "<br/>  " . $this->log->getFileDate();
+                    $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                     $array[] = $this->status;
                 }
                 break;
@@ -153,6 +153,10 @@ class RAccountsAccount {
                 break;
         }
         return $array;
+    }
+    
+    private function domainLink(){
+        return "<a target='_blank' href='http://".$this->domain."'>".$this->domain."</a>";
     }
 
 }

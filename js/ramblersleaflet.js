@@ -1,13 +1,13 @@
 function addMarker($list, $popup, $lat, $long, $icon) {
     var marker = L.marker([$lat, $long], {icon: $icon});
-    $pop = $popup.replace(/&quot;/g, '"'); 
+    $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
     marker.bindPopup($pop);
     $list.push(marker);
 }
 
 function addMarkerToLayer($layer, $popup, $lat, $long, $icon) {
     var marker = L.marker([$lat, $long], {icon: $icon});
-    $pop = $popup.replace(/&quot;/g, '"'); 
+    $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text 
     marker.bindPopup($pop);
     $layer.add.push(marker);
 }

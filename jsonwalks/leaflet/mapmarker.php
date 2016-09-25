@@ -10,6 +10,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
     private $map;
     private $bounds;
     private $walkClass = "walk";
+    private $legendposition = "top";
 
     public function __construct() {
         $this->map = new RLeafletMap;
@@ -23,8 +24,17 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $this->map->mapWidth = $width;
     }
 
+    public function setLegend($position) {
+        $this->legendposition = $position;
+    }
+
     public function DisplayWalks($walks) {
+        $legend = '<p><strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.</p>
+<p><img src="ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.</p>';
         if (isset($this->map)) {
+            if (strpos($this->legendposition, "top") !== false) {
+                echo $legend;
+            }
             $items = $walks->allWalks();
             $this->bounds = $walks->getBounds(RJsonwalksWalks::LATLONG);
             $text = "";
@@ -39,6 +49,9 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
     map.fitBounds(bounds);";
             $this->map->addBounds($boundstext);
             $this->map->display();
+            if (strpos($this->legendposition, "bottom") !== false) {
+                echo $legend;
+            }
         }
     }
 
