@@ -57,6 +57,7 @@ class RLeafletMap {
         $document->addStyleDeclaration($mapStyle);
         // leaflet/joomla fix so that overlay pane is displayed
         $document->addStyleDeclaration(".leaflet-overlay-pane svg{max-width:none}");
+        $document->addStyleDeclaration(".osgridref {font-weight: 700;font-size:125%;}");
 
         $base = JURI::base();
         $this->map->replaceString("[base]", $base);
