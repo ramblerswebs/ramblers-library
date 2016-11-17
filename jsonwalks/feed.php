@@ -14,26 +14,46 @@ class RJsonwalksFeed {
 
     private $walks;
     private $rafeedurl;
-    private $feederror;
-    private $feednotfound;
     private $displayLimit = 0;
+    private $srfr;
 
     public function __construct($rafeedurl) {
-        $this->rafeedurl = strtolower($rafeedurl);
-        $this->feederror = "Invalid walks feed (invalid json format): " . $this->rafeedurl;
-        $this->feednotfound = "Walks feed error(url not found): " . $this->rafeedurl;
+        $this->rafeedurl = trim($rafeedurl);
         $this->walks = new RJsonwalksWalks(NULL);
+        $CacheTime = 5; // minutes
+        $cacheLocation = $this->CacheLocation();
+        $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->readFeed($this->rafeedurl);
     }
 
     private function readFeed($rafeedurl) {
-        $CacheTime = 60; // minutes
-        $cacheLocation = $this->CacheLocation();
-        $srfr = new RFeedhelper($cacheLocation, $CacheTime);
-        $contents = $srfr->getFeed($rafeedurl);
+
+        $result = $this->srfr->getFeed($rafeedurl);
+        $status = $result["status"];
+        $contents = $result["contents"];
+
+        switch ($status) {
+            case RFeedhelper::OK:
+                break;
+            case RFeedhelper::READFAILED:
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Unable to fetch walks, data may be out of date: ' . $rafeedurl), 'warning');
+                break;
+            case RFeedhelper::FEEDERROR;
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Feed must use HTTP protocol: ' . $rafeedurl), 'error');
+                break;
+            case RFeedhelper::FEEDFOPEN:
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Not able to read feed using fopen: ' . $rafeedurl), 'error');
+                break;
+            default:
+                break;
+        }
         switch ($contents) {
             case NULL:
-                echo '<b>Walks feed: Unable to read feed: ' . $rafeedurl . '</b>';
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Walks feed: Unable to read feed: ' . $rafeedurl), 'error');
                 break;
             case "":
                 echo '<b>Walks feed: No walks found</b>';
@@ -51,14 +71,16 @@ class RJsonwalksFeed {
                         $error+=$ok;
                     }
                     if ($error > 0) {
-                        echo '<br/><b>Walks feed: Json file format not supported</b>';
+                        $application = JFactory::getApplication();
+                        $application->enqueueMessage(JText::_('Walks feed: Json file format not supported: ' . $rafeedurl), 'error');
                     } else {
                         $this->walks = new RJsonwalksWalks($json);
                     }
                     unset($json);
                     break;
                 } else {
-                    echo '<br/><b>Walks feed: feed is not in Json format</b>';
+                    $application = JFactory::getApplication();
+                    $application->enqueueMessage(JText::_('Walks feed: feed is not in Json format: ' . $rafeedurl), 'error');
                 }
         }
     }
@@ -69,6 +91,10 @@ class RJsonwalksFeed {
 
     public function setDisplayLimit($no) {
         $this->displayLimit = $no;
+    }
+
+    public function filterDistance($easting,$northing,$distanceKm) {
+        $this->walks->filterDistance($easting,$northing,$distanceKm);
     }
 
     public function filterGroups($filter) {
@@ -171,19 +197,8 @@ class RJsonwalksFeed {
     }
 
     public function clearCache() {
-        $cacheFolderPath = $this->CacheLocation();
-// Check if the cache folder exists
-        if (file_exists($cacheFolderPath) && is_dir($cacheFolderPath)) {
-// clear files from folder
-            $files = glob($cacheFolderPath . '/*'); // get all file names
-            echo "<h2>Feed cache has been cleared</h2>";
-            foreach ($files as $file) { // iterate files
-                if (is_file($file)) {
-                    unlink($file); // delete file}
-                }
-            }
-        }
-// reread feed
+        $this->srfr->clearCache();
+        // reread feed
         $this->readFeed($this->rafeedurl);
     }
 

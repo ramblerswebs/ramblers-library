@@ -81,7 +81,7 @@ class RJsonwalksWalk extends REvent {
             $this->title = RHtml::convertToText($item->title);
             $this->descriptionHtml = $item->description;
             $this->description = RHtml::convertToText($item->description);
-            
+
             $this->additionalNotes = $item->additionalNotes;
             $this->isLinear = $item->isLinear == "true";
             switch ($item->finishTime) {
@@ -323,6 +323,10 @@ class RJsonwalksWalk extends REvent {
         $interval = new DateInterval($intervalFormat);
         $lasttime = $lasttime->add($interval);
         return $lasttime;
+    }
+
+    public function distanceFrom($easting, $northing, $distanceKm) {
+        return $this->startLocation->distanceFrom($easting, $northing, $distanceKm);
     }
 
     function endsWith($haystack, $needle) {

@@ -3,32 +3,51 @@ var map;
 var gridsquare10;
 var gridsquare100;
 var document;
+var postcodelayer
 
 //function raLoadLeaflet() {
-map = new L.Map("leafletmap", {center: new L.LatLng(54.221592, -3.355007), zoom: 5});
-// Zoom control
-L.control.scale().addTo(map);
-// search control
-new L.Control.GeoSearch({
-    provider: new L.GeoSearch.Provider.OpenStreetMap({countrycodes: "gb"}),
-    position: "topright",
-    zoomLevel: 14,
-    showMarker: false
-}).addTo(map);
-// map types
-var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 18,
-    attribution: "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> "
-});
+map = new L.Map("leafletmap", {
+    center: new L.LatLng(54.221592, -3.355007),
+    zoom: 5,
+    fullscreenControl: true});
 
-var ggl = new L.Google("ROADMAP");
-var ggl2 = new L.Google("HYBRID");
-var ggl3 = new L.Google("SATELLITE");
-map.addLayer(osm);
-mapLayers = {"Open Street Map": osm, "Google": ggl, "Google Satellite": ggl3, "Google Hybrid": ggl2};
+var addGoogle = false;
+// [set addGoogle]
+
+// map types
+var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> '}).addTo(map);
+if (addGoogle) {
+    var roads = L.gridLayer.googleMutant({
+        type: 'roadmap' // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+    });
+    var satellite = L.gridLayer.googleMutant({
+        type: 'satellite' // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+    });
+    var hybrid = L.gridLayer.googleMutant({
+        type: 'hybrid' // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+    });
+    var terrain = L.gridLayer.googleMutant({
+        type: 'terrain' // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+    });
+    mapLayers = {'Open Street Map': osm,
+        'Google': roads,
+        'Google Satellite': satellite,
+        'Google Hybrid': hybrid,
+        'Google Terrain': terrain
+    };
+} else {
+    mapLayers = {'Open Street Map': osm
+    };
+}
+
+
+
 // progress bar for custers
 var progress = document.getElementById("ra-cluster-progress");
 var progressBar = document.getElementById("ra-cluster-progress-bar");
+
 
 function updateProgressBar(processed, total, elapsed, layersArray) {
     if (elapsed > 1000) {
@@ -43,19 +62,17 @@ function updateProgressBar(processed, total, elapsed, layersArray) {
     }
 }
 
-// [FitBounds]
-
 var markerStart = L.icon({
     iconUrl: "[base]/ramblers/images/marker-start.png",
-    iconSize: [22, 35]
+    iconSize: [35, 35]
 });
 var markerArea = L.icon({
     iconUrl: "[base]/ramblers/images/marker-area.png",
-    iconSize: [22, 35]
+    iconSize: [35, 35]
 });
 var markerCancelled = L.icon({
     iconUrl: "[base]/ramblers/images/marker-cancelled.png",
-    iconSize: [22, 35]
+    iconSize: [35, 35]
 });
 var walkingarea = L.icon({
     iconUrl: "[base]/ramblers/images/area.png",
@@ -86,8 +103,11 @@ function makeGroup(color) {
 
 // [[Add markers here]]
 
+
+
 markersCG.addLayers(markerList);
 map.addLayer(markersCG);
+// [FitBounds]
 
 // create an orange rectangle
 gridsquare100 = L.rectangle([[84, -89], [84.00001, -89.000001]],
@@ -100,11 +120,40 @@ var overlayMaps = {
     "OS 100Km Grid": osgrid
 };
 osgrid.addTo(map);
+// add marker and layer group to contain postcode markers
+postcodeIcon = L.icon({
+    iconUrl: 'ramblers/leaflet/images/postcode-icon.png',
+    iconSize: [24, 18], // size of the icon
+    shadowSize: [26, 20], // size of the shadow
+    iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
+    shadowAnchor: [0, 0], // the same for the shadow
+    popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
+});
+postcodeIconClosest = L.icon({
+    iconUrl: 'ramblers/leaflet/images/postcode-icon-closest.png',
+    iconSize: [24, 18], // size of the icon
+    shadowSize: [26, 20], // size of the shadow
+    iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
+    shadowAnchor: [0, 0], // the same for the shadow
+    popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
+});
+postcodelayer = L.featureGroup([]);
+postcodelayer.addTo(map);
 
-L.control.layers(mapLayers, overlayMaps, {collapsed: false}).addTo(map);
+L.control.layers(mapLayers, overlayMaps, {collapsed: true}).addTo(map);
+var geocoder = L.Control.geocoder({
+    defaultMarkGeocode: true,
+    collapsed: true,
+    geocoder: L.Control.Geocoder.nominatim({
+        geocodingQueryParams: {countrycodes: 'gb'}
+    })
+}).addTo(map);
 
-L.control.mousePosition().addTo(map);
+L.control.postcodeStatus().addTo(map);
+L.control.mouse().addTo(map);
 
+// Zoom control
+L.control.scale().addTo(map);
 
 //}
 //;

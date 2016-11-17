@@ -82,6 +82,11 @@ class RJsonwalksLocation {
         }
         return $textdescription;
     }
+    public function distanceFrom($easting,$northing,$distanceKm){
+        $dele=$this->easting-$easting;
+        $deln=$this->northing-$northing;
+        return math.sqrt($dele*$dele+$deln*$deln);
+    }
 
     static function firstTime($loc1, $loc2) {
         if ($loc1 == null) {
@@ -127,7 +132,7 @@ class RJsonwalksLocation {
         return $loc2->time;
     }
 
-    public function displayPostcode() {
+    public function displayPostcode($detailsPageUrl) {
         $lat1 = $this->postcodeLatitude;
         $lon1 = $this->postcodeLongitude;
         $lat2 = $this->latitude;
@@ -147,7 +152,7 @@ class RJsonwalksLocation {
             $note = $this->type . " place is " . $dist . " metres " . $direction . " of postcode. ";
             $note.= "Click to display the locations of the Postcode(P) and " . $this->type . " locations";
             $note2 = $dist . " metres " . RGeometryGreatcircle::directionAbbr($direction);
-            $link = $this->getPostcodeMap($note2);
+            $link = $this->getPostcodeMap($note2, $detailsPageUrl);
         }
         $pc = "<abbr title='" . $note . "'><b>Postcode</b>: " . $this->postcode . " ";
         $pc.=$link;
@@ -203,21 +208,9 @@ class RJsonwalksLocation {
         }
     }
 
-    public function getPostcodeMap($text) {
+    public function getPostcodeMap($text, $detailsPageUrl) {
         if ($this->exact) {
-            // $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&size=512x512&path=color:0xff0000ff|weight:5|[lat1],[long1]|[lat2],[long2]&markers=color:blue|label:P|[lat1],[long1]&markers=color:green|label:[Lab]|[lat2],[long2]";
-            $code = "https://maps.googleapis.com/maps/api/staticmap?center=[latcentre],[longcentre]&amp;size=512x512&amp;markers=color:blue|label:P|[lat1],[long1]&amp;markers=color:green|label:[Lab]|[lat2],[long2]";
-            $centreLatitude = ($this->latitude + $this->postcodeLatitude) / 2;
-            $centreLongitude = ($this->longitude + $this->postcodeLongitude) / 2;
-            $code = str_replace("[lat1]", $this->postcodeLatitude, $code);
-            $code = str_replace("[long1]", $this->postcodeLongitude, $code);
-            $code = str_replace("[lat2]", $this->latitude, $code);
-            $code = str_replace("[long2]", $this->longitude, $code);
-            $code = str_replace("[latcentre]", $centreLatitude, $code);
-            $code = str_replace("[longcentre]", $centreLongitude, $code);
-            $lab = substr($this->type, 0, 1);
-            $code = str_replace("[Lab]", $lab, $code);
-            $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=600,height=600');\">[" . $text . "]</span>";
+            $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $detailsPageUrl . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=900,height=600');\">[" . $text . "]</span>";
             return $out;
         } else {
             return "";

@@ -12,6 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class RUsersStatus {
 
+    private $srfr;
     private $user;
     private $cbInfo;
     private $membership;
@@ -110,7 +111,7 @@ class RUsersStatus {
         }
     }
 
-    function getMembershipInfo($id) {
+    function getMembershipInfoDELETE($id) {
         $this->decodeMembershipNumber($id);
         $ClearCache = NULL;
         $feedTimeout = 5;
@@ -155,6 +156,80 @@ class RUsersStatus {
                 }
         }
     }
+ function getMembershipInfo($id) {
+        $this->decodeMembershipNumber($id);
+        $ClearCache = NULL;
+        $feedTimeout = 5;
+        $CacheTime = 60; // minutes
+        $cacheLocation = $this->CacheLocation();
+        $rafeedurl = "http://members.theramblers.org.uk/index.php?id=" . $this->membershipno;
+
+// Fetch content
+        $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
+
+        if (isset($ClearCache)) {
+            $this->srfr->clearCache($cacheLocation); // clear cache
+        }
+        
+        $this->membership = NULL;
+
+        $this->readFeed($rafeedurl);
+    }
+
+    private function readFeed($rafeedurl) {
+
+        $result = $this->srfr->getFeed($rafeedurl);
+        $status = $result["status"];
+        $contents = $result["contents"];
+
+        switch ($status) {
+            case RFeedhelper::OK:
+                break;
+            case RFeedhelper::READFAILED:
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Unable to fetch membership data, data may be out of date: ' . $rafeedurl), 'warning');
+                break;
+            case RFeedhelper::FEEDERROR;
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Feed must use HTTP protocol: ' . $rafeedurl), 'error');
+                break;
+            case RFeedhelper::FEEDFOPEN:
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Not able to read feed using fopen: ' . $rafeedurl), 'error');
+                break;
+            default:
+                break;
+        }
+        switch ($contents) {
+            case NULL:
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Membership feed: Unable to read feed: ' . $rafeedurl), 'error');
+                break;
+            case "":
+                echo '<b>Membership feed: Member not found</b>';
+                break;
+            case "[]":
+                echo '<b>Membership feed empty: Member not found</b>';
+                break;
+            default:
+                $json = json_decode($contents);
+                unset($contents);
+                $error = 0;
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    $this->membership = $json;
+                    if (isset($this->membership->error)) {
+                        if ($this->membership->error == true) {
+                            $this->membership = NULL;
+                        }
+                    }
+                    unset($json);
+                    break;
+                } else {
+                    $application = JFactory::getApplication();
+                    $application->enqueueMessage(JText::_('Membership feed: feed is not in Json format: ' . $rafeedurl), 'error');
+                }
+        }
+    }
 
     private function CacheLocation() {
         if (!defined('DS')) {
@@ -178,7 +253,7 @@ class RUsersStatus {
                 $id = $this->user->id;
                 $query = $db->getQuery(true);
 
-                $query->select($db->quoteName(array('cb_membershipno', 'cb_postcode','lastname')));
+                $query->select($db->quoteName(array('cb_membershipno', 'cb_postcode', 'lastname')));
                 $query->from($db->quoteName('#__comprofiler'));
                 $query->where($db->quoteName('id') . ' = ' . $id);
 // Reset the query using our newly populated query object.

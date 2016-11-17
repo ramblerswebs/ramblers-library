@@ -8,7 +8,6 @@
 class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
 
     private $map;
-    private $bounds;
     private $walkClass = "walk";
     private $legendposition = "top";
 
@@ -36,18 +35,13 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
                 echo $legend;
             }
             $items = $walks->allWalks();
-            $this->bounds = $walks->getBounds(RJsonwalksWalks::LATLONG);
             $text = "";
             foreach ($items as $walk) {
                 $marker = $this->addMarker($walk);
                 $text.=$marker . PHP_EOL;
             }
             $this->map->addMarkers($text);
-            $boundstext = "
-    var bounds = [[" . $this->bounds['xmin'] . "," . $this->bounds['ymin'] . "],[" . $this->bounds['xmax'] . "," . $this->bounds['ymax'] . ",]];
-    // zoom the map to the rectangle bounds
-    map.fitBounds(bounds);";
-            $this->map->addBounds($boundstext);
+            $this->map->addBounds();
             $this->map->display();
             if (strpos($this->legendposition, "bottom") !== false) {
                 echo $legend;

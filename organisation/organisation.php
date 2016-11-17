@@ -13,6 +13,7 @@
  */
 class ROrganisation {
 
+    private $srfr;
     public $groups;
     public $areas;
     public $showLinks = true;
@@ -27,13 +28,73 @@ class ROrganisation {
 
     public function load() {
         $url = "http://www.ramblers.org.uk/api/lbs/groups/";
+        $CacheTime = 3 * 4 * 7 * 60 * 24; // three months in minutes
+        $cacheLocation = $this->CacheLocation();
+        $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->readFeed($url);
     }
 
     private function readFeed($rafeedurl) {
-        $CacheTime = 3 * 4 * 7 * 60 * 24; // three months in minutes
-        $cacheLocation = $this->CacheLocation();
-        $srfr = new RFeedhelper($cacheLocation, $CacheTime);
+
+        $result = $this->srfr->getFeed($rafeedurl);
+        $status = $result["status"];
+        $contents = $result["contents"];
+
+        switch ($status) {
+            case RFeedhelper::OK:
+                break;
+            case RFeedhelper::READFAILED:
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Unable to fetch organisation data, data may be out of date: ' . $rafeedurl), 'warning');
+                break;
+            case RFeedhelper::FEEDERROR;
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Feed must use HTTP protocol: ' . $rafeedurl), 'error');
+                break;
+            case RFeedhelper::FEEDFOPEN:
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Not able to read feed using fopen: ' . $rafeedurl), 'error');
+                break;
+            default:
+                break;
+        }
+        switch ($contents) {
+            case NULL:
+                $application = JFactory::getApplication();
+                $application->enqueueMessage(JText::_('Groups feed: Unable to read feed: ' . $rafeedurl), 'error');
+                break;
+            case "":
+                echo '<b>Groups feed: No Groups found</b>';
+                break;
+            case "[]":
+                echo '<b>Groups feed empty: No Groups found</b>';
+                break;
+            default:
+                $json = json_decode($contents);
+                unset($contents);
+                $error = 0;
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    foreach ($json as $value) {
+                        $ok = $this->checkJsonProperties($value);
+                        $error+=$ok;
+                    }
+                    if ($error > 0) {
+                        $application = JFactory::getApplication();
+                        $application->enqueueMessage(JText::_('Groups feed: Json file format not supported: ' . $rafeedurl), 'error');
+                    } else {
+                        $this->convert($json);
+                    }
+                    unset($json);
+                    break;
+                } else {
+                    $application = JFactory::getApplication();
+                    $application->enqueueMessage(JText::_('Groups feed: feed is not in Json format: ' . $rafeedurl), 'error');
+                }
+        }
+    }
+
+    private function readFeedDELETE($rafeedurl) {
+
         $contents = $srfr->getFeed($rafeedurl);
         switch ($contents) {
             case NULL:
@@ -128,18 +189,7 @@ class ROrganisation {
 
     public function addMapMarkers($map) {
         if (isset($map)) {
-            // Set Centre and zoom level
-            $bounds = "";
-            if ($this->mapZoom >= 0 and $this->mapZoom <= 18) {
-                $bounds.="map.setZoom(" . $this->mapZoom . ");\r\n";
-            }
-            If ($this->centreGroup <> "") {
-                if (isset($this->groups[$this->centreGroup])) {
-                    $group = $this->groups[$this->centreGroup];
-                    $bounds.="var latlng = new L.LatLng(" . $group->latitude . "," . $group->longitude . ");\r\n map.panTo(latlng);\r\n";
-                }
-            }
-            $map->addBounds($bounds);
+            $map->addBounds();
             $text = "";
             foreach ($this->groups as $key => $group) {
                 $areatext = "";

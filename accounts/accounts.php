@@ -58,14 +58,14 @@ class RAccounts {
             case true:
                 $title = str_replace("'", "", $item->areaname);
                 $icon = "walkingarea";
-                $text = "Area " . $title . " [" . $item->code . "]";
+                $text = "Area: " . $title . " [" . $item->code . "]";
                 break;
             case false:
                 $title = str_replace("'", "", $item->groupname);
                 $icon = "walkinggroup";
-                $text = str_replace("'", "", "Area " . $item->areaname) . "<br/>";
+                $text = str_replace("'", "", "Area: " . $item->areaname) . "<br/>";
                 if (strlen($item->code) == 4) {
-                    $text .= "Group " . $title . " [" . $item->code . "]";
+                    $text .= "Group: " . $title . " [" . $item->code . "]";
                 }
                 break;
         }

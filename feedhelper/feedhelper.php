@@ -1,10 +1,10 @@
 <?php
 
 //
-//     @version		1.0
-//     @package		Simple Feed Reader - runs under Jumi
+//     @version		2.0
+//     @package		Simple Feed Reader 
 //     @author                 Chris Vaughan
-//     @copyright              Copyright (c) 2014 Chris Vaughan Derby & South Derbyshire Ramblers
+//     @copyright              Copyright (c) 2016 Chris Vaughan Derby & South Derbyshire Ramblers
 //     @license		GNU/GPL license: http://www.gnu.org/copyleft/gpl.html
 //
 //
@@ -19,127 +19,81 @@ class RFeedhelper {
 
     const OK = 0;
     const READFAILED = 1;
-    const READEMPTY = 2;
+    const FEEDERROR = 2;
+    const FEEDFOPEN = 3;
 
-    function __construct($cacheLocation, $cacheTime) {
+    public function __construct($cacheLocation, $cacheTime) {
+
         if (isset($cacheLocation)) {
             $this->cacheTime = $cacheTime * 60; // convert to seconds
             $this->cacheFolderPath = JPATH_SITE . DS . $cacheLocation;
+            $this->createCacheFolder();
         } else {
             die("Invalid call to RJsonwalksFeedhelper");
         }
     }
 
-    function getFeed($feedfilename) {
-        // Returns
-        //   NULL is cannot read feed
-        //   blank if feed empty
-        //   contents if all ok
+    public function getFeed($feedurl) {
+        
+        $url = trim($feedurl);
+        $contents = '';
         $this->status = self::OK;
-        $url = trim($feedfilename);
-        $content = '';
-        ini_set('max_execution_time', 120);
-        $cachedFile = $this->createCachedFileFromUrl($feedfilename);
-        if ($cachedFile <> '') {
-            $content = file_get_contents($cachedFile);
-            if ($content === false) {
-                $content = '';
+        if (ini_get('allow_url_fopen') == false) {
+            $this->status = self::FEEDFOPEN;
+        }
+        if (substr($url, 0, 4) != "http") {
+            $this->status = self::FEEDERROR;
+        }
+
+        if ($this->status == self::OK) {
+            $cachedFile = $this->createCachedFileFromUrl($url);
+            if ($cachedFile != '') {
+                $contents = file_get_contents($cachedFile);
+                if ($contents === false) {
+                    $contents = NULL;
+                }
             }
         }
-        switch ($this->status) {
-            case self::OK:
-                return $content;
-                break;
-            case self::READEMPTY:
-                return '';
-                break;
-            case self::READFAILED:
-                return NULL;
-                break;
-            default:
-                return NULL;
-                break;
-        }
-        return NULL;
+        $result = [];
+        $result["status"] = $this->status;
+        $result["contents"] = $contents;
+        return $result;
     }
 
     // Get remote file
-    private function createCachedFileFromUrl($feedfilename) {
-        // Check if the cache folder exists
-        if (file_exists($this->cacheFolderPath) && is_dir($this->cacheFolderPath)) {
-            // all OK
-        } else {
-            mkdir($this->cacheFolderPath);
-        }
-
+    private function createCachedFileFromUrl($url) {
         jimport('joomla.filesystem.file');
-
-        $url = trim($feedfilename);
+        $result = '';
         $tmpFile = $this->getCacheName($url);
-
         // Check if a cached copy exists otherwise create it
         if (file_exists($tmpFile) && is_readable($tmpFile) && (filemtime($tmpFile) + $this->cacheTime) > time()) {
-            $result = $tmpFile;
-        } else {
-            // Get file
-            if (substr($url, 0, 4) == "http") {
-                // remote file
-                if (ini_get('allow_url_fopen')) {
-                    // file_get_contents
-                    if ($this->urlExists($url)) {
-                        $fgcOutput = file_get_contents($url);
-                        if ($fgcOutput === false) {
-                            $status = self::READFAILED;
-                            return '';
-                        } else {
-                            JFile::write($tmpFile, $fgcOutput);
-                        }
-                    } else {
-                        $status = self::READFAILED;
-                        return '';
-                    }
-                } elseif (in_array('curl', get_loaded_extensions())) {
-                    // cURL
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $url);
-                    curl_setopt($ch, CURLOPT_HEADER, false);
-                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    $chOutput = curl_exec($ch);
-                    curl_close($ch);
-                    JFile::write($tmpFile, $chOutput);
-                } else {
-                    // fsockopen
-                    $readURL = parse_url($url);
-                    $relativePath = (isset($readURL['query'])) ? $readURL['path'] . "?" . $readURL['query'] : $readURL['path'];
-                    $fp = fsockopen($readURL['host'], 80, $errno, $errstr, 5);
-                    if (!$fp) {
-                        $status = self::READFAILED;
-                    } else {
-                        $out = "GET " . $relativePath . " HTTP/1.1\r\n";
-                        $out .= "Host: " . $readURL['host'] . "\r\n";
-                        $out .= "Connection: Close\r\n\r\n";
-                        fwrite($fp, $out);
-                        $header = '';
-                        $body = '';
-                        do {
-                            $header .= fgets($fp, 128);
-                        } while (strpos($header, "\r\n\r\n") === false); // get the header data
-                        while (!feof($fp))
-                            $body .= fgets($fp, 128); // get the actual content
-                        fclose($fp);
-                        JFile::write($tmpFile, $body);
-                    }
-                }
-
-                $result = $tmpFile;
-            } else {
-
-                // local file
-                $result = $url;
-            }
+            $this->status = self::OK;
+            return $tmpFile;
         }
-
+        // create cached file
+        // check url exists
+        if ($this->urlExists($url)) {
+            // file_get_contents
+            $ctx = stream_context_create(array(
+                'http' => array(
+                    'timeout' => 1
+                )
+                    )
+            );
+            //  $fgcOutput = file_get_contents($url, 0, $ctx);
+            $fgcOutput = file_get_contents($url);
+            if ($fgcOutput === false) {
+                $this->status = self::READFAILED;
+            } else {
+                JFile::write($tmpFile, $fgcOutput);
+            }
+        } else {
+            $this->status = self::READFAILED;
+        }
+        // if cached file exists (new or old) then return it.
+        if (file_exists($tmpFile) && is_readable($tmpFile)) {
+            $result = $tmpFile;
+        }
         return $result;
     }
 
@@ -174,8 +128,8 @@ class RFeedhelper {
         }
     }
 
-    private function getCacheName($feedfilename) {
-        $url = trim($feedfilename);
+    private function getCacheName($feedname) {
+        $url = strtolower(trim($feedname));
         if (substr($url, 0, 4) == "http") {
             $turl = explode("?", $url);
             $matchComponents = array("#(http|https)\:\/\/#s", "#www\.#s");
@@ -196,6 +150,15 @@ class RFeedhelper {
             $tmpFile = $this->cacheFolderPath . DS . 'cached_' . md5($url);
         }
         return $tmpFile;
+    }
+
+    private function createCacheFolder() {
+        // Check if the cache folder exists
+        if (file_exists($this->cacheFolderPath) && is_dir($this->cacheFolderPath)) {
+            // all OK
+        } else {
+            mkdir($this->cacheFolderPath);
+        }
     }
 
 }

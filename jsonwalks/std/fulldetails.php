@@ -126,10 +126,22 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         } else {
             echo "<b>Circular walk</b>";
         }
+        if ($walk->hasMeetPlace) {
+            $out = "<div><b>Meeting time " . $walk->meetLocation->timeHHMMshort."</b></div>";
+            echo $out . PHP_EOL;
+        }
+        if ($walk->startLocation->exact) {
+            $out = "<div><b>Start time " . $walk->startLocation->timeHHMMshort."</b></div>";
+            echo $out . PHP_EOL;
+        }
+        if ($walk->finishTime!=null) {
+            $out = "<div>(Estimated finish time " . $this->getShortTime($walk->finishTime).")</div>";
+            echo $out . PHP_EOL;
+        }
         echo "</div>";
         if ($walk->hasMeetPlace) {
             echo "<div class='meetplace'>";
-            $out = $this->addLocationInfo("Meeting", $walk->meetLocation);
+            $out = $this->addLocationInfo("Meeting", $walk->meetLocation, $walk->detailsPageUrl);
             echo $out;
             echo "</div>" . PHP_EOL;
         } else {
@@ -141,14 +153,14 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         } else {
             echo "<div class='nostartplace'><b>No start place - Rough location only</b>: ";
         }
-        echo $this->addLocationInfo("Start", $walk->startLocation);
+        echo $this->addLocationInfo("Start", $walk->startLocation, $walk->detailsPageUrl);
 
         echo "</div>" . PHP_EOL;
 
         if ($walk->isLinear) {
             echo "<div class='finishplace'>";
             if ($walk->finishLocation != null) {
-                echo $this->addLocationInfo("Finish", $walk->finishLocation);
+                echo $this->addLocationInfo("Finish", $walk->finishLocation, $walk->detailsPageUrl);
             } else {
                 echo "<span class='walkerror' >ERROR: No finish location supplied</span>";
             }
@@ -214,15 +226,16 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         if ($this->printOn) {
             $class = "printon";
         }
-        if ($this->displayGroup == false) {
+          echo "<div class='updated " . $class . "'><a href='" . $walk->detailsPageUrl . "' target='_blank' >View walk on Walks Finder</a></div>" . PHP_EOL;
+      if ($this->displayGroup == false) {
             echo "<div class='groupfootnote " . $class . "'>Group: " . $walk->groupName . "</div>" . PHP_EOL;
         }
-        echo "<div class='updated " . $class . "'><a href='" . $walk->detailsPageUrl . "' target='_blank' >Walks Finder</a> Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>" . PHP_EOL;
+        echo "<div class='updated " . $class . "'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
     }
 
-    private function addLocationInfo($title, $location) {
+    private function addLocationInfo($title, $location, $detailsPageUrl) {
 
         if ($location->exact) {
             $note = "Click Google Directions to see map and directions from your current location";
@@ -250,7 +263,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $out.= RHtml::withDiv("latlong", "<b>Latitude</b>: " . $location->latitude . " , <b>Longitude</b>: " . $location->longitude, $this->printOn);
 
             if ($location->postcode != "") {
-                $out.= $location->displayPostcode();
+                $out.= $location->displayPostcode($detailsPageUrl);
             }
         } else {
             $out = "<div class='place'>";
@@ -273,6 +286,16 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             }
             echo "</div>";
         }
+    }
+    function getShortTime($time){
+         $timeHHMM = $time->format('g:i a');
+            $timeHHMMshort = str_replace(":00", "", $timeHHMM);
+            if ($timeHHMMshort == "12 am") {
+                $time = "";
+                $timeHHMM = "No time";
+                $timeHHMMshort = "No time";
+            }
+            return $timeHHMMshort;
     }
 
 }
