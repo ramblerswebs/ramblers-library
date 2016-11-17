@@ -7,6 +7,7 @@ Updates
     update feed handling to use old cache file if unable to read feed
     updates to leaflet mapping
         addition of postcode display
+        display right click points location including mapcode
         full screen option
         different location search engine
     new gpx mapping option

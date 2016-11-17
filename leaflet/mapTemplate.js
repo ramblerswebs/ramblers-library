@@ -122,7 +122,7 @@ var overlayMaps = {
 osgrid.addTo(map);
 // add marker and layer group to contain postcode markers
 postcodeIcon = L.icon({
-    iconUrl: 'ramblers/leaflet/images/postcode-icon.png',
+    iconUrl: '/ramblers/leaflet/images/postcode-icon.png',
     iconSize: [24, 18], // size of the icon
     shadowSize: [26, 20], // size of the shadow
     iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
@@ -130,7 +130,7 @@ postcodeIcon = L.icon({
     popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
 });
 postcodeIconClosest = L.icon({
-    iconUrl: 'ramblers/leaflet/images/postcode-icon-closest.png',
+    iconUrl: '/ramblers/leaflet/images/postcode-icon-closest.png',
     iconSize: [24, 18], // size of the icon
     shadowSize: [26, 20], // size of the shadow
     iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
