@@ -63,27 +63,27 @@ function updateProgressBar(processed, total, elapsed, layersArray) {
 }
 
 var markerStart = L.icon({
-    iconUrl: "[base]/ramblers/images/marker-start.png",
+    iconUrl: "[base]ramblers/images/marker-start.png",
     iconSize: [35, 35]
 });
 var markerArea = L.icon({
-    iconUrl: "[base]/ramblers/images/marker-area.png",
+    iconUrl: "[base]ramblers/images/marker-area.png",
     iconSize: [35, 35]
 });
 var markerCancelled = L.icon({
-    iconUrl: "[base]/ramblers/images/marker-cancelled.png",
+    iconUrl: "[base]ramblers/images/marker-cancelled.png",
     iconSize: [35, 35]
 });
 var walkingarea = L.icon({
-    iconUrl: "[base]/ramblers/images/area.png",
+    iconUrl: "[base]ramblers/images/area.png",
     iconSize: [40, 35]
 });
 var walkinggroup = L.icon({
-    iconUrl: "[base]/ramblers/images/group.png",
+    iconUrl: "[base]ramblers/images/group.png",
     iconSize: [40, 35]
 });
 var walkingspecial = L.icon({
-    iconUrl: "[base]/ramblers/images/specialgroup.png",
+    iconUrl: "[base]ramblers/images/specialgroup.png",
     iconSize: [40, 35]
 });
 var markersCG = L.markerClusterGroup({chunkedLoading: false, chunkProgress: updateProgressBar});
@@ -122,7 +122,7 @@ var overlayMaps = {
 osgrid.addTo(map);
 // add marker and layer group to contain postcode markers
 postcodeIcon = L.icon({
-    iconUrl: '/ramblers/leaflet/images/postcode-icon.png',
+    iconUrl: '[base]ramblers/leaflet/images/postcode-icon.png',
     iconSize: [24, 18], // size of the icon
     shadowSize: [26, 20], // size of the shadow
     iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
@@ -130,7 +130,7 @@ postcodeIcon = L.icon({
     popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
 });
 postcodeIconClosest = L.icon({
-    iconUrl: '/ramblers/leaflet/images/postcode-icon-closest.png',
+    iconUrl: '[base]ramblers/leaflet/images/postcode-icon-closest.png',
     iconSize: [24, 18], // size of the icon
     shadowSize: [26, 20], // size of the shadow
     iconAnchor: [12, 9], // point of the icon which will correspond to marker's location

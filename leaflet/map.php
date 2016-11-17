@@ -45,7 +45,7 @@ class RLeafletMap {
         if ($this->addElevation) {
             // elevation
             $document->addScript("http://d3js.org/d3.v3.min.js", "text/javascript");
-            $document->addStyleSheet("ramblers/leaflet/gpx/gpx.css", "text/css");
+            $document->addStyleSheet("ramblers/leaflet/gpx/elevation.css", "text/css");
             $document->addScript("ramblers/leaflet/gpx/leaflet.elevation-0.0.4.src.js", "text/javascript");
             $document->addScript("ramblers/leaflet/gpx/gpx.js", "text/javascript");
         }

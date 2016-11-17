@@ -5,14 +5,17 @@
  *
  * @author Chris Vaughan
  */
-class RLeafletGpxMap extends RLeafletMap{
+class RLeafletGpxMap extends RLeafletMap {
+    
+    public $linecolour="#782327";
 
-     public function __construct() {
+    public function __construct() {
         parent::__construct();
     }
 
     public function displayPath($gpx) {
-        $this->addElevation=true;
+
+        $this->addElevation = true;
 
         $text = ' var el = L.control.elevation({
     position: "topright",
@@ -39,10 +42,11 @@ class RLeafletGpxMap extends RLeafletMap{
 });
         el.addTo(map);
         var g=new L.GPX(\'' . $gpx . '\', {async: true,
+            polyline_options: {color: \''.$this->linecolour.'\'},
             marker_options: {
-			    startIconUrl: \'ramblers/leaflet/gpx/images/pin-icon-start.png\',
-			    endIconUrl: \'ramblers/leaflet/gpx/images/pin-icon-end.png\',
-			    shadowUrl: \'ramblers/leaflet/gpx/images/pin-shadow.png\'
+			    startIconUrl: \'[base]ramblers/leaflet/gpx/images/pin-icon-start.png\',
+			    endIconUrl: \'[base]ramblers/leaflet/gpx/images/pin-icon-end.png\',
+			    shadowUrl: \'[base]ramblers/leaflet/gpx/images/pin-shadow.png\'
 			  }});
         g.on(\'addline\',function(e){
          el.addData(e.line);
@@ -51,10 +55,14 @@ class RLeafletGpxMap extends RLeafletMap{
             map.fitBounds(e.target.getBounds());
 		});
         g.addTo(map)';
-        
-
         parent::addMarkers($text);
-        parent::display();
+        if (file_exists($gpx)) {
+            parent::display();
+        } else {
+            $application = JFactory::getApplication();
+            $application->enqueueMessage(JText::_('GPX: Route file not found: ' . $gpx), 'error');
+            echo "<p><b>Unable to display gpx file</b></p>";
+        }
     }
 
 }
