@@ -40,3 +40,7 @@
     }
   }
 /* END support for full screen leaflet map */
+/* fix to menu with leaflet */
+div#rt-header {
+    z-index: 1000;
+}

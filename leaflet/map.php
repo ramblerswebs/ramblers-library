@@ -30,6 +30,8 @@ class RLeafletMap {
     }
 
     public function display() {
+       
+        JHtml::_('jquery.framework');
         $document = JFactory::getDocument();
         // Leaflet
         $document->addStyleSheet("ramblers/leaflet/leaflet/leaflet.css", "text/css");
