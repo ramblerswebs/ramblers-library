@@ -82,10 +82,12 @@ class RJsonwalksLocation {
         }
         return $textdescription;
     }
-    public function distanceFrom($easting,$northing,$distanceKm){
-        $dele=$this->easting-$easting;
-        $deln=$this->northing-$northing;
-        return math.sqrt($dele*$dele+$deln*$deln);
+
+    public function distanceFrom($easting, $northing, $distanceKm) {
+        $dele = ($this->easting - $easting) / 1000;
+        $deln = ($this->northing - $northing) / 1000;
+        $dist = sqrt($dele * $dele + $deln * $deln);
+        return $dist;
     }
 
     static function firstTime($loc1, $loc2) {

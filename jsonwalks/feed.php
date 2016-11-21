@@ -93,8 +93,8 @@ class RJsonwalksFeed {
         $this->displayLimit = $no;
     }
 
-    public function filterDistance($easting,$northing,$distanceKm) {
-        $this->walks->filterDistance($easting,$northing,$distanceKm);
+    public function filterDistanceFrom($easting, $northing, $distanceKm) {
+        $this->walks->filterDistanceFrom($easting, $northing, $distanceKm);
     }
 
     public function filterGroups($filter) {

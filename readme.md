@@ -7,7 +7,7 @@ Updates
     update feed handling to use old cache file if unable to read feed
     updates to leaflet mapping
             Google licensing
-            Add fix to mak sure drop down menu does not go under map
+            Add fix to make sure drop down menu does not go under map
         addition of postcode display
         display right click points location including mapcode
         full screen option
