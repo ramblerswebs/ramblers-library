@@ -22,7 +22,8 @@ class RLeafletGpxMap extends RLeafletMap {
         } else {
             $imperial = "false";
         }
-
+        $file = JURI::root() . $gpx;
+     //   echo $file;
         $text = ' var el = L.control.elevation({
     position: "topright",
     theme: "steelblue-theme", //default: lime-theme
@@ -47,7 +48,7 @@ class RLeafletGpxMap extends RLeafletMap {
     imperial: ' . $imperial . '    //display imperial units instead of metric
 });
         el.addTo(map);
-        var g=new L.GPX(\'' . $gpx . '\', {async: true,
+        var g=new L.GPX(\'' . $file . '\', {async: true,
             polyline_options: {color: \'' . $this->linecolour . '\'},
             marker_options: {
 			    startIconUrl: \'[base]ramblers/leaflet/gpx/images/pin-icon-start.png\',
@@ -66,7 +67,7 @@ class RLeafletGpxMap extends RLeafletMap {
             parent::display();
         } else {
             $application = JFactory::getApplication();
-            $application->enqueueMessage(JText::_('GPX: Route file not found: ' . $gpx), 'error');
+            $application->enqueueMessage(JText::_('GPX: Route file not found: ' . $file), 'error');
             echo "<p><b>Unable to display gpx file</b></p>";
         }
     }
