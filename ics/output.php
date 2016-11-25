@@ -28,7 +28,7 @@ class RIcsOutput {
             $before = "<!DOCTYPE html><html><head><title></title></head><body>";
             $after = "</body></html>";
             $content = str_replace("\\n", "<br/>", $content);
-            $lines = str_split($command . $before . $content . $after, 73);
+            $lines = str_split($command . htmlentities($before) . htmlentities($content) . htmlentities($after), 73);
         } else {
             $content = str_replace("&nbsp;", " ", $content);
             $content = str_replace("<p>", "", $content);

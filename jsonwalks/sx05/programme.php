@@ -75,7 +75,7 @@ class RJsonwalksSx05Programme extends RJsonwalksDisplaybase {
         }
         //  $title = "<div class='" . $walk->status . "'>" . $text . " </div>";
         if ($this->addDescription) {
-            $description .= self::BR .$walk->description;
+            $description .= self::BR . $walk->description;
         }
 
 
@@ -89,16 +89,16 @@ class RJsonwalksSx05Programme extends RJsonwalksDisplaybase {
         if ($walk->telephone2 <> "") {
             $contact .= $walk->telephone2 . self::BR;
         }
-$out="<tr>";
-$out.="<td>".$date."</td>";
-$out.="<td>".$description."</td>";
-$out.="<td nowrap>".$contact."</td>";
+        $out = "<tr>";
+        $out.="<td>" . $date . "</td>";
+        $out.="<td>" . $description . "</td>";
+        $out.="<td nowrap>" . $contact . "</td>";
 
-$out.="</tr>". PHP_EOL;
-echo $out;
+        $out.="</tr>" . PHP_EOL;
+        echo $out;
 
 
-     //   echo RHtml::addTableRow(array($date, $description, $contact));
+        //   echo RHtml::addTableRow(array($date, $description, $contact));
     }
 
     private function addLocation($location) {

@@ -219,6 +219,20 @@ class RJsonwalksLocation {
         }
     }
 
+    public function getDuration($time) {
+
+        if (get_class($time) != 'DateTime') {
+            return "";
+        }
+        if (get_class($this->time) != 'DateTime') {
+            return "";
+        }
+        // calc time difference
+        $interval = $this->time->diff($time);
+
+        return $interval->format("%H:%I") . "hrs";
+    }
+
     function __destruct() {
         
     }

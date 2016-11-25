@@ -18,3 +18,4 @@ Updates
     new sx05 programme display method
     new feed option to limit walks by distance
     correction to feed filterGroups option
+    change to make filterDateRange to be inclusive
