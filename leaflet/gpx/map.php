@@ -15,7 +15,10 @@ class RLeafletGpxMap extends RLeafletMap {
     }
 
     public function displayPath($gpx) {
-
+        $this->addClusters=false;
+        $this->addSearch=false;
+        $this->addFullScreen=false;
+ 
         $this->addElevation = true;
         if ($this->imperial) {
             $imperial = "true";
@@ -23,7 +26,7 @@ class RLeafletGpxMap extends RLeafletMap {
             $imperial = "false";
         }
         $file = JURI::root() . $gpx;
-     //   echo $file;
+        //   echo $file;
         $text = ' var el = L.control.elevation({
     position: "topright",
     theme: "steelblue-theme", //default: lime-theme
