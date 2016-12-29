@@ -10,14 +10,15 @@ L.Control.Mouse = L.Control.extend({
     onAdd: function (map) {
         this._container = L.DomUtil.create('div', 'leaflet-control-mouseposition');
         L.DomEvent.disableClickPropagation(this._container);
-        map.on('mousemove', this._onMouseMove, this);
+         map.on('mousemove', this._update, this);
         this._container.innerHTML = this.options.emptyString;
+        
         return this._container;
     },
     onRemove: function (map) {
         map.off('mousemove', this._onMouseMove);
     },
-    _onMouseMove: function (e) {
+    _update: function (e) {
         var text = getMouseMoveAction(e);
         this._container.innerHTML = text;
     }

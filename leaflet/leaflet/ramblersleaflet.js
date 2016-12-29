@@ -91,8 +91,6 @@ function raLoadLeaflet() {
         }
     }
 
-
-
     if (ramblersMap.options.osgrid) {
         osgrid = L.layerGroup([]);
         osMapGrid(L, osgrid);
@@ -101,19 +99,6 @@ function raLoadLeaflet() {
         };
         osgrid.addTo(ramblersMap.map);
     }
-
-    if (ramblersMap.options.postcodes) {
-        ramblersMap.postcodelayer = L.featureGroup([]);
-        ramblersMap.postcodelayer.addTo(ramblersMap.map);
-        L.control.postcodeStatus().addTo(ramblersMap.map);
-    }
-
-    if (ramblersMap.options.mouseposition) {
-        L.control.mouse().addTo(ramblersMap.map);
-    }
-
-    // Zoom control
-    L.control.scale().addTo(ramblersMap.map);
 
     L.control.layers(mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
 
@@ -127,6 +112,17 @@ function raLoadLeaflet() {
             })
         }).addTo(ramblersMap.map);
     }
+      if (ramblersMap.options.postcodes) {
+        ramblersMap.postcodelayer = L.featureGroup([]);
+        ramblersMap.postcodelayer.addTo(ramblersMap.map);
+        L.control.postcodeStatus().addTo(ramblersMap.map);
+    }
+
+    if (ramblersMap.options.mouseposition) {
+        L.control.mouse().addTo(ramblersMap.map);
+    } 
+    // Zoom control
+    L.control.scale().addTo(ramblersMap.map);
 }
 ;
 
@@ -282,6 +278,10 @@ function displayPostcodes(e) {
     var i;
     var marker;
     var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
+    if (gr !== "") {
+        desc += "<br/><b>Grid Reference: </b>" + gr +
+                "<br/><b>Grid Reference: </b>" + gr10 + " (8 Figure)";
+    }
     var results = encodeShortest(e.latlng.lat, e.latlng.lng);
     if (results.length > 0) {
         desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode;
@@ -298,11 +298,10 @@ function displayPostcodes(e) {
     var point = L.marker(p).bindPopup(msg);
     ramblersMap.postcodelayer.addLayer(point);
     if (gr !== "") {
-        desc += "<br/><b>Grid Reference: </b>" + gr +
-                "<br/><b>Grid Reference: </b>" + gr10 + " (8 Figure)";
+      
 // remove previous postcodes
 
-        point.getPopup().setContent("Searching ...");
+        point.getPopup().setContent(desc+"<br/><b>Searching for postcodes ...</b>");
         point.openPopup();
         // get postcodes around this point       
         var east = Math.round(grid.easting);
