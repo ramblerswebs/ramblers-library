@@ -14,6 +14,9 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
     public function __construct() {
         $this->map = new RLeafletMap;
     }
+    public function getMap(){
+        return $this->map;
+    }
 
     public function mapHeight($height) {
         $this->map->mapHeight = $height;
@@ -40,7 +43,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
                 $marker = $this->addMarker($walk);
                 $text.=$marker . PHP_EOL;
             }
-            $this->map->addMarkers($text);
+            $this->map->addContent($text);
             $this->map->addBounds();
             $this->map->display();
             if (strpos($this->legendposition, "bottom") !== false) {
@@ -74,7 +77,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $photos = "<a href=&quot;javascript:photos('" . $gr . "')&quot; >[Photos]</a>";
         $popup = $walk . $map . $directions . $photos;
         // $popup = str_replace('"', "&quot;", $popup);
-        $marker = 'addMarker(markerList,"' . $popup . '", ' . $lat . ', ' . $long . ', ' . $icon . ');';
+        $marker = 'addMarker("' . $popup . '", ' . $lat . ', ' . $long . ', ' . $icon . ');';
         //     $marker = "addWalk(markerList,'" . $this->walkClass . $walk->status . "', '" . $date . "', '" . $title . "', '" . $dist . "', '" . $gr . "', " . $lat . ", " . $long . ", '" . $url . "', " . $icon . ");";
         return $marker;
     }

@@ -201,7 +201,7 @@ class ROrganisation {
                 $marker = $group->addMapMarker($areatext);
                 $text.=$marker . PHP_EOL;
             }
-            $map->addMarkers($text);
+            $map->addContent($text);
         }
     }
 

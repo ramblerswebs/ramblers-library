@@ -2,8 +2,8 @@
 // GridLayer like https://avinmathew.com/leaflet-and-google-maps/ , but using MutationObserver instead of jQuery
 
 
-// class GridLayer.GoogleMutant
-// extends GridLayer
+// 🍂class GridLayer.GoogleMutant
+// 🍂extends GridLayer
 L.GridLayer.GoogleMutant = L.GridLayer.extend({
 	includes: L.Mixin.Events,
 
@@ -214,6 +214,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 
 		if (coords) {
 			var key = this._tileCoordsToKey(coords);
+			imgNode.style.position = 'absolute';
 			if (this._imagesPerTile > 1) { key += '/' + sublayer; }
 			if (key in this._tileCallbacks && this._tileCallbacks[key]) {
 // console.log('Fullfilling callback ', key);
@@ -384,7 +385,7 @@ L.GridLayer.GoogleMutant = L.GridLayer.extend({
 });
 
 
-// factory gridLayer.googleMutant(options)
+// 🍂factory gridLayer.googleMutant(options)
 // Returns a new `GridLayer.GoogleMutant` given its options
 L.gridLayer.googleMutant = function (options) {
 	return new L.GridLayer.GoogleMutant(options);

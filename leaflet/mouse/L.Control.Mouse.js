@@ -1,4 +1,4 @@
-var L, map, OsGridRef;
+var L,ramblersMap;
 L.Control.Mouse = L.Control.extend({
     options: {
         position: 'bottomleft',
@@ -18,9 +18,9 @@ L.Control.Mouse = L.Control.extend({
         map.off('mousemove', this._onMouseMove);
     },
     _onMouseMove: function (e) {
-        var text = getMouseMoveAction(e, map);
+        var text = getMouseMoveAction(e);
         this._container.innerHTML = text;
-    },
+    }
 });
 
 L.Map.mergeOptions({
@@ -43,33 +43,35 @@ L.Control.PostcodeStatus = L.Control.extend({
         position: 'bottomleft',
         defaultString: 'Zoom in and right click to see nearby postcodes'
     },
+    displaymap:null,
     onAdd: function (map) {
+        displaymap=map;
         this._container = L.DomUtil.create('div', 'leaflet-control-postcodeposition');
         L.DomEvent.disableClickPropagation(this._container);
-        map.on('zoomend', this._onZoomEnd, this);
-        map.on('contextmenu', this._onRightClick, this);
+        displaymap.on('zoomend', this._onZoomEnd, this);
+        displaymap.on('contextmenu', this._onRightClick, this);
         this._container.innerHTML = this.options.defaultString;
         return this._container;
     },
-    onRemove: function (map) {
-        map.off('zoomend', this._onZoomEnd);
-        map.off('contextmenu', this._onClick);
+    onRemove: function () {
+        displaymap.off('zoomend', this._onZoomEnd);
+        displaymap.off('contextmenu', this._onClick);
     },
     _onRightClick: function (e) {
-        var zoom = map.getZoom();
+        var zoom = displaymap.getZoom();
         if (zoom > 12) {
-            displayPostcodes(e, map);
+            displayPostcodes(e);
         } else {
-            postcodelayer.clearLayers();
+            ramblersMap.postcodelayer.clearLayers();
             this._container.innerHTML = "Zoom in to view postcodes!";
         }
     },
     _onZoomEnd: function (e) {
-        var zoom = map.getZoom();
+        var zoom = ramblersMap.map.getZoom();
         if (zoom <= 12) {
             this._container.innerHTML = "Zoom in and right click to see nearby postcodes";
             if (zoom <= 9) {
-                postcodelayer.clearLayers();
+                ramblersMap.postcodelayer.clearLayers();
             }
         } else {
             this._container.innerHTML = "Right click to see nearby postcodes";

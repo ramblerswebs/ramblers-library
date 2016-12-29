@@ -62,7 +62,7 @@ class ROrganisationGroup {
         }
         $class = "group" . $this->scope;
         $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" .  $title .  "</a></div>";
-        $marker = "addMarker(markerList,\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
+        $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
 
         return $marker;
     }

@@ -1,8 +1,246 @@
-function addMarker($list, $popup, $lat, $long, $icon) {
+var L, ramblersMap, OsGridRef, Element;
+function RamblersLeafletMap(base) {
+    this.base = base;
+    this.map = null;
+    this.osm = null;
+    this.roads = null;
+    this.satellite = null;
+    this.hybrid = null;
+    this.terrain = null;
+    this.gridsquare10 = null;
+    this.gridsquare100 = null;
+    this.postcodelayer = null;
+    this.markerList = null;
+    this.markersCG = null;
+    this.progress = null;
+    this.progressBar = null;
+    this.options = {cluster: true,
+        fullscreen: true,
+        google: false,
+        search: true,
+        osgrid: true,
+        mouseposition: true,
+        postcodes: true,
+        fitbounds: true};
+}
+;
+function raLoadLeaflet() {
+    if (ramblersMap.options.fullscreen) {
+        ramblersMap.map = new L.Map("leafletmap", {
+            center: new L.LatLng(54.221592, -3.355007),
+            zoom: 5,
+            fullscreenControl: true});
+    } else {
+        ramblersMap.map = new L.Map("leafletmap", {
+            center: new L.LatLng(54.221592, -3.355007),
+            zoom: 5});
+    }
+
+
+// map types
+    ramblersMap.osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>"}).addTo(ramblersMap.map);
+    if (ramblersMap.options.google) {
+        ramblersMap.roads = L.gridLayer.googleMutant({
+            type: "roadmap" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+        });
+        ramblersMap.satellite = L.gridLayer.googleMutant({
+            type: "satellite" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+        });
+        ramblersMap.hybrid = L.gridLayer.googleMutant({
+            type: "hybrid" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+        });
+        ramblersMap.terrain = L.gridLayer.googleMutant({
+            type: "terrain" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+        });
+        mapLayers = {"Open Street Map": ramblersMap.osm,
+            "Google": ramblersMap.roads,
+            "Google Satellite": ramblersMap.satellite,
+            "Google Hybrid": ramblersMap.hybrid,
+            "Google Terrain": ramblersMap.terrain
+        };
+    } else {
+        mapLayers = {"Open Street Map": ramblersMap.osm};
+    }
+
+    createWalkMarkers(ramblersMap.base);
+    createMouseMarkers(ramblersMap.base);
+
+    if (ramblersMap.options.cluster) {
+        // progress bar for cluster
+        ramblersMap.progress = document.getElementById("ra-cluster-progress");
+        ramblersMap.progressBar = document.getElementById("ra-cluster-progress-bar");
+        ramblersMap.markersCG = L.markerClusterGroup({chunkedLoading: false, chunkProgress: updateClusterProgressBar});
+        ramblersMap.markerList = [];
+    }
+
+    addContent(ramblersMap);
+
+    if (ramblersMap.options.cluster) {
+        ramblersMap.markersCG.addLayers(ramblersMap.markerList);
+        ramblersMap.map.addLayer(ramblersMap.markersCG);
+    }
+
+    if (ramblersMap.options.fitbounds) {
+        // [FitBounds]   
+        if (ramblersMap.options.cluster) {
+            ramblersMap.map.fitBounds(ramblersMap.markersCG.getBounds());
+        } else {
+
+        }
+    }
+
+
+
+    if (ramblersMap.options.osgrid) {
+        osgrid = L.layerGroup([]);
+        osMapGrid(L, osgrid);
+        var overlayMaps = {
+            "OS 100Km Grid": osgrid
+        };
+        osgrid.addTo(ramblersMap.map);
+    }
+
+    if (ramblersMap.options.postcodes) {
+        ramblersMap.postcodelayer = L.featureGroup([]);
+        ramblersMap.postcodelayer.addTo(ramblersMap.map);
+        L.control.postcodeStatus().addTo(ramblersMap.map);
+    }
+
+    if (ramblersMap.options.mouseposition) {
+        L.control.mouse().addTo(ramblersMap.map);
+    }
+
+    // Zoom control
+    L.control.scale().addTo(ramblersMap.map);
+
+    L.control.layers(mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
+
+    if (ramblersMap.options.search) {
+        // must be after layers so is second control in top right
+        var geocoder = L.Control.geocoder({
+            defaultMarkGeocode: true,
+            collapsed: true,
+            geocoder: L.Control.Geocoder.nominatim({
+                geocodingQueryParams: {countrycodes: 'gb'}
+            })
+        }).addTo(ramblersMap.map);
+    }
+}
+;
+
+function displayGPX(ramblersMap, file, linecolour, imperial) {
+    var el = L.control.elevation({
+        position: "topright",
+        theme: "steelblue-theme", //default: lime-theme
+        width: 600,
+        height: 125,
+        margins: {
+            top: 10,
+            right: 20,
+            bottom: 30,
+            left: 50
+        },
+        useHeightIndicator: true, //if false a marker is drawn at map position
+        interpolation: "linear", //see https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-area_interpolate
+        hoverNumber: {
+            decimalsX: 1, //decimals on distance (always in km)
+            decimalsY: 0, //deciamls on hehttps://www.npmjs.com/package/leaflet.coordinatesight (always in m)
+            formatter: undefined //custom formatter function may be injected
+        },
+        xTicks: undefined, //number of ticks in x axis, calculated by default according to width
+        yTicks: undefined, //number of ticks on y axis, calculated by default according to height
+        collapsed: true, //collapsed mode, show chart on click or mouseover
+        imperial: imperial    //display imperial units instead of metric
+    });
+    el.addTo(ramblersMap.map);
+    var g = new L.GPX(file, {async: true,
+        polyline_options: {color: linecolour},
+        marker_options: {
+            startIconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-start.png',
+            endIconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-end.png',
+            shadowUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-shadow.png'
+        }});
+    g.on('addline', function (e) {
+        el.addData(e.line);
+    });
+    g.on('loaded', function (e) {
+        ramblersMap.map.fitBounds(e.target.getBounds());
+    });
+    g.addTo(ramblersMap.map);
+}
+
+function updateClusterProgressBar(processed, total, elapsed) {
+    if (elapsed > 1000) {
+        // if it takes more than a second to load, display the progress bar:
+        ramblersMap.progress.style.display = "block";
+        ramblersMap.progressBar.style.width = Math.round(processed / total * 100) + "%";
+    }
+
+    if (processed === total) {
+        // all markers processed - hide the progress bar:
+        ramblersMap.progress.style.display = "none";
+    }
+}
+
+function createWalkMarkers(base) {
+    markerStart = L.icon({
+        iconUrl: base + "ramblers/images/marker-start.png",
+        iconSize: [35, 35]
+    });
+    markerArea = L.icon({
+        iconUrl: base + "ramblers/images/marker-area.png",
+        iconSize: [35, 35]
+    });
+    markerCancelled = L.icon({
+        iconUrl: base + "ramblers/images/marker-cancelled.png",
+        iconSize: [35, 35]
+    });
+    walkingarea = L.icon({
+        iconUrl: base + "ramblers/images/area.png",
+        iconSize: [40, 35]
+    });
+    walkinggroup = L.icon({
+        iconUrl: base + "ramblers/images/group.png",
+        iconSize: [40, 35]
+    });
+    walkingspecial = L.icon({
+        iconUrl: base + "ramblers/images/specialgroup.png",
+        iconSize: [40, 35]
+    });
+}
+function createMouseMarkers(base) {
+    // add marker and layer group to contain postcode markers
+    postcodeIcon = L.icon({
+        iconUrl: base + 'ramblers/leaflet/images/postcode-icon.png',
+        iconSize: [24, 18], // size of the icon
+        shadowSize: [26, 20], // size of the shadow
+        iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
+        shadowAnchor: [0, 0], // the same for the shadow
+        popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
+    });
+    postcodeIconClosest = L.icon({
+        iconUrl: base + 'ramblers/leaflet/images/postcode-icon-closest.png',
+        iconSize: [24, 18], // size of the icon
+        shadowSize: [26, 20], // size of the shadow
+        iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
+        shadowAnchor: [0, 0], // the same for the shadow
+        popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
+    });
+    // create an orange rectangle
+    ramblersMap.gridsquare100 = L.rectangle([[84, -89], [84.00001, -89.000001]],
+            {color: "#ff7800", weight: 1}).addTo(ramblersMap.map);
+    ramblersMap.gridsquare10 = L.rectangle([[84, -89], [84.00001, -89.000001]],
+            {color: "#884000", weight: 1}).addTo(ramblersMap.map);
+
+}
+
+function addMarker($popup, $lat, $long, $icon) {
     var marker = L.marker([$lat, $long], {icon: $icon});
     $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
     marker.bindPopup($pop);
-    $list.push(marker);
+    ramblersMap.markerList.push(marker);
 }
 
 function addMarkerToLayer($layer, $popup, $lat, $long, $icon) {
@@ -27,26 +265,39 @@ function streetmap($gr) {
 }
 function directions($lat, $long) {
     //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
-
     page = "https://maps.google.com?saddr=Current+Location&daddr=" + $lat.toString() + "," + $long.toString();
     window2 = open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
+function streetview($lat, $long) {
+    page = "http://www.instantstreetview.com/s/" + $lat.toString() + "," + $long.toString();
+    //page="http://maps.google.com/maps?q=&layer=c&cbll="+$lat.toString() + "," + $long.toString()+"&cbp=1,0,0,0,0";
+    window2 = open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
+}
 
-function displayPostcodes(e, map) {
+function displayPostcodes(e) {
     var p = new LatLon(e.latlng.lat, e.latlng.lng);
     var grid = OsGridRef.latLonToOsGrid(p);
-    gr = grid.toString(6);
-    gr10 = grid.toString(8);
-    var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + "<br/><b>Longitude: </b>" + e.latlng.lng.toFixed(5);
-    results = encodeShortest(e.latlng.lat, e.latlng.lng);
+    var gr = grid.toString(6);
+    var gr10 = grid.toString(8);
+    var i;
+    var marker;
+    var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
+    var results = encodeShortest(e.latlng.lat, e.latlng.lng);
     if (results.length > 0) {
         desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode;
     }
-    postcodelayer.clearLayers();
+    if (gr !== "") {
+        desc += ' <br/> <a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
+        desc += '<a href="javascript:photos(\'' + gr10 + '\')">[Photos]</a>';
+    }
+
+    desc += '<a href="javascript:directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
+    desc += '<a href="javascript:streetview(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Streetview]</a>';
+    ramblersMap.postcodelayer.clearLayers();
     var msg = "   ";
     var point = L.marker(p).bindPopup(msg);
-    postcodelayer.addLayer(point);
-    if (gr != "") {
+    ramblersMap.postcodelayer.addLayer(point);
+    if (gr !== "") {
         desc += "<br/><b>Grid Reference: </b>" + gr +
                 "<br/><b>Grid Reference: </b>" + gr10 + " (8 Figure)";
 // remove previous postcodes
@@ -57,17 +308,17 @@ function displayPostcodes(e, map) {
         var east = Math.round(grid.easting);
         var north = Math.round(grid.northing);
 
-        url = "http://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=20";
+        var url = "http://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=20";
         getJSON(url, function (err, items) {
-            if (err != null) {
+            if (err !== null) {
                 var msg = "Error: Something went wrong: " + err;
                 point.getPopup().setContent(msg);
             } else {
-                if (items.length == 0) {
+                if (items.length === 0) {
                     closest = "No postcodes found within 10Km";
                     point.getPopup().setContent(closest);
                 } else {
-                    for (i = 0; i < items.length; i++) { 
+                    for (i = 0; i < items.length; i++) {
 
                         var item = items[i];
                         var popup = item.Postcode + "<br />     Distance: " + kFormatter(Math.round(item.Distance)) + "m";
@@ -75,16 +326,16 @@ function displayPostcodes(e, map) {
                         var northing = item.Northing;
                         var gr = new OsGridRef(easting, northing);
                         var latlong = OsGridRef.osGridToLatLon(gr);
-                        pt = new L.latLng(latlong.lat, latlong.lon);
-                        if (i == 0) {
-                            var marker = L.marker(pt, {icon: postcodeIconClosest}).bindPopup(popup);
+                        var pt = new L.latLng(latlong.lat, latlong.lon);
+                        if (i === 0) {
+                            marker = L.marker(pt, {icon: postcodeIconClosest}).bindPopup(popup);
                             style = {color: 'green', weight: 4, opacity: 0.2};
                         } else {
-                            var marker = L.marker(pt, {icon: postcodeIcon}).bindPopup(popup);
+                            marker = L.marker(pt, {icon: postcodeIcon}).bindPopup(popup);
                             style = {color: 'blue', weight: 4, opacity: 0.2};
                         }
-                        postcodelayer.addLayer(marker);
-                        postcodelayer.addLayer(L.polyline([pt, p], style));
+                        ramblersMap.postcodelayer.addLayer(marker);
+                        ramblersMap.postcodelayer.addLayer(L.polyline([pt, p], style));
                     }
                 }
                 point.getPopup().setContent(desc);
@@ -100,7 +351,7 @@ function displayPostcodes(e, map) {
 }
 
 function kFormatter(num) {
-    return num > 999 ? (num / 1000).toFixed(1) + 'K' : num
+    return num > 999 ? (num / 1000).toFixed(1) + 'K' : num;
 }
 
 
@@ -110,7 +361,7 @@ var getJSON = function (url, callback) {
     xhr.responseType = "json";
     xhr.onload = function () {
         var status = xhr.status;
-        if (status == 200) {
+        if (status === 200) {
             if (typeof xhr.response === 'string') {
                 items = JSON.parse(xhr.response);
             } else {
@@ -129,8 +380,9 @@ function getTitle(text) {
     return text.match('<title>(.*)?</title>')[1];
 }
 
-function getMouseMoveAction(e, map) {
-    var zoom = map.getZoom();
+function getMouseMoveAction(e) {
+    var gr, gridref;
+    var zoom = ramblersMap.map.getZoom();
     var p = new LatLon(e.latlng.lat, e.latlng.lng);
     var grid = OsGridRef.latLonToOsGrid(p);
     if (zoom > 16) {
@@ -140,20 +392,20 @@ function getMouseMoveAction(e, map) {
         gr = grid.toString(6);
         gridref = '6 figure grid reference [100m<sup>2</sup>]<br/><span class="osgridref">' + gr + "</span><br/>";
     }
-    if (gr == "") {
+    if (gr === "") {
         gridref = "Outside OS Grid<br/>";
     } else {
         if (zoom > 12) {
             var bounds = osGridToLatLongSquare(grid, 100);
             // change rectangle
-            gridsquare100.setLatLngs(bounds);
+            ramblersMap.gridsquare100.setLatLngs(bounds);
         }
         if (zoom > 16) {
             var bounds2 = osGridToLatLongSquare(grid, 10);
             // change rectangle
-            gridsquare10.setLatLngs(bounds2);
+            ramblersMap.gridsquare10.setLatLngs(bounds2);
         } else {
-            gridsquare10.setLatLngs([[84, -89], [84.00001, -89.000001]]);
+            ramblersMap.gridsquare10.setLatLngs([[84, -89], [84.00001, -89.000001]]);
         }
     }
     var lng = e.latlng.lng.toFixed(5);
@@ -224,7 +476,6 @@ L.Control.Fullscreen = L.Control.extend({
             'true': 'Exit Fullscreen'
         }
     },
-
     onAdd: function (map) {
         var container = L.DomUtil.create('div', 'leaflet-control-fullscreen leaflet-bar leaflet-control');
 
@@ -239,14 +490,12 @@ L.Control.Fullscreen = L.Control.extend({
 
         return container;
     },
-
     _click: function (e) {
         L.DomEvent.stopPropagation(e);
         L.DomEvent.preventDefault(e);
         this._map.toggleFullscreen(this.options);
     },
-
-    _toggleTitle: function() {
+    _toggleTitle: function () {
         this.link.title = this.options.title[this._map.isFullscreen()];
     }
 });
@@ -255,7 +504,6 @@ L.Map.include({
     isFullscreen: function () {
         return this._isFullscreen || false;
     },
-
     toggleFullscreen: function (options) {
         var container = this.getContainer();
         if (this.isFullscreen()) {
@@ -289,22 +537,19 @@ L.Map.include({
         }
 
     },
-
     _enablePseudoFullscreen: function (container) {
         L.DomUtil.addClass(container, 'leaflet-pseudo-fullscreen');
         this._setFullscreen(true);
         this.invalidateSize();
         this.fire('fullscreenchange');
     },
-
     _disablePseudoFullscreen: function (container) {
         L.DomUtil.removeClass(container, 'leaflet-pseudo-fullscreen');
         this._setFullscreen(false);
         this.invalidateSize();
         this.fire('fullscreenchange');
     },
-
-    _setFullscreen: function(fullscreen) {
+    _setFullscreen: function (fullscreen) {
         this._isFullscreen = fullscreen;
         var container = this.getContainer();
         if (fullscreen) {
@@ -313,13 +558,12 @@ L.Map.include({
             L.DomUtil.removeClass(container, 'leaflet-fullscreen-on');
         }
     },
-
     _onFullscreenChange: function (e) {
         var fullscreenElement =
-            document.fullscreenElement ||
-            document.mozFullScreenElement ||
-            document.webkitFullscreenElement ||
-            document.msFullscreenElement;
+                document.fullscreenElement ||
+                document.mozFullScreenElement ||
+                document.webkitFullscreenElement ||
+                document.msFullscreenElement;
 
         if (fullscreenElement === this.getContainer() && !this._isFullscreen) {
             this._setFullscreen(true);
@@ -371,4 +615,3 @@ L.control.fullscreen = function (options) {
 };
 
 // end of leaflet full screen support
-

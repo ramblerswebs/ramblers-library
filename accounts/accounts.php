@@ -45,7 +45,7 @@ class RAccounts {
         foreach ($this->dbresults as $item) :
             $text.= $this->addMapMarker($map, $item) . PHP_EOL;
         endforeach;
-        $map->addMarkers($text);
+        $map->addContent($text);
     }
 
     private function addMapMarker($map, $item) {
@@ -71,7 +71,7 @@ class RAccounts {
         }
         $class = "website";
         $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" . $url . "</a></div>";
-        $marker = "addMarker(markerList,\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
+        $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
 
         return $marker;
     }
