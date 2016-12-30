@@ -41,16 +41,21 @@ L.control.mouse = function (options) {
 L.Control.PostcodeStatus = L.Control.extend({
     options: {
         position: 'bottomleft',
-        defaultString: 'Zoom in and right click/tap hold to see nearby postcodes'
+        zoominString: 'Zoom in and right click to see nearby postcodes',
+        displayString: 'Right click to see nearby postcodes',
     },
     displaymap: null,
     onAdd: function (map) {
+        if (L.Browser.touch) {
+            this.options.zoominString = 'Zoom in and tap hold to see nearby postcodes';
+            this.options.displayString = 'Tap hold to see nearby postcodes';
+        }
         displaymap = map;
         this._container = L.DomUtil.create('div', 'leaflet-control-postcodeposition');
         L.DomEvent.disableClickPropagation(this._container);
         displaymap.on('zoomend', this._onZoomEnd, this);
         displaymap.on('contextmenu', this._onRightClick, this);
-        this._container.innerHTML = this.options.defaultString;
+        this._container.innerHTML = this.options.zoominString;
         return this._container;
     },
     onRemove: function () {
@@ -58,23 +63,23 @@ L.Control.PostcodeStatus = L.Control.extend({
         displaymap.off('contextmenu', this._onClick);
     },
     _onRightClick: function (e) {
-        var zoom = displaymap.getZoom();
-        if (zoom > 12) {
+     //   var zoom = displaymap.getZoom();
+     //   if (zoom > 12) {
             displayPostcodes(e);
-        } else {
-            ramblersMap.postcodelayer.clearLayers();
-            this._container.innerHTML = "Zoom in to view postcodes!";
-        }
+      //  } else {
+      //      ramblersMap.postcodelayer.clearLayers();
+      //      this._container.innerHTML = this.options.zoominString;
+      //  }
     },
     _onZoomEnd: function (e) {
         var zoom = ramblersMap.map.getZoom();
         if (zoom <= 12) {
-            this._container.innerHTML = "Zoom in and right click to see nearby postcodes";
+            this._container.innerHTML = this.options.zoominString;
             if (zoom <= 9) {
                 ramblersMap.postcodelayer.clearLayers();
             }
         } else {
-            this._container.innerHTML = "Right click to see nearby postcodes";
+            this._container.innerHTML = this.options.displayString;
         }
     }
 });

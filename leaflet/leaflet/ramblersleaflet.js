@@ -66,7 +66,6 @@ function raLoadLeaflet() {
 
     createWalkMarkers(ramblersMap.base);
     createMouseMarkers(ramblersMap.base);
-
     if (ramblersMap.options.cluster) {
         // progress bar for cluster
         ramblersMap.progress = document.getElementById("ra-cluster-progress");
@@ -76,7 +75,6 @@ function raLoadLeaflet() {
     }
 
     addContent(ramblersMap);
-
     if (ramblersMap.options.cluster) {
         ramblersMap.markersCG.addLayers(ramblersMap.markerList);
         ramblersMap.map.addLayer(ramblersMap.markersCG);
@@ -101,7 +99,6 @@ function raLoadLeaflet() {
     }
 
     L.control.layers(mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
-
     if (ramblersMap.options.search) {
         // must be after layers so is second control in top right
         var geocoder = L.Control.geocoder({
@@ -112,22 +109,21 @@ function raLoadLeaflet() {
             })
         }).addTo(ramblersMap.map);
     }
-      if (ramblersMap.options.postcodes) {
+    if (ramblersMap.options.postcodes) {
         ramblersMap.postcodelayer = L.featureGroup([]);
         ramblersMap.postcodelayer.addTo(ramblersMap.map);
         L.control.postcodeStatus().addTo(ramblersMap.map);
     }
 
     if (ramblersMap.options.mouseposition) {
-          if (!L.Browser.touch) {
-              L.control.mouse().addTo(ramblersMap.map);
-          }
-    } 
+        if (!L.Browser.touch) {
+            L.control.mouse().addTo(ramblersMap.map);
+        }
+    }
     // Zoom control
     L.control.scale().addTo(ramblersMap.map);
 }
 ;
-
 function displayGPX(ramblersMap, file, linecolour, imperial) {
     var el = L.control.elevation({
         position: "topright",
@@ -171,13 +167,13 @@ function displayGPX(ramblersMap, file, linecolour, imperial) {
 
 function updateClusterProgressBar(processed, total, elapsed) {
     if (elapsed > 1000) {
-        // if it takes more than a second to load, display the progress bar:
+// if it takes more than a second to load, display the progress bar:
         ramblersMap.progress.style.display = "block";
         ramblersMap.progressBar.style.width = Math.round(processed / total * 100) + "%";
     }
 
     if (processed === total) {
-        // all markers processed - hide the progress bar:
+// all markers processed - hide the progress bar:
         ramblersMap.progress.style.display = "none";
     }
 }
@@ -209,7 +205,7 @@ function createWalkMarkers(base) {
     });
 }
 function createMouseMarkers(base) {
-    // add marker and layer group to contain postcode markers
+// add marker and layer group to contain postcode markers
     postcodeIcon = L.icon({
         iconUrl: base + 'ramblers/leaflet/images/postcode-icon.png',
         iconSize: [24, 18], // size of the icon
@@ -231,7 +227,6 @@ function createMouseMarkers(base) {
             {color: "#ff7800", weight: 1}).addTo(ramblersMap.map);
     ramblersMap.gridsquare10 = L.rectangle([[84, -89], [84.00001, -89.000001]],
             {color: "#884000", weight: 1}).addTo(ramblersMap.map);
-
 }
 
 function addMarker($popup, $lat, $long, $icon) {
@@ -262,7 +257,7 @@ function streetmap($gr) {
     window2 = open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 function directions($lat, $long) {
-    //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
+//  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
     page = "https://maps.google.com?saddr=Current+Location&daddr=" + $lat.toString() + "," + $long.toString();
     window2 = open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
@@ -279,6 +274,7 @@ function displayPostcodes(e) {
     var gr10 = grid.toString(8);
     var i;
     var marker;
+    var zoom = displaymap.getZoom();
     var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
     if (gr !== "") {
         desc += "<br/><b>Grid Reference: </b>" + gr +
@@ -286,10 +282,10 @@ function displayPostcodes(e) {
     }
     var results = encodeShortest(e.latlng.lat, e.latlng.lng);
     if (results.length > 0) {
-        desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode;
+        desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode + "<br/>";
     }
     if (gr !== "") {
-        desc += ' <br/> <a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
+        desc += '<a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
         desc += '<a href="javascript:photos(\'' + gr10 + '\')">[Photos]</a>';
     }
 
@@ -299,50 +295,51 @@ function displayPostcodes(e) {
     var msg = "   ";
     var point = L.marker(p).bindPopup(msg);
     ramblersMap.postcodelayer.addLayer(point);
+    point.getPopup().setContent(desc);
     if (gr !== "") {
-      
-// remove previous postcodes
-
-        point.getPopup().setContent(desc+"<br/><b>Searching for postcodes ...</b>");
         point.openPopup();
-        // get postcodes around this point       
-        var east = Math.round(grid.easting);
-        var north = Math.round(grid.northing);
-
-        var url = "http://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=20";
-        getJSON(url, function (err, items) {
-            if (err !== null) {
-                var msg = "Error: Something went wrong: " + err;
-                point.getPopup().setContent(msg);
-            } else {
-                if (items.length === 0) {
-                    closest = "No postcodes found within 10Km";
-                    point.getPopup().setContent(closest);
+        if (zoom > 12) {
+            point.getPopup().setContent(desc + "<br/><b>Searching for postcodes ...</b>");
+// get postcodes around this point       
+            var east = Math.round(grid.easting);
+            var north = Math.round(grid.northing);
+            var url = "http://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=20";
+            getJSON(url, function (err, items) {
+                if (err !== null) {
+                    var msg = "Error: Something went wrong: " + err;
+                    point.getPopup().setContent(msg);
                 } else {
-                    for (i = 0; i < items.length; i++) {
+                    if (items.length === 0) {
+                        closest = "No postcodes found within 10Km";
+                        point.getPopup().setContent(closest);
+                    } else {
+                        for (i = 0; i < items.length; i++) {
 
-                        var item = items[i];
-                        var popup = item.Postcode + "<br />     Distance: " + kFormatter(Math.round(item.Distance)) + "m";
-                        var easting = item.Easting;
-                        var northing = item.Northing;
-                        var gr = new OsGridRef(easting, northing);
-                        var latlong = OsGridRef.osGridToLatLon(gr);
-                        var pt = new L.latLng(latlong.lat, latlong.lon);
-                        if (i === 0) {
-                            marker = L.marker(pt, {icon: postcodeIconClosest}).bindPopup(popup);
-                            style = {color: 'green', weight: 4, opacity: 0.2};
-                        } else {
-                            marker = L.marker(pt, {icon: postcodeIcon}).bindPopup(popup);
-                            style = {color: 'blue', weight: 4, opacity: 0.2};
+                            var item = items[i];
+                            var popup = item.Postcode + "<br />     Distance: " + kFormatter(Math.round(item.Distance)) + "m";
+                            var easting = item.Easting;
+                            var northing = item.Northing;
+                            var gr = new OsGridRef(easting, northing);
+                            var latlong = OsGridRef.osGridToLatLon(gr);
+                            var pt = new L.latLng(latlong.lat, latlong.lon);
+                            if (i === 0) {
+                                marker = L.marker(pt, {icon: postcodeIconClosest}).bindPopup(popup);
+                                style = {color: 'green', weight: 4, opacity: 0.2};
+                            } else {
+                                marker = L.marker(pt, {icon: postcodeIcon}).bindPopup(popup);
+                                style = {color: 'blue', weight: 4, opacity: 0.2};
+                            }
+                            ramblersMap.postcodelayer.addLayer(marker);
+                            ramblersMap.postcodelayer.addLayer(L.polyline([pt, p], style));
                         }
-                        ramblersMap.postcodelayer.addLayer(marker);
-                        ramblersMap.postcodelayer.addLayer(L.polyline([pt, p], style));
                     }
+                    point.getPopup().setContent(desc);
+                    point.openPopup();
                 }
-                point.getPopup().setContent(desc);
-                point.openPopup();
-            }
-        });
+
+            });
+
+        }
     } else {
         desc += "<br/>Outside OS Grid";
         point.getPopup().setContent(desc);
@@ -375,7 +372,6 @@ var getJSON = function (url, callback) {
     };
     xhr.send();
 };
-
 // Helper method to parse the title tag from the response.
 function getTitle(text) {
     return text.match('<title>(.*)?</title>')[1];
@@ -479,16 +475,12 @@ L.Control.Fullscreen = L.Control.extend({
     },
     onAdd: function (map) {
         var container = L.DomUtil.create('div', 'leaflet-control-fullscreen leaflet-bar leaflet-control');
-
         this.link = L.DomUtil.create('a', 'leaflet-control-fullscreen-button leaflet-bar-part', container);
         this.link.href = '#';
-
         this._map = map;
         this._map.on('fullscreenchange', this._toggleTitle, this);
         this._toggleTitle();
-
         L.DomEvent.on(this.link, 'click', this._click, this);
-
         return container;
     },
     _click: function (e) {
@@ -500,7 +492,6 @@ L.Control.Fullscreen = L.Control.extend({
         this.link.title = this.options.title[this._map.isFullscreen()];
     }
 });
-
 L.Map.include({
     isFullscreen: function () {
         return this._isFullscreen || false;
@@ -565,7 +556,6 @@ L.Map.include({
                 document.mozFullScreenElement ||
                 document.webkitFullscreenElement ||
                 document.msFullscreenElement;
-
         if (fullscreenElement === this.getContainer() && !this._isFullscreen) {
             this._setFullscreen(true);
             this.fire('fullscreenchange');
@@ -575,11 +565,9 @@ L.Map.include({
         }
     }
 });
-
 L.Map.mergeOptions({
     fullscreenControl: false
 });
-
 L.Map.addInitHook(function () {
     if (this.options.fullscreenControl) {
         this.fullscreenControl = new L.Control.Fullscreen(this.options.fullscreenControl);
@@ -587,7 +575,6 @@ L.Map.addInitHook(function () {
     }
 
     var fullscreenchange;
-
     if ('onfullscreenchange' in document) {
         fullscreenchange = 'fullscreenchange';
     } else if ('onmozfullscreenchange' in document) {
@@ -600,19 +587,15 @@ L.Map.addInitHook(function () {
 
     if (fullscreenchange) {
         var onFullscreenChange = L.bind(this._onFullscreenChange, this);
-
         this.whenReady(function () {
             L.DomEvent.on(document, fullscreenchange, onFullscreenChange);
         });
-
         this.on('unload', function () {
             L.DomEvent.off(document, fullscreenchange, onFullscreenChange);
         });
     }
 });
-
 L.control.fullscreen = function (options) {
     return new L.Control.Fullscreen(options);
 };
-
 // end of leaflet full screen support
