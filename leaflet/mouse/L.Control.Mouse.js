@@ -1,4 +1,4 @@
-var L,ramblersMap;
+var L, ramblersMap;
 L.Control.Mouse = L.Control.extend({
     options: {
         position: 'bottomleft',
@@ -10,9 +10,8 @@ L.Control.Mouse = L.Control.extend({
     onAdd: function (map) {
         this._container = L.DomUtil.create('div', 'leaflet-control-mouseposition');
         L.DomEvent.disableClickPropagation(this._container);
-         map.on('mousemove', this._update, this);
+        map.on('mousemove', this._update, this);
         this._container.innerHTML = this.options.emptyString;
-        
         return this._container;
     },
     onRemove: function (map) {
@@ -42,11 +41,11 @@ L.control.mouse = function (options) {
 L.Control.PostcodeStatus = L.Control.extend({
     options: {
         position: 'bottomleft',
-        defaultString: 'Zoom in and right click to see nearby postcodes'
+        defaultString: 'Zoom in and right click/tap hold to see nearby postcodes'
     },
-    displaymap:null,
+    displaymap: null,
     onAdd: function (map) {
-        displaymap=map;
+        displaymap = map;
         this._container = L.DomUtil.create('div', 'leaflet-control-postcodeposition');
         L.DomEvent.disableClickPropagation(this._container);
         displaymap.on('zoomend', this._onZoomEnd, this);

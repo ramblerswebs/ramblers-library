@@ -119,7 +119,9 @@ function raLoadLeaflet() {
     }
 
     if (ramblersMap.options.mouseposition) {
-        L.control.mouse().addTo(ramblersMap.map);
+          if (!L.Browser.touch) {
+              L.control.mouse().addTo(ramblersMap.map);
+          }
     } 
     // Zoom control
     L.control.scale().addTo(ramblersMap.map);
