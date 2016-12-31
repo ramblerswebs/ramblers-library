@@ -280,6 +280,7 @@ function displayPostcodes(e) {
         desc += "<br/><b>Grid Reference: </b>" + gr +
                 "<br/><b>Grid Reference: </b>" + gr10 + " (8 Figure)";
     }
+    desc += getBroswerStatus();
     var results = encodeShortest(e.latlng.lat, e.latlng.lng);
     if (results.length > 0) {
         desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode + "<br/>";
@@ -352,6 +353,15 @@ function kFormatter(num) {
     return num > 999 ? (num / 1000).toFixed(1) + 'K' : num;
 }
 
+function getBroswerStatus() {
+    out = "";
+    out += "<br/>Mobile: " + L.Browser.mobile.toString();
+    out += "<br/>Touch: " + L.Browser.touch.toString();
+    out += "<br/>Pointer : " + L.Browser.pointer.toString();
+    out += "<br/>Win: " + L.Browser.win.toString();
+    out += "<br/>Android: " + L.Browser.android.toString();
+    return out;
+}
 
 var getJSON = function (url, callback) {
     var xhr = new XMLHttpRequest();
