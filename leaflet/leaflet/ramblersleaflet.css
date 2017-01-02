@@ -52,3 +52,9 @@ div#rt-header {
 .osgridref {
     font-weight: 700;
     font-size:125%;}
+
+#ra-error-text {
+    margin-left: 30px;
+    font-weight: bold;
+    color:red;
+}

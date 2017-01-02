@@ -100,24 +100,37 @@ function raLoadLeaflet() {
 
     L.control.layers(mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
     if (ramblersMap.options.search) {
+        try {
+            var geocoder = L.Control.geocoder({
+                defaultMarkGeocode: true,
+                collapsed: true,
+                geocoder: L.Control.Geocoder.nominatim({
+                    geocodingQueryParams: {countrycodes: 'gb'}
+                })
+            }).addTo(ramblersMap.map);
+        } catch (err) {
+            document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
+        }
         // must be after layers so is second control in top right
-        var geocoder = L.Control.geocoder({
-            defaultMarkGeocode: true,
-            collapsed: true,
-            geocoder: L.Control.Geocoder.nominatim({
-                geocodingQueryParams: {countrycodes: 'gb'}
-            })
-        }).addTo(ramblersMap.map);
+
     }
     if (ramblersMap.options.postcodes) {
-        ramblersMap.postcodelayer = L.featureGroup([]);
-        ramblersMap.postcodelayer.addTo(ramblersMap.map);
-        L.control.postcodeStatus().addTo(ramblersMap.map);
+        try {
+            ramblersMap.postcodelayer = L.featureGroup([]);
+            ramblersMap.postcodelayer.addTo(ramblersMap.map);
+            L.control.postcodeStatus().addTo(ramblersMap.map);
+        } catch (err) {
+            document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
+        }
     }
 
     if (ramblersMap.options.mouseposition) {
         if (!L.Browser.touch) {
-            L.control.mouse().addTo(ramblersMap.map);
+            try {
+                L.control.mouse().addTo(ramblersMap.map);
+            } catch (err) {
+                document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
+            }
         }
     }
     // Zoom control
