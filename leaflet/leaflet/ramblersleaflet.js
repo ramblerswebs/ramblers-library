@@ -292,7 +292,7 @@ function displayPostcodes(e) {
         desc += "<br/><b>Grid Reference: </b>" + gr +
                 "<br/><b>Grid Reference: </b>" + gr10 + " (8 Figure)";
     }
-    desc += getBroswerStatus();
+    // desc += getBroswerStatus();
     var results = encodeShortest(e.latlng.lat, e.latlng.lng);
     if (results.length > 0) {
         desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode + "<br/>";
