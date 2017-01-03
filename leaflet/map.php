@@ -9,10 +9,11 @@
 class RLeafletMap {
 
     private $map;
+    public $debugoptions = false;
     public $mapStyle;
     public $mapHeight;
     public $mapWidth;
-    public  $options;
+    public $options;
     protected $addElevation = false;
 
     public function __construct() {
@@ -36,7 +37,7 @@ class RLeafletMap {
     }
 
     public function display() {
-$options=$this->options;
+        $options = $this->options;
         JHtml::_('jquery.framework');
 
         $document = JFactory::getDocument();
@@ -65,9 +66,9 @@ $options=$this->options;
         }
         if (RLicense::isGoogleKeyMapSet()) {
             // Google
-            $document->addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), "text/javascript",true,true);
+            $document->addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), "text/javascript", true, true);
             $document->addScript("ramblers/leaflet/google/Leaflet.GoogleMutant.js", "text/javascript");
-          //  $document->addScript("ramblers/leaflet/google/es6-promise.auto.js", "text/javascript");
+            //  $document->addScript("ramblers/leaflet/google/es6-promise.auto.js", "text/javascript");
             $this->map->replaceString("// [set addGoogle]", "ramblersMap.options.google=true;");
         }
         if ($options->cluster) {
@@ -101,9 +102,12 @@ $options=$this->options;
         $base = JURI::base();
         $this->map->replaceString("[base]", $base);
         $optionstext = $options->text();
-        
+
         $this->map->replaceString("// [set MapOptions]", $optionstext);
-        echo $optionstext;
+        if ($this->debugoptions){
+             echo $optionstext;
+        }
+       
         echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
         echo "<div id='ra-error-text'></div> " . PHP_EOL;
         echo "<div class='map-container'>" . PHP_EOL;

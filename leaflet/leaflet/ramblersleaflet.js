@@ -41,7 +41,7 @@ function raLoadLeaflet() {
     ramblersMap.osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 18,
         attribution: "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>"}).addTo(ramblersMap.map);
-    if (ramblersMap.options.google) {
+    if (ramblersMap.options.google && !L.Browser.android) {
         ramblersMap.roads = L.gridLayer.googleMutant({
             type: "roadmap" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
         });
@@ -89,7 +89,7 @@ function raLoadLeaflet() {
         }
     }
 
-    if (ramblersMap.options.osgrid) {
+    if (ramblersMap.options.osgrid && !L.Browser.android) {
         osgrid = L.layerGroup([]);
         osMapGrid(L, osgrid);
         var overlayMaps = {
@@ -99,7 +99,7 @@ function raLoadLeaflet() {
     }
 
     L.control.layers(mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
-    if (ramblersMap.options.search) {
+    if (ramblersMap.options.search && !L.Browser.android) {
         try {
             var geocoder = L.Control.geocoder({
                 defaultMarkGeocode: true,
@@ -124,14 +124,13 @@ function raLoadLeaflet() {
         }
     }
 
-    if (ramblersMap.options.mouseposition) {
-        if (!L.Browser.touch) {
-            try {
+    if (ramblersMap.options.mouseposition && !L.Browser.touch) {
+                    try {
                 L.control.mouse().addTo(ramblersMap.map);
             } catch (err) {
                 document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
             }
-        }
+        
     }
     // Zoom control
     L.control.scale().addTo(ramblersMap.map);
