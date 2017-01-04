@@ -84,11 +84,9 @@ class RLeafletMap {
         }
         if ($options->mouseposition or $options->postcodes) {
             $document->addScript("ramblers/leaflet/mouse/L.Control.Mouse.js", "text/javascript");
-        }
-        if ($options->mouseposition) {
-            // Mouse position
             $document->addStyleSheet("ramblers/leaflet/mouse/L.Control.Mouse.css", "text/css");
         }
+
         if ($options->mouseposition or $options->osgrid or $options->postcodes) {
             // grid ref to/from lat/long
             $document->addScript("ramblers/leaflet/geodesy/vector3d.js", "text/javascript");
@@ -104,10 +102,10 @@ class RLeafletMap {
         $optionstext = $options->text();
 
         $this->map->replaceString("// [set MapOptions]", $optionstext);
-        if ($this->debugoptions){
-             echo $optionstext;
+        if ($this->debugoptions) {
+            echo $optionstext;
         }
-       
+
         echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
         echo "<div id='ra-error-text'></div> " . PHP_EOL;
         echo "<div class='map-container'>" . PHP_EOL;

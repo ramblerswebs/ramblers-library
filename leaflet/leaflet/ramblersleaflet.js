@@ -41,7 +41,7 @@ function raLoadLeaflet() {
     ramblersMap.osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 18,
         attribution: "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>"}).addTo(ramblersMap.map);
-    if (ramblersMap.options.google && !L.Browser.android) {
+    if (ramblersMap.options.google) {
         ramblersMap.roads = L.gridLayer.googleMutant({
             type: "roadmap" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
         });
@@ -89,7 +89,7 @@ function raLoadLeaflet() {
         }
     }
 
-    if (ramblersMap.options.osgrid && !L.Browser.android) {
+    if (ramblersMap.options.osgrid) {
         osgrid = L.layerGroup([]);
         osMapGrid(L, osgrid);
         var overlayMaps = {
@@ -99,7 +99,7 @@ function raLoadLeaflet() {
     }
 
     L.control.layers(mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
-    if (ramblersMap.options.search && !L.Browser.android) {
+    if (ramblersMap.options.search) {
         try {
             var geocoder = L.Control.geocoder({
                 defaultMarkGeocode: true,
