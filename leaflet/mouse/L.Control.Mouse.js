@@ -41,16 +41,12 @@ L.control.mouse = function (options) {
 L.Control.PostcodeStatus = L.Control.extend({
     options: {
         position: 'bottomleft',
-        zoominString: 'Zoom in and right click to see nearby postcodes',
-        displayString: 'Right click to see nearby postcodes',
+        zoominString: 'Zoom in and right click/tap hold to see nearby postcodes',
+        displayString: 'Right click/tap hold to see nearby postcodes',
     },
     displaymap: null,
     onAdd: function (map) {
-        if (L.Browser.touch) {
-            this.options.zoominString = 'Zoom in and tap hold to see nearby postcodes';
-            this.options.displayString = 'Tap hold to see nearby postcodes';
-        }
-        displaymap = map;
+         displaymap = map;
         this._container = L.DomUtil.create('div', 'leaflet-control-postcodeposition');
         L.DomEvent.disableClickPropagation(this._container);
         displaymap.on('zoomend', this._onZoomEnd, this);
