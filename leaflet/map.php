@@ -68,7 +68,7 @@ class RLeafletMap {
             // Google
             $document->addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), "text/javascript", true, true);
             $document->addScript("ramblers/leaflet/google/Leaflet.GoogleMutant.js", "text/javascript");
-            //  $document->addScript("ramblers/leaflet/google/es6-promise.auto.js", "text/javascript");
+            $document->addScript("ramblers/leaflet/google/es6-promise.auto.js", "text/javascript");
             $this->map->replaceString("// [set addGoogle]", "ramblersMap.options.google=true;");
         }
         if ($options->cluster) {

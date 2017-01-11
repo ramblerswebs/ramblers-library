@@ -124,13 +124,13 @@ function raLoadLeaflet() {
         }
     }
 
-    if (ramblersMap.options.mouseposition && !L.Browser.touch) {
-                    try {
-                L.control.mouse().addTo(ramblersMap.map);
-            } catch (err) {
-                document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
-            }
-        
+    if (ramblersMap.options.mouseposition && !L.Browser.mobile) {
+        try {
+            L.control.mouse().addTo(ramblersMap.map);
+        } catch (err) {
+            document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
+        }
+
     }
     // Zoom control
     L.control.scale().addTo(ramblersMap.map);
