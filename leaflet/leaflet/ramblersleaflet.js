@@ -14,6 +14,7 @@ function RamblersLeafletMap(base) {
     this.markersCG = null;
     this.progress = null;
     this.progressBar = null;
+    this.startingplaces = false;
     this.options = {cluster: true,
         fullscreen: true,
         google: false,
@@ -64,13 +65,18 @@ function raLoadLeaflet() {
         mapLayers = {"Open Street Map": ramblersMap.osm};
     }
 
-    createWalkMarkers(ramblersMap.base);
+
     createMouseMarkers(ramblersMap.base);
+    if (ramblersMap.options.startingplaces) {
+        createPlaceMarkers(ramblersMap.base);
+    } else {
+        createWalkMarkers(ramblersMap.base);
+    }
     if (ramblersMap.options.cluster) {
         // progress bar for cluster
-        ramblersMap.progress = document.getElementById("ra-cluster-progress");
+        // ramblersMap.progress = document.getElementById("ra-cluster-progress");
         ramblersMap.progressBar = document.getElementById("ra-cluster-progress-bar");
-        ramblersMap.markersCG = L.markerClusterGroup({chunkedLoading: false, chunkProgress: updateClusterProgressBar});
+        ramblersMap.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: updateClusterProgressBar});
         ramblersMap.markerList = [];
     }
 
@@ -83,7 +89,9 @@ function raLoadLeaflet() {
     if (ramblersMap.options.fitbounds) {
         // [FitBounds]   
         if (ramblersMap.options.cluster) {
-            ramblersMap.map.fitBounds(ramblersMap.markersCG.getBounds());
+            // cacl bounds from marker as cluster still loading
+            var bounds = getBounds(ramblersMap.markerList);
+            ramblersMap.map.fitBounds(bounds);
         } else {
 
         }
@@ -113,6 +121,9 @@ function raLoadLeaflet() {
         }
         // must be after layers so is second control in top right
 
+    }
+    if (ramblersMap.options.startingplaces) {
+        L.control.usageAgreement().addTo(ramblersMap.map);
     }
     if (ramblersMap.options.postcodes) {
         try {
@@ -179,14 +190,13 @@ function displayGPX(ramblersMap, file, linecolour, imperial) {
 
 function updateClusterProgressBar(processed, total, elapsed) {
     if (elapsed > 1000) {
-// if it takes more than a second to load, display the progress bar:
-        ramblersMap.progress.style.display = "block";
-        ramblersMap.progressBar.style.width = Math.round(processed / total * 100) + "%";
+        // if it takes more than a second to load, display the progress bar:
+        ramblersMap.progressBar.innerHTML = "Loading: " + Math.round(processed / total * 100) + "%";
     }
 
     if (processed === total) {
 // all markers processed - hide the progress bar:
-        ramblersMap.progress.style.display = "none";
+        ramblersMap.progressBar.style.display = "none";
     }
 }
 
@@ -240,6 +250,33 @@ function createMouseMarkers(base) {
     ramblersMap.gridsquare10 = L.rectangle([[84, -89], [84.00001, -89.000001]],
             {color: "#884000", weight: 1}).addTo(ramblersMap.map);
 }
+function createPlaceMarkers(base) {
+    s0 = L.icon({
+        iconUrl: base + 'images/rejected.png',
+        iconSize: [15, 15]
+    });
+    s1 = L.icon({
+        iconUrl: base + 'images/1star.png',
+        iconSize: [19, 19]
+    });
+    s2 = L.icon({
+        iconUrl: base + 'images/2star.png',
+        iconSize: [21, 21]
+    });
+    s3 = L.icon({
+        iconUrl: base + 'images/3star.png',
+        iconSize: [23, 23]
+    });
+    s4 = L.icon({
+        iconUrl: base + 'images/4star.png',
+        iconSize: [25, 25]
+    });
+    s5 = L.icon({
+        iconUrl: base + 'images/5star.png',
+        iconSize: [27, 27]
+    });
+
+}
 
 function addMarker($popup, $lat, $long, $icon) {
     var marker = L.marker([$lat, $long], {icon: $icon});
@@ -253,6 +290,28 @@ function addMarkerToLayer($layer, $popup, $lat, $long, $icon) {
     $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text 
     marker.bindPopup($pop);
     $layer.add.push(marker);
+}
+function addPlace($gr, $no, $lat, $long, $icon)
+{
+    var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long});
+    if ($gr.length == 8) {
+        $grdisp = $gr.substr(0, 2) + " " + $gr.substr(2, 3) + " " + $gr.substr(5, 3);
+    } else {
+        $grdisp = $gr;
+    }
+    marker.bindPopup("<b>Grid Ref " + $grdisp + "</b><br/>Lat/Long " + $lat + " " + $long);
+    marker.on('click', onClick);
+    ramblersMap.markerList.push(marker);
+}
+function getBounds(list) {
+    var bounds = new L.LatLngBounds();
+    var marker;
+    for (i = 0; i < list.length; i++) {
+        marker = list[i];
+        bounds.extend(marker.getLatLng());
+    }
+
+    return bounds;
 }
 
 function walkdetails($url) {
@@ -273,10 +332,9 @@ function directions($lat, $long) {
     page = "https://maps.google.com?saddr=Current+Location&daddr=" + $lat.toString() + "," + $long.toString();
     window2 = open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
-function streetview($lat, $long) {
-    page = "http://www.instantstreetview.com/s/" + $lat.toString() + "," + $long.toString();
-    //page="http://maps.google.com/maps?q=&layer=c&cbll="+$lat.toString() + "," + $long.toString()+"&cbp=1,0,0,0,0";
-    window2 = open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
+function googlemap($lat, $long) {
+    page = "https://www.google.com/maps/place/" + $lat.toString() + "+" + $long.toString() + "/@" + $lat.toString() + "," + $long.toString() + ",15z";
+    window2 = open(page, "Google Map", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 
 function displayPostcodes(e) {
@@ -298,12 +356,12 @@ function displayPostcodes(e) {
         desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode + "<br/>";
     }
     if (gr !== "") {
-        desc += '<a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
         desc += '<a href="javascript:photos(\'' + gr10 + '\')">[Photos]</a>';
-    }
+        desc += '<a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
 
+    }
+    desc += '<a href="javascript:googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
     desc += '<a href="javascript:directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
-    desc += '<a href="javascript:streetview(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Streetview]</a>';
     ramblersMap.postcodelayer.clearLayers();
     var msg = "   ";
     var point = L.marker(p).bindPopup(msg);
@@ -352,6 +410,8 @@ function displayPostcodes(e) {
 
             });
 
+        } else {
+            point.getPopup().setContent(desc + "<br/><b>Zoom in and right click/tap hold to see nearby postcodes</b>");
         }
     } else {
         desc += "<br/>Outside OS Grid";

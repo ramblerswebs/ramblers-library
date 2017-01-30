@@ -24,3 +24,20 @@
     font: 11px/1.5 arial,Monaco, sans-serif;
     font-weight: bold;
 }
+
+.leaflet-container .leaflet-control-usageagreement {
+    background-color: #C60C30;
+     opacity: 0.6;
+    filter: alpha(opacity=60); /* For IE8 and earlier */
+    box-shadow: 0 0 5px #bbb;
+    padding: 0 5px;
+    margin:0;
+    margin-left: 5px;
+    border:2px;
+    border-color: #777777;
+    border-style: solid;
+    color: #ffffff;
+    font: 11px/1.5 arial,Monaco, sans-serif;
+    font-weight: bold;
+    border-radius: 4px;
+}

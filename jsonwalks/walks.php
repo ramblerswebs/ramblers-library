@@ -111,7 +111,7 @@ class RJsonwalksWalks {
 
     public function filterDateRange($fromdate, $todate) {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if ($walk->walkDate <= $fromdate || $walk->walkDate >= $todate) {
+            if ($walk->walkDate < $fromdate || $walk->walkDate > $todate) {
                 unset($this->arrayofwalks[$key]);
             }
         }

@@ -14,7 +14,8 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
     public function __construct() {
         $this->map = new RLeafletMap;
     }
-    public function getMap(){
+
+    public function getMap() {
         return $this->map;
     }
 
@@ -74,8 +75,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $map = "<a href=&quot;javascript:streetmap('" . $gr . "')&quot; >[OS Map]</a>";
         $directions = "<a href=&quot;javascript:directions(" . $lat . "," . $long . ")&quot; >[Directions]</a>";
         //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
-        $photos = "<a href=&quot;javascript:photos('" . $gr . "')&quot; >[Photos]</a>";
-        $popup = $walk . $map . $directions . $photos;
+        $popup = $walk . $map . $directions;
         // $popup = str_replace('"', "&quot;", $popup);
         $marker = 'addMarker("' . $popup . '", ' . $lat . ', ' . $long . ', ' . $icon . ');';
         //     $marker = "addWalk(markerList,'" . $this->walkClass . $walk->status . "', '" . $date . "', '" . $title . "', '" . $dist . "', '" . $gr . "', " . $lat . ", " . $long . ", '" . $url . "', " . $icon . ");";

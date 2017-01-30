@@ -15,7 +15,7 @@ L.Control.Mouse = L.Control.extend({
         return this._container;
     },
     onRemove: function (map) {
-        map.off('mousemove', this._onMouseMove);
+        map.off('mousemove', this._update);
     },
     _update: function (e) {
         var text = getMouseMoveAction(e);
@@ -46,7 +46,7 @@ L.Control.PostcodeStatus = L.Control.extend({
     },
     displaymap: null,
     onAdd: function (map) {
-         displaymap = map;
+        displaymap = map;
         this._container = L.DomUtil.create('div', 'leaflet-control-postcodeposition');
         L.DomEvent.disableClickPropagation(this._container);
         displaymap.on('zoomend', this._onZoomEnd, this);
@@ -59,13 +59,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         displaymap.off('contextmenu', this._onClick);
     },
     _onRightClick: function (e) {
-     //   var zoom = displaymap.getZoom();
-     //   if (zoom > 12) {
-            displayPostcodes(e);
-      //  } else {
-      //      ramblersMap.postcodelayer.clearLayers();
-      //      this._container.innerHTML = this.options.zoominString;
-      //  }
+        displayPostcodes(e);
     },
     _onZoomEnd: function (e) {
         var zoom = ramblersMap.map.getZoom();
@@ -82,4 +76,25 @@ L.Control.PostcodeStatus = L.Control.extend({
 
 L.control.postcodeStatus = function (options) {
     return new L.Control.PostcodeStatus(options);
+};
+
+L.Control.UsageAgreement = L.Control.extend({
+    options: {
+        position: 'bottomleft',
+        defaultString: 'You have agreed that you will check the suitability of locations before you use them.'
+    },
+    onAdd: function (map) {
+        this._container = L.DomUtil.create('div', 'leaflet-control-usageagreement');
+        L.DomEvent.disableClickPropagation(this._container);
+        this._container.innerHTML = this.options.defaultString;
+        return this._container;
+    },
+    onRemove: function (map) {
+        map.off('zoomend', this._onZoomEnd);
+        map.off('contextmenu', this._onClick);
+    }
+});
+
+L.control.usageAgreement = function (options) {
+    return new L.Control.UsageAgreement(options);
 };
