@@ -105,8 +105,9 @@ class RLeafletMap {
         if ($this->debugoptions) {
             echo $optionstext;
         }
-
-        echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
+        if ($options->cluster) {
+            echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
+        }
         echo "<div id='ra-error-text'></div> " . PHP_EOL;
         echo "<div class='map-container'>" . PHP_EOL;
 
