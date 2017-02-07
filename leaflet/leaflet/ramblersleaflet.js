@@ -19,6 +19,7 @@ function RamblersLeafletMap(base) {
         fullscreen: true,
         google: false,
         search: true,
+        locationsearch: true,
         osgrid: true,
         mouseposition: true,
         postcodes: true,
@@ -74,7 +75,6 @@ function raLoadLeaflet() {
     }
     if (ramblersMap.options.cluster) {
         // progress bar for cluster
-        // ramblersMap.progress = document.getElementById("ra-cluster-progress");
         ramblersMap.progressBar = document.getElementById("ra-cluster-progress-bar");
         ramblersMap.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: updateClusterProgressBar});
         ramblersMap.markerList = [];
@@ -89,7 +89,7 @@ function raLoadLeaflet() {
     if (ramblersMap.options.fitbounds) {
         // [FitBounds]   
         if (ramblersMap.options.cluster) {
-            // cacl bounds from marker as cluster still loading
+            // calc bounds from marker as cluster still loading
             var bounds = getBounds(ramblersMap.markerList);
             ramblersMap.map.fitBounds(bounds);
         } else {
@@ -122,6 +122,15 @@ function raLoadLeaflet() {
         // must be after layers so is second control in top right
 
     }
+
+    if (ramblersMap.options.locationsearch) {
+        L.control.locationsearch({
+            defaultMarkLocationsearch: true,
+            collapsed: true
+        }).addTo(ramblersMap.map);
+    }
+
+
     if (ramblersMap.options.startingplaces) {
         L.control.usageAgreement().addTo(ramblersMap.map);
     }
@@ -241,6 +250,14 @@ function createMouseMarkers(base) {
         iconSize: [24, 18], // size of the icon
         shadowSize: [26, 20], // size of the shadow
         iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
+        shadowAnchor: [0, 0], // the same for the shadow
+        popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
+    });
+    redmarkericon = L.icon({
+        iconUrl: base + 'ramblers/leaflet/images/redmarker.png',
+        iconSize: [32, 32], // size of the icon
+        shadowSize: [26, 20], // size of the shadow
+        iconAnchor: [16, 32], // point of the icon which will correspond to marker's location
         shadowAnchor: [0, 0], // the same for the shadow
         popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
     });

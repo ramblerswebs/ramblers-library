@@ -50,6 +50,10 @@ class RLeafletMap {
             $document->addStyleSheet("ramblers/leaflet/geocoder/Control.Geocoder.css", "text/css");
             $document->addScript("ramblers/leaflet/geocoder/Control.Geocoder.js", "text/javascript");
         }
+       if ($options->locationsearch) {
+            $document->addStyleSheet("ramblers/leaflet/locationsearch/Control.Locationsearch.css", "text/css");
+            $document->addScript("ramblers/leaflet/locationsearch/Control.Locationsearch.js", "text/javascript");
+        }
 
         if ($options->postcodes) {
             // Mapcodes        
