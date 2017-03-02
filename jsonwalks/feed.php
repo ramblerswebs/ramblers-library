@@ -118,6 +118,8 @@ class RJsonwalksFeed {
             echo "filterDateRange: second parameter is NOT Datetime";
             return;
         }
+        $dateto->setTime(0, 0, 0);
+        $datefrom->setTime(0, 0, 0);
         $this->walks->filterDateRange($datefrom, $dateto);
     }
 

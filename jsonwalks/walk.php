@@ -14,7 +14,7 @@ class RJsonwalksWalk extends REvent {
     public $dateCreated;            // date of the walk as a datetime object
     public $cancellationReason;     // text reason walk cancelled
 // basic walk details
-    public $walkDate;               // date of the walk as a datettime object
+    public $walkDate;               // date of the walk as a datetime object
     Public $dayofweek;              // day of the week as text
     public $day;                    // the day number as text
     public $month;                  // the month as text

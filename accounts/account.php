@@ -20,6 +20,7 @@ class RAccountsAccount {
     const FORMAT_AKEEBA = 5;
     const FORMAT_CONFIG = 6;
     const FORMAT_NOJOOMLA = 7;
+    const FORMAT_SPF = 8;
 
     private $status;
     private $domain;
@@ -47,7 +48,7 @@ class RAccountsAccount {
             case self::FORMAT_LOGFILE:
                 if (!$this->log->Exists()) {
                     return null;
-                }  
+                }
                 $array[] = $this->domainLink();
                 $array[] = $this->status;
                 $array[] = $this->log->getWebMonitorVersion();
@@ -117,6 +118,19 @@ class RAccountsAccount {
                     $array[] = $this->status;
                 }
                 break;
+            case self::FORMAT_SPF:
+                $result = dns_get_record($this->domain);
+                $spf = "Not found";
+                if (isset($result[0])) {
+                    $col0 = $result[0];
+                    if (isset($col0['txt'])) {
+                        $spf = $col0['txt'];
+                    }
+                }
+                $array[] = $this->domainLink();
+                $array[] = $this->status;
+                $array[] = $spf;
+                break;
             default:
                 return Null;
                 break;
@@ -148,15 +162,17 @@ class RAccountsAccount {
             case self::FORMAT_NOJOOMLA:
                 return ["Domain<br/>  Date", "Status"];
                 break;
+            case self::FORMAT_SPF:
+                return ["Domain", "Status", "Txt/Spf Record"];
             default:
                 return Null;
                 break;
         }
         return $array;
     }
-    
-    private function domainLink(){
-        return "<a target='_blank' href='http://".$this->domain."'>".$this->domain."</a>";
+
+    private function domainLink() {
+        return "<a target='_blank' href='http://" . $this->domain . "'>" . $this->domain . "</a>";
     }
 
 }

@@ -18,13 +18,25 @@ class RAccounts {
     private $dbresults;
 
     public function updateAccounts() {
-        $this->getAccounts();
+        $this->getAccounts(false);
         $org = new ROrganisation();
         $this->updateDatabase($org);
     }
 
     public function listLogDetails($format) {
-        $this->getAccounts();
+        $sortbystatus = false;
+        switch ($format) {
+            case RAccountsAccount::FORMAT_NOLOGFILE:
+                $sortbystatus = true;
+                break;
+            case RAccountsAccount::FORMAT_SPF:
+                $sortbystatus = true;
+                break;
+            default:
+                $sortbystatus = false;
+                break;
+        }
+        $this->getAccounts($sortbystatus);
         echo "<table style='font-size: 85%'>";
         echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
         foreach ($this->dbresults as $item) :
@@ -84,7 +96,7 @@ class RAccounts {
 
             $query->select("*");
             $query->from($db->quoteName(ACCOUNTTABLE));
-            
+
             // Reset the query using our newly populated query object.
             $db->setQuery($query);
 
@@ -93,7 +105,7 @@ class RAccounts {
         }
     }
 
-    private function getAccounts() {
+    private function getAccounts($sortbystatus) {
 
         if (RSqlUtils::tableExists(ACCOUNTTABLE)) {
             $db = JFactory::getDbo();
@@ -101,7 +113,11 @@ class RAccounts {
 
             $query->select($db->quoteName(array('id', 'code', 'domain', 'status')));
             $query->from($db->quoteName(ACCOUNTTABLE));
-            $query->order('domain ASC');
+            if ($sortbystatus) {
+                $query->order('status,domain ASC');
+            } else {
+                $query->order('domain ASC');
+            }
 
             // Reset the query using our newly populated query object.
             $db->setQuery($query);
