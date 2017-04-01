@@ -38,8 +38,9 @@ class RJsonwalksWalk extends REvent {
 // finish place
     public $isLinear = false;       // true if walk has a finishing place otherwise false
     public $finishLocation;         // a [[RJsonwalksLocation]] object if isLinear=true
-    public $finishTime;      // finishTime as dateTime or null
-// grades length
+                                    // not always provided so check if null
+    public $finishTime;             // finishTime as dateTime or null
+// grades ,length
     public $nationalGrade = "";     // national grade as full word
     public $localGrade = "";        // local grade
     public $distanceMiles;          // distance of walk as number in miles

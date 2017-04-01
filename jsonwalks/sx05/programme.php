@@ -60,7 +60,7 @@ class RJsonwalksSx05Programme extends RJsonwalksDisplaybase {
 
         $description = "";
         if ($walk->hasMeetPlace) {
-            $description .= $walk->meetLocation->description . " " . $walk->meetLocation->timeHHMMshort;
+            $description .= $walk->meetLocation->timeHHMMshort . ". " . $walk->meetLocation->description;
         }
         if ($description != "") {
             $description.=", ";
