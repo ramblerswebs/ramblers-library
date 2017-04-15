@@ -119,7 +119,7 @@ class RAccountsAccount {
                 }
                 break;
             case self::FORMAT_SPF:
-                $result = dns_get_record($this->domain);
+                $result = dns_get_record($this->domain,DNS_TXT);
                 $spf = "Not found";
                 if (isset($result[0])) {
                     $col0 = $result[0];

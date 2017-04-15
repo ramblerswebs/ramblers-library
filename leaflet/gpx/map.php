@@ -15,9 +15,9 @@ class RLeafletGpxMap extends RLeafletMap {
     }
 
     public function displayPath($gpx) {
-        $opts=new RLeafletMapoptions();
-        $opts->cluster=false;
-        $this->options->cluster=false;
+        $opts = new RLeafletMapoptions();
+        $opts->cluster = false;
+        $this->options->cluster = false;
         $this->addElevation = true;
         if ($this->imperial) {
             $imperial = "true";
@@ -26,7 +26,7 @@ class RLeafletGpxMap extends RLeafletMap {
         }
         $file = JURI::root() . $gpx;
         //   echo $file;
-      $text="displayGPX(ramblersMap, '$gpx', '$this->linecolour', $imperial)";
+        $text = "displayGPX(ramblersMap, '$gpx', '$this->linecolour', $imperial)";
         parent::addContent($text);
         if (file_exists($gpx)) {
             parent::display();

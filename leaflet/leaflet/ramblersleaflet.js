@@ -181,7 +181,7 @@ function displayGPX(ramblersMap, file, linecolour, imperial) {
         imperial: imperial    //display imperial units instead of metric
     });
     el.addTo(ramblersMap.map);
-    var g = new L.GPX(file, {async: true,
+    var g = new L.GPX(ramblersMap.base + file, {async: true,
         polyline_options: {color: linecolour},
         marker_options: {
             startIconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-start.png',
