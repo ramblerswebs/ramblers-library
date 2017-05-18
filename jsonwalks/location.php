@@ -29,9 +29,9 @@ class RJsonwalksLocation {
             $this->timeHHMM = "No time";
             $this->timeHHMMshort = "No time";
         } else {
-            $this->timeHHMM = $this->time->format('g:i a');
+            $this->timeHHMM = $this->time->format('g:ia');
             $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
-            if ($this->timeHHMMshort == "12 am") {
+            if ($this->timeHHMMshort == "12am") {
                 $this->time = "";
                 $this->timeHHMM = "No time";
                 $this->timeHHMMshort = "No time";

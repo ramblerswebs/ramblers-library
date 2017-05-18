@@ -13,6 +13,8 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
     private $lastValue = "";
     private $walksClass = "walks";
     private $walkClass = "walk";
+    public $addGridRef = true;
+    public $addDescription = true;
 
     // const BR = "<br />";
 
@@ -42,15 +44,33 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
 
     private function displayWalk($walk) {
 
-        $text = "<b>" . $walk->walkDate->format('l, jS') . "</b>" . PHP_EOL;
+        $text = "<b>" . $walk->walkDate->format('l jS') . "</b>";
         if ($walk->hasMeetPlace) {
             $text .= ", " . $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
+            if ($this->addGridRef === true) {
+                $text .= " [" . $walk->meetLocation->gridref . "]";
+            }
         }
         if ($walk->startLocation->exact) {
             $text .= ", " . $walk->startLocation->timeHHMMshort . " at " . $walk->startLocation->description;
+            if ($this->addGridRef === true) {
+                $text .= " [" . $walk->startLocation->gridref . "]";
+            }
+        } else {
+            if (!empty($walk->startLocation->description)) {
+                $text .= ", " . $walk->startLocation->description . " area";
+            }
         }
 
-        $text .= ", " . $walk->title . " ";
+        if (!empty($walk->title)) {
+            $text .= ", " . $walk->title;
+        }
+
+        if ($this->addDescription) {
+            if (!empty($walk->description)) {
+                $text .= ", " . $walk->description;
+            }
+        }
         $text .= ", " . $walk->distanceMiles . "mi / " . $walk->distanceKm . "km";
         if ($walk->isLeader) {
             $text.=", Leader " . $walk->contactName . " " . $walk->telephone1;
