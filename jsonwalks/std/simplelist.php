@@ -14,7 +14,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
     private $walksClass = "walks";
     private $walkClass = "walk";
     public $addGridRef = true;
-    public $addDescription = true;
+    public $addDescription = false;
 
     // const BR = "<br />";
 
@@ -71,7 +71,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
                 $text .= ", " . $walk->description;
             }
         }
-        $text .= ", " . $walk->distanceMiles . "mi / " . $walk->distanceKm . "km";
+        $text .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
         if ($walk->isLeader) {
             $text.=", Leader " . $walk->contactName . " " . $walk->telephone1;
         } else {
