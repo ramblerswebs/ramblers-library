@@ -33,12 +33,18 @@ class RJsonwalksWalks {
     }
 
     public function setNewWalks($days) {
-        $interval = "P" . $days . "D";
         $date = new DateTime(NULL);
+        If ($days <= 0) {
+            $interval = "P" . 10 . "D";
+        } else {
+            $interval = "P" . $days . "D";
+        }
         $interval = new DateInterval($interval);
+        If ($days <= 0) {
+            $interval->invert = 1;
+        }
         $date->sub($interval);
         $items = $this->allWalks();
-
         foreach ($items as $walk) {
             $walk->setNewWalk($date);
         }

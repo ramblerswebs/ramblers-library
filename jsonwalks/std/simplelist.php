@@ -63,12 +63,14 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
         }
 
         if (!empty($walk->title)) {
-            $text .= ", " . $walk->title;
+            $text .= ", <b>" . $walk->title . "</b>";
         }
 
         if ($this->addDescription) {
-            if (!empty($walk->description)) {
-                $text .= ", " . $walk->description;
+            if ($walk->description !== $walk->title) {
+                if (!empty($walk->description)) {
+                    $text .= ", " . $walk->description;
+                }
             }
         }
         $text .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
