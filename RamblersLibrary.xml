@@ -2,7 +2,7 @@
 <extension type="file"  version="3.0" client="site" method="upgrade">
     <name>RamblersLibrary</name>
     <author>Chris Vaughan Derby and South Derbyshire</author>
-    <creationDate>21 May 2017</creationDate>
+    <creationDate>2 June 2017</creationDate>
     <copyright>Copyright (C) 2016/2017</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
@@ -22,8 +22,10 @@
             <folder>html</folder>
             <folder>ics</folder>
             <folder>images</folder>
+            <folder>images/grades</folder>
             <folder>js</folder>
             <folder>jsonwalks</folder>
+            <folder>jsonwalks/css</folder>
             <folder>jsonwalks/de02</folder>
             <folder>jsonwalks/leaflet</folder>
             <folder>jsonwalks/std</folder>
@@ -42,6 +44,7 @@
             <folder>license</folder>
             <folder>organisation</folder>
             <folder>osmap</folder>
+            <folder>pages</folder>
             <folder>sql</folder>
             <folder>users</folder>
         </files>

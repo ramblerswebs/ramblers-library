@@ -123,9 +123,39 @@ class RJsonwalksWalks {
         }
     }
 
+    public function filterTitle($filter, $option = 'remove') {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($option === 'remove') {
+                if ($this->titleIs($walk, $filter)) {
+                    unset($this->arrayofwalks[$key]);
+                }
+            }
+            if ($option === 'keep') {
+                if (!$this->titleIs($walk, $filter)) {
+                    unset($this->arrayofwalks[$key]);
+                }
+            }
+        }
+    }
+
+    public function filterTitleContains($filter, $option = 'remove') {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($option === 'remove') {
+                if ($this->titleContains($walk, $filter)) {
+                    unset($this->arrayofwalks[$key]);
+                }
+            }
+            if ($option === 'keep') {
+                if (!$this->titleContains($walk, $filter)) {
+                    unset($this->arrayofwalks[$key]);
+                }
+            }
+        }
+    }
+
     public function filterNationalGrade($grades) {
-        foreach ($this->arrayofwalks as $key => $value) {
-            if ($this->notInGradeList($value, $grades)) {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($this->notInGradeList($walk, $grades)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -141,12 +171,20 @@ class RJsonwalksWalks {
     }
 
     private function notInGradeList($walk, $grades) {
-        foreach ($grades as $value) {
-            if (strtolower($value) == strtolower($walk->nationalGrade)) {
+        foreach ($grades as $grade) {
+            if (strtolower($grade) == strtolower($walk->nationalGrade)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private function titleIs($walk, $filter) {
+        return strtolower($filter) === strtolower($walk->title);
+    }
+
+    private function titleContains($walk, $filter) {
+        return $this->contains(strtolower($filter), strtolower($walk->title));
     }
 
     private function notInDayList($walk, $days) {

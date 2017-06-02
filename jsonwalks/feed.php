@@ -105,6 +105,18 @@ class RJsonwalksFeed {
         $this->walks->filterStrands($filter);
     }
 
+    public function filterTitle($filter, $option = 'remove') {
+        $this->walks->filterTitle($filter, $option);
+    }
+
+    public function filterTitleContains($filter, $option = 'remove') {
+        $this->walks->filterTitleContains($filter, $option);
+    }
+
+    public function filterNationalGrade($grades) {
+        $this->walks->filterStrands($grades);
+    }
+
     public function filterFestivals($filter) {
         $this->walks->filterFestivals($filter);
     }
@@ -135,6 +147,11 @@ class RJsonwalksFeed {
         $this->walks->walksInFuture($period);
     }
 
+    public function nationalGradesLink() {
+        $out = '<p></p><p>Description of <a href="ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">National Grades</a></p>';
+        echo $out;
+    }
+
     public function display($displayclass) {
         if ($this->walks == null) {
             return;
@@ -142,9 +159,11 @@ class RJsonwalksFeed {
         if ($this->walks->totalWalks() == 0) {
             return;
         }
+        $doc = JFactory::getDocument();
+        $doc->addStyleSheet(JURI::base() . 'ramblers/jsonwalks/css/ramblers.css');
         $printOn = JRequest::getVar('print') == 1;
         if ($printOn) {
-            $doc = JFactory::getDocument();
+
             $style = 'BODY {color: #000000;}';
             $doc->addStyleDeclaration($style);
         }

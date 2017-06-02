@@ -38,7 +38,7 @@ class RJsonwalksWalk extends REvent {
 // finish place
     public $isLinear = false;       // true if walk has a finishing place otherwise false
     public $finishLocation;         // a [[RJsonwalksLocation]] object if isLinear=true
-                                    // not always provided so check if null
+    // not always provided so check if null
     public $finishTime;             // finishTime as dateTime or null
 // grades ,length
     public $nationalGrade = "";     // national grade as full word
@@ -324,6 +324,33 @@ class RJsonwalksWalk extends REvent {
         $interval = new DateInterval($intervalFormat);
         $lasttime = $lasttime->add($interval);
         return $lasttime;
+    }
+
+    public function getGradeImage() {
+        $image = "ramblers/images/grades/base.jpg";
+        switch ($this->nationalGrade) {
+            case "Easy Access":
+                $image = "ramblers/images/grades/eanew.jpg";
+                break;
+            case "Easy":
+                $image = "ramblers/images/grades/e.jpg";
+                break;
+            case "Leisurely":
+                $image = "ramblers/images/grades/l.jpg";
+                break;
+            case "Moderate":
+                $image = "ramblers/images/grades/m.jpg";
+                break;
+            case "Strenuous":
+                $image = "ramblers/images/grades/s.jpg";
+                break;
+            case "Technical":
+                $image = "ramblers/images/grades/t.jpg";
+                break;
+            default:
+                break;
+        }
+        return $image;
     }
 
     public function distanceFrom($easting, $northing, $distanceKm) {

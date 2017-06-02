@@ -78,8 +78,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     }
 
     private function displayWalkSummary($walk) {
-
-        $text = "<b>" . $walk->walkDate->format('l, jS F Y') . "</b>";
+        $text = $this->addGradeImage($walk);
+        $text .= "<b> " . $walk->walkDate->format('l, jS F Y') . "</b>";
 
         $text .= ", " . $walk->title;
         if ($walk->distanceMiles > 0) {
@@ -95,6 +95,13 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         }
 
         echo $text . PHP_EOL;
+    }
+
+    private function addGradeImage($walk) {
+        $out = '<div class="walktooltip">';
+        $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" style="width:25px;height:25px;">';
+        $out .='<div class="walktooltiptext">' . $walk->nationalGrade . '</div></div>';
+        return $out;
     }
 
     function displayWalkDetails($walk) {
@@ -127,15 +134,15 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "<b>Circular walk</b>";
         }
         if ($walk->hasMeetPlace) {
-            $out = "<div><b>Meeting time " . $walk->meetLocation->timeHHMMshort."</b></div>";
+            $out = "<div><b>Meeting time " . $walk->meetLocation->timeHHMMshort . "</b></div>";
             echo $out . PHP_EOL;
         }
         if ($walk->startLocation->exact) {
-            $out = "<div><b>Start time " . $walk->startLocation->timeHHMMshort."</b></div>";
+            $out = "<div><b>Start time " . $walk->startLocation->timeHHMMshort . "</b></div>";
             echo $out . PHP_EOL;
         }
-        if ($walk->finishTime!=null) {
-            $out = "<div>(Estimated finish time " . $this->getShortTime($walk->finishTime).")</div>";
+        if ($walk->finishTime != null) {
+            $out = "<div>(Estimated finish time " . $this->getShortTime($walk->finishTime) . ")</div>";
             echo $out . PHP_EOL;
         }
         echo "</div>";
@@ -226,8 +233,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         if ($this->printOn) {
             $class = "printon";
         }
-          echo "<div class='updated " . $class . "'><a href='" . $walk->detailsPageUrl . "' target='_blank' >View walk on Walks Finder</a></div>" . PHP_EOL;
-      if ($this->displayGroup == false) {
+        echo "<div class='updated " . $class . "'><a href='" . $walk->detailsPageUrl . "' target='_blank' >View walk on Walks Finder</a></div>" . PHP_EOL;
+        if ($this->displayGroup == false) {
             echo "<div class='groupfootnote " . $class . "'>Group: " . $walk->groupName . "</div>" . PHP_EOL;
         }
         echo "<div class='updated " . $class . "'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>" . PHP_EOL;
@@ -287,15 +294,16 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo "</div>";
         }
     }
-    function getShortTime($time){
-         $timeHHMM = $time->format('g:i a');
-            $timeHHMMshort = str_replace(":00", "", $timeHHMM);
-            if ($timeHHMMshort == "12 am") {
-                $time = "";
-                $timeHHMM = "No time";
-                $timeHHMMshort = "No time";
-            }
-            return $timeHHMMshort;
+
+    function getShortTime($time) {
+        $timeHHMM = $time->format('g:i a');
+        $timeHHMMshort = str_replace(":00", "", $timeHHMM);
+        if ($timeHHMMshort == "12 am") {
+            $time = "";
+            $timeHHMM = "No time";
+            $timeHHMMshort = "No time";
+        }
+        return $timeHHMMshort;
     }
 
 }
