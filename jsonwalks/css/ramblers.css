@@ -1,3 +1,4 @@
+/* WALKS css */
 /* June 2017 -  */
 /* Ramblers colours */
 /* pantone0110 '#D7A900';           */
@@ -13,26 +14,6 @@
 
 /* Ramblers additions */
 .cancelled {color:#C60C30; text-decoration: line-through;}
-
-/* Print font setting
-
-body.contentpane {
-  font-family: Arial, Helvetica, sans-serif;
-}                     */
-
-/* Kunena forum user status*/
-div.userkunenalistempty {
-    color: #782327;
-    font-weight: 900
-}
-div.userkunenalist {
-    color: #000000;
-}
-ul.userkunenacatorgories li{
-    color:   #206C49;
-    list-style-type: square;
-    font-weight: 800
-}
 
 /* css code to handle json walk feeds */
 
@@ -78,8 +59,8 @@ ul.userkunenacatorgories li{
 
 .walkNew {
     padding-left: 0px;
-    background: url(../images/icons/new.gif) no-repeat scroll 0 50% rgba(0, 0, 0, 0);
-    background-position: 24px 0px ;
+    background: url(../../images/new.gif) no-repeat scroll 0 50% rgba(0, 0, 0, 0);
+    background-position: 55px 0px ;
 
 }
 span.walkerror {
@@ -216,7 +197,7 @@ font-weight: 900;
 /* Show the tooltip text when you mouse over the tooltip container */
 .walktooltip:hover .walktooltiptext {
     display: inline;
-    padding-left:20px;
+    padding-left:5px;
   
 }
 

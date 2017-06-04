@@ -19,6 +19,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $addContacttoHeader = false;
     public $popupLink = true; // not used now!
     public $displayGroup = false;  // should the Group name be displayed
+    public $displayGradesIcon = false;
     private $printOn = false;
     private static $accordianId = 100;
 
@@ -98,9 +99,16 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     }
 
     private function addGradeImage($walk) {
-        $out = '<div class="walktooltip">';
-        $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" style="width:25px;height:25px;">';
-        $out .='<div class="walktooltiptext">' . $walk->nationalGrade . '</div></div>';
+        $out = '';
+        if ($this->displayGradesIcon) {
+            $out = '<div class="walktooltip">';
+            $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" style="width:25px;height:25px;">';
+            $out .='<div class="walktooltiptext">' . $walk->nationalGrade . ':</div></div>';
+        } else {
+            $out = '<div class="walktooltip">';
+            $out .= ' <img src="ramblers/images/grades/base.jpg" alt="' . $walk->nationalGrade . '" style="width:25px;height:25px;">';
+            $out .='<div class="walktooltiptext">' . $walk->nationalGrade . ':</div></div>';
+        }
         return $out;
     }
 
