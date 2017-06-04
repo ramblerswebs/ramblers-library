@@ -14,6 +14,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
     private $walksClass = "walks";
     private $walkClass = "walk";
     public $addGridRef = true;
+    public $addStartGridRef = false;
     public $addDescription = false;
 
     // const BR = "<br />";
@@ -53,7 +54,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
         }
         if ($walk->startLocation->exact) {
             $text .= ", " . $walk->startLocation->timeHHMMshort . " at " . $walk->startLocation->description;
-            if ($this->addGridRef === true) {
+            if ($this->addGridRef === true or $this->addStartGridRef) {
                 $text .= " [" . $walk->startLocation->gridref . "]";
             }
         } else {

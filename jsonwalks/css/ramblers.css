@@ -57,12 +57,17 @@
     text-decoration: line-through;
 }
 
-.walkNew {
+.ra-accordion-item.walkNew {
     padding-left: 0px;
     background: url(../../images/new.gif) no-repeat scroll 0 50% rgba(0, 0, 0, 0);
     background-position: 55px 0px ;
 
 }
+.walkNew {
+    padding-left: 35px;
+    background: url(../../images/new.gif) no-repeat scroll 0 50% rgba(0,0,0,0);
+}
+
 span.walkerror {
     color: #ffffff;
     background-color: #C60C30;
@@ -183,14 +188,14 @@ div.groupA,div.groupG,div.groupS {
 /* Tooltip container */
 .walktooltip {
     display: inline;
-    
+
 }
 
 /* Tooltip text */
 .walktooltip .walktooltiptext {
-  color:#206C49;
-  font-size: 13px;
-font-weight: 900;
+    color:#206C49;
+    font-size: 13px;
+    font-weight: 900;
     display: none;
 }
 
@@ -198,7 +203,7 @@ font-weight: 900;
 .walktooltip:hover .walktooltiptext {
     display: inline;
     padding-left:5px;
-  
+
 }
 
 @media only screen and (min-width: 769px){
