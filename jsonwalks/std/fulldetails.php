@@ -19,7 +19,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $addContacttoHeader = false;
     public $popupLink = true; // not used now!
     public $displayGroup = false;  // should the Group name be displayed
-    public $displayGradesIcon = false;
+    public $displayGradesIcon = true;
     private $printOn = false;
     private static $accordianId = 100;
 
