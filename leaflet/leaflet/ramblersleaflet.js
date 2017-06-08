@@ -40,9 +40,9 @@ function raLoadLeaflet() {
 
 
 // map types
-    ramblersMap.osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    ramblersMap.osm = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 18,
-        attribution: "Map data &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>"}).addTo(ramblersMap.map);
+        attribution: "Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a>"}).addTo(ramblersMap.map);
     if (ramblersMap.options.google) {
         ramblersMap.roads = L.gridLayer.googleMutant({
             type: "roadmap" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
