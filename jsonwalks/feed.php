@@ -114,7 +114,7 @@ class RJsonwalksFeed {
     }
 
     public function filterNationalGrade($grades) {
-        $this->walks->filterStrands($grades);
+        $this->walks->filterNationalGrade($grades);
     }
 
     public function filterFestivals($filter) {
