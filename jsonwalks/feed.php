@@ -147,11 +147,6 @@ class RJsonwalksFeed {
         $this->walks->walksInFuture($period);
     }
 
-    public function nationalGradesLink() {
-        $out = '<p></p><p>Description of <a href="ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">National Grades</a></p>';
-        echo $out;
-    }
-
     public function display($displayclass) {
         if ($this->walks == null) {
             return;
