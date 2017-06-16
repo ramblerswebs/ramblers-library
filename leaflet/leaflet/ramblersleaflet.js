@@ -391,7 +391,7 @@ function displayPostcodes(e) {
 // get postcodes around this point       
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
-            var url = "http://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=20";
+            var url = "https://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=20";
             getJSON(url, function (err, items) {
                 if (err !== null) {
                     var msg = "Error: Something went wrong: " + err;
