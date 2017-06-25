@@ -237,12 +237,15 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         $this->addItemInfo("strands", "", $walk->strands);
         $this->addItemInfo("festivals", "Festivals", $walk->festivals);
         echo "<div class='walkdates'>" . PHP_EOL;
+
+        if (!$this->printOn) {
+            echo "<div class='updated'><a href='" . $walk->detailsPageUrl . "' target='_blank' >View walk on Walks Finder</a></div>" . PHP_EOL;
+        }
         $class = "";
         if ($this->printOn) {
             $class = "printon";
         }
-        echo "<div class='updated " . $class . "'><a href='" . $walk->detailsPageUrl . "' target='_blank' >View walk on Walks Finder</a></div>" . PHP_EOL;
-        if ($this->displayGroup == false) {
+        if ($this->displayGroup != false) {
             echo "<div class='groupfootnote " . $class . "'>Group: " . $walk->groupName . "</div>" . PHP_EOL;
         }
         echo "<div class='updated " . $class . "'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>" . PHP_EOL;
