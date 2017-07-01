@@ -177,7 +177,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             if ($walk->finishLocation != null) {
                 echo $this->addLocationInfo("Finish", $walk->finishLocation, $walk->detailsPageUrl);
             } else {
-                echo "<span class='walkerror' >ERROR: No finish location supplied</span>";
+                echo "<span class='walkerror' >Linear walk but no finish location supplied</span>";
             }
             echo "</div>" . PHP_EOL;
         }

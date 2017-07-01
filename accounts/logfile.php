@@ -302,7 +302,7 @@ class RAccountsLogfile {
                 break;
             case self::FILE_HTACCESS:
                 $file = ".htaccess";
-                $expected = "SetEnv DEFAULT_PHP_VERSION 55\n";
+                $expected = "SetEnv DEFAULT_PHP_VERSION 7\n";
                 break;
             case self::FILE_PUBLICPHPINI:
                 $file = "public_html/php.ini";
