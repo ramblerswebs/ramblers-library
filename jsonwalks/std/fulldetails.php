@@ -19,11 +19,16 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $addContacttoHeader = false;
     public $popupLink = true; // not used now!
     public $displayGroup = false;  // should the Group name be displayed
-    public $displayGradesIcon = false;
+    public $displayGradesIcon = true;
     private $printOn = false;
     private static $accordianId = 100;
 
     public function DisplayWalks($walks) {
+        if ($this->displayGradesIcon) {
+            RJsonwalksWalk::gradeSidebar();
+            RJsonwalksWalk::gradeToolTips();
+        }
+
         self::$accordianId +=1;
         $document = JFactory::getDocument();
         $this->printOn = JRequest::getVar('print') == 1;
@@ -101,13 +106,9 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private function addGradeImage($walk) {
         $out = '';
         if ($this->displayGradesIcon) {
-            $out = '<div class="walktooltip">';
-            $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" style="width:25px;height:25px;">';
-            $out .='<div class="walktooltiptext">' . $walk->nationalGrade . ':</div></div>';
+            $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" style="width:25px;height:25px;" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
         } else {
-            $out = '<div class="walktooltip">';
-            $out .= ' <img src="ramblers/images/grades/base.jpg" alt="' . $walk->nationalGrade . '" style="width:25px;height:25px;">';
-            $out .='<div class="walktooltiptext">' . $walk->nationalGrade . ':</div></div>';
+            $out .= ' <img src="ramblers/images/grades/base.jpg" alt="' . $walk->nationalGrade . '" style="width:25px;height:25px;" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
         }
         return $out;
     }

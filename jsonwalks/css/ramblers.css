@@ -228,3 +228,105 @@ div.groupA,div.groupG,div.groupS {
 
     }
 }
+
+/* Grade sidebar formatting */
+
+.gradeSidebar {
+    position: fixed;
+    top: 160px;
+    left: -125px;
+    height:auto;
+    width:130px;
+    padding: 10px;
+    z-index: 10000;
+    font-size: 14px;
+    border-radius:  0px 5px 5px 0px;
+    color: black;
+    font-weight: bold;
+    background-color:#D7A900;
+}
+.gradeSidebar a{
+    color: black;
+}
+.gradeSidebar a:hover{
+    color: white;
+}
+.gradeSidebar:hover {
+    color:white;
+    left:0px;
+    -webkit-transition:  .5s; /* Safari */
+    transition:  .5s;
+    background-color:#007A87;
+    background: #D7A900; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left, #C75B12 , #D7A900); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #C75B12, #D7A900); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #C75B12, #D7A900); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #C75B12 , #D7A900); /* Standard syntax */
+}
+
+
+.gradebar{
+    position: fixed;
+    padding: 0px;
+    padding-left:5px;
+    padding-right:5px;
+    z-index: 10000;
+    text-decoration: none;
+    border-radius: 5px 5px 5px 5px ;
+    color: white;
+    font-size: 12px;
+    left: 0px;
+    bottom:50px;
+    visibility : hidden;
+}               
+
+
+.gradebar:before{
+    border: solid;
+    border-color: #333 transparent;
+    border-width: 6px 6px 0 6px;
+    bottom: -6px;
+    content: "";
+    left: 10%;
+    position: absolute;
+    z-index: 10000;
+}
+
+#grade-ea:before {  
+    border-color: #8BA69C transparent;
+}
+#grade-e:before {  
+    border-color: #A8B400 transparent;
+}
+#grade-l:before {   
+    border-color: #007A87 transparent;
+}
+#grade-m:before {   
+    border-color: #C75B12 transparent;
+}
+#grade-s:before {   
+    border-color: #782327 transparent;
+}
+#grade-t:before {
+    border-color: #5B491F transparent;
+}
+
+
+#grade-ea {  
+    background-color: #8BA69C;
+}
+#grade-e {  
+    background-color: #A8B400;
+}
+#grade-l {   
+    background-color: #007A87;
+}
+#grade-m {   
+    background-color: #C75B12;
+}
+#grade-s {   
+    background-color: #782327;
+}
+#grade-t {
+    background-color: #5B491F;
+}

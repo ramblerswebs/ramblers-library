@@ -335,27 +335,43 @@ class RJsonwalksWalk extends REvent {
         $image = "ramblers/images/grades/base.jpg";
         switch ($this->nationalGrade) {
             case "Easy Access":
-                $image = "ramblers/images/grades/ea.jpg";
+                $image = "ramblers/images/grades/grade-ea.jpg";
                 break;
             case "Easy":
-                $image = "ramblers/images/grades/e.jpg";
+                $image = "ramblers/images/grades/grade-e.jpg";
                 break;
             case "Leisurely":
-                $image = "ramblers/images/grades/l.jpg";
+                $image = "ramblers/images/grades/grade-l.jpg";
                 break;
             case "Moderate":
-                $image = "ramblers/images/grades/m.jpg";
+                $image = "ramblers/images/grades/grade-m.jpg";
                 break;
             case "Strenuous":
-                $image = "ramblers/images/grades/s.jpg";
+                $image = "ramblers/images/grades/grade-s.jpg";
                 break;
             case "Technical":
-                $image = "ramblers/images/grades/t.jpg";
+                $image = "ramblers/images/grades/grade-t.jpg";
                 break;
             default:
                 break;
         }
         return $image;
+    }
+
+    public static function gradeSidebar() {
+        echo '<div class = "gradeSidebar" >';
+        echo '<a href="ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">';
+        echo 'Walks difficulty</a>';
+        echo '</div>';
+    }
+
+    public static function gradeToolTips() {
+        echo '<span  class = "gradebar" id = "grade-ea">Easy Access</span>';
+        echo '<span  class = "gradebar" id = "grade-e">Easy</span>';
+        echo '<span  class = "gradebar" id = "grade-l">Leisurely</span>';
+        echo '<span  class = "gradebar" id = "grade-m">Moderate</span>';
+        echo '<span  class = "gradebar" id = "grade-s">Strenuous</span>';
+        echo '<span  class = "gradebar" id = "grade-t">Technical</span>';
     }
 
     public function distanceFrom($easting, $northing, $distanceKm) {
