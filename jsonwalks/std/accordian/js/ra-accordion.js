@@ -53,54 +53,46 @@
 
 /* code to display or not grade information */
 
-function dispGrade(item ) {
-    grade=item.alt;
+function dispGrade(item) {
+    grade = item.alt;
     item.style.height = "35px";
     item.style.width = "35px";
     var offsets = item.getBoundingClientRect();
-    var bottom = Math.round(window.innerHeight-offsets.y) + "px";
-    var right = Math.round(offsets.x+30) + "px";
-  
+    var bottom = Math.round(window.innerHeight - offsets.y) + "px";
+    var right = Math.round(offsets.x + 30) + "px";
+
     var x;
     switch (grade) {
         case 'Easy Access':
             x = document.getElementById("grade-ea");
-            x.style.visibility = "visible";
-            x.style.bottom = bottom;
             break;
         case 'Easy':
             x = document.getElementById("grade-e");
-            x.style.visibility = "visible";
-            x.style.bottom = bottom;
             break;
         case 'Leisurely':
             x = document.getElementById("grade-l");
-            x.style.visibility = "visible";
-            x.style.bottom = bottom;
-           x.style.left = right;
             break;
         case 'Moderate':
             x = document.getElementById("grade-m");
-            x.style.visibility = "visible";
-            x.style.bottom = bottom;
-            x.style.left = right;
             break;
         case 'Strenuous':
             x = document.getElementById("grade-s");
-            x.style.visibility = "visible";
-            x.style.bottom = bottom;
             break;
         case 'Technical':
             x = document.getElementById("grade-t");
-            x.style.visibility = "visible";
-            x.style.bottom = bottom;
             break;
+        default:
+            return;
     }
-
+    if (x != null) {
+        x.style.visibility = "visible";
+        x.style.bottom = bottom;
+        x.style.left = right;
+    }
 }
 
 function noGrade(item) {
-    grade=item.alt;
+    grade = item.alt;
     item.style.height = "25px";
     item.style.width = "25px";
     x = document.getElementById("grade-ea");
