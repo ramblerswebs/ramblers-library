@@ -18,7 +18,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $localGradeTarget = "_parent";
     public $addContacttoHeader = false;
     public $popupLink = true; // not used now!
-    public $displayGroup = false;  // should the Group name be displayed
+    public $displayGroup = null;  // should the Group name be displayed
     public $displayGradesIcon = true;
     private $printOn = false;
     private static $accordianId = 100;
@@ -113,11 +113,38 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         return $out;
     }
 
+    private function gradeCSS($walk) {
+        $class = "";
+        switch ($walk->nationalGrade) {
+            case "Easy Access":
+                $class = "grade-ea";
+                break;
+            case "Easy":
+                $class = "grade-e";
+                break;
+            case "Leisurely":
+                $class = "grade-l";
+                break;
+            case "Moderate":
+                $class = "grade-m";
+               break;
+            case "Strenuous":
+                $class = "grade-s";
+                break;
+            case "Technical":
+                $class = "grade-t";
+                break;
+            default:
+                break;
+        }
+        return $class;
+    }
+
     function displayWalkDetails($walk) {
 
         echo "<div class='walkstdfulldetails'>" . PHP_EOL;
-        if ($this->displayGroup) {
-            echo "<div class='group'><b>Group</b>: " . $walk->groupName . "</div>" . PHP_EOL;
+        if ($this->displayGroup === true) {
+            echo "<div class='group " . $this->gradeCSS($walk) . "'><b>Group</b>: " . $walk->groupName . "</div>" . PHP_EOL;
         }
         if ($walk->isCancelled()) {
             echo "<div class='reason'>WALK CANCELLED: " . $walk->cancellationReason . "</div>" . PHP_EOL;
@@ -245,16 +272,18 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         $class = "";
         if ($this->printOn) {
             $class = "printon";
-        }
-        if ($this->displayGroup != false) {
-            echo "<div class='groupfootnote " . $class . "'>Group: " . $walk->groupName . "</div>" . PHP_EOL;
+        } else {
+            if ($this->displayGroup === null) {
+                echo "<div class='groupfootnote " . $class . "'>Group: " . $walk->groupName . "</div>" . PHP_EOL;
+            }
         }
         echo "<div class='updated " . $class . "'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
     }
 
-    private function addLocationInfo($title, $location, $detailsPageUrl) {
+    private
+            function addLocationInfo($title, $location, $detailsPageUrl) {
 
         if ($location->exact) {
             $note = "Click Google Directions to see map and directions from your current location";

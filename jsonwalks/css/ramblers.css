@@ -83,7 +83,7 @@ div.walkstdfulldetails div.group
     padding: 5px;
     display: table;
     width:97%;
-    border: 2px solid #782327  ;
+    border: 0px;
     background-color: #782327;
     color: #eeeeee;
 }
@@ -329,4 +329,22 @@ div.groupA,div.groupG,div.groupS {
 }
 #grade-t {
     background-color: #5B491F;
+}
+.grade-ea {  
+    background-color: #8BA69C !important;
+}
+.grade-e {  
+    background-color: #A8B400 !important;
+}
+.grade-l {   
+    background-color: #007A87 !important;
+}
+.grade-m {   
+    background-color: #C75B12 !important;
+}
+.grade-s {   
+    background-color: #782327 !important;
+}
+.grade-t {
+    background-color: #5B491F !important;
 }
