@@ -16,7 +16,16 @@
 .cancelled {color:#C60C30; text-decoration: line-through;}
 
 /* css code to handle json walk feeds */
-
+.ra-accordion-item div span span img{
+    height:30px;
+    width:30px;
+    padding:2px;
+}
+.ra-accordion-item div span span img:hover{
+    height:40px;
+    width:40px;
+    padding: 5px 5px 5px 0px;
+}
 /* Ramblers additions */
 .cancelledWalks { background-color: #8BA69C;
                   border-radius: 10px 10px 10px 10px;

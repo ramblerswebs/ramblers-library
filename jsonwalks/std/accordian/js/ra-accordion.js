@@ -55,11 +55,9 @@
 
 function dispGrade(item) {
     grade = item.alt;
-    item.style.height = "35px";
-    item.style.width = "35px";
     var offsets = item.getBoundingClientRect();
     var bottom = Math.round(window.innerHeight - offsets.y) + "px";
-    var right = Math.round(offsets.x + 30) + "px";
+    var right = Math.round(offsets.x + 35) + "px";
 
     var x;
     switch (grade) {
@@ -93,8 +91,6 @@ function dispGrade(item) {
 
 function noGrade(item) {
     grade = item.alt;
-    item.style.height = "25px";
-    item.style.width = "25px";
     x = document.getElementById("grade-ea");
     x.style.visibility = "hidden";
     x = document.getElementById("grade-e");
