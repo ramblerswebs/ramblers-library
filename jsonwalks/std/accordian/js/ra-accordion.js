@@ -56,8 +56,8 @@
 function dispGrade(item) {
     grade = item.alt;
     var offsets = item.getBoundingClientRect();
-    var bottom = Math.round(window.innerHeight - offsets.y) + "px";
-    var right = Math.round(offsets.x + 35) + "px";
+    var bottom = Math.round(window.innerHeight - offsets.y-15) + "px";
+    var right = Math.round(offsets.x + 45) + "px";
 
     var x;
     switch (grade) {

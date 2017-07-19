@@ -366,12 +366,12 @@ class RJsonwalksWalk extends REvent {
     }
 
     public static function gradeToolTips() {
-        echo '<span  class = "gradebar" id = "grade-ea">Easy Access</span>';
-        echo '<span  class = "gradebar" id = "grade-e">Easy</span>';
-        echo '<span  class = "gradebar" id = "grade-l">Leisurely</span>';
-        echo '<span  class = "gradebar" id = "grade-m">Moderate</span>';
-        echo '<span  class = "gradebar" id = "grade-s">Strenuous</span>';
-        echo '<span  class = "gradebar" id = "grade-t">Technical</span>';
+        echo '<span  class = "gradeBar" id = "grade-ea">Easy Access</span>';
+        echo '<span  class = "gradeBar" id = "grade-e">Easy</span>';
+        echo '<span  class = "gradeBar" id = "grade-l">Leisurely</span>';
+        echo '<span  class = "gradeBar" id = "grade-m">Moderate</span>';
+        echo '<span  class = "gradeBar" id = "grade-s">Strenuous</span>';
+        echo '<span  class = "gradeBar" id = "grade-t">Technical</span>';
     }
 
     public function distanceFrom($easting, $northing, $distanceKm) {

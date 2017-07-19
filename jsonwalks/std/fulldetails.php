@@ -20,12 +20,15 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $popupLink = true; // not used now!
     public $displayGroup = null;  // should the Group name be displayed
     public $displayGradesIcon = true;
+    public $displayGradesSidebar = true;
     private $printOn = false;
     private static $accordianId = 100;
 
     public function DisplayWalks($walks) {
-        if ($this->displayGradesIcon) {
+        if ($this->displayGradesSidebar) {
             RJsonwalksWalk::gradeSidebar();
+        }
+        if ($this->displayGradesIcon) {
             RJsonwalksWalk::gradeToolTips();
         }
 
@@ -53,7 +56,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             } else {
                 echo '<div class="toggler">' . PHP_EOL;
             }
-            echo '<span><span>' . PHP_EOL;
+            echo '<span><span class="walksummary">' . PHP_EOL;
 
             $this->displayWalkSummary($walk);
             echo '</span></span>' . PHP_EOL;
@@ -127,7 +130,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
                 break;
             case "Moderate":
                 $class = "grade-m";
-               break;
+                break;
             case "Strenuous":
                 $class = "grade-s";
                 break;

@@ -16,12 +16,12 @@
 .cancelled {color:#C60C30; text-decoration: line-through;}
 
 /* css code to handle json walk feeds */
-.ra-accordion-item div span span img{
+span.walksummary img{
     height:30px;
     width:30px;
     padding:2px;
 }
-.ra-accordion-item div span span img:hover{
+span.walksummary img:hover{
     height:40px;
     width:40px;
     padding: 5px 5px 5px 0px;
@@ -274,7 +274,7 @@ div.groupA,div.groupG,div.groupS {
 }
 
 
-.gradebar{
+.gradeBar{
     position: fixed;
     padding: 0px;
     padding-left:5px;
@@ -288,38 +288,6 @@ div.groupA,div.groupG,div.groupS {
     bottom:50px;
     visibility : hidden;
 }               
-
-
-.gradebar:before{
-    border: solid;
-    border-color: #333 transparent;
-    border-width: 6px 6px 0 6px;
-    bottom: -6px;
-    content: "";
-    left: 10%;
-    position: absolute;
-    z-index: 10000;
-}
-
-#grade-ea:before {  
-    border-color: #8BA69C transparent;
-}
-#grade-e:before {  
-    border-color: #A8B400 transparent;
-}
-#grade-l:before {   
-    border-color: #007A87 transparent;
-}
-#grade-m:before {   
-    border-color: #C75B12 transparent;
-}
-#grade-s:before {   
-    border-color: #782327 transparent;
-}
-#grade-t:before {
-    border-color: #5B491F transparent;
-}
-
 
 #grade-ea {  
     background-color: #8BA69C;
@@ -339,6 +307,7 @@ div.groupA,div.groupG,div.groupS {
 #grade-t {
     background-color: #5B491F;
 }
+
 .grade-ea {  
     background-color: #8BA69C !important;
 }
@@ -356,4 +325,14 @@ div.groupA,div.groupG,div.groupS {
 }
 .grade-t {
     background-color: #5B491F !important;
+}
+div.leaflet-popup-content div.walkPublished img,
+div.leaflet-popup-content div.walkNew img{
+    height:30px;
+    width:30px;
+    float: right;
+    margin: 0px 0px 0px 5px;
+}
+div.leaflet-popup-content div.walkCancelled img{
+    display:none;
 }

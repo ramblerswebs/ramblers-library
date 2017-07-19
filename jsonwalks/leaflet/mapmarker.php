@@ -10,6 +10,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
     private $map;
     private $walkClass = "walk";
     private $legendposition = "top";
+    public $displayGradesSidebar = true;
 
     public function __construct() {
         $this->map = new RLeafletMap;
@@ -34,6 +35,10 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
     public function DisplayWalks($walks) {
         $legend = '<p><strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.</p>
 <p><img src="ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.</p>';
+
+        if ($this->displayGradesSidebar) {
+            RJsonwalksWalk::gradeSidebar();
+        } 
         if (isset($this->map)) {
             if (strpos($this->legendposition, "top") !== false) {
                 echo $legend;
@@ -71,11 +76,13 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
             $icon = "markerCancelled";
         }
         $class = $this->walkClass . $walk->status;
-        $walk = "<div class='" . $class . "'><b><a href=&quot;javascript:walkdetails('" . $url . "')&quot; >" . $date . "<br/>" . $title . "<br/>" . $dist . "</a></b></div>";
+        $grade = $walk->getGradeImage();
+        $grade = "<img src='" . $grade . "' alt='" . $walk->nationalGrade . "' width='25px'>";
+        $details = "<div class='" . $class . "'>" . $grade . "<b><a href=&quot;javascript:walkdetails('" . $url . "')&quot; >" . $date . "<br/>" . $title . "<br/>" . $dist . " " . $walk->nationalGrade . "</a></b></div>";
         $map = "<a href=&quot;javascript:streetmap('" . $gr . "')&quot; >[OS Map]</a>";
         $directions = "<a href=&quot;javascript:directions(" . $lat . "," . $long . ")&quot; >[Directions]</a>";
         //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
-        $popup = $walk . $map . $directions;
+        $popup = $details . $map . $directions;
         // $popup = str_replace('"', "&quot;", $popup);
         $marker = 'addMarker("' . $popup . '", ' . $lat . ', ' . $long . ', ' . $icon . ');';
         //     $marker = "addWalk(markerList,'" . $this->walkClass . $walk->status . "', '" . $date . "', '" . $title . "', '" . $dist . "', '" . $gr . "', " . $lat . ", " . $long . ", '" . $url . "', " . $icon . ");";
