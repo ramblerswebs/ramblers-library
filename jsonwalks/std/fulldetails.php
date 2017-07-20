@@ -42,12 +42,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         $items = $walks->allWalks();
         $id = "accordion_ra1_id" . self::$accordianId;
         echo "<div class='" . $this->walksClass . "' >";
-        echo '<script type="text/javascript">' . PHP_EOL;
-        echo 'jQuery(function($) {' . PHP_EOL;
-        echo "$('#" . $id . "').raAccordion({" . PHP_EOL;
-        echo 'hidefirst: 1 });' . PHP_EOL;
-        echo '});' . PHP_EOL;
-        echo '</script>' . PHP_EOL;
+        echo '<script type="text/javascript">jQuery(function($) {$(\'#' . $id . '\').raAccordion({hidefirst: 1 });});</script>' . PHP_EOL;
         echo '<div id="' . $id . '" class="ra-accordion ra-accordion-style4 ">';
         foreach ($items as $walk) {
             echo '<div class="ra-accordion-item ' . $this->walkClass . $walk->status . '">' . PHP_EOL;
