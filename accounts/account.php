@@ -53,7 +53,6 @@ class RAccountsAccount {
                 $array[] = $this->status;
                 $array[] = $this->log->getWebMonitorVersion();
                 $array[] = $this->log->getReportFormat();
-                $array[] = $this->log->getIP();
                 $array[] = $this->log->getFileSize();
                 $array[] = $this->log->getFileDate();
                 $array[] = $this->log->getNoFilesScanned();
@@ -145,7 +144,7 @@ class RAccountsAccount {
                 return ["Domain", "Status", "IP"];
                 break;
             case self::FORMAT_LOGFILE:
-                return ["Domain", "Status", "Web Monitor", "Report Format", "IP", "File size", "Date", "Files scanned", "Total size scanned", "Latest File"];
+                return ["Domain", "Status", "Web Monitor", "Report Format",  "File size", "Date", "Files scanned", "Total size scanned", "Latest File"];
                 break;
             case self::FORMAT_BASIC:
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];

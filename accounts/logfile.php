@@ -73,18 +73,11 @@ class RAccountsLogfile {
             return $this->jsonobject->webmonitorversion;
         }
         return "...";
-    }  
+    }
 
     public function getIP() {
         $ipfromdomain = gethostbyname($this->domain);
-        $ip = "...";
-        if (isset($this->jsonobject->ip)) {
-            $ip = $this->jsonobject->ip;
-        }
-        If ($ip == $ipfromdomain) {
-            return $ip;
-        }
-        return $ip . "/" . $ipfromdomain;
+        return $ipfromdomain;
     }
 
     public function getNoFilesScanned() {
@@ -317,8 +310,8 @@ class RAccountsLogfile {
                 return "Error";
                 break;
         }
-        $key = $this->jsonobject->path . $file;
         if ($this->jsonobject <> NULL) {
+            $key = $this->jsonobject->path . $file;
             if (isset($this->jsonobject->files->$key)) {
                 $value = $this->jsonobject->files->$key;
                 return self::isSame($value, $expected);
