@@ -45,7 +45,11 @@ span.walksummary img:hover{
 .cancelledWalk {color:#000000; }
 .cancelreason {color:#C60C30; font-size: 130%; font-stretch: wider }
 
-.walkCancelled {color:#C60C30; text-decoration: line-through;}
+.nextwalkCancelled,
+.walkCancelled {
+    color:#C60C30; 
+    text-decoration: line-through;
+}
 
 .ra-accordion-item.walkCancelled{
     color:#C60C30; 
@@ -68,9 +72,13 @@ span.walksummary img:hover{
 
 .ra-accordion-item.walkNew {
     padding-left: 0px;
-    background: url(../../images/new.gif) no-repeat scroll 0 50% rgba(0, 0, 0, 0);
+    background: url('../../images/new.gif') no-repeat scroll 0 50% rgba(0, 0, 0, 0);
     background-position: 60px 0px ;
 
+}
+.nextwalkNew::before {
+    content: url('../../images/new.gif');
+    padding-right:5px;
 }
 .walkNew {
     padding-left: 35px;

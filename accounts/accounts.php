@@ -40,7 +40,7 @@ class RAccounts {
         echo "<table style='font-size: 85%'>";
         echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
         foreach ($this->dbresults as $item) :
-            $domain = $item->domain;
+            $domain = strtolower(trim($item->domain));
             $status = $item->status;
             $account = new RAccountsAccount($domain, $status);
             $cols = $account->getColumns($format);
