@@ -127,7 +127,12 @@ div.walkstdfulldetails div.finishplace,
 div.walkstdfulldetails div.difficulty,
 div.walkstdfulldetails div.walkcontact,
 div.walkstdfulldetails div.festivals,
-div.walkstdfulldetails div.strands{
+div.walkstdfulldetails div.strands,
+div.walkstdfulldetails div.suitability,
+div.walkstdfulldetails div.surroundings,
+div.walkstdfulldetails div.theme,
+div.walkstdfulldetails div.specialStatus,
+div.walkstdfulldetails div.facilities{
     margin: 2px;
     border-radius: 10px 10px 10px 10px;
     padding: 5px;

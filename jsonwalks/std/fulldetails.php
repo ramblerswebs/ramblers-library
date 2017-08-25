@@ -262,6 +262,11 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "</div>" . PHP_EOL;
         $this->addItemInfo("strands", "", $walk->strands);
         $this->addItemInfo("festivals", "Festivals", $walk->festivals);
+        $this->addItemInfo("suitability", "Suitability", $walk->suitability);
+        $this->addItemInfo("surroundings", "Surroundings", $walk->surroundings);
+        $this->addItemInfo("theme", "Theme", $walk->theme);
+        $this->addItemInfo("specialStatus", "Special Status", $walk->specialStatus);
+        $this->addItemInfo("facilities", "Facilities", $walk->facilities);
         echo "<div class='walkdates'>" . PHP_EOL;
 
         if (!$this->printOn) {
@@ -327,10 +332,11 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         if ($value != null) {
             $items = $value->getItems();
             echo "<div class='" . $class . "'><b>" . $title . "</b>";
+            echo "<ul>";
             foreach ($items as $item) {
-                echo "<div class='item'><b>" . $item->getName() . "</b></div>";
+                echo "<li class='item'>" . $item->getName() . "</li>";
             }
-            echo "</div>";
+            echo "</ul></div>";
         }
     }
 

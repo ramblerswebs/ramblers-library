@@ -50,6 +50,11 @@ class RJsonwalksWalk extends REvent {
     Public $ascentFeet;             // the ascent in feet or null
     Public $strands;                // RJsonwalksItems object or null
     Public $festivals;              // RJsonwalksItems object or null
+    public $suitability;          // RJsonwalksItems object or null
+    public $surroundings;          // RJsonwalksItems object or null
+    public $theme;          // RJsonwalksItems object or null
+    public $specialStatus;          // RJsonwalksItems object or null
+    public $facilities;          // RJsonwalksItems object or null
 // extra derived values
     private $sortTime;
     private $icsDayEvents = false;
@@ -121,6 +126,26 @@ class RJsonwalksWalk extends REvent {
 // read festivals
             if (count($item->festivals->items) > 0) {
                 $this->festivals = new RJsonwalksItems($item->festivals);
+            }
+// read suitability
+            if (count($item->suitability->items) > 0) {
+                $this->suitability = new RJsonwalksItems($item->suitability);
+            }
+// read surroundings
+            if (count($item->surroundings->items) > 0) {
+                $this->surroundings = new RJsonwalksItems($item->surroundings);
+            }
+// read theme
+            if (count($item->theme->items) > 0) {
+                $this->theme = new RJsonwalksItems($item->theme);
+            }
+// read specialStatus
+            if (count($item->specialStatus->items) > 0) {
+                $this->specialStatus = new RJsonwalksItems($item->specialStatus);
+            }
+            // read facilities
+            if (count($item->facilities->items) > 0) {
+                $this->facilities = new RJsonwalksItems($item->facilities);
             }
 // pocess meeting and starting locations
             $this->processPoints($item->points);
