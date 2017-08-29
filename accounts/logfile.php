@@ -80,6 +80,17 @@ class RAccountsLogfile {
         return $ipfromdomain;
     }
 
+    public function getHCPVersion() {
+        $path = $this->jsonobject->path;
+        $domain = $this->jsonobject->domain;
+        $pos = strpos($path, $domain);
+        if ($pos === false) {
+            return "New";
+        } else {
+            return "Old";
+        }
+    }
+
     public function getNoFilesScanned() {
         if (isset($this->jsonobject->nofilesscanned)) {
             return number_format($this->jsonobject->nofilesscanned);

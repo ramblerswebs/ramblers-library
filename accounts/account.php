@@ -43,7 +43,6 @@ class RAccountsAccount {
                 }
                 $array[] = $this->domainLink();
                 $array[] = $this->status;
-                $array[] = gethostbyname($this->domain);
                 break;
             case self::FORMAT_LOGFILE:
                 if (!$this->log->Exists()) {
@@ -51,6 +50,7 @@ class RAccountsAccount {
                 }
                 $array[] = $this->domainLink();
                 $array[] = $this->status;
+                $array[] = $this->log->getHCPVersion();
                 $array[] = $this->log->getWebMonitorVersion();
                 $array[] = $this->log->getReportFormat();
                 $array[] = $this->log->getFileSize();
@@ -118,7 +118,7 @@ class RAccountsAccount {
                 }
                 break;
             case self::FORMAT_SPF:
-                $result = dns_get_record($this->domain,DNS_TXT);
+                $result = dns_get_record($this->domain, DNS_TXT);
                 $spf = "Not found";
                 if (isset($result[0])) {
                     $col0 = $result[0];
@@ -141,10 +141,10 @@ class RAccountsAccount {
         $array = array();
         switch ($format) {
             case self::FORMAT_NOLOGFILE:
-                return ["Domain", "Status", "IP"];
+                return ["Domain", "Status"];
                 break;
             case self::FORMAT_LOGFILE:
-                return ["Domain", "Status", "Web Monitor", "Report Format",  "File size", "Date", "Files scanned", "Total size scanned", "Latest File"];
+                return ["Domain", "Status", "HCP", "Web Monitor", "Report Format", "File size", "Date", "Files scanned", "Total size scanned", "Latest File"];
                 break;
             case self::FORMAT_BASIC:
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
