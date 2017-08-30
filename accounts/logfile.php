@@ -18,6 +18,14 @@ class RAccountsLogfile {
     const FILE_HTACCESS = 1;
     const FILE_PUBLICPHPINI = 2;
     const FILE_PUBLICHTACCESS = 3;
+    const OLD_DEFAULT_PHPINI = "";
+    const OLD_DEFAULT_HTACCESS = "SetEnv DEFAULT_PHP_VERSION 7\n";
+    const OLD_DEFAULT_PUBLIC_PHPINI = "upload_max_filesize = 20M;\npost_max_size = 20M;\nmax_execution_time = 60;\noutput_buffering=0;";
+    const OLD_DEFAULT_PUBLIC_HTACCESS = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !\.(cgi)$\nRewritecond %{http_host} ^THIS_DOMAIN\nRewriteRule ^(.*) http://www.THIS_DOMAIN/$1";
+    const NEW_DEFAULT_PHPINI = "";
+    const NEW_DEFAULT_HTACCESS = "#+PHPVersion\n#=\"php70\"\nAddHandler x-httpd-php70 .php\n#-PHPVersion";
+    const NEW_DEFAULT_PUBLIC_PHPINI = "upload_max_filesize = 20M;\npost_max_size = 20M;\nmax_execution_time = 60;\noutput_buffering=0;";
+    const NEW_DEFAULT_PUBLIC_HTACCESS = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !\.(cgi)$\nRewritecond %{http_host} ^THIS_DOMAIN\nRewriteRule ^(.*) http://www.THIS_DOMAIN/$1\nRewriteEngine On\nRewriteCond %{HTTP_HOST} !^www\. [NC]\nRewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]";
 
     private $exists = false;
     private $jsonobject = null;
@@ -302,19 +310,21 @@ class RAccountsLogfile {
         switch ($which) {
             case self::FILE_PHPINI:
                 $file = "php.ini";
-                $expected = "";
+                $expected = [self::OLD_DEFAULT_PHPINI, self::NEW_DEFAULT_PHPINI];
                 break;
             case self::FILE_HTACCESS:
                 $file = ".htaccess";
-                $expected = "SetEnv DEFAULT_PHP_VERSION 7\n";
+                $expected = [self::OLD_DEFAULT_HTACCESS, self::NEW_DEFAULT_HTACCESS];
                 break;
             case self::FILE_PUBLICPHPINI:
                 $file = "public_html/php.ini";
-                $expected = "upload_max_filesize = 20M;\npost_max_size = 20M;\nmax_execution_time = 60;\noutput_buffering=0;";
+                $expected = [self::OLD_DEFAULT_PUBLIC_PHPINI, self::NEW_DEFAULT_PUBLIC_PHPINI];
                 break;
             case self::FILE_PUBLICHTACCESS:
                 $file = "public_html/.htaccess";
-                $expected = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !\.(cgi)$\nRewritecond %{http_host} ^" . $this->domain . "\nRewriteRule ^(.*) http://www." . $this->domain . "/$1";
+                $expected = [self::OLD_DEFAULT_PUBLIC_HTACCESS, self::NEW_DEFAULT_PUBLIC_HTACCESS];
+                $expected[0] = str_replace("THIS_DOMAIN", $this->domain, $expected[0]);
+                $expected[1] = str_replace("THIS_DOMAIN", $this->domain, $expected[1]);
                 break;
 
             default:
@@ -332,17 +342,20 @@ class RAccountsLogfile {
     }
 
     static function isSame($value, $expected) {
-        if ($value === $expected) {
-            return "Identical";
+        foreach ($expected as $item) {
+            if ($value === $item) {
+                return "Default";
+            }
+            $value = str_replace(" ;", ";", $value);
+            if (trim($value) === trim($item)) {
+                return "Default";
+            }
+            if (strtolower(trim($value)) == strtolower(trim($item))) {
+                return "Default - case difference";
+            }
         }
-        $value = str_replace(" ;", ";", $value);
-        if (trim($value) === trim($expected)) {
-            return "As expected";
-        }
-        if (strtolower(trim($value)) == strtolower(trim($expected))) {
-            return "As expected - case difference";
-        }
-        return self::process($value, 200);
+
+        return self::process($value, 400);
         ;
     }
 

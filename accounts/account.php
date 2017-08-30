@@ -85,6 +85,7 @@ class RAccountsAccount {
                     $report = $this->log->getReportFormat();
                     if ($report = 1.02) {
                         $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
+                        $array[] =  $this->status ;
                         $array[] = $this->log->getBackupFolder();
                         $array[] = $this->log->getBackupNo();
                         $array[] = $this->log->getBackupSize();
@@ -137,6 +138,44 @@ class RAccountsAccount {
         return $array;
     }
 
+    public static function getDefaults($format) {
+        $array = array();
+        switch ($format) {
+            case self::FORMAT_NOLOGFILE:
+                return Null;
+                break;
+            case self::FORMAT_LOGFILE:
+                return null;
+                break;
+            case self::FORMAT_BASIC:
+                $array[] = "DEFAULT VALUES";
+                $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_HTACCESS . "<br/>or<br/>" . RAccountsLogfile::NEW_DEFAULT_HTACCESS);
+                $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_PHPINI);
+                $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_PUBLIC_HTACCESS . "<br/>or<br/>" . RAccountsLogfile::NEW_DEFAULT_PUBLIC_HTACCESS);
+                $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_PUBLIC_PHPINI);
+                break;
+            case self::FORMAT_FOLDERS:
+                return null;
+                break;
+            case self::FORMAT_AKEEBA:
+                return null;
+                break;
+            case self::FORMAT_CONFIG:
+                return null;
+                break;
+            case self::FORMAT_NOJOOMLA:
+                return null;
+                break;
+            case self::FORMAT_SPF:
+                return null;
+                break;
+            default:
+                return Null;
+                break;
+        }
+        return $array;
+    }
+
     public static function getHeader($format) {
         $array = array();
         switch ($format) {
@@ -153,7 +192,7 @@ class RAccountsAccount {
                 return ["Domain<br/>  Date", "Public_html/Folders"];
                 break;
             case self::FORMAT_AKEEBA:
-                return ["Domain<br/>  Date", "Folder", "No", "Size", "File"];
+                return ["Domain<br/>  Date", "Status", "Folder", "No", "Size", "File"];
                 break;
             case self::FORMAT_CONFIG:
                 return ["Domain<br/>  Date", "Status", "Folder", "Site name", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix"];

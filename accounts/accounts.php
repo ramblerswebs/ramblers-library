@@ -39,6 +39,10 @@ class RAccounts {
         $this->getAccounts($sortbystatus);
         echo "<table style='font-size: 85%'>";
         echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
+        $cols = RAccountsAccount::getDefaults($format);
+        if ($cols <> null) {
+            echo RHtml::addTableRow($cols);
+        }
         foreach ($this->dbresults as $item) :
             $domain = strtolower(trim($item->domain));
             $status = $item->status;
@@ -47,6 +51,7 @@ class RAccounts {
             if ($cols <> null) {
                 echo RHtml::addTableRow($cols);
             }
+
         endforeach;
         echo "</table>";
     }
