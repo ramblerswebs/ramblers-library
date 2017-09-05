@@ -55,6 +55,7 @@ class RAccountsAccount {
                 $array[] = $this->log->getReportFormat();
                 $array[] = $this->log->getFileSize();
                 $array[] = $this->log->getFileDate();
+                $array[] = $this->log->getTimeDiff();
                 $array[] = $this->log->getNoFilesScanned();
                 $array[] = $this->log->getTotalSizeScanned();
                 $array[] = $this->log->getLatestFile();
@@ -76,6 +77,8 @@ class RAccountsAccount {
                 $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                 $folders = $this->log->getFolders();
                 $array[] = implode(", ", $folders);
+                $array[] = $this->log->getCMSFolders();
+                $array[] = $this->log->getCMSVersions();
                 break;
             case self::FORMAT_AKEEBA:
                 if (!$this->log->Exists()) {
@@ -85,7 +88,7 @@ class RAccountsAccount {
                     $report = $this->log->getReportFormat();
                     if ($report = 1.02) {
                         $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
-                        $array[] =  $this->status ;
+                        $array[] = $this->status;
                         $array[] = $this->log->getBackupFolder();
                         $array[] = $this->log->getBackupNo();
                         $array[] = $this->log->getBackupSize();
@@ -102,6 +105,7 @@ class RAccountsAccount {
                     $array[] = $this->status;
                     $array[] = $this->log->getConfigFolder();
                     $array[] = $this->log->getConfigSitename();
+                    $array[] = $this->log->getJoomlaVersion();
                     $array[] = $this->log->getConfigCaching();
                     $array[] = $this->log->getConfigGZip();
                     $array[] = $this->log->getConfigSef();
@@ -121,10 +125,12 @@ class RAccountsAccount {
             case self::FORMAT_SPF:
                 $result = dns_get_record($this->domain, DNS_TXT);
                 $spf = "Not found";
-                if (isset($result[0])) {
-                    $col0 = $result[0];
-                    if (isset($col0['txt'])) {
-                        $spf = $col0['txt'];
+                if ($result !== false) {
+                    if (isset($result[0])) {
+                        $col0 = $result[0];
+                        if (isset($col0['txt'])) {
+                            $spf = $col0['txt'];
+                        }
                     }
                 }
                 $array[] = $this->domainLink();
@@ -183,19 +189,19 @@ class RAccountsAccount {
                 return ["Domain", "Status"];
                 break;
             case self::FORMAT_LOGFILE:
-                return ["Domain", "Status", "HCP", "Web Monitor", "Report Format", "File size", "Date", "Files scanned", "Total size scanned", "Latest File"];
+                return ["Domain", "Status", "HCP", "Web Monitor", "Report Format", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File"];
                 break;
             case self::FORMAT_BASIC:
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
                 break;
             case self::FORMAT_FOLDERS:
-                return ["Domain<br/>  Date", "Public_html/Folders"];
+                return ["Domain<br/>  Date", "Public_html/Folders", "CMS Folder", "CMS Version"];
                 break;
             case self::FORMAT_AKEEBA:
                 return ["Domain<br/>  Date", "Status", "Folder", "No", "Size", "File"];
                 break;
             case self::FORMAT_CONFIG:
-                return ["Domain<br/>  Date", "Status", "Folder", "Site name", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix"];
+                return ["Domain<br/>  Date", "Status", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix"];
                 break;
             case self::FORMAT_NOJOOMLA:
                 return ["Domain<br/>  Date", "Status"];
