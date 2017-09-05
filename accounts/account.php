@@ -76,7 +76,7 @@ class RAccountsAccount {
                 }
                 $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                 $folders = $this->log->getFolders();
-                $array[] = implode(", ", $folders);
+                $array[] = $this->formatFolder($folders);
                 $array[] = $this->log->getCMSFolders();
                 $array[] = $this->log->getCMSVersions();
                 break;
@@ -217,6 +217,26 @@ class RAccountsAccount {
 
     private function domainLink() {
         return "<a target='_blank' href='http://" . $this->domain . "'>" . $this->domain . "</a>";
+    }
+
+    private function formatFolder($folders) {
+        $lines = "";
+        $line = "";
+        foreach ($folders as $folder) {
+            $len = strlen($line);
+            if ($len == 0) {
+                $line = $folder;
+            } else {
+                if ($len < 60) {
+                    $line.=", " . $folder;
+                } else {
+                    $lines.= $line."<br/>";
+                    $line = $folder;
+                }
+            }
+        }
+        $lines.=$line;
+        return $lines;
     }
 
 }
