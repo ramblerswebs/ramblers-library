@@ -13,12 +13,15 @@
  */
 class RAccountsAccount {
 
+    const DEV_DOMAINDETAILS = "index.php?option=com_content&view=article&id=202";
+    const PROD_DOMAINDETAILS = "index.php?option=com_content&view=article&id=254";
+    const FORMAT_SINGLE = 0;
     const FORMAT_NOLOGFILE = 1;
     const FORMAT_LOGFILE = 2;
     const FORMAT_BASIC = 3;
     const FORMAT_FOLDERS = 4;
-    const FORMAT_AKEEBA = 5;
-    const FORMAT_CONFIG = 6;
+    const FORMAT_CONFIG = 5;
+    const FORMAT_AKEEBA = 6;
     const FORMAT_NOJOOMLA = 7;
     const FORMAT_SPF = 8;
 
@@ -32,6 +35,11 @@ class RAccountsAccount {
         $this->status = $status;
         $this->log = new RAccountsLogfile($domain);
         $this->timeperiod = new DateInterval("P2D");
+    }
+
+    Public static function formatsArray() {
+        $items = [1, 2, 3, 4, 5, 6, 7, 8];
+        return $items;
     }
 
     public function getColumns($format) {
@@ -52,13 +60,14 @@ class RAccountsAccount {
                 $array[] = $this->status;
                 $array[] = $this->log->getHCPVersion();
                 $array[] = $this->log->getWebMonitorVersion();
-                $array[] = $this->log->getReportFormat();
+                // $array[] = $this->log->getReportFormat();
                 $array[] = $this->log->getFileSize();
                 $array[] = $this->log->getFileDate();
                 $array[] = $this->log->getTimeDiff();
                 $array[] = $this->log->getNoFilesScanned();
                 $array[] = $this->log->getTotalSizeScanned();
                 $array[] = $this->log->getLatestFile();
+                $array[] = $this->detailsLink();
                 break;
             case self::FORMAT_BASIC:
                 if (!$this->log->Exists()) {
@@ -144,6 +153,37 @@ class RAccountsAccount {
         return $array;
     }
 
+    public static function displayTitle($format) {
+        $title = "";
+        switch ($format) {
+            case self::FORMAT_NOLOGFILE:
+                $title = "No Logfile";
+                break;
+            case self::FORMAT_LOGFILE:
+                $title = "Basic Logfile details";
+                break;
+            case self::FORMAT_BASIC:
+                $title = "Basic Files";
+                break;
+            case self::FORMAT_FOLDERS:
+                $title = "Public_html folders";
+                break;
+            case self::FORMAT_AKEEBA:
+                $title = "Joomla/Akeeba backup files on server";
+                break;
+            case self::FORMAT_CONFIG:
+                $title = "Joomla Config settings";
+                break;
+            case self::FORMAT_NOJOOMLA:
+                $title = "Joomla not found";
+                break;
+            case self::FORMAT_SPF:
+                $title = "SPF/TXT record";
+                break;
+        }
+        echo "<h3>" . $title . "</h3>";
+    }
+
     public static function getDefaults($format) {
         $array = array();
         switch ($format) {
@@ -156,9 +196,9 @@ class RAccountsAccount {
             case self::FORMAT_BASIC:
                 $array[] = "DEFAULT VALUES";
                 $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_HTACCESS . "<br/>or<br/>" . RAccountsLogfile::NEW_DEFAULT_HTACCESS);
-                $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_PHPINI);
+                $array[] = str_replace("\n", "<br/>", self::blank(RAccountsLogfile::OLD_DEFAULT_PHPINI) . "<br/>");
                 $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_PUBLIC_HTACCESS . "<br/>or<br/>" . RAccountsLogfile::NEW_DEFAULT_PUBLIC_HTACCESS);
-                $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_PUBLIC_PHPINI);
+                $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_PUBLIC_PHPINI . "<br/>or<br/>" . self::blank(RAccountsLogfile::NEW_DEFAULT_PUBLIC_PHPINI));
                 break;
             case self::FORMAT_FOLDERS:
                 return null;
@@ -182,6 +222,14 @@ class RAccountsAccount {
         return $array;
     }
 
+    private static function blank($value) {
+        if ($value == "") {
+            return 'blank';
+        } else {
+            return $value;
+        }
+    }
+
     public static function getHeader($format) {
         $array = array();
         switch ($format) {
@@ -189,7 +237,7 @@ class RAccountsAccount {
                 return ["Domain", "Status"];
                 break;
             case self::FORMAT_LOGFILE:
-                return ["Domain", "Status", "HCP", "Web Monitor", "Report Format", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File"];
+                return ["Domain", "Status", "HCP", "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Domain Details"];
                 break;
             case self::FORMAT_BASIC:
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
@@ -219,6 +267,14 @@ class RAccountsAccount {
         return "<a target='_blank' href='http://" . $this->domain . "'>" . $this->domain . "</a>";
     }
 
+    private function detailsLink() {
+        $host = JURI::base();
+        if (strpos($host, 'localhost') !== false) {
+            return "<a  href='" . self::DEV_DOMAINDETAILS . "&domain=" . $this->domain . "'>Details</a>";
+        }
+        return "<a  href='" . self::PROD_DOMAINDETAILS . "&domain=" . $this->domain . "'>Details</a>";
+    }
+
     private function formatFolder($folders) {
         $lines = "";
         $line = "";
@@ -230,7 +286,7 @@ class RAccountsAccount {
                 if ($len < 60) {
                     $line.=", " . $folder;
                 } else {
-                    $lines.= $line."<br/>";
+                    $lines.= $line . "<br/>";
                     $line = $folder;
                 }
             }

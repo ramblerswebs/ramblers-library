@@ -36,24 +36,53 @@ class RAccounts {
                 $sortbystatus = false;
                 break;
         }
-        $this->getAccounts($sortbystatus);
-        echo "<table style='font-size: 85%'>";
-        echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
-        $cols = RAccountsAccount::getDefaults($format);
-        if ($cols <> null) {
-            echo RHtml::addTableRow($cols);
-        }
-        foreach ($this->dbresults as $item) :
-            $domain = strtolower(trim($item->domain));
-            $status = $item->status;
-            $account = new RAccountsAccount($domain, $status);
-            $cols = $account->getColumns($format);
+        if ($format != RAccountsAccount::FORMAT_SINGLE) { // all domains
+            $this->getAccounts($sortbystatus);
+            echo "<table style='font-size: 85%'>";
+            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
+            $cols = RAccountsAccount::getDefaults($format);
             if ($cols <> null) {
                 echo RHtml::addTableRow($cols);
             }
+            foreach ($this->dbresults as $item) :
+                $adomain = strtolower(trim($item->domain));
+                $status = $item->status;
+                $account = new RAccountsAccount($adomain, $status);
+                $cols = $account->getColumns($format);
+                if ($cols <> null) {
+                    echo RHtml::addTableRow($cols);
+                }
 
-        endforeach;
-        echo "</table>";
+            endforeach;
+            echo "</table>";
+        } else {
+            $jinput = JFactory::getApplication()->input;
+            $domain = $jinput->getString('domain', '');
+            echo "<h2 style='font-variant: small-caps;'>" . $domain . "</h2>";
+            $this->getAccounts($sortbystatus);
+            $formats = RAccountsAccount::formatsArray();
+            foreach ($formats as $format) {
+                foreach ($this->dbresults as $item) :
+                    $adomain = strtolower(trim($item->domain));
+                    if ($adomain == $domain) {
+                        $status = $item->status;
+                        $account = new RAccountsAccount($adomain, $status);
+                        $cols = $account->getColumns($format);
+                        if ($cols <> null) {
+                            RAccountsAccount::displayTitle($format);
+                            echo "<table style='font-size: 85%'>";
+                            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
+                            $defcols = RAccountsAccount::getDefaults($format);
+                            if ($defcols <> null) {
+                                echo RHtml::addTableRow($defcols);
+                            }
+                            echo RHtml::addTableRow($cols);
+                            echo "</table>";
+                        }
+                    }
+                endforeach;
+            }
+        }
     }
 
     public function addMapMarkers($map) {

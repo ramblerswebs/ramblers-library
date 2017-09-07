@@ -24,7 +24,7 @@ class RAccountsLogfile {
     const OLD_DEFAULT_PUBLIC_HTACCESS = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !\.(cgi)$\nRewritecond %{http_host} ^THIS_DOMAIN\nRewriteRule ^(.*) http://www.THIS_DOMAIN/$1";
     const NEW_DEFAULT_PHPINI = "";
     const NEW_DEFAULT_HTACCESS = "#+PHPVersion\n#=\"php70\"\nAddHandler x-httpd-php70 .php\n#-PHPVersion";
-    const NEW_DEFAULT_PUBLIC_PHPINI = "upload_max_filesize = 20M;\npost_max_size = 20M;\nmax_execution_time = 60;\noutput_buffering=0;";
+    const NEW_DEFAULT_PUBLIC_PHPINI = "";
     const NEW_DEFAULT_PUBLIC_HTACCESS = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !\.(cgi)$\nRewritecond %{http_host} ^THIS_DOMAIN\nRewriteRule ^(.*) http://www.THIS_DOMAIN/$1\nRewriteEngine On\nRewriteCond %{HTTP_HOST} !^www\. [NC]\nRewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]";
 
     private $exists = false;
@@ -415,7 +415,8 @@ class RAccountsLogfile {
         return "...";
     }
 
-    static function isSame($value, $expected) {
+    static function isSame($input, $expected) {
+        $value = str_replace("\n\n", "\n", $input); // do not worry about extra blank lines
         foreach ($expected as $item) {
             if ($value === $item) {
                 return "Default";
