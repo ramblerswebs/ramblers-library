@@ -165,7 +165,7 @@ class RAccountsLogfile {
             }
             return $out;
         }
-        return "not set";
+        return "Not found";
     }
 
     public function getNoFilesScanned() {
@@ -412,7 +412,7 @@ class RAccountsLogfile {
                 return self::isSame($value, $expected);
             }
         }
-        return "...";
+        return "None";
     }
 
     static function isSame($input, $expected) {
@@ -431,7 +431,6 @@ class RAccountsLogfile {
         }
 
         return self::process($value, 400);
-        ;
     }
 
     public function Exists() {

@@ -51,6 +51,7 @@ class RAccountsAccount {
                 }
                 $array[] = $this->domainLink();
                 $array[] = $this->status;
+                 $array[] = $this->whoisLink();
                 break;
             case self::FORMAT_LOGFILE:
                 if (!$this->log->Exists()) {
@@ -67,7 +68,7 @@ class RAccountsAccount {
                 $array[] = $this->log->getNoFilesScanned();
                 $array[] = $this->log->getTotalSizeScanned();
                 $array[] = $this->log->getLatestFile();
-                $array[] = $this->detailsLink();
+                $array[] = $this->detailsLink()."<br/>". $this->whoisLink();
                 break;
             case self::FORMAT_BASIC:
                 if (!$this->log->Exists()) {
@@ -234,10 +235,10 @@ class RAccountsAccount {
         $array = array();
         switch ($format) {
             case self::FORMAT_NOLOGFILE:
-                return ["Domain", "Status"];
+                return ["Domain", "Status","Whois"];
                 break;
             case self::FORMAT_LOGFILE:
-                return ["Domain", "Status", "HCP", "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Domain Details"];
+                return ["Domain", "Status", "HCP", "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Domain Details<br/>Whois"];
                 break;
             case self::FORMAT_BASIC:
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
@@ -261,6 +262,22 @@ class RAccountsAccount {
                 break;
         }
         return $array;
+    }
+
+    private function whoisLink() {
+        if ($this->endsWith($this->domain, ".uk")) {
+            return "<a target='_blank' href='https://www.nominet.uk/whois/?query=" . $this->domain . "#whois-results'>Whois</a>";
+        } else {
+            return " ";
+        }
+    }
+
+    private function beginsWith($str, $sub) {
+        return ( substr($str, 0, strlen($sub)) === $sub );
+    }
+
+    private function endsWith($str, $sub) {
+        return ( substr($str, strlen($str) - strlen($sub)) === $sub );
     }
 
     private function domainLink() {
