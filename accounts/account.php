@@ -20,10 +20,11 @@ class RAccountsAccount {
     const FORMAT_LOGFILE = 2;
     const FORMAT_BASIC = 3;
     const FORMAT_FOLDERS = 4;
-    const FORMAT_CONFIG = 5;
-    const FORMAT_AKEEBA = 6;
-    const FORMAT_NOJOOMLA = 7;
-    const FORMAT_SPF = 8;
+    const FORMAT_LARGESTFILES = 5;
+    const FORMAT_CONFIG = 6;
+    const FORMAT_AKEEBA = 7;
+    const FORMAT_NOJOOMLA = 8;
+    const FORMAT_SPF = 9;
 
     private $status;
     private $domain;
@@ -38,7 +39,7 @@ class RAccountsAccount {
     }
 
     Public static function formatsArray() {
-        $items = [1, 2, 3, 4, 5, 6, 7, 8];
+        $items = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         return $items;
     }
 
@@ -51,7 +52,7 @@ class RAccountsAccount {
                 }
                 $array[] = $this->domainLink();
                 $array[] = $this->status;
-                 $array[] = $this->whoisLink();
+                $array[] = $this->whoisLink();
                 break;
             case self::FORMAT_LOGFILE:
                 if (!$this->log->Exists()) {
@@ -68,7 +69,7 @@ class RAccountsAccount {
                 $array[] = $this->log->getNoFilesScanned();
                 $array[] = $this->log->getTotalSizeScanned();
                 $array[] = $this->log->getLatestFile();
-                $array[] = $this->detailsLink()."<br/>". $this->whoisLink();
+                $array[] = $this->detailsLink() . "<br/>" . $this->whoisLink();
                 break;
             case self::FORMAT_BASIC:
                 if (!$this->log->Exists()) {
@@ -89,6 +90,14 @@ class RAccountsAccount {
                 $array[] = $this->formatFolder($folders);
                 $array[] = $this->log->getCMSFolders();
                 $array[] = $this->log->getCMSVersions();
+                break;
+            case self::FORMAT_LARGESTFILES:
+                if (!$this->log->Exists()) {
+                    return null;
+                }
+                $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
+                $array[] = $this->log->getLargestFilesName();
+                $array[] = $this->log->getLargestFilesSize();
                 break;
             case self::FORMAT_AKEEBA:
                 if (!$this->log->Exists()) {
@@ -169,6 +178,9 @@ class RAccountsAccount {
             case self::FORMAT_FOLDERS:
                 $title = "Public_html folders";
                 break;
+            case self::FORMAT_LARGESTFILES:
+                $title = "Largest files in account";
+                break;
             case self::FORMAT_AKEEBA:
                 $title = "Joomla/Akeeba backup files on server";
                 break;
@@ -188,33 +200,12 @@ class RAccountsAccount {
     public static function getDefaults($format) {
         $array = array();
         switch ($format) {
-            case self::FORMAT_NOLOGFILE:
-                return Null;
-                break;
-            case self::FORMAT_LOGFILE:
-                return null;
-                break;
             case self::FORMAT_BASIC:
                 $array[] = "DEFAULT VALUES";
                 $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_HTACCESS . "<br/>or<br/>" . RAccountsLogfile::NEW_DEFAULT_HTACCESS);
                 $array[] = str_replace("\n", "<br/>", self::blank(RAccountsLogfile::OLD_DEFAULT_PHPINI) . "<br/>");
                 $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_PUBLIC_HTACCESS . "<br/>or<br/>" . RAccountsLogfile::NEW_DEFAULT_PUBLIC_HTACCESS);
                 $array[] = str_replace("\n", "<br/>", RAccountsLogfile::OLD_DEFAULT_PUBLIC_PHPINI . "<br/>or<br/>" . self::blank(RAccountsLogfile::NEW_DEFAULT_PUBLIC_PHPINI));
-                break;
-            case self::FORMAT_FOLDERS:
-                return null;
-                break;
-            case self::FORMAT_AKEEBA:
-                return null;
-                break;
-            case self::FORMAT_CONFIG:
-                return null;
-                break;
-            case self::FORMAT_NOJOOMLA:
-                return null;
-                break;
-            case self::FORMAT_SPF:
-                return null;
                 break;
             default:
                 return Null;
@@ -232,36 +223,29 @@ class RAccountsAccount {
     }
 
     public static function getHeader($format) {
-        $array = array();
         switch ($format) {
             case self::FORMAT_NOLOGFILE:
-                return ["Domain", "Status","Whois"];
-                break;
+                return ["Domain", "Status", "Whois"];
             case self::FORMAT_LOGFILE:
                 return ["Domain", "Status", "HCP", "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Domain Details<br/>Whois"];
-                break;
             case self::FORMAT_BASIC:
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", "public_html/.htaccess", "public_html/php.ini"];
-                break;
             case self::FORMAT_FOLDERS:
                 return ["Domain<br/>  Date", "Public_html/Folders", "CMS Folder", "CMS Version"];
-                break;
+            case self::FORMAT_LARGESTFILES:
+                return ["Domain<br/>  Date", "Largest Files", "Size"];
             case self::FORMAT_AKEEBA:
                 return ["Domain<br/>  Date", "Status", "Folder", "No", "Size", "File"];
-                break;
             case self::FORMAT_CONFIG:
                 return ["Domain<br/>  Date", "Status", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix"];
-                break;
             case self::FORMAT_NOJOOMLA:
                 return ["Domain<br/>  Date", "Status"];
-                break;
             case self::FORMAT_SPF:
                 return ["Domain", "Status", "Txt/Spf Record"];
             default:
                 return Null;
-                break;
         }
-        return $array;
+        return Null;
     }
 
     private function whoisLink() {

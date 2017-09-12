@@ -20,7 +20,11 @@ class RAccounts {
     public function updateAccounts() {
         $this->getAccounts(false);
         $org = new ROrganisation();
-        $this->updateDatabase($org);
+        if ($org->areas!=null ){
+              $this->updateDatabase($org);
+        } else {
+            echo "Organisation not available: locations not updated";
+        }
     }
 
     public function listLogDetails($format) {

@@ -88,6 +88,32 @@ class RAccountsLogfile {
         return "...";
     }
 
+    public function getLargestFilesName() {
+        if (isset($this->jsonobject["largestfiles"])) {
+            $array=$this->jsonobject["largestfiles"];
+            $out="";
+            foreach ($array as $key => $value) {
+                $out.=$key."<br/>";
+            }
+            
+            return $out;
+        }
+        return "...";
+    }
+
+    public function getLargestFilesSize() {
+         if (isset($this->jsonobject["largestfiles"])) {
+            $array=$this->jsonobject["largestfiles"];
+            $out="";
+            foreach ($array as $key => $value) {
+                $out.=number_format($value)."<br/>";
+            }
+            
+            return $out;
+        }
+        return "...";
+    }
+
     public function getWebMonitorVersion() {
         if (isset($this->jsonobject["webmonitorversion"])) {
             return $this->jsonobject["webmonitorversion"];
