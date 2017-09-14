@@ -32,6 +32,9 @@ class RFeedhelper {
             die("Invalid call to RJsonwalksFeedhelper");
         }
     }
+    public function setReadTimeout($value){
+        ini_set('default_socket_timeout', $value);
+    }
 
     public function getFeed($feedurl) {
         

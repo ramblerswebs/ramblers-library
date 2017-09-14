@@ -23,6 +23,7 @@ class RJsonwalksFeed {
         $CacheTime = 5; // minutes
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
+        $this->srfr->setReadTimeout(30);
         $this->readFeed($this->rafeedurl);
     }
 

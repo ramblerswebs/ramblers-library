@@ -31,6 +31,7 @@ class ROrganisation {
         $CacheTime = 3 * 4 * 7 * 60 * 24; // three months in minutes
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
+        $this->srfr->setReadTimeout(60);
         $this->readFeed($url);
     }
 
