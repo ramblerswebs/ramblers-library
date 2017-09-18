@@ -15,6 +15,10 @@
             <filename>readme.md</filename>
             <folder>accounts</folder>
             <folder>calendar</folder>
+            <folder>conf</folder>
+            <folder>conf/htaccess</folder>
+            <folder>conf/phpini</folder>
+            <folder>conf/userini</folder>
             <folder>directory</folder>
             <folder>event</folder>
             <folder>feedhelper</folder>

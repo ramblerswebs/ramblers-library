@@ -20,8 +20,8 @@ class RAccounts {
     public function updateAccounts() {
         $this->getAccounts(false);
         $org = new ROrganisation();
-        if ($org->areas!=null ){
-              $this->updateDatabase($org);
+        if ($org->areas != null) {
+            $this->updateDatabase($org);
         } else {
             echo "Organisation not available: locations not updated";
         }
@@ -43,20 +43,15 @@ class RAccounts {
         if ($format != RAccountsAccount::FORMAT_SINGLE) { // all domains
             $this->getAccounts($sortbystatus);
             echo "<table style='font-size: 85%'>";
-            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
-            $cols = RAccountsAccount::getDefaults($format);
-            if ($cols <> null) {
-                echo RHtml::addTableRow($cols);
-            }
+            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format,false));
             foreach ($this->dbresults as $item) :
                 $adomain = strtolower(trim($item->domain));
                 $status = $item->status;
                 $account = new RAccountsAccount($adomain, $status);
-                $cols = $account->getColumns($format);
+                $cols = $account->getColumns($format,false);
                 if ($cols <> null) {
                     echo RHtml::addTableRow($cols);
                 }
-
             endforeach;
             echo "</table>";
         } else {
@@ -71,17 +66,14 @@ class RAccounts {
                     if ($adomain == $domain) {
                         $status = $item->status;
                         $account = new RAccountsAccount($adomain, $status);
-                        $cols = $account->getColumns($format);
+                        $cols = $account->getColumns($format,true);
                         if ($cols <> null) {
                             RAccountsAccount::displayTitle($format);
                             echo "<table style='font-size: 85%'>";
-                            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format));
-                            $defcols = RAccountsAccount::getDefaults($format);
-                            if ($defcols <> null) {
-                                echo RHtml::addTableRow($defcols);
-                            }
+                            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format,true));
                             echo RHtml::addTableRow($cols);
                             echo "</table>";
+                            $account->displayDetails($format);
                         }
                     }
                 endforeach;

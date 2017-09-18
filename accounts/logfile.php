@@ -14,18 +14,15 @@
 class RAccountsLogfile {
 
     const CACHE = "../cache01/cache";
-    const FILE_PHPINI = 0;
-    const FILE_HTACCESS = 1;
-    const FILE_PUBLICPHPINI = 2;
-    const FILE_PUBLICHTACCESS = 3;
-    const OLD_DEFAULT_PHPINI = "";
-    const OLD_DEFAULT_HTACCESS = "SetEnv DEFAULT_PHP_VERSION 7\n";
-    const OLD_DEFAULT_PUBLIC_PHPINI = "upload_max_filesize = 20M;\npost_max_size = 20M;\nmax_execution_time = 60;\noutput_buffering=0;";
-    const OLD_DEFAULT_PUBLIC_HTACCESS = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !\.(cgi)$\nRewritecond %{http_host} ^THIS_DOMAIN\nRewriteRule ^(.*) http://www.THIS_DOMAIN/$1";
-    const NEW_DEFAULT_PHPINI = "";
-    const NEW_DEFAULT_HTACCESS = "#+PHPVersion\n#=\"php70\"\nAddHandler x-httpd-php70 .php\n#-PHPVersion";
-    const NEW_DEFAULT_PUBLIC_PHPINI = "";
-    const NEW_DEFAULT_PUBLIC_HTACCESS = "RewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !\.(cgi)$\nRewritecond %{http_host} ^THIS_DOMAIN\nRewriteRule ^(.*) http://www.THIS_DOMAIN/$1\nRewriteEngine On\nRewriteCond %{HTTP_HOST} !^www\. [NC]\nRewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]";
+    const FILE_HTACCESS = 0;
+    const FILE_PHPINI = 1;
+    const FILE_USERINI = 2;
+    const FILE_PUBLIC_HTACCESS = 3;
+    const FILE_PUBLIC_PHPINI = 4;
+    const FILE_PUBLIC_USERINI = 5;
+    const JOOMLA_HTACCESS = 1;
+    const JOOMLA_PHPINI = 2;
+    const JOOMLA_USERINI = 3;
 
     private $exists = false;
     private $jsonobject = null;
@@ -90,25 +87,25 @@ class RAccountsLogfile {
 
     public function getLargestFilesName() {
         if (isset($this->jsonobject["largestfiles"])) {
-            $array=$this->jsonobject["largestfiles"];
-            $out="";
+            $array = $this->jsonobject["largestfiles"];
+            $out = "";
             foreach ($array as $key => $value) {
-                $out.=$key."<br/>";
+                $out.=$key . "<br/>";
             }
-            
+
             return $out;
         }
         return "...";
     }
 
     public function getLargestFilesSize() {
-         if (isset($this->jsonobject["largestfiles"])) {
-            $array=$this->jsonobject["largestfiles"];
-            $out="";
+        if (isset($this->jsonobject["largestfiles"])) {
+            $array = $this->jsonobject["largestfiles"];
+            $out = "";
             foreach ($array as $key => $value) {
-                $out.=number_format($value)."<br/>";
+                $out.=number_format($value) . "<br/>";
             }
-            
+
             return $out;
         }
         return "...";
@@ -192,6 +189,88 @@ class RAccountsLogfile {
             return $out;
         }
         return "Not found";
+    }
+
+    public function getJoomlaHtaccess($displaydetails) {
+        $out = $this->checkJoomlaControlFiles(".htaccess",$displaydetails);
+
+        return $out;
+    }
+
+    public function getJoomlaPhpini($displaydetails) {
+        $out = $this->checkJoomlaControlFiles("php.ini",$displaydetails);
+
+        return $out;
+    }
+
+    public function getJoomlaUserini($displaydetails) {
+        $out = $this->checkJoomlaControlFiles(".user.ini",$displaydetails);
+
+        return $out;
+    }
+
+    private function checkJoomlaControlFiles($filename,$displaydetails) {
+        if ($this->jsonobject <> NULL) {
+            if (isset($this->jsonobject["config"])) {
+                $out = "";
+                $directory = $this->jsonobject["directory"];
+                foreach ($this->jsonobject["config"] as $item) {
+                    $parts = explode(",", $item);
+                    if ($parts[1] == "\$sitename") {
+                        $folder = $parts[0];
+                        $file = $directory . $folder . "/" . $filename;
+                        $version = $this->jsonobject["joomlaversions"][$directory . $folder];
+                        $first = substr($version, 0, 1);
+                        switch ($first) {
+                            case "1":
+                                $out.= "Obsolete<br/>";
+                                break;
+                            case "2":
+                                $out.= "Obsolete<br/>";
+                                break;
+                            case "3":
+                                $result = $this->checkJoomlaControlFile($directory, $folder, $filename,$displaydetails);
+                                $out.=$result . "<br/>";
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                return $out;
+            }
+            return "";
+        }
+        return "";
+    }
+
+    private function checkJoomlaControlFile($directory, $folder, $filename,$displaydetails) {
+        $options = [];
+        switch ($filename) {
+            case ".htaccess":
+                $options = ["compare" => "htaccess", "file" => "htaccess", "path" => "ramblers/conf/htaccess/joomla3"];
+                break;
+            case "php.ini":
+                $options = ["compare" => "ini", "file" => "php.ini", "path" => ""];
+                break;
+            case ".user.ini":
+                $options = ["compare" => "ini", "file" => ".user.ini", "path" => ""];
+                break;
+            default:
+                break;
+        }
+        $options["displaydetails"] = $displaydetails;
+       $text="";
+       if ($this->jsonobject <> NULL) {
+            $key = $directory . $folder . "/" . $filename;
+            if (isset($this->jsonobject["files"]["$key"])) {
+                $text = $this->jsonobject["files"]["$key"];
+            }
+        }
+       //  return $key;
+        $comp = new RConfCompare();
+        $out = $comp->compare($options, $text);
+        return $out;
     }
 
     public function getNoFilesScanned() {
@@ -405,40 +484,69 @@ class RAccountsLogfile {
         return false;
     }
 
-    public function getFile($which) {
-
-        switch ($which) {
-            case self::FILE_PHPINI:
-                $file = "php.ini";
-                $expected = [self::OLD_DEFAULT_PHPINI, self::NEW_DEFAULT_PHPINI];
+    public function getFile($which, $displaydetails = false) {
+        $hcp = $this->getHCPVersion();
+        $options = [];
+        switch ($hcp) {
+            case "New":
+                switch ($which) {
+                    case self::FILE_HTACCESS:
+                        $options = ["compare" => "htaccess", "file" => ".htaccess", "path" => "ramblers/conf/htaccess/new-root"];
+                        break;
+                    case self::FILE_PHPINI:
+                        $options = ["compare" => "ini", "file" => "php.ini", "path" => ""];
+                        break;
+                    case self::FILE_USERINI:
+                        $options = ["compare" => "ini", "file" => ".user.ini", "path" => ""];
+                        break;
+                    case self::FILE_PUBLIC_HTACCESS:
+                        $options = ["compare" => "htaccess", "file" => "public_html/.htaccess", "path" => "ramblers/conf/htaccess/new-public_html", "replace" => true];
+                        break;
+                    case self::FILE_PUBLIC_PHPINI:
+                        $options = ["compare" => "ini", "file" => "public_html/php.ini", "path" => ""];
+                        break;
+                    case self::FILE_PUBLIC_USERINI:
+                        $file = "public_html/php.ini";
+                        $options = ["compare" => "ini", "file" => "public_html/.user.ini", "path" => ""];
+                        break;
+                }
                 break;
-            case self::FILE_HTACCESS:
-                $file = ".htaccess";
-                $expected = [self::OLD_DEFAULT_HTACCESS, self::NEW_DEFAULT_HTACCESS];
-                break;
-            case self::FILE_PUBLICPHPINI:
-                $file = "public_html/php.ini";
-                $expected = [self::OLD_DEFAULT_PUBLIC_PHPINI, self::NEW_DEFAULT_PUBLIC_PHPINI];
-                break;
-            case self::FILE_PUBLICHTACCESS:
-                $file = "public_html/.htaccess";
-                $expected = [self::OLD_DEFAULT_PUBLIC_HTACCESS, self::NEW_DEFAULT_PUBLIC_HTACCESS];
-                $expected[0] = str_replace("THIS_DOMAIN", $this->domain, $expected[0]);
-                $expected[1] = str_replace("THIS_DOMAIN", $this->domain, $expected[1]);
-                break;
-
-            default:
-                return "Error";
+            Case "Old":
+                switch ($which) {
+                    case self::FILE_HTACCESS:
+                        $options = ["compare" => "htaccess", "file" => ".htaccess", "path" => "ramblers/conf/htaccess/old-root"];
+                        break;
+                    case self::FILE_PHPINI:
+                        $options = ["compare" => "ini", "file" => "php.ini", "path" => ""];
+                        break;
+                    case self::FILE_USERINI:
+                        $options = ["compare" => "ini", "file" => ".user.ini", "path" => ""];
+                        break;
+                    case self::FILE_PUBLIC_HTACCESS:
+                        $options = ["compare" => "htaccess", "file" => "public_html/.htaccess", "path" => "ramblers/conf/htaccess/old-public_html", "replace" => true];
+                        break;
+                    case self::FILE_PUBLIC_PHPINI:
+                        $options = ["compare" => "ini", "file" => "public_html/php.ini", "path" => "ramblers/conf/phpini/old-public_html"];
+                        break;
+                    case self::FILE_PUBLIC_USERINI:
+                        $options = ["compare" => "ini", "file" => "public_html/.user.ini", "path" => ""];
+                        break;
+                }
                 break;
         }
+        $options["domain"] = $this->jsonobject["domain"];
+        $options["displaydetails"] = $displaydetails;
+        $text = "";
+        $file = $options["file"];
         if ($this->jsonobject <> NULL) {
             $key = $this->jsonobject["path"] . $file;
             if (isset($this->jsonobject["files"]["$key"])) {
-                $value = $this->jsonobject["files"]["$key"];
-                return self::isSame($value, $expected);
+                $text = $this->jsonobject["files"]["$key"];
             }
         }
-        return "None";
+        $comp = new RConfCompare();
+        $out = $comp->compare($options, $text);
+        return $out;
     }
 
     static function isSame($input, $expected) {
