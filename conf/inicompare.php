@@ -29,7 +29,7 @@ class RConfInicompare {
             }
         }
         if ($nodifferences == 0) {
-            return "Same";
+            return RConfCompare::SAME;
         }
         return RConfCompare::DIFFERENT;
     }
