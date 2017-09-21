@@ -19,9 +19,9 @@ class RConfCompare {
     private $result = "invalid";
 
     const DIFFERENT = "DIFFERENT";
-    const ADDITIONAL="ADDITIONAL Items";
-  const SAME="Same";
-  const IDENTICAL="Identical";
+    const ADDITIONAL = "ADDITIONAL Items";
+    const SAME = "Same";
+    const IDENTICAL = "Identical";
 
     public function __construct() {
         
@@ -59,10 +59,11 @@ class RConfCompare {
             }
         }
         $displaydetails = $options["displaydetails"];
+        $folder = $options["folder"];
         if ($displaydetails) {
             if ($this->result == self::DIFFERENT or $this->result == self::ADDITIONAL) {
                 $file = $options["file"];
-                echo "<h4>" . $file . "</h4>";
+                echo "<h4>" . $folder . "/" . $file . "</h4>";
                 echo " <textarea rows='10' cols='80' style='width:auto;font-size: 85%;'>" . $text . "</textarea>";
                 echo " <textarea rows='10' cols='80' style='width:auto;font-size: 85%;'>" . $this->comparefiletext . "</textarea>";
             }

@@ -179,37 +179,37 @@ class RAccountsLogfile {
     }
 
     public function getJoomlaVersion() {
+        $out = "";
         if ($this->jsonobject <> NULL) {
             if (isset($this->jsonobject["joomlaversions"])) {
-                $out = "";
                 foreach ($this->jsonobject["joomlaversions"] as $item) {
                     $out.=$item . "<br/>";
-                }
+                } 
+                return $out;
             }
-            return $out;
         }
         return "Not found";
     }
 
     public function getJoomlaHtaccess($displaydetails) {
-        $out = $this->checkJoomlaControlFiles(".htaccess",$displaydetails);
+        $out = $this->checkJoomlaControlFiles(".htaccess", $displaydetails);
 
         return $out;
     }
 
     public function getJoomlaPhpini($displaydetails) {
-        $out = $this->checkJoomlaControlFiles("php.ini",$displaydetails);
+        $out = $this->checkJoomlaControlFiles("php.ini", $displaydetails);
 
         return $out;
     }
 
     public function getJoomlaUserini($displaydetails) {
-        $out = $this->checkJoomlaControlFiles(".user.ini",$displaydetails);
+        $out = $this->checkJoomlaControlFiles(".user.ini", $displaydetails);
 
         return $out;
     }
 
-    private function checkJoomlaControlFiles($filename,$displaydetails) {
+    private function checkJoomlaControlFiles($filename, $displaydetails) {
         if ($this->jsonobject <> NULL) {
             if (isset($this->jsonobject["config"])) {
                 $out = "";
@@ -219,21 +219,23 @@ class RAccountsLogfile {
                     if ($parts[1] == "\$sitename") {
                         $folder = $parts[0];
                         $file = $directory . $folder . "/" . $filename;
-                        $version = $this->jsonobject["joomlaversions"][$directory . $folder];
-                        $first = substr($version, 0, 1);
-                        switch ($first) {
-                            case "1":
-                                $out.= "Obsolete<br/>";
-                                break;
-                            case "2":
-                                $out.= "Obsolete<br/>";
-                                break;
-                            case "3":
-                                $result = $this->checkJoomlaControlFile($directory, $folder, $filename,$displaydetails);
-                                $out.=$result . "<br/>";
-                                break;
-                            default:
-                                break;
+                        if (isset($this->jsonobject["joomlaversions"][$directory . $folder])) {
+                            $version = $this->jsonobject["joomlaversions"][$directory . $folder];
+                            $first = substr($version, 0, 1);
+                            switch ($first) {
+                                case "1":
+                                    $out.= "Obsolete<br/>";
+                                    break;
+                                case "2":
+                                    $out.= "Obsolete<br/>";
+                                    break;
+                                case "3":
+                                    $result = $this->checkJoomlaControlFile($directory, $folder, $filename, $displaydetails);
+                                    $out.=$result . "<br/>";
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                 }
@@ -244,11 +246,11 @@ class RAccountsLogfile {
         return "";
     }
 
-    private function checkJoomlaControlFile($directory, $folder, $filename,$displaydetails) {
+    private function checkJoomlaControlFile($directory, $folder, $filename, $displaydetails) {
         $options = [];
         switch ($filename) {
             case ".htaccess":
-                $options = ["compare" => "htaccess", "file" => "htaccess", "path" => "ramblers/conf/htaccess/joomla3"];
+                $options = ["compare" => "htaccess", "file" => ".htaccess", "path" => "ramblers/conf/htaccess/joomla3"];
                 break;
             case "php.ini":
                 $options = ["compare" => "ini", "file" => "php.ini", "path" => ""];
@@ -260,14 +262,15 @@ class RAccountsLogfile {
                 break;
         }
         $options["displaydetails"] = $displaydetails;
-       $text="";
-       if ($this->jsonobject <> NULL) {
+        $options["folder"] = $folder;
+        $text = "";
+        if ($this->jsonobject <> NULL) {
             $key = $directory . $folder . "/" . $filename;
             if (isset($this->jsonobject["files"]["$key"])) {
                 $text = $this->jsonobject["files"]["$key"];
             }
         }
-       //  return $key;
+        //  return $key;
         $comp = new RConfCompare();
         $out = $comp->compare($options, $text);
         return $out;
@@ -536,6 +539,7 @@ class RAccountsLogfile {
         }
         $options["domain"] = $this->jsonobject["domain"];
         $options["displaydetails"] = $displaydetails;
+        $options["folder"] = "";
         $text = "";
         $file = $options["file"];
         if ($this->jsonobject <> NULL) {
