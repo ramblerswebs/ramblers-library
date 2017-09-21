@@ -256,7 +256,7 @@ class RAccountsLogfile {
                 $options = ["compare" => "ini", "file" => "php.ini", "path" => ""];
                 break;
             case ".user.ini":
-                $options = ["compare" => "ini", "file" => ".user.ini", "path" => ""];
+                $options = ["compare" => "ini", "file" => ".user.ini", "path" => "ramblers/conf/userini/joomla3.ini"];
                 break;
             default:
                 break;
