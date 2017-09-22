@@ -76,6 +76,7 @@ class RAccountsAccount {
                 break;
             case self::FORMAT_CONTROL_FILES:
                 $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
+                $array[] = $this->log->getHCPVersion();
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_HTACCESS, false);
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_PHPINI, false);
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_USERINI, false);
@@ -223,9 +224,9 @@ class RAccountsAccount {
                 }
             case self::FORMAT_CONTROL_FILES:
                 if ($details) {
-                    return ["Domain<br/>  Date", ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini"];
+                    return ["Domain<br/>  Date", "HCP", ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini"];
                 }
-                return ["Domain<br/>  Date", ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini", "Details"];
+                return ["Domain<br/>  Date", "HCP", ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini", "Details"];
             case self::FORMAT_FOLDERS:
                 return ["Domain<br/>  Date", "Public_html/Folders", "CMS Folder", "CMS Version"];
             case self::FORMAT_LARGESTFILES:
