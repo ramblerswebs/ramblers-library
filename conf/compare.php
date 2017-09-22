@@ -11,7 +11,7 @@
  *
  * @author Chris Vaughan
  */
-class RConfCompare {
+abstract class RConfCompare {
 
     private $type;
     private $comparefilename;
@@ -27,7 +27,7 @@ class RConfCompare {
         
     }
 
-    public function compare($options, $text) {
+    public function compare($text, $options) {
         $this->type = $options["compare"];
         $this->comparefilename = $options["path"];
         $this->readCompareFile();
@@ -45,31 +45,28 @@ class RConfCompare {
                     $this->comparefiletext = str_replace("THIS_DOMAIN", $domain, $this->comparefiletext);
                 }
             }
-            switch ($this->type) {
-                case "ini":
-                    $comp = new RConfInicompare($text);
-                    $this->result = $comp->compare($this->comparefiletext);
-                    break;
-                case "htaccess":
-                    $comp = new RConfHtaccesscompare($text);
-                    $this->result = $comp->compare($this->comparefiletext);
-                    break;
-                default:
-                    return $this->result;
-            }
+
+            $this->result = $this->comparetext($text, $this->comparefiletext);
         }
         $displaydetails = $options["displaydetails"];
         $folder = $options["folder"];
         if ($displaydetails) {
             if ($this->result == self::DIFFERENT or $this->result == self::ADDITIONAL) {
+                $rows = min([10, max([$this->getCount1(), $this->getCount2()])]);
                 $file = $options["file"];
                 echo "<h4>" . $folder . "/" . $file . "</h4>";
-                echo " <textarea rows='10' cols='80' style='width:auto;font-size: 85%;'>" . $text . "</textarea>";
-                echo " <textarea rows='10' cols='80' style='width:auto;font-size: 85%;'>" . $this->comparefiletext . "</textarea>";
+                echo " <textarea rows='$rows' cols='80' style='width:auto;font-size: 85%;'>" . $text . "</textarea>";
+                echo " <textarea rows='$rows' cols='80' style='width:auto;font-size: 85%;'>" . $this->comparefiletext . "</textarea>";
             }
         }
         return $this->result;
     }
+
+    abstract function comparetext($text, $text2);
+
+    abstract function getCount1();
+
+    abstract function getCount2();
 
     private function readCompareFile() {
         if ($this->comparefilename == "") {

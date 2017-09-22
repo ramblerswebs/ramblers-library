@@ -184,7 +184,7 @@ class RAccountsLogfile {
             if (isset($this->jsonobject["joomlaversions"])) {
                 foreach ($this->jsonobject["joomlaversions"] as $item) {
                     $out.=$item . "<br/>";
-                } 
+                }
                 return $out;
             }
         }
@@ -248,18 +248,22 @@ class RAccountsLogfile {
 
     private function checkJoomlaControlFile($directory, $folder, $filename, $displaydetails) {
         $options = [];
+        $comp = Null;
         switch ($filename) {
             case ".htaccess":
                 $options = ["compare" => "htaccess", "file" => ".htaccess", "path" => "ramblers/conf/htaccess/joomla3"];
+                $comp = new RConfHtaccesscompare();
                 break;
             case "php.ini":
                 $options = ["compare" => "ini", "file" => "php.ini", "path" => ""];
+                $comp = new RConfInicompare();
                 break;
             case ".user.ini":
                 $options = ["compare" => "ini", "file" => ".user.ini", "path" => "ramblers/conf/userini/joomla3.ini"];
+                $comp = new RConfInicompare();
                 break;
             default:
-                break;
+                return "ERROR checkJoomlaControlFile";
         }
         $options["displaydetails"] = $displaydetails;
         $options["folder"] = $folder;
@@ -270,10 +274,13 @@ class RAccountsLogfile {
                 $text = $this->jsonobject["files"]["$key"];
             }
         }
-        //  return $key;
-        $comp = new RConfCompare();
-        $out = $comp->compare($options, $text);
+        //  return $key;     
+        if ($comp!=NULL){
+              $out = $comp->compare($text, $options);
         return $out;
+        }
+        return "ERROR checkJoomlaControlFile(2)";
+      
     }
 
     public function getNoFilesScanned() {
@@ -490,27 +497,35 @@ class RAccountsLogfile {
     public function getFile($which, $displaydetails = false) {
         $hcp = $this->getHCPVersion();
         $options = [];
+        $comp = Null;
         switch ($hcp) {
             case "New":
                 switch ($which) {
                     case self::FILE_HTACCESS:
                         $options = ["compare" => "htaccess", "file" => ".htaccess", "path" => "ramblers/conf/htaccess/new-root"];
+                        $comp = new RConfHtaccesscompare();
                         break;
                     case self::FILE_PHPINI:
                         $options = ["compare" => "ini", "file" => "php.ini", "path" => ""];
+                        $comp = new RConfInicompare();
                         break;
                     case self::FILE_USERINI:
                         $options = ["compare" => "ini", "file" => ".user.ini", "path" => ""];
+                        $comp = new RConfInicompare();
                         break;
                     case self::FILE_PUBLIC_HTACCESS:
+                        $comp = new RConfHtaccesscompare();
                         $options = ["compare" => "htaccess", "file" => "public_html/.htaccess", "path" => "ramblers/conf/htaccess/new-public_html", "replace" => true];
+                        $comp = new RConfInicompare();
                         break;
                     case self::FILE_PUBLIC_PHPINI:
                         $options = ["compare" => "ini", "file" => "public_html/php.ini", "path" => ""];
+                        $comp = new RConfInicompare();
                         break;
                     case self::FILE_PUBLIC_USERINI:
                         $file = "public_html/php.ini";
                         $options = ["compare" => "ini", "file" => "public_html/.user.ini", "path" => ""];
+                        $comp = new RConfInicompare();
                         break;
                 }
                 break;
@@ -518,21 +533,27 @@ class RAccountsLogfile {
                 switch ($which) {
                     case self::FILE_HTACCESS:
                         $options = ["compare" => "htaccess", "file" => ".htaccess", "path" => "ramblers/conf/htaccess/old-root"];
+                        $comp = new RConfHtaccesscompare();
                         break;
                     case self::FILE_PHPINI:
                         $options = ["compare" => "ini", "file" => "php.ini", "path" => ""];
+                        $comp = new RConfInicompare();
                         break;
                     case self::FILE_USERINI:
                         $options = ["compare" => "ini", "file" => ".user.ini", "path" => ""];
+                        $comp = new RConfInicompare();
                         break;
                     case self::FILE_PUBLIC_HTACCESS:
                         $options = ["compare" => "htaccess", "file" => "public_html/.htaccess", "path" => "ramblers/conf/htaccess/old-public_html", "replace" => true];
+                        $comp = new RConfHtaccesscompare();
                         break;
                     case self::FILE_PUBLIC_PHPINI:
                         $options = ["compare" => "ini", "file" => "public_html/php.ini", "path" => "ramblers/conf/phpini/old-public_html"];
+                        $comp = new RConfInicompare();
                         break;
                     case self::FILE_PUBLIC_USERINI:
                         $options = ["compare" => "ini", "file" => "public_html/.user.ini", "path" => ""];
+                        $comp = new RConfInicompare();
                         break;
                 }
                 break;
@@ -548,9 +569,11 @@ class RAccountsLogfile {
                 $text = $this->jsonobject["files"]["$key"];
             }
         }
-        $comp = new RConfCompare();
-        $out = $comp->compare($options, $text);
-        return $out;
+        if ($comp != NULL) {
+            $out = $comp->compare($text, $options);
+            return $out;
+        }
+        Return "ERROR - getFile";
     }
 
     static function isSame($input, $expected) {

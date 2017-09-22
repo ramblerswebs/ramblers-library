@@ -11,20 +11,18 @@
  *
  * @author Chris Vaughan
  */
-class RConfHtaccesscompare {
+class RConfHtaccesscompare extends RConfCompare {
 
     private $config1;
+    private $config2;
 
-    public function __construct($text1) {
-        $this->config1 = $this->loadstring($text1);
-    }
-
-    public function compare($text2) {
-        $config2 = $this->loadstring($text2);
+    public function comparetext($text1, $text2) {
+        $this->config1 = self::loadstring($text1);
+        $this->config2 = self::loadstring($text2);
         $count1 = count($this->config1);
-        $count2 = count($config2);
+        $count2 = count($this->config2);
         if ($count1 > $count2) {
-            foreach ($config2 as $key => $value) {
+            foreach ($this->config2 as $key => $value) {
                 $value2 = $this->config1[$key];
                 if ($value != $value2) {
                     return RConfCompare::DIFFERENT;
@@ -36,7 +34,7 @@ class RConfHtaccesscompare {
             return RConfCompare::DIFFERENT;
         }
         foreach ($this->config1 as $key => $value) {
-            $value2 = $config2[$key];
+            $value2 = $this->config2[$key];
             if ($value != $value2) {
                 return RConfCompare::DIFFERENT;
             }
@@ -44,7 +42,15 @@ class RConfHtaccesscompare {
         return RConfCompare::SAME;
     }
 
-    private function loadstring($text) {
+    public function getCount1() {
+        return count($this->config1);
+    }
+
+    public function getCount2() {
+        return count($this->config2);
+    }
+
+    private static function loadstring($text) {
         $lines = explode("\n", $text);
         $config = [];
         foreach ($lines as $line) {

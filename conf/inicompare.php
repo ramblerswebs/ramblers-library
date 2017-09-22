@@ -6,36 +6,38 @@
  * and open the template in the editor.
  */
 
-class RConfInicompare {
+class RConfInicompare extends RConfCompare{
 
     private $config1;
+    private $config2;
 
-    public function __construct($text1) {
-        $this->config1 = $this->loadstring($text1);
-    }
-
-    public function compare($text2) {
-        $config2 = $this->loadstring($text2);
-        $nodifferences = 0;
-
+    public function comparetext($text1, $text2) {
+        $this->config1 = self::loadstring($text1);
+        $this->config2 = self::loadstring($text2);
         foreach ($this->config1 as $var => $val) {
-            if (isset($config2[$var])) {
-                if ($val == $config2[$var]) {
-                    continue;
+            if (isset($this->config2[$var])) {
+                if ($val != $this->config2[$var]) {
+                    return RConfCompare::DIFFERENT;
                 }
-                $nodifferences += 1;
-            } else {
-                $nodifferences += 1;
             }
         }
-        if ($nodifferences == 0) {
-            return RConfCompare::SAME;
+        $count1 = count($this->config1);
+        $count2 = count($this->config2);
+        if ($count1 != $count2) {
+            return RConfCompare::DIFFERENT;
         }
-        return RConfCompare::DIFFERENT;
+        return RConfCompare::SAME;
     }
 
-    private function loadstring($text) {
+    public function getCount1() {
+        return count($this->config1);
+    }
 
+    public function getCount2() {
+        return count($this->config2);
+    }
+
+    private static function loadstring($text) {
         $lines = explode("\n", $text);
         $config = [];
         foreach ($lines as $line) {
@@ -51,10 +53,8 @@ class RConfInicompare {
             if ($line[0] == '[') {
                 continue;
             }
-
             $var = explode('=', $line);
             $count = count($var);
-
             switch ($count) {
                 case 1:
                     $config[trim($var[0])] = "";
