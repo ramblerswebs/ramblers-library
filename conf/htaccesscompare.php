@@ -24,7 +24,7 @@ class RConfHtaccesscompare extends RConfCompare {
         if ($count1 > $count2) {
             foreach ($this->config2 as $key => $value) {
                 $value2 = $this->config1[$key];
-                if ($value != $value2) {
+                if (strtolower($value) != strtolower($value2)) {
                     return RConfCompare::DIFFERENT;
                 }
             }
@@ -35,7 +35,7 @@ class RConfHtaccesscompare extends RConfCompare {
         }
         foreach ($this->config1 as $key => $value) {
             $value2 = $this->config2[$key];
-            if ($value != $value2) {
+            if (strtolower($value) != strtolower($value2)) {
                 return RConfCompare::DIFFERENT;
             }
         }
