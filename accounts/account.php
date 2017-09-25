@@ -113,6 +113,7 @@ class RAccountsAccount {
                 if ($this->log->hasJoomla()) {
                     $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                     $array[] = $this->status;
+                    $array[] = $this->log->getHCPVersion();
                     $array[] = $this->log->getConfigFolder();
                     $array[] = $this->log->getConfigSitename();
                     $array[] = $this->log->getJoomlaVersion();
@@ -235,9 +236,9 @@ class RAccountsAccount {
                 return ["Domain<br/>  Date", "Status", "Folder", "No", "Size", "File"];
             case self::FORMAT_JOOMLA_CONFIG:
                 if ($details) {
-                    return ["Domain<br/>  Date", "Status", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini"];
+                    return ["Domain<br/>  Date", "Status", "HCP", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini"];
                 } else {
-                    return ["Domain<br/>  Date", "Status", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Details"];
+                    return ["Domain<br/>  Date", "Status", "HCP", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Details"];
                 } case self::FORMAT_NOJOOMLA:
                 return ["Domain<br/>  Date", "Status"];
             case self::FORMAT_SPF:
