@@ -65,6 +65,9 @@ class RJsonwalksSx05Table extends RJsonwalksDisplaybase {
         // }
         if ($walk->startLocation->exact) {
             $start = $walk->startLocation->timeHHMMshort . self::BR . $walk->startLocation->description . " ";
+            if ($this->addLocation){
+                $start.=$this->addLocation($walk->startLocation);
+            }
         }
         if ($this->link) {
             $title = "<a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $walk->title . "</a>";
