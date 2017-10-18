@@ -23,6 +23,8 @@ class RAccountsLogfile {
     const JOOMLA_HTACCESS = 1;
     const JOOMLA_PHPINI = 2;
     const JOOMLA_USERINI = 3;
+    const TICK = "&#10004;<br/>";
+    const CROSS = "&#10008;<br/>";
 
     private $exists = false;
     private $jsonobject = null;
@@ -249,6 +251,7 @@ class RAccountsLogfile {
     private function checkJoomlaControlFile($directory, $folder, $filename, $displaydetails) {
         $options = [];
         $comp = Null;
+        $hcp = $this->getHCPVersion();
         switch ($filename) {
             case ".htaccess":
                 $options = ["compare" => "htaccess", "file" => ".htaccess", "path" => "ramblers/conf/htaccess/joomla3"];
@@ -259,7 +262,14 @@ class RAccountsLogfile {
                 $comp = new RConfInicompare();
                 break;
             case ".user.ini":
-                $options = ["compare" => "ini", "file" => ".user.ini", "path" => "ramblers/conf/userini/joomla3.ini"];
+                switch ($hcp) {
+                    case "Old":
+                        $options = ["compare" => "ini", "file" => ".user.ini", "path" => ""];
+                        break;
+                    default:
+                        $options = ["compare" => "ini", "file" => ".user.ini", "path" => "ramblers/conf/userini/joomla3.ini"];
+                        break;
+                }
                 $comp = new RConfInicompare();
                 break;
             default:
@@ -275,12 +285,11 @@ class RAccountsLogfile {
             }
         }
         //  return $key;     
-        if ($comp!=NULL){
-              $out = $comp->compare($text, $options);
-        return $out;
+        if ($comp != NULL) {
+            $out = $comp->compare($text, $options);
+            return $out;
         }
         return "ERROR checkJoomlaControlFile(2)";
-      
     }
 
     public function getNoFilesScanned() {
@@ -391,6 +400,40 @@ class RAccountsLogfile {
 
     public function getConfigSef_suffix() {
         return $this->getConfigName("\$sef_suffix");
+    }
+
+    public function checkJoomlaFolders($which, $subfolder, $details) {
+
+        $path = $this->jsonobject["path"] . "public_html/";
+
+        if ($this->jsonobject <> NULL) {
+            if (isset($this->jsonobject["config"])) {
+                $out = "";
+                foreach ($this->jsonobject["config"] as $item) {
+                    $parts = explode(",", $item);
+                    if (trim($parts[1]) == $which) {
+                        $folder = $parts[0];
+                        $item = $parts[2];
+                        $correctvalue = $path . $folder . "/" . $subfolder;
+                        if ($correctvalue == $item) {
+                            $out.= Self::TICK;
+                        } else {
+                            $out.= self::CROSS;
+                            if ($details) {
+                                echo "<h4>" . $folder . "/" . $which . "</h4>";
+                                echo "<ul>";
+                                echo "<li>Correct value " . $correctvalue . "</li>";
+                                echo "<li>Actual value " . $item . "</li>";
+                                echo "</ul>";
+                            }
+                        }
+                    }
+                }
+                return $out;
+            }
+            return "not set";
+        }
+        return "...";
     }
 
     public function getConfigName($which) {
@@ -657,7 +700,7 @@ class RAccountsLogfile {
         }
         if ($interval->s !== 0) {
             if (!count($format)) {
-                return "less than a minute ago";
+                return "less than a minute";
             } else {
                 $format[] = "%s " . $doPlural($interval->s, "second");
             }

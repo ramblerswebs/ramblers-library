@@ -71,7 +71,7 @@ class RAccountsAccount {
                 if ($details) {
                     $array[] = $this->whoisLink();
                 } else {
-                    $array[] = $this->detailsLink() . "<br/>" . $this->whoisLink();
+                    $array[] = $this->detailsLink() . "<br/><div>" . $this->whoisLink()."</div>";
                 }
                 break;
             case self::FORMAT_CONTROL_FILES:
@@ -125,6 +125,8 @@ class RAccountsAccount {
                     $array[] = $this->log->getJoomlaHtaccess(false);
                     $array[] = $this->log->getJoomlaPhpini(false);
                     $array[] = $this->log->getJoomlaUserini(false);
+                    $array[] = $this->log->checkJoomlaFolders("\$log_path", "logs", false);
+                    $array[] = $this->log->checkJoomlaFolders("\$tmp_path", "tmp", false);
                     if (!$details) {
                         $array[] = $this->detailsLink();
                     }
@@ -206,6 +208,8 @@ class RAccountsAccount {
                 $this->log->getJoomlaHtaccess(true);
                 $this->log->getJoomlaPhpini(true);
                 $this->log->getJoomlaUserini(true);
+                $this->log->checkJoomlaFolders("\$log_path", "logs", true);
+                $this->log->checkJoomlaFolders("\$tmp_path", "tmp", true);
             default:
                 return Null;
                 break;
@@ -236,9 +240,9 @@ class RAccountsAccount {
                 return ["Domain<br/>  Date", "Status", "Folder", "No", "Size", "File"];
             case self::FORMAT_JOOMLA_CONFIG:
                 if ($details) {
-                    return ["Domain<br/>  Date", "Status", "HCP", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini"];
+                    return ["Domain<br/>  Date", "Status", "HCP", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp"];
                 } else {
-                    return ["Domain<br/>  Date", "Status", "HCP", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Details"];
+                    return ["Domain<br/>  Date", "Status", "HCP", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp", "Details"];
                 } case self::FORMAT_NOJOOMLA:
                 return ["Domain<br/>  Date", "Status"];
             case self::FORMAT_SPF:

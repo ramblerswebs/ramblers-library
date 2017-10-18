@@ -18,10 +18,10 @@ abstract class RConfCompare {
     private $comparefiletext;
     private $result = "invalid";
 
-    const DIFFERENT = "DIFFERENT";
+    const DIFFERENT = "&#10008;";
     const ADDITIONAL = "ADDITIONAL Items";
-    const SAME = "Same";
-    const IDENTICAL = "Identical";
+    const SAME = "&#10004;";
+    const IDENTICAL = "&#10004;";
 
     public function __construct() {
         
