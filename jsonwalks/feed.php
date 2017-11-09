@@ -156,7 +156,7 @@ class RJsonwalksFeed {
             return;
         }
         $doc = JFactory::getDocument();
-        $doc->addStyleSheet(JURI::base() . 'ramblers/jsonwalks/css/ramblerswalks.css');
+        $doc->addStyleSheet('ramblers/jsonwalks/css/ramblerswalks.css');
         $printOn = JRequest::getVar('print') == 1;
         if ($printOn) {
 

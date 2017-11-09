@@ -80,6 +80,12 @@ span.walksummary img:hover{
     content: url('../../images/new.gif');
     padding-right:5px;
 }
+
+.walkNew.printon {
+    background:none;
+    padding-left: 0px;;
+    
+}
 .walkNew {
     padding-left: 35px;
     background: url(../../images/new.gif) no-repeat scroll 0 50% rgba(0,0,0,0);
@@ -370,4 +376,64 @@ div.leaflet-popup-content div.walkNew img{
 }
 div.leaflet-popup-content div.walkCancelled img{
     display:none;
+
+
+}
+table.walksTable td{
+    vertical-align: top;
+} 
+
+table.walksTable  div.EasyAccess {
+    background: url(../../images/grades/grade-ea.jpg);
+    background-size:25px 25px;
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    min-height:30px;
+}
+table.walksTable  div.Easy {
+    background: url(../../images/grades/grade-e.jpg);
+    background-size:25px 25px;
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    min-height:30px;
+}
+table.walksTable  div.Leisurely {
+    background: url(../../images/grades/grade-l.jpg);
+    background-size:25px 25px;
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    min-height:30px;
+}
+table.walksTable  div.Moderate {
+    background: url(../../images/grades/grade-m.jpg);
+    background-size:25px 25px;
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    min-height:30px;
+}
+table.walksTable  div.Strenuous {
+    background: url(../../images/grades/grade-s.jpg);
+    background-size:25px 25px;
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    min-height:30px;
+}
+table.walksTable  div.Technical  {
+    background: url(../../images/grades/grade-t.jpg);
+    background-size:25px 25px;
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    min-height:30px;
+}
+
+
+div.nextWalksWithGrade{
+    clear:left;
+}
+div.nextWalksWithGrade img{
+    float:left;
+    margin-right:10px;
+    margin-top:10px;
+    width:30px;
+    height:30px;
 }

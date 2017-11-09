@@ -10,7 +10,7 @@ defined("_JEXEC") or die("Restricted access");
 
 class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
-    private $tableClass = "";
+    private $tableClass = "walksTable";
     private $walkClass = "walk";
     public $link = true;
     public $addDescription = true;
@@ -29,11 +29,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         }
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
-        if ($this->tableClass != "") {
-            echo "<table class='$this->tableClass'>";
-        } else {
-            echo "<table>";
-        }
+        echo "<table class='$this->tableClass'>";
         if ($walks->hasMeetPlace()) {
             echo RHtml::addTableHeader(array("Date", "Meet", "Start", "Title", "Distance", "Grade", "Contact"));
             foreach ($items as $walk) {
@@ -64,10 +60,15 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     private function displayWalkForProgrammeTable($walk, $hasMeet) {
         $group = "";
         if ($this->addGroupName) {
-            $group =  self::BR . $walk->groupName;
+            $group = self::BR . $walk->groupName;
         }
-        $date = "<div class='" . $this->walkClass . $walk->status . "'><b>" . $walk->walkDate->format('l, jS F') . "</b>" . $group . "</div>";
 
+        $date = "<b>" . $walk->walkDate->format('l, jS F') . "</b>";
+        if ($this->printOn) {
+            $date = "<div class='" . $this->walkClass . $walk->status . " printon'>" . $date . $group . "</div>";
+        } else {
+            $date = "<div class='" . $this->walkClass . $walk->status . "'>" . $date . $group . "</div>";
+        }
         if ($walk->hasMeetPlace) {
             $meet = $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
             if ($this->addLocation) {
@@ -86,10 +87,15 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $start = ".";
         }
         if ($this->link) {
-            $text = "<a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $walk->title . "</a>";
+            if ($this->printOn) {
+                $text = $walk->title;
+            } else {
+                $text = "<a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $walk->title . "</a>";
+            }
         } else {
             $text = $walk->title;
         }
+        $text = "<strong>" . $text . "</strong>";
         $title = "<div class='" . $walk->status . "'>" . $text . " </div>";
         if ($this->addDescription) {
             $title .= $walk->description;
@@ -103,27 +109,31 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $contact = "Contact";
         }
         if ($walk->contactName <> "") {
-            $contact .=   self::BR. $walk->contactName;
+            $contact .= self::BR . "<strong>" . $walk->contactName . "</strong>";
         }
         if ($walk->email <> "") {
-            $contact .=  self::BR . $walk->email;
+            $contact .= self::BR . $walk->email;
         }
         if ($walk->telephone1 <> "") {
-            $contact .=  self::BR . $walk->telephone1;
+            $contact .= self::BR . $walk->telephone1;
         }
         if ($walk->telephone2 <> "") {
-            $contact .=  self::BR. $walk->telephone2;
+            $contact .= self::BR . $walk->telephone2;
         }
         $grade = $walk->nationalGrade . self::BR . $walk->localGrade;
+        if ($this->displayGrade AND ! $this->printOn) {
+            $grade = "<div class='" . str_replace(' ', '', $walk->nationalGrade) . "'>" . $walk->nationalGrade . self::BR . $walk->localGrade . "</div>";
+        }
+        $class = $this->tableClass;
         if ($hasMeet) {
-            echo RHtml::addTableRow(array($date, $meet, $start, $title, $dist, $grade, $contact));
+            echo RHtml::addTableRow(array($date, $meet, $start, $title, $dist, $grade, $contact), $class);
         } else {
-            echo RHtml::addTableRow(array($date, $start, $title, $dist, $grade, $contact));
+            echo RHtml::addTableRow(array($date, $start, $title, $dist, $grade, $contact), $class);
         }
     }
 
     private function addLocation($location) {
-        $text =  self::BR.$location->gridref . " / " . $location->postcode;
+        $text = self::BR . $location->gridref . " / " . $location->postcode;
         return $text;
     }
 

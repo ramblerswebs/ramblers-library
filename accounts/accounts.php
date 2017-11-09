@@ -43,12 +43,13 @@ class RAccounts {
         if ($format != RAccountsAccount::FORMAT_SINGLE) { // all domains
             $this->getAccounts($sortbystatus);
             echo "<table style='font-size: 85%'>";
-            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format,false));
+            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format, false));
             foreach ($this->dbresults as $item) :
                 $adomain = strtolower(trim($item->domain));
                 $status = $item->status;
-                $account = new RAccountsAccount($adomain, $status);
-                $cols = $account->getColumns($format,false);
+                $webmaster = $item->web_master;
+                $account = new RAccountsAccount($adomain, $status,$webmaster);
+                $cols = $account->getColumns($format, false);
                 if ($cols <> null) {
                     echo RHtml::addTableRow($cols);
                 }
@@ -65,12 +66,13 @@ class RAccounts {
                     $adomain = strtolower(trim($item->domain));
                     if ($adomain == $domain) {
                         $status = $item->status;
-                        $account = new RAccountsAccount($adomain, $status);
-                        $cols = $account->getColumns($format,true);
+                         $webmaster = $item->web_master;
+                        $account = new RAccountsAccount($adomain, $status,$webmaster);
+                        $cols = $account->getColumns($format, true);
                         if ($cols <> null) {
                             RAccountsAccount::displayTitle($format);
                             echo "<table style='font-size: 85%'>";
-                            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format,true));
+                            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format, true));
                             echo RHtml::addTableRow($cols);
                             echo "</table>";
                             $account->displayDetails($format);
@@ -141,7 +143,7 @@ class RAccounts {
             $db = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $query->select($db->quoteName(array('id', 'code', 'domain', 'status')));
+            $query->select($db->quoteName(array('id', 'code', 'domain', 'status', 'web_master')));
             $query->from($db->quoteName(ACCOUNTTABLE));
             if ($sortbystatus) {
                 $query->order('status,domain ASC');

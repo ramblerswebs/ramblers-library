@@ -21,7 +21,6 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     public $displayGroup = null;  // should the Group name be displayed
     public $displayGradesIcon = true;
     public $displayGradesSidebar = true;
-    private $printOn = false;
     private static $accordianId = 100;
 
     public function DisplayWalks($walks) {
@@ -34,7 +33,6 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         self::$accordianId +=1;
         $document = JFactory::getDocument();
-        $this->printOn = JRequest::getVar('print') == 1;
         JHtml::_('jquery.framework');
         $document->addStyleSheet(JURI::base() . 'ramblers/jsonwalks/std/accordian/style/style4.css');
         $document->addScript(JURI::base() . 'ramblers/jsonwalks/std/accordian/js/ra-accordion.js', "text/javascript");
@@ -318,9 +316,17 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             }
         } else {
             $out = "<div class='place'>";
+            $out .= "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
             if (!$this->printOn) {
-                $out .= "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
                 $out.=$location->getAreaMap("Map of area");
+            }
+            if ($location->type == "Start") {
+                if ($this->displayStartTime) {
+                    $out .= "<div class='starttime'>Start time: " . $location->timeHHMMshort."</div>";
+                }
+                if ($this->displayStartDescription) {
+                    $out .= "<div class='startdescription'>".$location->description."</div>";
+                }
             }
             $out.= "</div>";
         }

@@ -19,8 +19,9 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         $no = 0;
-        echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;
-
+        if (!$this->displayGrade) {
+            echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;
+        }
         foreach ($items as $walk) {
             $no+=1;
             if ($no > $this->nowalks) {
@@ -31,9 +32,14 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             if ($walk->distanceMiles > 0) {
                 $desc .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
             }
+            $out = "<span class='" . $this->walkClass . $walk->status . "' " . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $desc . "</a></span>";
 
-            echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $desc . "</a></div>" . PHP_EOL;
-            if ($walk->isCancelled()) {
+            if ($this->displayGrade) {
+                $image = $walk->getGradeImage();
+                echo "<div class='nextWalksWithGrade' ><img src=\"" . $image . "\" alt=\"" . $walk->nationalGrade . "\" />" . $out . "</div>" . PHP_EOL;
+            } else {
+                echo "<li> " . $out . "</li>" . PHP_EOL;
+            } if ($walk->isCancelled()) {
                 echo "CANCELLED: " . $walk->cancellationReason;
             } else {
                 $performer = new RJsonwalksStructuredperformer($walk->groupName);
@@ -54,6 +60,9 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             }
         }
 
+        if (!$this->displayGrade) {
+            echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;
+        }
         echo "</ul>" . PHP_EOL;
         $script = json_encode($schemawalks);
         $script = str_replace('"context":', '"@context":', $script);
@@ -63,7 +72,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
         $doc->addScriptDeclaration($script, "application/ld+json");
     }
 
-    function noWalks($no) {
+    public function noWalks($no) {
         $this->nowalks = $no;
     }
 

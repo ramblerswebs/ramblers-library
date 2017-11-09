@@ -402,7 +402,7 @@ class RAccountsLogfile {
         return $this->getConfigName("\$sef_suffix");
     }
 
-    public function checkJoomlaFolders($which, $subfolder, $details) {
+    public function checkJoomlaFolders($which, $subfolders, $details) {
 
         $path = $this->jsonobject["path"] . "public_html/";
 
@@ -414,15 +414,26 @@ class RAccountsLogfile {
                     if (trim($parts[1]) == $which) {
                         $folder = $parts[0];
                         $item = $parts[2];
-                        $correctvalue = $path . $folder . "/" . $subfolder;
-                        if ($correctvalue == $item) {
+                        $correctvalues = [];
+                        foreach ($subfolders as $subfolder) {
+                            $correctvalues[] = $path . $folder . "/" . $subfolder;
+                        }
+                        $ok = false;
+                        foreach ($correctvalues as $correctvalue) {
+                            if ($correctvalue == $item) {
+                                $ok = true;
+                            }
+                        }
+                        if ($ok) {
                             $out.= Self::TICK;
                         } else {
                             $out.= self::CROSS;
                             if ($details) {
                                 echo "<h4>" . $folder . "/" . $which . "</h4>";
                                 echo "<ul>";
-                                echo "<li>Correct value " . $correctvalue . "</li>";
+                                foreach ($correctvalues as $correctvalue) {
+                                    echo "<li>Correct value " . $correctvalue . "</li>";
+                                }
                                 echo "<li>Actual value " . $item . "</li>";
                                 echo "</ul>";
                             }
