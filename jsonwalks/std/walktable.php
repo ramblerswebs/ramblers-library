@@ -29,7 +29,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         }
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
-        echo "<table class='$this->tableClass'>";
+        echo "<table class='gradeTable $this->tableClass'>";
         if ($walks->hasMeetPlace()) {
             echo RHtml::addTableHeader(array("Date", "Meet", "Start", "Title", "Distance", "Grade", "Contact"));
             foreach ($items as $walk) {

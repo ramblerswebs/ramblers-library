@@ -379,46 +379,43 @@ div.leaflet-popup-content div.walkCancelled img{
 
 
 }
-table.walksTable td{
-    vertical-align: top;
-} 
 
-table.walksTable  div.EasyAccess {
+table.gradeTable  div.EasyAccess {
     background: url(../../images/grades/grade-ea.jpg);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
-table.walksTable  div.Easy {
+table.gradeTable  div.Easy {
     background: url(../../images/grades/grade-e.jpg);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
-table.walksTable  div.Leisurely {
+table.gradeTable  div.Leisurely {
     background: url(../../images/grades/grade-l.jpg);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
-table.walksTable  div.Moderate {
+table.gradeTable  div.Moderate {
     background: url(../../images/grades/grade-m.jpg);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
-table.walksTable  div.Strenuous {
+table.gradeTable  div.Strenuous {
     background: url(../../images/grades/grade-s.jpg);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
-table.walksTable  div.Technical  {
+table.gradeTable  div.Technical  {
     background: url(../../images/grades/grade-t.jpg);
     background-size:25px 25px;
     background-repeat: no-repeat;
