@@ -16,7 +16,8 @@ abstract class RJsonwalksDisplaybase {
     protected $displayStartTime = false;
     protected $displayStartDescription = false;
     protected $printOn = false;
-    protected $displayGrade = true;
+    public $displayGradesIcon = true;
+    public $displayGradesSidebar = true;
 
     abstract protected function DisplayWalks($walks);
 
@@ -30,10 +31,6 @@ abstract class RJsonwalksDisplaybase {
 
     public function alwaysDisplayStartDescription($value) {
         $this->displayStartDescription = $value;
-    }
-
-    public function displayGrade($value) {
-        $this->displayGrade = $value;
     }
 
 }

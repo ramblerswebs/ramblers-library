@@ -15,11 +15,14 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
     private $nowalks = 5;
 
     function DisplayWalks($walks) {
+        if ($this->displayGradesSidebar) {
+            RJsonwalksWalk::gradeSidebar();
+        }
         $schemawalks = array();
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         $no = 0;
-        if (!$this->displayGrade) {
+        if (!$this->displayGradesIcon) {
             echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;
         }
         foreach ($items as $walk) {
@@ -34,7 +37,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             }
             $out = "<span class='" . $this->walkClass . $walk->status . "' " . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $desc . "</a></span>";
 
-            if ($this->displayGrade) {
+            if ($this->displayGradesIcon) {
                 $image = $walk->getGradeImage();
                 echo "<div class='nextWalksWithGrade' ><img src=\"" . $image . "\" alt=\"" . $walk->nationalGrade . "\" />" . $out . "</div>" . PHP_EOL;
             } else {
@@ -60,7 +63,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             }
         }
 
-        if (!$this->displayGrade) {
+        if (!$this->displayGradesIcon) {
             echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;
         }
         echo "</ul>" . PHP_EOL;

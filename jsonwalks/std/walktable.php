@@ -21,6 +21,9 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
     function DisplayWalks($walks) {
         echo "</p>";
+        if ($this->displayGradesSidebar) {
+            RJsonwalksWalk::gradeSidebar();
+        }
         $printOn = JRequest::getVar('print') == 1;
         if ($printOn) {
             $doc = JFactory::getDocument();
@@ -121,7 +124,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $contact .= self::BR . $walk->telephone2;
         }
         $grade = $walk->nationalGrade . self::BR . $walk->localGrade;
-        if ($this->displayGrade AND ! $this->printOn) {
+        if ($this->displayGradesIcon AND ! $this->printOn) {
             $grade = "<div class='" . str_replace(' ', '', $walk->nationalGrade) . "'>" . $walk->nationalGrade . self::BR . $walk->localGrade . "</div>";
         }
         $class = $this->tableClass;

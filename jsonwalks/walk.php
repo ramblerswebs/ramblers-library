@@ -58,6 +58,7 @@ class RJsonwalksWalk extends REvent {
 // extra derived values
     private $sortTime;
     private $icsDayEvents = false;
+    private static $gradeSidebarDisplayed = false;
 
     const SORT_DATE = 0;
     const SORT_CONTACT = 1;
@@ -384,10 +385,13 @@ class RJsonwalksWalk extends REvent {
     }
 
     public static function gradeSidebar() {
-        echo '<div class = "gradeSidebar" >';
-        echo '<a href="ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">';
-        echo 'Walks difficulty</a>';
-        echo '</div>';
+        if (!self::$gradeSidebarDisplayed) {
+            self::$gradeSidebarDisplayed = true;
+            echo '<div class = "gradeSidebar" >';
+            echo '<a href="ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">';
+            echo 'Walks difficulty</a>';
+            echo '</div>';
+        }
     }
 
     public static function gradeToolTips() {
