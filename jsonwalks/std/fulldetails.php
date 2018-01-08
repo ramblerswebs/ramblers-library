@@ -235,7 +235,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo RHtml::withDiv("contactname", "<b>Name</b>: " . $walk->contactName, $this->printOn);
         if ($walk->email != "" and !$this->printOn) {
             $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
-            echo RHtml::withDiv("email", "<b>Email: </b><a href='" . $link . $walk->id."' target='_blank'>Email Contact via ramblers.org.uk<a>", $this->printOn);
+            echo RHtml::withDiv("email", "<b>Email: </b><a href='" . $link . $walk->id."' target='_blank'>Email Contact via ramblers.org.uk</a>", $this->printOn);
         }
         if ($walk->telephone1 . $walk->telephone2 != "") {
             $text = "<b>Telephone</b>: ";
