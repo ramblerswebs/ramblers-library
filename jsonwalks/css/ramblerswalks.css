@@ -255,6 +255,32 @@ div.groupA,div.groupG,div.groupS {
 
 }
 
+.ntooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 0px solid white;
+}
+
+.ntooltip .ntooltiptext {
+    visibility: hidden;
+    width: auto;
+    background-color: grey;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px ;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+   
+}
+
+.ntooltip:hover .ntooltiptext {
+    visibility: visible;
+}
+
 @media only screen and (min-width: 769px){
     div.walkstdfulldetails {
         -webkit-column-count: 2; /* Chrome, Safari, Opera */
@@ -425,6 +451,7 @@ table.gradeTable  div.Technical  {
 
 
 div.nextWalksWithGrade{
+    line-height: 20px;
     clear:left;
 }
 div.nextWalksWithGrade img{

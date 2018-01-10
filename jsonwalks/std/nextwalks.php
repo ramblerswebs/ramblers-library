@@ -39,7 +39,8 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
 
             if ($this->displayGradesIcon) {
                 $image = $walk->getGradeImage();
-                echo "<div class='nextWalksWithGrade' ><img src=\"" . $image . "\" alt=\"" . $walk->nationalGrade . "\" />" . $out . "</div>" . PHP_EOL;
+                $tooltip = "<span class='ntooltiptext'>".$walk->nationalGrade."</span>";
+                echo "<div class='nextWalksWithGrade ntooltip'><img src=\"" . $image . "\" alt=\"" . $walk->nationalGrade . "\" />" .$tooltip. $out . "</div>" . PHP_EOL;
             } else {
                 echo "<li> " . $out . "</li>" . PHP_EOL;
             } if ($walk->isCancelled()) {
