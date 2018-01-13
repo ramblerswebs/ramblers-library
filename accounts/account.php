@@ -62,7 +62,7 @@ class RAccountsAccount {
                 $array[] = $this->domainLink();
                 $array[] = $this->status;
                 $array[] = $this->webmaster;
-                $array[] = $this->log->getHCPVersion();
+               // $array[] = $this->log->getHCPVersion();
                 $array[] = $this->log->getWebMonitorVersion();
                 // $array[] = $this->log->getReportFormat();
                 $array[] = $this->log->getFileSize();
@@ -79,7 +79,7 @@ class RAccountsAccount {
                 break;
             case self::FORMAT_CONTROL_FILES:
                 $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
-                $array[] = $this->log->getHCPVersion();
+               // $array[] = $this->log->getHCPVersion();
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_HTACCESS, false);
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_PHPINI, false);
                 $array[] = $this->log->getFile(RAccountsLogfile::FILE_USERINI, false);
@@ -116,7 +116,7 @@ class RAccountsAccount {
                 if ($this->log->hasJoomla()) {
                     $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                     $array[] = $this->status;
-                    $array[] = $this->log->getHCPVersion();
+                  // $array[] = $this->log->getHCPVersion();
                     $array[] = $this->log->getConfigFolder();
                     $array[] = $this->log->getConfigSitename();
                     $array[] = $this->log->getJoomlaVersion();
@@ -139,7 +139,7 @@ class RAccountsAccount {
                 if (!$this->log->hasJoomla()) {
                     $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                     $array[] = $this->status;
-                    $array[] = $this->log->getHCPVersion();
+                   // $array[] = $this->log->getHCPVersion();
                 }
                 break;
             case self::FORMAT_SPF:
@@ -227,15 +227,15 @@ class RAccountsAccount {
                 return ["Domain", "Status", "Whois"];
             case self::FORMAT_LOGFILE:
                 if ($details) {
-                    return ["Domain", "Status", "Webmaster", "HCP", "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Whois"];
+                    return ["Domain", "Status", "Webmaster",  "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Whois"];
                 } else {
-                    return ["Domain", "Status", "Webmaster", "HCP", "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Domain Details<br/>Whois"];
+                    return ["Domain", "Status", "Webmaster",  "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Domain Details<br/>Whois"];
                 }
             case self::FORMAT_CONTROL_FILES:
                 if ($details) {
-                    return ["Domain<br/>  Date", "HCP", ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini"];
+                    return ["Domain<br/>  Date",  ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini"];
                 }
-                return ["Domain<br/>  Date", "HCP", ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini", "Details"];
+                return ["Domain<br/>  Date",  ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini", "Details"];
             case self::FORMAT_FOLDERS:
                 return ["Domain<br/>  Date", "Public_html/Folders", "CMS Folder", "CMS Version"];
             case self::FORMAT_LARGESTFILES:
@@ -244,12 +244,12 @@ class RAccountsAccount {
                 return ["Domain<br/>  Date", "Status", "Folder", "No", "Size", "File"];
             case self::FORMAT_JOOMLA_CONFIG:
                 if ($details) {
-                    return ["Domain<br/>  Date", "Status", "HCP", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp"];
+                    return ["Domain<br/>  Date", "Status",  "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp"];
                 } else {
-                    return ["Domain<br/>  Date", "Status", "HCP", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp", "Details"];
+                    return ["Domain<br/>  Date", "Status",  "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp", "Details"];
                 }
             case self::FORMAT_NOJOOMLA:
-                return ["Domain<br/>  Date", "Status", "HCP"];
+                return ["Domain<br/>  Date", "Status"];
             case self::FORMAT_SPF:
                 return ["Domain", "Status", "Txt/Spf Record"];
             default:
