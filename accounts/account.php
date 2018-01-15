@@ -46,6 +46,7 @@ class RAccountsAccount {
     }
 
     public function getColumns($format, $details) {
+
         $array = array();
         if (!$this->log->Exists()) {
             switch ($format) {
@@ -62,7 +63,7 @@ class RAccountsAccount {
                 $array[] = $this->domainLink();
                 $array[] = $this->status;
                 $array[] = $this->webmaster;
-               // $array[] = $this->log->getHCPVersion();
+                // $array[] = $this->log->getHCPVersion();
                 $array[] = $this->log->getWebMonitorVersion();
                 // $array[] = $this->log->getReportFormat();
                 $array[] = $this->log->getFileSize();
@@ -71,7 +72,7 @@ class RAccountsAccount {
                 $array[] = $this->log->getNoFilesScanned();
                 $array[] = $this->log->getTotalSizeScanned();
                 $array[] = $this->log->getLatestFile();
-                if ($details) {
+                if (!$details == RAccountsLogfile::DISP_NONE) {
                     $array[] = $this->whoisLink();
                 } else {
                     $array[] = $this->detailsLink() . "<br/><div>" . $this->whoisLink() . "</div>";
@@ -79,14 +80,14 @@ class RAccountsAccount {
                 break;
             case self::FORMAT_CONTROL_FILES:
                 $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
-               // $array[] = $this->log->getHCPVersion();
-                $array[] = $this->log->getFile(RAccountsLogfile::FILE_HTACCESS, false);
-                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PHPINI, false);
-                $array[] = $this->log->getFile(RAccountsLogfile::FILE_USERINI, false);
-                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_HTACCESS, false);
-                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_PHPINI, false);
-                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_USERINI, false);
-                if (!$details) {
+                // $array[] = $this->log->getHCPVersion();
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_HTACCESS, $details);
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PHPINI, $details);
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_USERINI, $details);
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_HTACCESS, $details);
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_PHPINI, $details);
+                $array[] = $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_USERINI, $details);
+                if ($details == RAccountsLogfile::DISP_NONE) {
                     $array[] = $this->detailsLink();
                 }
                 break;
@@ -116,7 +117,7 @@ class RAccountsAccount {
                 if ($this->log->hasJoomla()) {
                     $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                     $array[] = $this->status;
-                  // $array[] = $this->log->getHCPVersion();
+                    // $array[] = $this->log->getHCPVersion();
                     $array[] = $this->log->getConfigFolder();
                     $array[] = $this->log->getConfigSitename();
                     $array[] = $this->log->getJoomlaVersion();
@@ -125,12 +126,12 @@ class RAccountsAccount {
                     $array[] = $this->log->getConfigSef();
                     $array[] = $this->log->getConfigSef_rewrite();
                     $array[] = $this->log->getConfigSef_suffix();
-                    $array[] = $this->log->getJoomlaHtaccess(false);
-                    $array[] = $this->log->getJoomlaPhpini(false);
-                    $array[] = $this->log->getJoomlaUserini(false);
-                    $array[] = $this->log->checkJoomlaFolders("\$log_path", ["logs", "administrator/logs"], false);
-                    $array[] = $this->log->checkJoomlaFolders("\$tmp_path", ["tmp"], false);
-                    if (!$details) {
+                    $array[] = $this->log->getJoomlaHtaccess($details);
+                    $array[] = $this->log->getJoomlaPhpini($details);
+                    $array[] = $this->log->getJoomlaUserini($details);
+                    $array[] = $this->log->checkJoomlaFolders("\$log_path", ["logs", "administrator/logs"], $details);
+                    $array[] = $this->log->checkJoomlaFolders("\$tmp_path", ["tmp"], $details);
+                    if ($details == RAccountsLogfile::DISP_NONE) {
                         $array[] = $this->detailsLink();
                     }
                 }
@@ -139,7 +140,7 @@ class RAccountsAccount {
                 if (!$this->log->hasJoomla()) {
                     $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                     $array[] = $this->status;
-                   // $array[] = $this->log->getHCPVersion();
+                    // $array[] = $this->log->getHCPVersion();
                 }
                 break;
             case self::FORMAT_SPF:
@@ -201,17 +202,17 @@ class RAccountsAccount {
     public function displayDetails($format) {
         switch ($format) {
             case self::FORMAT_CONTROL_FILES:
-                $this->log->getFile(RAccountsLogfile::FILE_HTACCESS, true);
-                $this->log->getFile(RAccountsLogfile::FILE_PHPINI, true);
-                $this->log->getFile(RAccountsLogfile::FILE_USERINI, true);
-                $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_HTACCESS, true);
-                $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_PHPINI, true);
-                $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_USERINI, true);
+                $this->log->getFile(RAccountsLogfile::FILE_HTACCESS, RAccountsLogfile::DISP_DETAILS);
+                $this->log->getFile(RAccountsLogfile::FILE_PHPINI, RAccountsLogfile::DISP_DETAILS);
+                $this->log->getFile(RAccountsLogfile::FILE_USERINI, RAccountsLogfile::DISP_DETAILS);
+                $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_HTACCESS, RAccountsLogfile::DISP_DETAILS);
+                $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_PHPINI, RAccountsLogfile::DISP_DETAILS);
+                $this->log->getFile(RAccountsLogfile::FILE_PUBLIC_USERINI, RAccountsLogfile::DISP_DETAILS);
                 break;
             case self::FORMAT_JOOMLA_CONFIG:
-                $this->log->getJoomlaHtaccess(true);
-                $this->log->getJoomlaPhpini(true);
-                $this->log->getJoomlaUserini(true);
+                $this->log->getJoomlaHtaccess(RAccountsLogfile::DISP_DETAILS);
+                $this->log->getJoomlaPhpini(RAccountsLogfile::DISP_DETAILS);
+                $this->log->getJoomlaUserini(RAccountsLogfile::DISP_DETAILS);
                 $this->log->checkJoomlaFolders("\$log_path", ["logs", "administrator/logs"], true);
                 $this->log->checkJoomlaFolders("\$tmp_path", ["tmp"], true);
             default:
@@ -226,16 +227,16 @@ class RAccountsAccount {
             case self::FORMAT_NOLOGFILE:
                 return ["Domain", "Status", "Whois"];
             case self::FORMAT_LOGFILE:
-                if ($details) {
-                    return ["Domain", "Status", "Webmaster",  "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Whois"];
+                if (!$details == RAccountsLogfile::DISP_NONE) {
+                    return ["Domain", "Status", "Webmaster", "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Whois"];
                 } else {
-                    return ["Domain", "Status", "Webmaster",  "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Domain Details<br/>Whois"];
+                    return ["Domain", "Status", "Webmaster", "Web Monitor", "File size", "Date", "Server Time Diff", "Files scanned", "Total size scanned", "Latest File", "Domain Details<br/>Whois"];
                 }
             case self::FORMAT_CONTROL_FILES:
-                if ($details) {
-                    return ["Domain<br/>  Date",  ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini"];
+                if (!$details == RAccountsLogfile::DISP_NONE) {
+                    return ["Domain<br/>  Date", ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini"];
                 }
-                return ["Domain<br/>  Date",  ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini", "Details"];
+                return ["Domain<br/>  Date", ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini", "Details"];
             case self::FORMAT_FOLDERS:
                 return ["Domain<br/>  Date", "Public_html/Folders", "CMS Folder", "CMS Version"];
             case self::FORMAT_LARGESTFILES:
@@ -243,10 +244,10 @@ class RAccountsAccount {
             case self::FORMAT_AKEEBA:
                 return ["Domain<br/>  Date", "Status", "Folder", "No", "Size", "File"];
             case self::FORMAT_JOOMLA_CONFIG:
-                if ($details) {
-                    return ["Domain<br/>  Date", "Status",  "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp"];
+                if (!$details == RAccountsLogfile::DISP_NONE) {
+                    return ["Domain<br/>  Date", "Status", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp"];
                 } else {
-                    return ["Domain<br/>  Date", "Status",  "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp", "Details"];
+                    return ["Domain<br/>  Date", "Status", "Folder", "Site name", "Version", "caching", "gzip", "sef", "sef_rewrite", "sef_suffix", ".htaccess", "php.ini", ".user.ini", "Log", "Tmp", "Details"];
                 }
             case self::FORMAT_NOJOOMLA:
                 return ["Domain<br/>  Date", "Status"];

@@ -50,16 +50,30 @@ abstract class RConfCompare {
         }
         $displaydetails = $options["displaydetails"];
         $folder = $options["folder"];
-        if ($displaydetails) {
+        $link = "";
+        if ($displaydetails == RAccountsLogfile::DISP_DETAILS) {
             if ($this->result == self::DIFFERENT or $this->result == self::ADDITIONAL) {
-                $rows = min([10, max([$this->getCount1(), $this->getCount2()])]);
+                $rows = min([$this->getCount1(), $this->getCount2()]);
+                If ($rows < 4) {
+                    $rows = 4;
+                } If ($rows > 10) {
+                    $rows = 10;
+                }
                 $file = $options["file"];
                 echo "<h4>" . $folder . "/" . $file . "</h4>";
                 echo " <textarea rows='$rows' cols='80' style='width:auto;font-size: 85%;'>" . $text . "</textarea>";
                 echo " <textarea rows='$rows' cols='80' style='width:auto;font-size: 85%;'>" . $this->comparefiletext . "</textarea>";
             }
         }
-        return $this->result;
+        if ($displaydetails == RAccountsLogfile::DISP_VIEW) {
+            if ($this->result == self::SAME or $this->result == self::IDENTICAL) {
+                if ($this->comparefilename != "") {
+                    $link = " <a href='$this->comparefilename' target='_blank'>view</a>";
+                }
+            }
+        }
+
+        return $this->result . $link;
     }
 
     abstract function comparetext($text, $text2);

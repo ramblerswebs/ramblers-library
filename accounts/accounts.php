@@ -43,13 +43,13 @@ class RAccounts {
         if ($format != RAccountsAccount::FORMAT_SINGLE) { // all domains
             $this->getAccounts($sortbystatus);
             echo "<table style='font-size: 85%'>";
-            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format, false));
+            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format,  RAccountsLogfile::DISP_NONE));
             foreach ($this->dbresults as $item) :
                 $adomain = strtolower(trim($item->domain));
                 $status = $item->status;
                 $webmaster = $item->web_master;
                 $account = new RAccountsAccount($adomain, $status,$webmaster);
-                $cols = $account->getColumns($format, false);
+                $cols = $account->getColumns($format, RAccountsLogfile::DISP_NONE);
                 if ($cols <> null) {
                     echo RHtml::addTableRow($cols);
                 }
@@ -68,11 +68,11 @@ class RAccounts {
                         $status = $item->status;
                          $webmaster = $item->web_master;
                         $account = new RAccountsAccount($adomain, $status,$webmaster);
-                        $cols = $account->getColumns($format, true);
+                        $cols = $account->getColumns($format,  RAccountsLogfile::DISP_VIEW);
                         if ($cols <> null) {
                             RAccountsAccount::displayTitle($format);
                             echo "<table style='font-size: 85%'>";
-                            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format, true));
+                            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format,  RAccountsLogfile::DISP_VIEW));
                             echo RHtml::addTableRow($cols);
                             echo "</table>";
                             $account->displayDetails($format);
