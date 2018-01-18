@@ -14,7 +14,7 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
 
     private $filename;
     private $buttonClass = "button-p1815";
-    public $removeHTML = true;
+    public $removeHTML = false;
 
     public function __construct($filename = "tmp/walks-download.csv") {
         parent::__construct();
