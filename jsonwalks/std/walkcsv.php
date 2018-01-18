@@ -14,6 +14,7 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
 
     private $filename;
     private $buttonClass = "button-p1815";
+    public $removeHTML = true;
 
     public function __construct($filename = "tmp/walks-download.csv") {
         parent::__construct();
@@ -102,7 +103,11 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         $array[] = ""; //strand id
         $array[] = ""; //festival
         $array[] = ""; //festival id
-        $array[] = $walk->descriptionHtml;
+        if ($this->removeHTML) {
+            $array[] = html_entity_decode(strip_tags($walk->description));
+        } else {
+            $array[] = $walk->descriptionHtml;
+        }
         $array[] = $walk->additionalNotes;
         $array[] = $walk->pace;
         $array[] = $walk->ascentFeet;

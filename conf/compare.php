@@ -68,7 +68,7 @@ abstract class RConfCompare {
         if ($displaydetails == RAccountsLogfile::DISP_VIEW) {
             if ($this->result == self::SAME or $this->result == self::IDENTICAL) {
                 if ($this->comparefilename != "") {
-                    $link = " <a href='/$this->comparefilename' target='_blank'>view</a>";
+                    $link = " <a href='".JURI::root()  ."$this->comparefilename' target='_blank'>view</a>";
                 }
             }
         }
