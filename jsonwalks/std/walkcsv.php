@@ -15,13 +15,14 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
     private $filename;
     private $buttonClass = "button-p1815";
     public $removeHTML = false;
+    public $convertToASCII = false;
 
     public function __construct($filename = "tmp/walks-download.csv") {
         parent::__construct();
         $this->filename = $filename;
     }
 
-    function DisplayWalks($walks) {
+    public function DisplayWalks($walks) {
         $handle = fopen($this->filename, 'w'); //open file for writing 
         If ($handle === false) {
             die('Cannot open file:  ' . $this->filename);
@@ -29,14 +30,28 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
             $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
             $items = $walks->allWalks();
             $fields = $this->csvHeader();
+
             fputcsv($handle, $fields);
             foreach ($items as $walk) {
                 $fields = $this->displayWalkCSV($walk);
+                $fields = $this->convertToAscii($fields);
                 fputcsv($handle, $fields);
             }
             fclose($handle);
             $this->createButton();
         }
+    }
+
+    private function convertToAscii($values) {
+        if ($this->convertToASCII) {
+            $fields = [];
+            foreach ($values as $key => $value) {
+                //  $fields[$key] = mb_convert_encoding($value, "ASCII", "UTF-8");
+                $fields[$key] = iconv("UTF-8", "ASCII//IGNORE", $value);
+            }
+            return $fields;
+        }
+        return $values;
     }
 
     private function displayWalkCSV($walk) {
