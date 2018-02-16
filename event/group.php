@@ -33,13 +33,12 @@ class REventGroup {
         }
     }
 
-    public function addWalksArray($arrayofwalks)
-    {
+    public function addWalksArray($arrayofwalks) {
         foreach ($arrayofwalks as $walk) {
             $this->arrayofevents[] = $walk;
         }
     }
-    
+
     public function getEvents() {
         return $this->arrayofevents;
     }

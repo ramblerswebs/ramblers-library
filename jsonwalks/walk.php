@@ -323,16 +323,21 @@ class RJsonwalksWalk extends REvent {
             $time = $this->getFirstTime();
             if ($time <> null) {
                 $icsfile->addRecord("DTSTART;VALUE=DATE-TIME:" . $time->format('Ymd\THis'));
-            }
-            $time = $this->getFinishTime();
-            if ($time <> null) {
-                $icsfile->addRecord("DTEND;VALUE=DATE-TIME:" . $time->format('Ymd\THis'));
+                $time = $this->getFinishTime();
+                if ($time <> null) {
+                    $icsfile->addRecord("DTEND;VALUE=DATE-TIME:" . $time->format('Ymd\THis'));
+                }
+            } else {
+                $icsfile->addRecord("DTSTART;VALUE=DATE:" . $this->walkDate->format('Ymd'));
             }
         }
     }
 
     private function getFirstTime() {
         $starttime = RJsonwalksLocation::firstTime($this->meetLocation, $this->startLocation);
+        if ($starttime == "") {
+            $starttime = null;
+        }
         return $starttime;
     }
 
