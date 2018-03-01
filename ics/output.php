@@ -24,27 +24,23 @@ class RIcsOutput {
     }
 
     public function addRecord($command, $content = "", $html = false) {
+        $text = mb_convert_encoding($content, "UTF-8");
+        $text = $this->escapeString($text);
         if ($html) {
             $before = "<!DOCTYPE html><html><head><title></title></head><body>";
             $after = "</body></html>";
-            $content = str_replace("\\n", "<br/>", $content);
-            $lines = str_split($command . htmlentities($before) . htmlentities($content) . htmlentities($after), 73);
+            $text = str_replace("\\n", "<br/>", $text);
+            $lines = $this->chunk_split_unicode($command . $before . $text . $after, 73);
         } else {
-            $content = str_replace("&nbsp;", " ", $content);
-            $content = str_replace("<p>", "", $content);
-            $content = str_replace("</p>", "\\n", $content);
-            $content = str_replace("&ndash;", "-", $content);
-            $content = strip_tags($content);
-            $content = html_entity_decode($content, ENT_QUOTES | ENT_HTML5);
-            $lines = str_split($command . $content, 73);
+            $text = str_replace("&nbsp;", " ", $text);
+            $text = str_replace("<p>", "", $text);
+            $text = str_replace("</p>", "\\n", $text);
+            $text = str_replace("&ndash;", "-", $text);
+            $text = strip_tags($text);
+            $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
+            $lines = $this->chunk_split_unicode($command . $text, 73);
         }
-        $blank = "";
-        foreach ($lines as $line) {
-            if (trim($line) <> "") {
-                $this->isc.=$blank . $line . "\r\n";
-                $blank = " ";
-            }
-        }
+        $this->isc.= $lines;
     }
 
     // Escapes a string of characters
@@ -63,6 +59,18 @@ class RIcsOutput {
     private function addHeader() {
         $this->isc = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nMETHOD:PUBLISH\r\n";
         $this->isc.= "PRODID:ramblers-webs v1.1\r\n";
+    }
+
+    private function chunk_split_unicode($str, $l = 73, $e = "\r\n") {
+        $tmp = array_chunk(
+                preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY), $l);
+        $str = "";
+        $blank = "";
+        foreach ($tmp as $t) {
+            $str .= $blank . join("", $t) . $e;
+            $blank = " ";
+        }
+        return $str;
     }
 
     function __destruct() {

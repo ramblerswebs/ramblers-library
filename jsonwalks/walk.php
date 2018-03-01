@@ -291,29 +291,34 @@ class RJsonwalksWalk extends REvent {
         $now = new datetime();
         $icsfile->addRecord("BEGIN:VEVENT");
         $this->addIcsTimes($icsfile);
-        $icsfile->addRecord("LOCATION:", RIcsOutput::escapeString($startLocation));
+        $icsfile->addRecord("LOCATION:", $startLocation);
         $icsfile->addRecord("TRANSP:OPAQUE");
         $icsfile->addSequence($this->dateUpdated);
         $icsfile->addRecord("UID: walk" . $this->id . "-isc@ramblers-webs.org.uk");
         $icsfile->addRecord("ORGANIZER;CN=" . $this->groupName . ":mailto:ignore@ramblers-webs.org.uk");
         if ($this->isCancelled()) {
             $icsfile->addRecord("METHOD:CANCEL");
-            $icsfile->addRecord("SUMMARY: CANCELLED ", RIcsOutput::escapeString($summary));
-            $icsfile->addRecord("DESCRIPTION: CANCELLED - REASON: ", RIcsOutput::escapeString(RHtml::convertToText($this->cancellationReason)) . " (" . RIcsOutput::escapeString($this->description) . ")");
+            $icsfile->addRecord("SUMMARY: CANCELLED ", RHtml::convertToText($summary));
+            $icsfile->addRecord("DESCRIPTION: CANCELLED - REASON: ", RHtml::convertToText($this->cancellationReason) . " (" . $this->description . ")");
         } else {
-            $icsfile->addRecord("SUMMARY:", RIcsOutput::escapeString($summary));
-            $icsfile->addRecord("DESCRIPTION:", RIcsOutput::escapeString($before . $this->description . $after));
+            $icsfile->addRecord("SUMMARY:", RHtml::convertToText($summary));
+            $icsfile->addRecord("DESCRIPTION:", $before . $this->description . $after);
             $icsfile->addRecord("X-ALT-DESC;FMTTYPE=text/html:", $before . $this->descriptionHtml . $after, true);
         }
-        $icsfile->addRecord("CATEGORIES:", "Walk," . RIcsOutput::escapeString($this->groupName));
-        $icsfile->addRecord("DTSTAMP;VALUE=DATE-TIME:", $now->format('Ymd\THis'));
-        $icsfile->addRecord("CREATED;VALUE=DATE-TIME:", $this->dateCreated->format('Ymd\THis'));
-        $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:", $this->dateUpdated->format('Ymd\THis'));
+        $icsfile->addRecord("CATEGORIES:", "Walk," . $this->groupName);
+        $icsfile->addRecord("DTSTAMP;VALUE=DATE-TIME:", $this->dateTimetoUTC($now));
+        $icsfile->addRecord("CREATED;VALUE=DATE-TIME:", $this->dateTimetoUTC($this->dateCreated));
+        $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:", $this->dateTimetoUTC($this->dateUpdated));
         $icsfile->addRecord("PRIORITY:1");
-        $icsfile->addRecord("URL;VALUE=URI:", RIcsOutput::escapeString($this->detailsPageUrl));
+        $icsfile->addRecord("URL;VALUE=URI:", $this->detailsPageUrl);
         $icsfile->addRecord("CLASS:PUBLIC");
         $icsfile->addRecord("END:VEVENT");
         return;
+    }
+    private function dateTimetoUTC($date){    
+        $utcdate=new DateTime($date->format('Ymd His'));
+        $utcdate->setTimezone(new DateTimeZone('UTC'));
+        return $utcdate->format('Ymd\THis\Z');
     }
 
     private function addIcsTimes($icsfile) {
