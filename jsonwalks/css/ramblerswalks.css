@@ -83,7 +83,7 @@ span.walksummary img:hover{
 .walkNew.printon {
     background:none;
     padding-left: 0px;;
-    
+
 }
 .walkNew {
     padding-left: 35px;
@@ -273,7 +273,7 @@ div.groupA,div.groupG,div.groupS {
     position: absolute;
     z-index: 1;
     bottom: 100%;
-   
+
 }
 
 .ntooltip:hover .ntooltiptext {
@@ -451,8 +451,7 @@ table.gradeTable  div.Technical  {
 
 div.nextWalksWithGrade{
     min-height: 30px;
-    float: left;
-    clear: both;
+    display: block;
     line-height: 1.2em;
 }
 div.nextWalksWithGrade img{
