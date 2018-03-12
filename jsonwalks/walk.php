@@ -156,6 +156,48 @@ class RJsonwalksWalk extends REvent {
         }
     }
 
+    public function getEmail($option, $withtitle = false) {
+        if ($withtitle) {
+            switch ($option) {
+                case 1:
+                    return "<b>Email: </b>" . $this->email;
+                    break;
+                case 2:
+                    $printOn = JRequest::getVar('print') == 1;
+                    $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
+                    return RHtml::withDiv("email", "<b>Email: </b><a href='" . $link . $this->id . "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
+                case 3:
+                    return "";
+                    break;
+                case 4:
+                    return "<b>Email: </b>" . str_replace("@", " (at) ", $this->email);
+                    break;
+                default:
+                    return "Invalid option specified for \$display->emailDisplayFormat";
+                    break;
+            }
+        } else {
+            switch ($option) {
+                case 1:
+                    return $this->email;
+                    break;
+                case 2:
+                    $printOn = JRequest::getVar('print') == 1;
+                    $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
+                    return "<a href='" . $link . $this->id . "' target='_blank'>Email contact via ramblers.org.uk</a>";
+                    break;
+                case 3:
+                    return "";
+                    break;
+                case 4:
+                    return str_replace("@", " (at) ", $this->email);
+                    break;
+                default:
+                    return "Invalid option specified for \$display->emailDisplayFormat";
+            }
+        }
+    }
+
     public function getValue($type) {
         switch ($type) {
             case self::SORT_CONTACT :
@@ -315,8 +357,9 @@ class RJsonwalksWalk extends REvent {
         $icsfile->addRecord("END:VEVENT");
         return;
     }
-    private function dateTimetoUTC($date){    
-        $utcdate=new DateTime($date->format('Ymd His'));
+
+    private function dateTimetoUTC($date) {
+        $utcdate = new DateTime($date->format('Ymd His'));
         $utcdate->setTimezone(new DateTimeZone('UTC'));
         return $utcdate->format('Ymd\THis\Z');
     }

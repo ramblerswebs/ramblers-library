@@ -35,7 +35,7 @@ class RJsonwalksStdLeaderstable extends RJsonwalksDisplaybase {
                 $value.=" ," . $walk->email;
             }
             if ($value <> $last) {
-                echo RHtml::addTableRow(array($walk->contactName, $walk->email, $walk->telephone1, $walk->telephone2));
+                echo RHtml::addTableRow(array($walk->contactName, $walk->getEmail($this->emailDisplayFormat), $walk->telephone1, $walk->telephone2));
                 $last = $value;
             }
         }

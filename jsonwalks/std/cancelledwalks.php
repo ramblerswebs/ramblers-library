@@ -14,7 +14,7 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
     private $walkClass = "cancelledWalk";
     Public $message = "<h3>Sorry - the following walk(s) have been cancelled</h3>";
 
-    function DisplayWalks($walks) {
+    public function DisplayWalks($walks) {
 
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
@@ -30,11 +30,11 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
         }
     }
 
-    function setWalksClass($class) {
+    public function setWalksClass($class) {
         $this->walksClass = $class;
     }
 
-    function setWalkClass($class) {
+    public function setWalkClass($class) {
         $this->walkClass = $class;
     }
 

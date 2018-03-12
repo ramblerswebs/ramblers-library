@@ -23,7 +23,7 @@ class RJsonwalksStdListleaders extends RJsonwalksDisplaybase {
                 $value.=" ," . $walk->telephone2;
             }
             if (!$walk->email == NULL) {
-                $value.=" ," . $walk->email;
+                $value.=" ," . $walk->getEmail($this->emailDisplayFormat);
             }
             if ($value <> $last) {
                 echo "<li>" . $value . "</li>" . PHP_EOL;

@@ -18,6 +18,12 @@ abstract class RJsonwalksDisplaybase {
     protected $printOn = false;
     public $displayGradesIcon = true;
     public $displayGradesSidebar = true;
+    public $emailDisplayFormat = 1;
+
+    // 1 display mailto link to contact, Obfuscated to prevent harvesting by bots and spammers, without visible changes to the address for human visitors.
+    // 2 link to ramblers.org.uk form to email contact 
+    // 3 do not display
+    // 4 display as name (at) domain
 
     abstract protected function DisplayWalks($walks);
 

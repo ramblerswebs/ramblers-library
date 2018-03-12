@@ -144,8 +144,23 @@ class RJsonwalksFeed {
         $this->walks->noWalks($no);
     }
 
+    public function numberWalks() {
+        return count($this->walks->allWalks());
+    }
+
     public function walksInFuture($period) {
         $this->walks->walksInFuture($period);
+    }
+
+    public function noCancelledWalks() {
+        $number = 0;
+        $items = $this->walks->allWalks();
+        foreach ($items as $walk) {
+            if ($walk->isCancelled()) {
+                $number+=1;
+            }
+        }
+        return $number;
     }
 
     public function display($displayclass) {

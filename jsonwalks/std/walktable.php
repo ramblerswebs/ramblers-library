@@ -115,7 +115,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $contact .= self::BR . "<strong>" . $walk->contactName . "</strong>";
         }
         if ($walk->email <> "") {
-            $contact .= self::BR . $walk->email;
+            $contact .= self::BR . $walk->getEmail($this->emailDisplayFormat);
         }
         if ($walk->telephone1 <> "") {
             $contact .= self::BR . $walk->telephone1;
