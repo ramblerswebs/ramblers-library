@@ -16,7 +16,7 @@ class RLeafletGpxMapget extends RLeafletGpxMap {
 
     public function displayPath($name = "") {
         $opts = new RLeafletGpxMap();
-        $gpxname = $_GET['gpx'];
+        $gpxname = $_GET['filter'];
         if ($this->folder != "") {
             $gpx = $this->folder . "/" . $gpxname . ".gpx";
         } else {

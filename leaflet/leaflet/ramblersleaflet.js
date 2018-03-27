@@ -24,8 +24,10 @@ function RamblersLeafletMap(base) {
         mouseposition: true,
         postcodes: true,
         fitbounds: true};
+    this.gpxelevation = null;
+    this.gpx = null;
 }
-;
+
 function raLoadLeaflet() {
     if (ramblersMap.options.fullscreen) {
         ramblersMap.map = new L.Map("leafletmap", {
@@ -155,8 +157,17 @@ function raLoadLeaflet() {
     // Zoom control
     L.control.scale().addTo(ramblersMap.map);
 }
-;
+
 function displayGPX(ramblersMap, file, linecolour, imperial) {
+    // remove old gpx route
+      if (ramblersMap.gpxelevation !== null) {
+        ramblersMap.gpxelevation.remove();
+        ramblersMap.gpxelevation = null;
+    }
+    if (ramblersMap.gpx !== null) {
+        ramblersMap.gpx.remove();
+        ramblersMap.gpx = null;
+    }
     var el = L.control.elevation({
         position: "topright",
         theme: "steelblue-theme", //default: lime-theme
@@ -195,6 +206,8 @@ function displayGPX(ramblersMap, file, linecolour, imperial) {
         ramblersMap.map.fitBounds(e.target.getBounds());
     });
     g.addTo(ramblersMap.map);
+    ramblersMap.gpxelevation = el;
+    ramblersMap.gpx = g;
 }
 
 function updateClusterProgressBar(processed, total, elapsed) {
@@ -698,3 +711,18 @@ L.control.fullscreen = function (options) {
     return new L.Control.Fullscreen(options);
 };
 // end of leaflet full screen support
+
+// Tab control
+function ra_tab(evt, cityName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("ra_tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("ra_tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+}

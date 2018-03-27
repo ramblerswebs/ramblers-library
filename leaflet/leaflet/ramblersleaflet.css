@@ -78,3 +78,38 @@ div#rt-header {
     left: 50%;
     z-index:2000;
 }
+.gpxlist {
+    background-color: #EEEEEE;
+    border-width: 0.5px;
+    border-style: solid;
+    border-color: #782327;
+    column-rule-style: solid;
+    column-rule-width: 0.5px;
+    column-rule-color:#782327;
+    -webkit-column-count: 3; /* Chrome, Safari, Opera */
+    -moz-column-count: 3; /* Firefox */
+    column-count: 3;
+    -webkit-column-width: 100px; /* Chrome, Safari, Opera */
+    -moz-column-width: 100px; /* Firefox */
+    column-width: 100px;
+}
+@media only screen and (min-width: 1024px) and (max-width: 1320px) {
+    .gpxlist {
+        -webkit-column-count: 2; /* Chrome, Safari, Opera */
+        -moz-column-count: 2; /* Firefox */
+        column-count: 2;
+        -webkit-column-width: 100px; /* Chrome, Safari, Opera */
+        -moz-column-width: 100px; /* Firefox */
+        column-width: 100px;
+    }
+}
+@media only screen and (max-width: 1023px) {
+    .gpxlist {
+        -webkit-column-count: 1; /* Chrome, Safari, Opera */
+        -moz-column-count: 1; /* Firefox */
+        column-count: 1;
+        -webkit-column-width: 100px; /* Chrome, Safari, Opera */
+        -moz-column-width: 100px; /* Firefox */
+        column-width: 100px;
+    }
+}
