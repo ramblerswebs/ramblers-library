@@ -25,7 +25,7 @@ class RGpxFile {
 
     private function parse() {
         if (!$this->registered) {
-            JLoader::registerNamespace('phpGPX', "ramblers\\gpx");
+            JLoader::registerNamespace('phpGPX', "ramblers/gpx");
             $this->registered = true;
             require_once 'phpGPX/phpGPX.php';
         }

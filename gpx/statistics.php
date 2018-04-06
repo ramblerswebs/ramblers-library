@@ -17,7 +17,7 @@ class RGpxStatistics {
         if (!file_exists($folder)) {
             $text = "Folder does not exist: " . $folder . ". Unable to list contents";
             JFactory::getApplication()->enqueueMessage($text);
-            echo "<b>Not able to list contents of folder" . $folder . "<b>";
+            echo "<b>Not able to list contents of folder: " . $folder . "<b>";
             return;
         }
         $lastModFile = $this->latestFile();
@@ -88,6 +88,12 @@ class RGpxStatistics {
             $desc = strip_tags($desc, '<br><br/>');
         }
         return $desc;
+    }
+    private function getTitlefromName($file){
+        $title=substr($file,0,-4);
+        $title=  str_replace("_","", $title);
+        $title=  str_replace("-",", ", $title);
+        return $title;
     }
 
     private function endsWith($haystack, $needle) {
