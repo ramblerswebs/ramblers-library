@@ -91,7 +91,7 @@ class RGpxStatistics {
     }
     private function getTitlefromName($file){
         $title=substr($file,0,-4);
-        $title=  str_replace("_","", $title);
+        $title=  str_replace("_"," ", $title);
         $title=  str_replace("-",", ", $title);
         return $title;
     }
