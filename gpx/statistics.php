@@ -72,9 +72,15 @@ class RGpxStatistics {
         $stat->longitude = $gpx->longitude;
         $stat->latitude = $gpx->latitude;
         $stat->distance = $gpx->distance;
-        $stat->cumulativeElevationGain = $gpx->cumulativeElevationGain;
-        $stat->minAltitude = $gpx->minAltitude;
-        $stat->maxAltitude = $gpx->maxAltitude;
+        if ($gpx->cumulativeElevationGain!==null){
+             $stat->cumulativeElevationGain = $gpx->cumulativeElevationGain;
+        }
+        if ($gpx->minAltitude!==null){
+             $stat->minAltitude = $gpx->minAltitude;
+        }
+         if ($gpx->maxAltitude!==null){
+             $stat->maxAltitude = $gpx->maxAltitude;
+        }
         $stat->tracks = $gpx->tracks;
         $stat->routes = $gpx->routes;
         return $stat;
