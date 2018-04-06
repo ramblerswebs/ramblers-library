@@ -6,128 +6,114 @@
  *
  * @author Chris Vaughan
  */
-class RLeafletGpxMaplist extends RLeafletGpxMap {
+class RLeafletGpxMaplist extends RLeafletMap {
 
+    public $linecolour = "#782327";
+    public $imperial = false;
     Public $folder = "images";
+    public $addDownloadLink = "Users"; // "None" - no link, "Users" - users link, "Public" - guest link
+    public $descriptions = true; // set false if NO description files are to be supplied
 
     public function __construct() {
         parent::__construct();
     }
 
-    public function displayPath($name = "") {
-        $opts = new RLeafletGpxMap();
-        $list = new dirList([".gpx"]);
-        $list->listItems($this->folder);
-        $gpx = $list->first;
-        $this->addScripts();
-        if ($list->first == null) {
-            $text = "No GPX file found in folder: " . $folder;
-            JFactory::getApplication()->enqueueMessage($text);
-            echo "<b>No GPX file found in folder: " . $folder . " <b>";
+    public function display() {
+        $document = JFactory::getDocument();
+        $document->addScript("ramblers/leaflet/gpx/maplist.js", "text/javascript");
+        // get all names from folder
+        $stats = new RGpxStatistics($this->folder);
+        $items = $stats->getJson();
+        $this->addMapScript($items);
+        $this->options->cluster = true;
+        $this->addElevation = true;
+        if ($this->imperial) {
+            $imperial = "true";
         } else {
-            echo "<h2 id=\"gpxtitle\" >$list->firsttitle</h2>";
-            parent::displayPath($gpx);
-            echo "</div>";
+            $imperial = "false";
         }
+
+        echo "<div class=\"tab\">";
+        echo "<button class=\"tablinks active\" onclick=\"openTab(event, 'tabRouteList')\">Walking Routes</button>";
+        if ($this->descriptions) {
+            echo "<button class=\"tablinks\" onclick=\"openTab(event, 'tabDescriptions')\">Descriptions</button>";
+        }
+        echo "<button class=\"tablinks\" onclick=\"openTab(event, 'tabRouteDetails')\">Route Details</button>";
+        echo "<form id=\"searchform\" ACTION=\"\"\ onsubmit=\"return gpxsearch()\">
+              <input name=\"titlesearch\" id=\"gpxtitlesearch\" maxlength=\"200\" class=\"inputbox search-query input-medium\" size=\"20\" placeholder=\"Search\" type=\"search\">
+         </form>";
+        echo "</div>";
+        echo "<div id=\"tabRouteList\" class=\"tabcontent\"  style=\"display:block\">Error</div>";
+        if ($this->descriptions) {
+            echo "<div id=\"tabDescriptions\" class=\"tabcontent\" >Webmaster: Add text files to display descriptions of each route</div>";
+        }
+        echo "<div id=\"tabRouteDetails\" class=\"tabcontent\">Error</div>";
+        echo "<p> </p>";
+        echo "<div id = \"gpxheader\" ><h4>Click on any walk to display route</h4></div>";
+
+        $text = " 
+                ramblersGpx=new RamblersLeafletGpx();
+                ramblersGpx.gpxdownload=" . $this->downloadState() . ";
+                ramblersGpx.gpxfolder= \"" . $this->folder . "\";
+                addRoutes();
+                displayGPXNames();
+                displayGPXTable();
+                addGPXMarkers();";
+        if ($this->descriptions) {
+            $text .="ramblersGpx.description='true';";
+            $text .="displayGPXDescriptions();";
+        } else {
+            $text .="ramblersGpx.description='false';";
+        }
+        parent::addContent($text);
+        parent::display();
+        echo "<br/>";
     }
 
-    private function addScripts() {
+    private function addMapScript($items) {
+        $script = "function addRoutes() {"
+                . "ramblersGpx.gpxroutes=" . $items . ";}";
 
         $document = JFactory::getDocument();
-        $out = "function updateGPX(ramblersMap,path,title) { document.getElementById('gpxtitle').innerText = title; displayGPX(ramblersMap, path, \"$this->linecolour\",$this->imperial); }";
-        $document->addScriptDeclaration($out, "text/javascript");
+        $document->addScriptDeclaration($script, "text/javascript");
     }
 
-}
-
-class dirList {
-
-    protected $handle;
-    private $names;
-    private $fileTypes;
-    public $first = null;
-    public $firsttitle;
-    public $columns = 3;
-
-    const ASC = 1;
-    const DESC = 2;
-
-    public function __construct($fileTypes) {
-        $this->fileTypes = $fileTypes;
+    private function loggedon() {
+        $user = JFactory::getUser(); //gets user object
+        If ($user != null) {
+            return $user->id != 0;
+        }
+        return false;
     }
 
-    public function listItems($folder, $sort = self::ASC) {
-        echo "<div class='gpxlist'>";
-        $this->names = array();
-        if (!file_exists($folder)) {
-            $text = "Folder does not exist: " . $folder . ". Unable to list contents";
-            JFactory::getApplication()->enqueueMessage($text);
-            echo "<b>Not able to list contents of folder<b>";
-            return;
-        }
-        if ($handle = opendir($folder)) {
-            while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != "..") {
-                    if (is_dir($entry)) {
-                        
-                    } else {
-                        $this->names[] = $entry;
-                    }
-                }
-            }
-            closedir($handle);
-        }
-        if ($sort == self::ASC) {
-            asort($this->names);
-        }
-        if ($sort == self::DESC) {
-            arsort($this->names);
-        }
-        $no = 0;
-        foreach ($this->names as $value) {
-            foreach ($this->fileTypes as $type) {
-                if ($this->endsWith($value, $type)) {
-                    $no+=1;
-                }
+    private function hasDescriptions($items) {
+        return true;
+        foreach ($items as $item) {
+            if ($item->description !== '') {
+                return true;
             }
         }
-        $no = $no / $this->columns;
-        echo "<ul>";
-        $i = 0;
-        foreach ($this->names as $value) {
-            foreach ($this->fileTypes as $type) {
-                if ($this->endsWith($value, $type)) {
-                    $i+=1;
-                    $desc = "";
-                    $descfile = $folder . "/" . $value . ".text";
-                    if (file_exists($descfile)) {
-                        $desc = " - " . file_get_contents($descfile);
-                        $desc = strip_tags($desc, '<b><i><br><br/>');
-                    }
-                    $text = $value;
-                    $text = str_replace("-", " ", $text);
-                    $text = str_replace("_", " ", $text);
-                    $text = substr($text, 0, -4);
-                    $path = $folder . "/" . $value;
-                    if ($this->first == null) {
-                        $this->first = $path;
-                        $this->firsttitle = $text;
-                    }
-                    //  echo "<a href='" . JURI::base() . $path . "' target='_blank'>" . $text . "</a>" . $desc . "";
-                    echo "<li><a href=\"javascript:updateGPX(ramblersMap, '$path','$text');\">$text</a>$desc</li>\n";
-                    if ($i > $no) {
-                        $i = 0;
-                     //   echo "</ul></div><div class='gpxlist'><ul>";
-                    }
-                }
-            }
-        }
-        echo "</ul></div>";
+        return false;
     }
 
-    private function endsWith($haystack, $needle) {
-        // search forward starting from end minus needle length characters
-        return $needle === "" || strpos($haystack, $needle, strlen($haystack) - strlen($needle)) !== FALSE;
+    private function downloadState() {
+        $state = 0; // no download link
+        switch ($this->addDownloadLink) {
+            case "Users":
+            case 1:
+                If ($this->loggedon()) {
+                    $state = 2; // display link
+                } else {
+                    $state = 1; // need to be logged on
+                }
+                break;
+            case "Public" :
+            case 2:
+                $state = 2;  // display link
+            default:
+                break;
+        }
+        return $state;
     }
 
 }

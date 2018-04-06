@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * Description of statistic
+ *
+ * @author Chris Vaughan
+ */
+class RGpxStatistic {
+
+    private static $lastId = 0;
+    Public $id = 0;
+    public $filename = '';
+    public $title = '';
+    public $description = '';
+    public $longitude = 0;
+    public $latitude = 0;
+    public $distance = 0;
+    public $cumulativeElevationGain = 0;
+    public $minAltitude = 0;
+    public $maxAltitude = 0;
+    public $tracks = 0;
+    public $routes = 0;
+
+    public function __construct() {
+        $this->id = self::$lastId;
+        self::$lastId +=1;
+    }
+
+}

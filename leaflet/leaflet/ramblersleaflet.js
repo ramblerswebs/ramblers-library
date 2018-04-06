@@ -24,8 +24,6 @@ function RamblersLeafletMap(base) {
         mouseposition: true,
         postcodes: true,
         fitbounds: true};
-    this.gpxelevation = null;
-    this.gpx = null;
 }
 
 function raLoadLeaflet() {
@@ -103,7 +101,7 @@ function raLoadLeaflet() {
         osgrid = L.layerGroup([]);
         osMapGrid(L, osgrid);
         var overlayMaps = {
-            "OS 100Km Grid": osgrid
+            "OS 100km Grid": osgrid
         };
         osgrid.addTo(ramblersMap.map);
     }
@@ -158,57 +156,6 @@ function raLoadLeaflet() {
     L.control.scale().addTo(ramblersMap.map);
 }
 
-function displayGPX(ramblersMap, file, linecolour, imperial) {
-    // remove old gpx route
-      if (ramblersMap.gpxelevation !== null) {
-        ramblersMap.gpxelevation.remove();
-        ramblersMap.gpxelevation = null;
-    }
-    if (ramblersMap.gpx !== null) {
-        ramblersMap.gpx.remove();
-        ramblersMap.gpx = null;
-    }
-    var el = L.control.elevation({
-        position: "topright",
-        theme: "steelblue-theme", //default: lime-theme
-        width: 600,
-        height: 125,
-        margins: {
-            top: 10,
-            right: 20,
-            bottom: 30,
-            left: 50
-        },
-        useHeightIndicator: true, //if false a marker is drawn at map position
-        interpolation: "linear", //see https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-area_interpolate
-        hoverNumber: {
-            decimalsX: 1, //decimals on distance (always in km)
-            decimalsY: 0, //deciamls on hehttps://www.npmjs.com/package/leaflet.coordinatesight (always in m)
-            formatter: undefined //custom formatter function may be injected
-        },
-        xTicks: undefined, //number of ticks in x axis, calculated by default according to width
-        yTicks: undefined, //number of ticks on y axis, calculated by default according to height
-        collapsed: true, //collapsed mode, show chart on click or mouseover
-        imperial: imperial    //display imperial units instead of metric
-    });
-    el.addTo(ramblersMap.map);
-    var g = new L.GPX(ramblersMap.base + file, {async: true,
-        polyline_options: {color: linecolour},
-        marker_options: {
-            startIconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-start.png',
-            endIconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-end.png',
-            shadowUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-shadow.png'
-        }});
-    g.on('addline', function (e) {
-        el.addData(e.line);
-    });
-    g.on('loaded', function (e) {
-        ramblersMap.map.fitBounds(e.target.getBounds());
-    });
-    g.addTo(ramblersMap.map);
-    ramblersMap.gpxelevation = el;
-    ramblersMap.gpx = g;
-}
 
 function updateClusterProgressBar(processed, total, elapsed) {
     if (elapsed > 1000) {
@@ -223,6 +170,11 @@ function updateClusterProgressBar(processed, total, elapsed) {
 }
 
 function createWalkMarkers(base) {
+    markerRoute = L.icon({
+        iconUrl: base + "ramblers/images/marker-route.png",
+        iconSize: [33, 50],
+        iconAnchor: [16, 45]
+    });
     markerStart = L.icon({
         iconUrl: base + "ramblers/images/marker-start.png",
         iconSize: [35, 35]
@@ -324,7 +276,7 @@ function addMarkerToLayer($layer, $popup, $lat, $long, $icon) {
 function addPlace($gr, $no, $lat, $long, $icon)
 {
     var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long});
-    if ($gr.length == 8) {
+    if ($gr.length === 8) {
         $grdisp = $gr.substr(0, 2) + " " + $gr.substr(2, 3) + " " + $gr.substr(5, 3);
     } else {
         $grdisp = $gr;
@@ -411,7 +363,7 @@ function displayPostcodes(e) {
                     point.getPopup().setContent(msg);
                 } else {
                     if (items.length === 0) {
-                        closest = "No postcodes found within 10Km";
+                        closest = "No postcodes found within 10km";
                         point.getPopup().setContent(closest);
                     } else {
                         for (i = 0; i < items.length; i++) {
@@ -712,17 +664,13 @@ L.control.fullscreen = function (options) {
 };
 // end of leaflet full screen support
 
-// Tab control
-function ra_tab(evt, cityName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("ra_tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("ra_tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(cityName).style.display = "block";
-    evt.currentTarget.className += " active";
+function removeClusterMarkers() {
+    ramblersMap.markersCG.removeLayers(ramblersMap.markerList);
+    ramblersMap.markerList = [];
+    //     ramblersMap.markersCG.addLayers(ramblersMap.markerList);
+}
+function addClusterMarkers() {
+    ramblersMap.markersCG.addLayers(ramblersMap.markerList);
+    var bounds = getBounds(ramblersMap.markerList);
+    ramblersMap.map.fitBounds(bounds);
 }

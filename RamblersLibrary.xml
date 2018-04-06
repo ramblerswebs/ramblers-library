@@ -2,7 +2,7 @@
 <extension type="file"  version="3.0" client="site" method="upgrade">
     <name>RamblersLibrary</name>
     <author>Chris Vaughan Derby and South Derbyshire</author>
-    <creationDate>12 March 2018</creationDate>
+    <creationDate>6 April 2018</creationDate>
     <copyright>Copyright (C) 2016/2018</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
@@ -23,6 +23,13 @@
             <folder>event</folder>
             <folder>feedhelper</folder>
             <folder>geometry</folder>
+            <folder>gpx</folder>
+            <folder>gpx/phpGPX</folder>
+            <folder>gpx/phpGPX/Helpers</folder>
+            <folder>gpx/phpGPX/Models</folder>
+            <folder>gpx/phpGPX/Models/Extensions</folder>
+            <folder>gpx/phpGPX/Parsers</folder>
+            <folder>gpx/phpGPX/Parsers/Extensions</folder>
             <folder>html</folder>
             <folder>ics</folder>
             <folder>images</folder>
@@ -40,6 +47,7 @@
             <folder>leaflet/geodesy</folder>
             <folder>leaflet/google</folder>
             <folder>leaflet/gpx</folder>
+            <folder>leaflet/gpx/images</folder>
             <folder>leaflet/images</folder>
             <folder>leaflet/leaflet</folder>
             <folder>leaflet/locationsearch</folder>
