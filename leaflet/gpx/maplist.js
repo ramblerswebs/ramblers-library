@@ -244,8 +244,8 @@ function getGPXdownloadLink(route) {
         link = "*";
     }
     if (ramblersGpx.gpxdownload === 2) {
-        path = ramblersGpx.gpxfolder + "/" + route.filename;
-        link = "<a href='/" + path + "'><img  alt='gpx' src='/ramblers/images/orange-gpx-32.png' width='20' height='20'></a>";
+        path = ramblersMap.base + ramblersGpx.gpxfolder + "/" + route.filename;
+        link = "<a href='" + path + "'><img  alt='gpx' src='" + ramblersMap.base + "ramblers/images/orange-gpx-32.png' width='20' height='20'></a>";
     }
     return link;
 }

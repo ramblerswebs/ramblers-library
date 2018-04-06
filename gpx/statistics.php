@@ -10,7 +10,7 @@ class RGpxStatistics {
     private $folder;
     private $jsonfile;
 
-    CONST JSONFILE = "gpx_statistics_file.json";
+    CONST JSONFILE = "0000gpx_statistics_file.json";
 
     public function __construct($folder) {
         $this->folder = $folder;

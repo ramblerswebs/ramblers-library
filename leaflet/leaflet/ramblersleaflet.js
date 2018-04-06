@@ -171,39 +171,39 @@ function updateClusterProgressBar(processed, total, elapsed) {
 
 function createWalkMarkers(base) {
     markerRoute = L.icon({
-        iconUrl: base + "ramblers/images/marker-route.png",
+        iconUrl: ramblersMap.base + "ramblers/images/marker-route.png",
         iconSize: [33, 50],
         iconAnchor: [16, 45]
     });
     markerStart = L.icon({
-        iconUrl: base + "ramblers/images/marker-start.png",
+        iconUrl: ramblersMap.base + "ramblers/images/marker-start.png",
         iconSize: [35, 35]
     });
     markerArea = L.icon({
-        iconUrl: base + "ramblers/images/marker-area.png",
+        iconUrl: ramblersMap.base + "ramblers/images/marker-area.png",
         iconSize: [35, 35]
     });
     markerCancelled = L.icon({
-        iconUrl: base + "ramblers/images/marker-cancelled.png",
+        iconUrl: ramblersMap.base + "ramblers/images/marker-cancelled.png",
         iconSize: [35, 35]
     });
     walkingarea = L.icon({
-        iconUrl: base + "ramblers/images/area.png",
+        iconUrl: ramblersMap.base + "ramblers/images/area.png",
         iconSize: [40, 35]
     });
     walkinggroup = L.icon({
-        iconUrl: base + "ramblers/images/group.png",
+        iconUrl: ramblersMap.base + "ramblers/images/group.png",
         iconSize: [40, 35]
     });
     walkingspecial = L.icon({
-        iconUrl: base + "ramblers/images/specialgroup.png",
+        iconUrl: ramblersMap.base + "ramblers/images/specialgroup.png",
         iconSize: [40, 35]
     });
 }
 function createMouseMarkers(base) {
 // add marker and layer group to contain postcode markers
     postcodeIcon = L.icon({
-        iconUrl: base + 'ramblers/leaflet/images/postcode-icon.png',
+        iconUrl: ramblersMap.base + 'ramblers/leaflet/images/postcode-icon.png',
         iconSize: [24, 18], // size of the icon
         shadowSize: [26, 20], // size of the shadow
         iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
@@ -211,7 +211,7 @@ function createMouseMarkers(base) {
         popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
     });
     postcodeIconClosest = L.icon({
-        iconUrl: base + 'ramblers/leaflet/images/postcode-icon-closest.png',
+        iconUrl: ramblersMap.base + 'ramblers/leaflet/images/postcode-icon-closest.png',
         iconSize: [24, 18], // size of the icon
         shadowSize: [26, 20], // size of the shadow
         iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
@@ -219,7 +219,7 @@ function createMouseMarkers(base) {
         popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
     });
     redmarkericon = L.icon({
-        iconUrl: base + 'ramblers/leaflet/images/redmarker.png',
+        iconUrl: ramblersMap.base + 'ramblers/leaflet/images/redmarker.png',
         iconSize: [32, 32], // size of the icon
         shadowSize: [26, 20], // size of the shadow
         iconAnchor: [16, 32], // point of the icon which will correspond to marker's location
@@ -234,27 +234,27 @@ function createMouseMarkers(base) {
 }
 function createPlaceMarkers(base) {
     s0 = L.icon({
-        iconUrl: base + 'images/rejected.png',
+        iconUrl: ramblersMap.base + 'images/rejected.png',
         iconSize: [15, 15]
     });
     s1 = L.icon({
-        iconUrl: base + 'images/1star.png',
+        iconUrl: ramblersMap.base + 'images/1star.png',
         iconSize: [19, 19]
     });
     s2 = L.icon({
-        iconUrl: base + 'images/2star.png',
+        iconUrl: ramblersMap.base + 'images/2star.png',
         iconSize: [21, 21]
     });
     s3 = L.icon({
-        iconUrl: base + 'images/3star.png',
+        iconUrl: ramblersMap.base + 'images/3star.png',
         iconSize: [23, 23]
     });
     s4 = L.icon({
-        iconUrl: base + 'images/4star.png',
+        iconUrl: ramblersMap.base + 'images/4star.png',
         iconSize: [25, 25]
     });
     s5 = L.icon({
-        iconUrl: base + 'images/5star.png',
+        iconUrl: ramblersMap.base + 'images/5star.png',
         iconSize: [27, 27]
     });
 
