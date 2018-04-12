@@ -3,25 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var ramblersMap, ramblersGpx, markerRoute;
+var L, ramblersMap, ramblersGpx, markerRoute;
 
 function RamblersLeafletGpx() {
-    this.gpxroutes = null;
-    this.gpxfolder = null;
-    this.gpxdistorder = false;
-    this.gpxtitleorder = false;
-    this.gpxgainorder = false;
-    this.gpxdownload = 0;
-    this.gpxelevation = null;
+    this.routes = null;
+    this.folder = null;
+    this.distorder = false;
+    this.titleorder = false;
+    this.gainorder = false;
+    this.download = 0;
+    this.elevation = null;
     this.description = true;
     this.gpx = null;
     this.searchtext = '';
 }
 function displayGPX(file, linecolour, imperial) {
     // remove old gpx route
-    if (ramblersGpx.gpxelevation !== null) {
-        ramblersGpx.gpxelevation.remove();
-        ramblersGpx.gpxelevation = null;
+    if (ramblersGpx.elevation !== null) {
+        ramblersGpx.elevation.remove();
+        ramblersGpx.elevation = null;
     }
     if (ramblersGpx.gpx !== null) {
         ramblersGpx.gpx.remove();
@@ -65,7 +65,7 @@ function displayGPX(file, linecolour, imperial) {
         ramblersMap.map.fitBounds(e.target.getBounds());
     });
     g.addTo(ramblersMap.map);
-    ramblersGpx.gpxelevation = el;
+    ramblersGpx.elevation = el;
     ramblersGpx.gpx = g;
 }
 
@@ -110,8 +110,8 @@ function displayGPXNames() {
     var out;
     out = "<div class='gpxlist'>";
     out += '<ul>';
-    for (index = 0; index < ramblersGpx.gpxroutes.length; ++index) {
-        var route = ramblersGpx.gpxroutes[index];
+    for (index = 0; index < ramblersGpx.routes.length; ++index) {
+        var route = ramblersGpx.routes[index];
         if (displayRoute(route)) {
             out += "<li>" + displayGPXName(route) + "</li>";
         }
@@ -131,13 +131,13 @@ function displayGPXTable() {
     if (tag !== null) {
         out = '<table id="gpxdetails">';
         out += "<tr><th onclick='sortGPXTable(\"title\")'>Title</th><th onclick='sortGPXTable(\"distance\")'>Distance</th><th>min Altitude</th><th>max Altitude</th><th onclick='sortGPXTable(\"gain\")'>Elevation Gain</th>";
-        if (ramblersGpx.gpxdownload === 0) {
+        if (ramblersGpx.download === 0) {
             out += "</tr>";
         } else {
             out += "<th>GPX</th></tr>";
         }
-        for (index = 0; index < ramblersGpx.gpxroutes.length; ++index) {
-            var route = ramblersGpx.gpxroutes[index];
+        for (index = 0; index < ramblersGpx.routes.length; ++index) {
+            var route = ramblersGpx.routes[index];
             if (displayRoute(route)) {
                 out += '<tr>';
                 out += displayGPXRow(route);
@@ -145,20 +145,25 @@ function displayGPXTable() {
             }
         }
         out += '</table>';
-        if (ramblersGpx.gpxdownload === 1) {
+        if (ramblersGpx.download === 1) {
             out += "<p>* To be able to download GPX Routes, you need to log on to our web site.</p>";
         }
         tag.innerHTML = out;
     }
 }
 function displayGPXRow(route) {
-    var link, download;
+    var link;
     link = '<td><b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b></td>';
     link += '<td>' + getGPXDistance(route.distance) + '</td>';
-    link += '<td>' + route.minAltitude.toFixed(0) + ' m</td>';
-    link += '<td>' + route.maxAltitude.toFixed(0) + ' m</td>';
-    link += '<td>' + route.cumulativeElevationGain.toFixed(0) + ' m</td>';
-    //  link += '<td>' + route.tracks.toFixed(0) + '/' + route.routes.toFixed(0) + '</td>';
+    if (route.cumulativeElevationGain === 0) {
+        link += '<td>...</td>';
+        link += '<td>...</td>';
+        link += '<td>...</td>';
+    } else {
+        link += '<td>' + route.minAltitude.toFixed(0) + '</td>';
+        link += '<td>' + route.maxAltitude.toFixed(0) + '</td>';
+        link += '<td>' + route.cumulativeElevationGain.toFixed(0) + '</td>';
+    }
     link += '<td>' + getGPXdownloadLink(route) + '</td>';
     return link;
 }
@@ -176,9 +181,7 @@ function updateGPXid(id) {
     if (route.description !== '') {
         header += '<b>Description</b> ' + route.description + '<br/>';
     }
-    header += '<b>Min Altitude</b> ' + route.minAltitude.toFixed(0) + ' m<br/>';
-    header += '<b>Max Altitude</b> ' + route.maxAltitude.toFixed(0) + ' m<br/>';
-    header += '<b>Elevation Gain</b> ' + route.cumulativeElevationGain.toFixed(0) + ' m<br/>';
+    header += formatAltitude(route);
     header += "<b>Download route</b> " + getGPXdownloadLink(route) + '<br/>';
 
     if (route.tracks > 0) {
@@ -188,14 +191,14 @@ function updateGPXid(id) {
         header += "<b>Routes:</b> " + route.routes.toFixed(0);
     }
     header += "</p>";
-    path = ramblersGpx.gpxfolder + "/" + route.filename;
+    path = ramblersGpx.folder + "/" + route.filename;
     document.getElementById('gpxheader').innerHTML = header;
     displayGPX(path, "#782327", 0);
     location.hash = '#gpxheader';
 }
 function getRoutefromID(id) {
-    for (index = 0; index < ramblersGpx.gpxroutes.length; ++index) {
-        var route = ramblersGpx.gpxroutes[index];
+    for (index = 0; index < ramblersGpx.routes.length; ++index) {
+        var route = ramblersGpx.routes[index];
         if (route.id === id) {
             return route;
         }
@@ -206,8 +209,8 @@ function displayGPXDescriptions() {
     var out;
     out = "<div class='gpxdescriptions'>";
     out += '<p>';
-    for (index = 0; index < ramblersGpx.gpxroutes.length; ++index) {
-        var route = ramblersGpx.gpxroutes[index];
+    for (index = 0; index < ramblersGpx.routes.length; ++index) {
+        var route = ramblersGpx.routes[index];
         if (route.description !== '') {
             if (displayRoute(route)) {
                 out += displayGPXName(route) + " [" + getGPXDistance(route.distance) + "] - " + route.description;
@@ -219,8 +222,8 @@ function displayGPXDescriptions() {
     document.getElementById("tabDescriptions").innerHTML = out;
 }
 function addGPXMarkers() {
-    for (index = 0; index < ramblersGpx.gpxroutes.length; ++index) {
-        var route = ramblersGpx.gpxroutes[index];
+    for (index = 0; index < ramblersGpx.routes.length; ++index) {
+        var route = ramblersGpx.routes[index];
         if (displayRoute(route)) {
             addGPXMarker(route);
         }
@@ -230,37 +233,47 @@ function addGPXMarker(route) {
     var $popup, $lat, $long;
     $popup = "<span style='font-size:120%'>" + displayGPXName(route) + "</span>";
     $popup += ' - ' + getGPXDistance(route.distance) + '<br/>';
-    $popup += '<b>Min Altitude</b> ' + route.minAltitude.toFixed(0) + ' m<br/>';
-    $popup += '<b>Max Altitude</b> ' + route.maxAltitude.toFixed(0) + ' m<br/>';
-    $popup += '<b>Elevation Gain</b> ' + route.cumulativeElevationGain.toFixed(0) + ' m<br/>';
+    $popup += formatAltitude(route);
     $lat = route.latitude;
     $long = route.longitude;
     addMarker($popup, $lat, $long, markerRoute);
 }
+function formatAltitude(route) {
+    var popup;
+    popup = "";
+    if (route.cumulativeElevationGain === 0) {
+        return "No elevation data<br/>";
+    } else {
+        popup += '<b>Min Altitude</b> ' + route.minAltitude.toFixed(0) + ' m<br/>';
+        popup += '<b>Max Altitude</b> ' + route.maxAltitude.toFixed(0) + ' m<br/>';
+        popup += '<b>Elevation Gain</b> ' + route.cumulativeElevationGain.toFixed(0) + ' m<br/>';
+    }
+    return popup;
+}
 function getGPXdownloadLink(route) {
     var path, link;
     link = "";
-    if (ramblersGpx.gpxdownload === 1) {
+    if (ramblersGpx.download === 1) {
         link = "*";
     }
-    if (ramblersGpx.gpxdownload === 2) {
-        path = ramblersMap.base + ramblersGpx.gpxfolder + "/" + route.filename;
+    if (ramblersGpx.download === 2) {
+        path = ramblersMap.base + ramblersGpx.folder + "/" + route.filename;
         link = "<a href='" + path + "'><img  alt='gpx' src='" + ramblersMap.base + "ramblers/images/orange-gpx-32.png' width='20' height='20'></a>";
     }
     return link;
 }
 function sortGPXTable(order) {
     if (order === "distance") {
-        sortOn(ramblersGpx.gpxroutes, 'distance', ramblersGpx.gpxdistorder, true);
-        ramblersGpx.gpxdistorder = !ramblersGpx.gpxdistorder;
+        sortOn(ramblersGpx.routes, 'distance', ramblersGpx.distorder, true);
+        ramblersGpx.distorder = !ramblersGpx.distorder;
     }
     if (order === "title") {
-        sortOn(ramblersGpx.gpxroutes, 'title', ramblersGpx.gpxtitleorder, false);
-        ramblersGpx.gpxtitleorder = !ramblersGpx.gpxtitleorder;
+        sortOn(ramblersGpx.routes, 'title', ramblersGpx.titleorder, false);
+        ramblersGpx.titleorder = !ramblersGpx.titleorder;
     }
     if (order === "gain") {
-        sortOn(ramblersGpx.gpxroutes, 'cumulativeElevationGain', ramblersGpx.gpxgainorder, true);
-        ramblersGpx.gpxgainorder = !ramblersGpx.gpxgainorder;
+        sortOn(ramblersGpx.routes, 'cumulativeElevationGain', ramblersGpx.gainorder, true);
+        ramblersGpx.gainorder = !ramblersGpx.gainorder;
     }
     displayGPXTable();
 }

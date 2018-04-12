@@ -45,7 +45,7 @@ class RGpxStatistics {
         $file = $this->folder . "/" . self::JSONFILE;
         if (file_exists($file)) {
             $contents = file_get_contents($file);
-                        return $contents;
+            return $contents;
         }
         return null;
     }
@@ -58,7 +58,7 @@ class RGpxStatistics {
         foreach ($files as $file) {
             if ($this->endsWith($file, ".gpx")) {
                 $stat = $this->processGPXFile($file);
-                $this->jsonfile->addItem("id".$stat->id, $stat);
+                $this->jsonfile->addItem("id" . $stat->id, $stat);
             }
         }
     }
@@ -72,14 +72,14 @@ class RGpxStatistics {
         $stat->longitude = $gpx->longitude;
         $stat->latitude = $gpx->latitude;
         $stat->distance = $gpx->distance;
-        if ($gpx->cumulativeElevationGain!==null){
-             $stat->cumulativeElevationGain = $gpx->cumulativeElevationGain;
+        if ($gpx->cumulativeElevationGain !== null) {
+            $stat->cumulativeElevationGain = $gpx->cumulativeElevationGain;
         }
-        if ($gpx->minAltitude!==null){
-             $stat->minAltitude = $gpx->minAltitude;
+        if ($gpx->minAltitude !== null) {
+            $stat->minAltitude = $gpx->minAltitude;
         }
-         if ($gpx->maxAltitude!==null){
-             $stat->maxAltitude = $gpx->maxAltitude;
+        if ($gpx->maxAltitude !== null) {
+            $stat->maxAltitude = $gpx->maxAltitude;
         }
         $stat->tracks = $gpx->tracks;
         $stat->routes = $gpx->routes;
@@ -91,14 +91,14 @@ class RGpxStatistics {
         $descfile = $this->folder . "/" . $file . ".txt";
         if (file_exists($descfile)) {
             $desc = file_get_contents($descfile);
-            $desc = strip_tags($desc, '<br><br/>');
         }
         return $desc;
     }
-    private function getTitlefromName($file){
-        $title=substr($file,0,-4);
-        $title=  str_replace("_"," ", $title);
-        $title=  str_replace("-",", ", $title);
+
+    private function getTitlefromName($file) {
+        $title = substr($file, 0, -4);
+        $title = str_replace("_", " ", $title);
+        $title = str_replace("-", ", ", $title);
         return $title;
     }
 

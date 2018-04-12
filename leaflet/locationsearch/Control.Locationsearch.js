@@ -1,5 +1,5 @@
 
-var L, ramblersMap;
+var L;
 L.Control.Locationsearch = L.Control.extend({
     options: {
         showResultIcons: false,

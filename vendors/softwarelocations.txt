@@ -1,0 +1,19 @@
+PHP Gpx handling
+  gpx - https://github.com/Sibyx/phpGPX
+  
+  
+  
+  
+Leaflet mapping
+Leaflet itself
+http://leafletjs.com/
+
+Clustering - https://github.com/Leaflet/Leaflet.markercluster
+Display Google Maps - https://gitlab.com/IvanSanchez/Leaflet.GridLayer.GoogleMutant
+Promise - https://github.com/stefanpenner/es6-promise
+Mapcodes - http://www.mapcode.com/
+           https://github.com/mapcode-foundation/mapcode-js
+		   
+Fullscreen - https://github.com/Leaflet/Leaflet.fullscreen	
+
+OS to/from Lat/Long conversion - http://www.movable-type.co.uk/scripts/latlong-os-gridref.html	   

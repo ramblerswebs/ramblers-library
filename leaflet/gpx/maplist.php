@@ -43,18 +43,18 @@ class RLeafletGpxMaplist extends RLeafletMap {
               <input name=\"titlesearch\" id=\"gpxtitlesearch\" maxlength=\"200\" class=\"inputbox search-query input-medium\" size=\"20\" placeholder=\"Search\" type=\"search\">
          </form>";
         echo "</div>";
-        echo "<div id=\"tabRouteList\" class=\"tabcontent\"  style=\"display:block\">Error</div>";
+        echo "<div id=\"tabRouteList\" class=\"tabcontent\"  style=\"display:block\">Processing ...</div>";
         if ($this->descriptions) {
             echo "<div id=\"tabDescriptions\" class=\"tabcontent\" >Webmaster: Add text files to display descriptions of each route</div>";
         }
-        echo "<div id=\"tabRouteDetails\" class=\"tabcontent\">Error</div>";
+        echo "<div id=\"tabRouteDetails\" class=\"tabcontent\">Processing ...</div>";
         echo "<p> </p>";
         echo "<div id = \"gpxheader\" ><h4>Click on any walk to display route</h4></div>";
 
         $text = " 
                 ramblersGpx=new RamblersLeafletGpx();
-                ramblersGpx.gpxdownload=" . $this->downloadState() . ";
-                ramblersGpx.gpxfolder= \"" . $this->folder . "\";
+                ramblersGpx.download=" . $this->downloadState() . ";
+                ramblersGpx.folder= \"" . $this->folder . "\";
                 addRoutes();
                 displayGPXNames();
                 displayGPXTable();
@@ -72,7 +72,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
 
     private function addMapScript($items) {
         $script = "function addRoutes() {"
-                . "ramblersGpx.gpxroutes=" . $items . ";}";
+                . "ramblersGpx.routes=" . $items . ";}";
 
         $document = JFactory::getDocument();
         $document->addScriptDeclaration($script, "text/javascript");
