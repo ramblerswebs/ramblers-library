@@ -14,7 +14,11 @@ class RLeafletMap {
     public $mapHeight;
     public $mapWidth;
     public $options;
-    protected $addElevation = false;
+    private $scripts = [];
+    private $stylesheets = [];
+
+    const COMBINED_JS = "cache/ra_leaflet/ra-leafet";
+    const FOLDER = "cache/ra_leaflet";
 
     public function __construct() {
         $template = "ramblers/leaflet/mapTemplate.js";
@@ -26,7 +30,6 @@ class RLeafletMap {
     }
 
     public function addContent($text) {
-//      $this->map->replaceString("// [[Add markers here]]", $text);
         $document = JFactory::getDocument();
         $out = "function addContent(ramblersMap) {" . $text . "}";
         $document->addScriptDeclaration($out, "text/javascript");
@@ -42,68 +45,100 @@ class RLeafletMap {
 
         $document = JFactory::getDocument();
         // Leaflet
-        $document->addStyleSheet("ramblers/vendors/leaflet1.3.1/leaflet.css", "text/css");
-        $document->addScript("ramblers/vendors/leaflet1.3.1/leaflet.js", "text/javascript");
-        $document->addScript("ramblers/leaflet/leaflet/ramblersleaflet.js", "text/javascript");
-        $document->addStyleSheet("ramblers/leaflet/leaflet/ramblersleaflet.css", "text/css");
+        $this->addStyleSheet("ramblers/vendors/leaflet1.3.1/leaflet.css", "text/css");
+        $this->addScript("ramblers/vendors/leaflet1.3.1/leaflet-src.js", "text/javascript");
+        $this->addScript("ramblers/leaflet/leaflet/ramblersleaflet.js", "text/javascript");
+        $this->addStyleSheet("ramblers/leaflet/leaflet/ramblersleaflet.css", "text/css");
         if ($options->search) {
-            $document->addStyleSheet("ramblers/leaflet/geocoder/Control.Geocoder.css", "text/css");
-            $document->addScript("ramblers/leaflet/geocoder/Control.Geocoder.js", "text/javascript");
+            $path = "ramblers/vendors/leaflet-control-geocoder-1.5.8/dist/";
+            $this->addStyleSheet($path . "Control.Geocoder.css", "text/css");
+            $this->addScript($path . "Control.Geocoder.js", "text/javascript");
         }
         if ($options->locationsearch) {
-            $document->addStyleSheet("ramblers/leaflet/locationsearch/Control.Locationsearch.css", "text/css");
-            $document->addScript("ramblers/leaflet/locationsearch/Control.Locationsearch.js", "text/javascript");
+            $this->addStyleSheet("ramblers/leaflet/locationsearch/Control.Locationsearch.css", "text/css");
+            $this->addScript("ramblers/leaflet/locationsearch/Control.Locationsearch.js", "text/javascript");
         }
         if ($options->fullscreen) {
             $path = "ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
-            $document->addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
-            $document->addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
+            $this->addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
+            $this->addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
         }
 
         if ($options->postcodes) {
             // Mapcodes        
-            $document->addScript("ramblers/vendors/mapcode-js-2.4.0/mapcode.js", "text/javascript");
-            $document->addScript("ramblers/vendors/mapcode-js-2.4.0/ndata.js", "text/javascript");
+            $this->addScript("ramblers/vendors/mapcode-js-2.4.1/mapcode.js", "text/javascript");
+            $this->addScript("ramblers/vendors/mapcode-js-2.4.1/ndata.js", "text/javascript");
         }
 
-        if ($this->addElevation) {
+        if ($options->displayElevation) {
             // elevation
-            $document->addScript("https://d3js.org/d3.v3.min.js", "text/javascript");
-            $document->addStyleSheet("ramblers/leaflet/gpx/elevation.css", "text/css");
-            $document->addScript("ramblers/leaflet/gpx/leaflet.elevation-0.0.4.src.js", "text/javascript");
-            $document->addScript("ramblers/leaflet/gpx/gpx.js", "text/javascript");
+            $this->addScript("https://d3js.org/d3.v3.min.js", "text/javascript");
+            $path = "ramblers/vendors/Leaflet.Elevation-0.0.4-ra/";
+            $this->addScript($path . "leaflet.elevation-0.0.4.src.js", "text/javascript");
+            $this->addStyleSheet($path . "elevation.css", "text/css");
+            $this->addScript("ramblers/vendors/leaflet-gpx-1.3.1/gpx.js", "text/javascript");
         }
         if (RLicense::isGoogleKeyMapSet()) {
             // Google
-            $document->addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), "text/javascript", true, true);
-            $document->addScript("ramblers/vendors/Leaflet.GridLayer.GoogleMutant/Leaflet.GoogleMutant.js", "text/javascript");
-            $document->addScript("ramblers/vendors/es6-promise-vv4.2.3/dist/es6-promise.auto.js", "text/javascript");
+            $this->addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), "text/javascript", true, true);
+            $this->addScript("ramblers/vendors/Leaflet.GridLayer.GoogleMutant/Leaflet.GoogleMutant.js", "text/javascript");
+            $this->addScript("ramblers/vendors/es6-promise-vv4.2.3/dist/es6-promise.auto.js", "text/javascript");
             $this->map->replaceString("// [set addGoogle]", "ramblersMap.options.google=true;");
         }
         if ($options->cluster) {
             // clustering
             $path = "ramblers/vendors/Leaflet.markercluster-1.3.0/dist/";
-            $document->addStyleSheet($path . "MarkerCluster.css", "text/css");
-            $document->addStyleSheet($path . "MarkerCluster.Default.css", "text/css");
-            $document->addScript($path . "leaflet.markercluster-src.js", "text/javascript");
+            $this->addStyleSheet($path . "MarkerCluster.css", "text/css");
+            $this->addStyleSheet($path . "MarkerCluster.Default.css", "text/css");
+            $this->addScript($path . "leaflet.markercluster-src.js", "text/javascript");
         }
         if ($options->mouseposition or $options->postcodes) {
-            $document->addScript("ramblers/leaflet/mouse/L.Control.Mouse.js", "text/javascript");
-            $document->addStyleSheet("ramblers/leaflet/mouse/L.Control.Mouse.css", "text/css");
+            $this->addScript("ramblers/leaflet/mouse/L.Control.Mouse.js", "text/javascript");
+            $this->addStyleSheet("ramblers/leaflet/mouse/L.Control.Mouse.css", "text/css");
         }
 
         if ($options->mouseposition or $options->osgrid or $options->postcodes) {
             // grid ref to/from lat/long
-            $document->addScript("ramblers/vendors/geodesy/vector3d.js", "text/javascript");
-            $document->addScript("ramblers/vendors/geodesy/latlon-ellipsoidal.js", "text/javascript");
-            $document->addScript("ramblers/vendors/geodesy/osgridref.js", "text/javascript");
+            $this->addScript("ramblers/vendors/geodesy/vector3d.js", "text/javascript");
+            $this->addScript("ramblers/vendors/geodesy/latlon-ellipsoidal.js", "text/javascript");
+            $this->addScript("ramblers/vendors/geodesy/osgridref.js", "text/javascript");
+        }
+        if ($options->draw) {
+            $this->addScript("ramblers/leaflet/gpx/ra-drawcontrol.js", "text/javascript");
+            $path = "ramblers/vendors/Leaflet.draw-0.4.14/dist/";
+            $this->addStyleSheet($path . "leaflet.draw-src.css", "text/css");
+            $this->addScript($path . "leaflet.draw-src.js", "text/javascript");
+            $this->addScript("ramblers/leaflet/gpx/maplist.js", "text/javascript");
+            $this->addScript("ramblers/leaflet/gpx/ra-gpx-upload.js", "text/javascript");
+            $this->addScript("ramblers/leaflet/gpx/ra-gpx-download.js", "text/javascript");
+            $this->addScript("ramblers/leaflet/gpx/ra-gpx-reverse-route.js", "text/javascript");
+            $this->addScript("ramblers/leaflet/gpx/ra-gpx-simplify.js", "text/javascript");
+            $this->addScript("ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");
+            $this->addStyleSheet("ramblers/leaflet/gpx/ra-gpx-tools.css", "text/css");
+            $this->addScript("ramblers/vendors/blurt-1.0.2/dist/js/blurt.min.js", "text/javascript");
+            $this->addStyleSheet("ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
+        }
+        if (RLicense::isBingKeyMapSet()) {
+            // Bing maps
+            $this->addScript("ramblers/vendors/bing/bing.js", "text/javascript");
         }
 
+//        if ($options->print) {
+//            $path = "ramblers/vendors/leaflet.browser.print-0.4/src/";
+//            $this->addScript($path . "leaflet.browser.print.js", "text/javascript");
+//            $this->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
+//        }
+        $this->addScriptandStyleSheets();
         $mapStyle = " #leafletmap { height: " . $this->mapHeight . "; width:" . $this->mapWidth . ";}";
         $document->addStyleDeclaration($mapStyle);
 
         $base = JURI::base();
-        $this->map->replaceString("[base]", $base);
+        if (strpos($base, 'localhost') !== false) {
+            $this->map->replaceString("[base]", "");
+        } else {
+            $this->map->replaceString("[base]", "/");
+        }
+
         $optionstext = $options->text();
 
         $this->map->replaceString("// [set MapOptions]", $optionstext);
@@ -123,6 +158,54 @@ class RLeafletMap {
         echo "</script>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
         echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";
+        if ($options->draw) {
+            echo "<p id='ra-map-details'></div>";
+        }
+    }
+
+    private function addScript($script, $type) {
+        $this->scripts[] = $script;
+    }
+
+    private function addStyleSheet($stylesheet, $type) {
+        $this->stylesheets[] = $stylesheet;
+    }
+
+    private function addScriptandStyleSheets() {
+
+        $test = true;
+        $document = JFactory::getDocument();
+        $jsfilename = self::COMBINED_JS . $this->options->getFileName() . ".js";
+        foreach ($this->stylesheets as $item) {
+            $document->addStyleSheet($item, "text/css");
+        }
+        if ($test) {
+            foreach ($this->scripts as $item) {
+                $document->addScript($item, "text/javascript");
+            }
+        } else {
+            if (!file_exists($jsfilename)) {
+                if (!file_exists(self::FOLDER)) {
+                    mkdir(self::FOLDER);
+                }
+                $this->createFile($this->scripts, $jsfilename);
+            }
+            $document->addScript($jsfilename, "text/javascript");
+        }
+    }
+
+    private function createFile($items, $path) {
+        $myfile = fopen($path, "w");
+        foreach ($items as $item) {
+            fwrite($myfile, "//\n");
+            fwrite($myfile, "//\n");
+            fwrite($myfile, "//  INCLUDE FILE  " . $item . "      \n");
+            fwrite($myfile, "//\n");
+            fwrite($myfile, "//\n");
+            $txt = file_get_contents($item);
+            fwrite($myfile, $txt);
+        }
+        fclose($myfile);
     }
 
 }

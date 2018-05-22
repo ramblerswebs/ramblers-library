@@ -18,10 +18,16 @@ class RLeafletGpxMap extends RLeafletMap {
     public function displayPath($gpx) {
         $document = JFactory::getDocument();
         $document->addScript("ramblers/leaflet/gpx/maplist.js", "text/javascript");
-        $opts = new RLeafletMapoptions();
-        $opts->cluster = false;
-        $this->options->cluster = false;
-        $this->addElevation = true;
+        $this->options->fullscreen = true;
+        $this->options->search = true;
+        $this->options->locationsearch = true;
+        $this->options->osgrid = true;
+        $this->options->mouseposition = true;
+        $this->options->postcodes = true;
+        $this->options->fitbounds = true;
+        $this->options->displayElevation = true;
+        $this->options->print = true;
+
         if ($this->imperial) {
             $imperial = "true";
         } else {
@@ -44,14 +50,7 @@ class RLeafletGpxMap extends RLeafletMap {
         }
 
         if (file_exists($gpx)) {
-            $text = "  ramblersGpx=new RamblersLeafletGpx();"
-                    . "displayGPX( '$gpx', '$this->linecolour', $imperial)";
-            parent::addContent($text);
-        } else {
-            parent::addContent("");
-        }
-        parent::display();
-        if (file_exists($gpx)) {
+            echo "<div id='gpxsingleheader'></div>";
             $link = false;
             switch ($this->addDownloadLink) {
                 case "Users":
@@ -59,7 +58,7 @@ class RLeafletGpxMap extends RLeafletMap {
                     If ($this->loggedon()) {
                         $link = true;
                     } else {
-                        echo "<br/><p>Please log on to our site to be able to download GPX file or this walk</p>";
+                        echo "<br/>Please log on to our site to be able to download GPX file or this walk";
                     }
                     break;
                 case "Public" :
@@ -69,9 +68,16 @@ class RLeafletGpxMap extends RLeafletMap {
                     break;
             }
             if ($link) {
-                echo "<br/><p><a id='gpxdownload' href='$gpx'><b>Download</b> the gpx file for this walk</a></p>";
+                echo '<b>Download route:</b> <a href="' . $gpx . '"><img alt="gpx" src="ramblers/images/orange-gpx-32.png" width="20" height="20"></a><br/><br/>';
             }
+
+            $text = "  ramblersGpx=new RamblersLeafletGpx();"
+                    . "displayGPX( '$gpx', '$this->linecolour', $imperial)";
+            parent::addContent($text);
+        } else {
+            parent::addContent("");
         }
+        parent::display();
     }
 
     private function loggedon() {

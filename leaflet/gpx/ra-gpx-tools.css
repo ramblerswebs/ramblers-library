@@ -1,0 +1,60 @@
+/* Download */
+
+.leaflet-control-gpx-download a {
+    background:#fff url(images/download.png) no-repeat 0 0;
+    background-size:27px 27px;
+    background-position: center; 
+}
+.ra-download-toolbar-button-disabled a {
+     background:#fff url(images/downloaddisabled.png) no-repeat 0 0;
+     background-size:27px 27px;
+    background-position: center; 
+}
+
+/* Simplify */
+
+.leaflet-control-gpx-simplify {
+    margin-bottom: 0px !important;
+}
+.leaflet-control-gpx-simplify a {
+    background:#fff url(images/simplify.png) no-repeat 0 0;
+    background-size:27px 27px;
+    background-position: center; 
+}
+.ra-simplify-toolbar-button-disabled a {
+     background:#fff url(images/simplifydisabled.png) no-repeat 0 0;
+     background-size:27px 27px;
+    background-position: center; 
+}
+
+/* upload */
+
+.image-upload label{
+   margin-bottom:0px;
+}
+.image-upload > input
+{
+    display: none;
+}
+.leaflet-control-gpx-upload .image-upload img
+{
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+/* Reverse */
+
+.leaflet-control-reverse-route {
+    margin-bottom: 0px !important;
+}
+.leaflet-control-reverse-route  a {
+    background:#fff url(images/reverse.png) no-repeat 0 0;
+    background-size:27px 27px;
+    background-position: center; 
+}
+.ra-reverse-toolbar-button-disabled a {
+    background:#ddd url(images/reversedisabled.png) no-repeat 0 0;
+    background-size:27px 27px;
+    background-position: center; 
+}

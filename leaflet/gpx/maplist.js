@@ -63,10 +63,31 @@ function displayGPX(file, linecolour, imperial) {
     });
     g.on('loaded', function (e) {
         ramblersMap.map.fitBounds(e.target.getBounds());
+        displayGpxdetails(g);
     });
     g.addTo(ramblersMap.map);
     ramblersGpx.elevation = el;
     ramblersGpx.gpx = g;
+
+}
+function displayGpxdetails(g) {
+    var info = g._info;
+    if (info !== "undefined" && info !== null) {
+        var header = '<b>Name:</b> ' + info.name + "<br/>";
+        header += '<b>Distance:</b> ' + getGPXDistance(info.length) + '<br/>';
+        if (info.desc !== "undefined" && info.desc !== null) {
+            header += '<b>Description:</b> ' + info.desc + '<br/>';
+        }
+        if (info.elevation.gain === 0) {
+            header += "No elevation data<br/>";
+        } else {
+            header += '<b>Min Altitude:</b> ' + info.elevation.min.toFixed(0) + ' m<br/>';
+            header += '<b>Max Altitude:</b> ' + info.elevation.max.toFixed(0) + ' m<br/>';
+            header += '<b>Elevation Gain:</b> ' + info.elevation.gain.toFixed(0) + ' m<br/>';
+        }
+        header += "<b>Est time:</b> " + naismith(info.length, info.elevation.gain);
+        document.getElementById('gpxsingleheader').innerHTML = header;
+    }
 }
 
 // Tab control
@@ -169,27 +190,29 @@ function displayGPXRow(route) {
 }
 function getGPXDistance(distance) {
     var dist, miles;
-    dist = distance / 1000;
-    miles = dist / 8 * 5;
+    dist = m_to_km(distance);
+    miles = m_to_mi(distance);
     return dist.toFixed(1) + ' km / ' + miles.toFixed(2) + 'mi';
 }
 function updateGPXid(id) {
     var header, path;
     var route = getRoutefromID(id);
     header = "<h2>" + route.title + "</h2><p>";
-    header += '<b>Distance</b> ' + getGPXDistance(route.distance) + '<br/>';
+    header += '<b>Distance:</b> ' + getGPXDistance(route.distance) + '<br/>';
     if (route.description !== '') {
-        header += '<b>Description</b> ' + route.description + '<br/>';
+        header += '<b>Description:</b> ' + route.description + '<br/>';
     }
     header += formatAltitude(route);
-    header += "<b>Download route</b> " + getGPXdownloadLink(route) + '<br/>';
-
+    header += "<b>Est time:</b> " + naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
+    header += "<b>Download route:</b> " + getGPXdownloadLink(route) + '<br/>';
     if (route.tracks > 0) {
         header += "<b>Tracks:</b> " + route.tracks.toFixed(0);
     }
+
     if (route.routes > 0) {
         header += "<b>Routes:</b> " + route.routes.toFixed(0);
     }
+
     header += "</p>";
     path = ramblersGpx.folder + "/" + route.filename;
     document.getElementById('gpxheader').innerHTML = header;
@@ -244,9 +267,9 @@ function formatAltitude(route) {
     if (route.cumulativeElevationGain === 0) {
         return "No elevation data<br/>";
     } else {
-        popup += '<b>Min Altitude</b> ' + route.minAltitude.toFixed(0) + ' m<br/>';
-        popup += '<b>Max Altitude</b> ' + route.maxAltitude.toFixed(0) + ' m<br/>';
-        popup += '<b>Elevation Gain</b> ' + route.cumulativeElevationGain.toFixed(0) + ' m<br/>';
+        popup += '<b>Min Altitude:</b> ' + route.minAltitude.toFixed(0) + ' m<br/>';
+        popup += '<b>Max Altitude:</b> ' + route.maxAltitude.toFixed(0) + ' m<br/>';
+        popup += '<b>Elevation Gain:</b> ' + route.cumulativeElevationGain.toFixed(0) + ' m<br/>';
     }
     return popup;
 }

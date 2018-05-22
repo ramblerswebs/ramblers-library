@@ -16,4 +16,19 @@ Mapcodes - http://www.mapcode.com/
 		   
 Fullscreen - https://github.com/Leaflet/Leaflet.fullscreen	
 
+Drawing route
+Leaflet.Draw - https://github.com/Leaflet/Leaflet.draw
+Display GPX file - https://github.com/mpetazzoni/leaflet-gpx
+Elevation plot - https://github.com/MrMufflon/Leaflet.Elevation - modified??
+
 OS to/from Lat/Long conversion - http://www.movable-type.co.uk/scripts/latlong-os-gridref.html	   
+
+Simplify - reduce number of points 
+    http://mourner.github.io/simplify-js/
+    https://github.com/mourner/simplify-js  
+
+Blurt popup
+    https://github.com/brijeshb42/blurt/
+
+Bing
+https://github.com/shramov/leaflet-plugins

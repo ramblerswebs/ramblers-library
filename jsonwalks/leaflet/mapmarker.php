@@ -14,6 +14,16 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
 
     public function __construct() {
         $this->map = new RLeafletMap;
+        $options = $this->map->options;
+        $options->cluster = true;
+        $options->displayElevation = true;
+        $options->fullscreen = true;
+        $options->search = true;
+        $options->locationsearch = true;
+        $options->osgrid = true;
+        $options->mouseposition = true;
+        $options->postcodes = true;
+        $options->fitbounds = true;
     }
 
     public function getMap() {
@@ -38,7 +48,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
 
         if ($this->displayGradesSidebar) {
             RJsonwalksWalk::gradeSidebar();
-        } 
+        }
         if (isset($this->map)) {
             if (strpos($this->legendposition, "top") !== false) {
                 echo $legend;
@@ -77,7 +87,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         }
         $class = $this->walkClass . $walk->status;
         $grade = $walk->getGradeImage();
-        $grade = "<img src='".JURI::base() . $grade . "' alt='" . $walk->nationalGrade . "' width='30px'>";
+        $grade = "<img src='" . JURI::base() . $grade . "' alt='" . $walk->nationalGrade . "' width='30px'>";
         $details = "<div class='" . $class . "'>" . $grade . "<b><a href=&quot;javascript:walkdetails('" . $url . "')&quot; >" . $date . "<br/>" . $title . "<br/>" . $dist . " " . $walk->nationalGrade . "</a></b></div>";
         $map = "<a href=&quot;javascript:streetmap('" . $gr . "')&quot; >[OS Map]</a>";
         $directions = "<a href=&quot;javascript:directions(" . $lat . "," . $long . ")&quot; >[Directions]</a>";

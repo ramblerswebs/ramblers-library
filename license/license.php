@@ -7,18 +7,31 @@
  */
 class RLicense {
 
-    private static $licensekey = "undefined";
+    private static $googlelicensekey = "undefined";
+    private static $binglicensekey = "undefined";
 
     public static function GoogleMapKey($value) {
-        self::$licensekey = $value;
+        self::$googlelicensekey = $value;
     }
 
     public static function getGoogleMapKey() {
-        return self::$licensekey;
+        return self::$googlelicensekey;
     }
 
     public static function isGoogleKeyMapSet() {
-        return self::$licensekey != "undefined";
+        return self::$googlelicensekey != "undefined";
+    }
+
+    public static function BingMapKey($value) {
+        self::$binglicensekey = $value;
+    }
+
+    public static function getBingMapKey() {
+        return self::$binglicensekey;
+    }
+
+    public static function isBingKeyMapSet() {
+        return self::$binglicensekey != "undefined";
     }
 
 }

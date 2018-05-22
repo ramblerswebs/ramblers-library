@@ -2,11 +2,9 @@ var L, ramblersMap, OsGridRef, Element;
 function RamblersLeafletMap(base) {
     this.base = base;
     this.map = null;
-    this.osm = null;
-    this.roads = null;
-    this.satellite = null;
-    this.hybrid = null;
-    this.terrain = null;
+    this.mapLayers = null;
+    this.bingkey=null;
+    this.googlekey=null;
     this.gridsquare10 = null;
     this.gridsquare100 = null;
     this.postcodelayer = null;
@@ -15,15 +13,22 @@ function RamblersLeafletMap(base) {
     this.progress = null;
     this.progressBar = null;
     this.startingplaces = false;
-    this.options = {cluster: true,
-        fullscreen: true,
+    this.drawnItems = null;
+    this.displayMouseGridSquare = true;
+    this.elevationcontrol = null;
+    this.options = {cluster: false,
+        fullscreen: false,
         google: false,
-        search: true,
-        locationsearch: true,
-        osgrid: true,
-        mouseposition: true,
-        postcodes: true,
-        fitbounds: true};
+        search: false,
+        locationsearch: false,
+        osgrid: false,
+        mouseposition: false,
+        postcodes: false,
+        fitbounds: false,
+        draw: false,
+        print: false,
+        displayElevation: false
+    };
 }
 
 function raLoadLeaflet() {
@@ -31,50 +36,56 @@ function raLoadLeaflet() {
         ramblersMap.map = new L.Map("leafletmap", {
             center: new L.LatLng(54.221592, -3.355007),
             zoom: 5,
-            fullscreenControl: true});
+            zoomSnap: 0.25,
+            maxZoom: 17,
+            fullscreenControl: true}
+        );
     } else {
         ramblersMap.map = new L.Map("leafletmap", {
             center: new L.LatLng(54.221592, -3.355007),
-            zoom: 5});
+            zoom: 5,
+            zoomSnap: 0.25,
+            maxZoom: 17});
     }
 
-
+    ramblersMap.mapLayers = new Object();
 // map types
-    ramblersMap.osm = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    ramblersMap.mapLayers["Open Street Map"] = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 18,
         attribution: "Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a>"}).addTo(ramblersMap.map);
+    ramblersMap.mapLayers["Open Topo Map"] = new L.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        maxNativeZoom: 16,
+        attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
+    if (ramblersMap.options.bing) {
+      //  var bingkey = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
+        //   ramblersMap.mapLayers["Aerial"] = new L.BingLayer(bingkey, {type: 'Aerial'});
+        ramblersMap.mapLayers["Aerial With Labels"] = new L.BingLayer(ramblersMap.bingkey, {type: 'AerialWithLabels'});
+        ramblersMap.mapLayers["Ordnance Survey"] = new L.BingLayer(ramblersMap.bingkey, {type: 'ordnanceSurvey'});
+    }
     if (ramblersMap.options.google) {
-        ramblersMap.roads = L.gridLayer.googleMutant({
+        ramblersMap.mapLayers["Google"] = L.gridLayer.googleMutant({
             type: "roadmap" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
         });
-        ramblersMap.satellite = L.gridLayer.googleMutant({
+        ramblersMap.mapLayers["Google Satellite"] = L.gridLayer.googleMutant({
             type: "satellite" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
         });
-        ramblersMap.hybrid = L.gridLayer.googleMutant({
+        ramblersMap.mapLayers["Google Hybrid"] = L.gridLayer.googleMutant({
             type: "hybrid" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
         });
-        ramblersMap.terrain = L.gridLayer.googleMutant({
+        ramblersMap.mapLayers["Google Terrain"] = L.gridLayer.googleMutant({
             type: "terrain" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
         });
-        mapLayers = {"Open Street Map": ramblersMap.osm,
-            "Google": ramblersMap.roads,
-            "Google Satellite": ramblersMap.satellite,
-            "Google Hybrid": ramblersMap.hybrid,
-            "Google Terrain": ramblersMap.terrain
-        };
-    } else {
-        mapLayers = {"Open Street Map": ramblersMap.osm};
     }
 
-
-    createMouseMarkers(ramblersMap.base);
+    createMouseMarkers();
     if (ramblersMap.options.startingplaces) {
-        createPlaceMarkers(ramblersMap.base);
+        createPlaceMarkers();
     } else {
-        createWalkMarkers(ramblersMap.base);
+        createWalkMarkers();
     }
     if (ramblersMap.options.cluster) {
-        // progress bar for cluster
+// progress bar for cluster
         ramblersMap.progressBar = document.getElementById("ra-cluster-progress-bar");
         ramblersMap.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: updateClusterProgressBar});
         ramblersMap.markerList = [];
@@ -87,9 +98,9 @@ function raLoadLeaflet() {
     }
 
     if (ramblersMap.options.fitbounds) {
-        // [FitBounds]   
+// [FitBounds]   
         if (ramblersMap.options.cluster) {
-            // calc bounds from marker as cluster still loading
+// calc bounds from marker as cluster still loading
             var bounds = getBounds(ramblersMap.markerList);
             ramblersMap.map.fitBounds(bounds);
         } else {
@@ -106,7 +117,7 @@ function raLoadLeaflet() {
         osgrid.addTo(ramblersMap.map);
     }
 
-    L.control.layers(mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
+    L.control.layers(ramblersMap.mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
     if (ramblersMap.options.search) {
         try {
             var geocoder = L.Control.geocoder({
@@ -119,7 +130,7 @@ function raLoadLeaflet() {
         } catch (err) {
             document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
         }
-        // must be after layers so is second control in top right
+// must be after layers so is second control in top right
 
     }
 
@@ -130,10 +141,13 @@ function raLoadLeaflet() {
         }).addTo(ramblersMap.map);
     }
 
-
     if (ramblersMap.options.startingplaces) {
         L.control.usageAgreement().addTo(ramblersMap.map);
     }
+    // if (ramblersMap.options.print) {
+    //     L.browserPrint().addTo(ramblersMap.map);
+    // }
+
     if (ramblersMap.options.postcodes) {
         try {
             ramblersMap.postcodelayer = L.featureGroup([]);
@@ -152,14 +166,14 @@ function raLoadLeaflet() {
         }
 
     }
-    // Zoom control
+// Zoom control
     L.control.scale().addTo(ramblersMap.map);
 }
 
 
 function updateClusterProgressBar(processed, total, elapsed) {
     if (elapsed > 1000) {
-        // if it takes more than a second to load, display the progress bar:
+// if it takes more than a second to load, display the progress bar:
         ramblersMap.progressBar.innerHTML = "Loading: " + Math.round(processed / total * 100) + "%";
     }
 
@@ -168,8 +182,18 @@ function updateClusterProgressBar(processed, total, elapsed) {
         ramblersMap.progressBar.style.display = "none";
     }
 }
+function removeClusterMarkers() {
+    ramblersMap.markersCG.removeLayers(ramblersMap.markerList);
+    ramblersMap.markerList = [];
+    //     ramblersMap.markersCG.addLayers(ramblersMap.markerList);
+}
+function addClusterMarkers() {
+    ramblersMap.markersCG.addLayers(ramblersMap.markerList);
+    var bounds = getBounds(ramblersMap.markerList);
+    ramblersMap.map.fitBounds(bounds);
+}
 
-function createWalkMarkers(base) {
+function createWalkMarkers() {
     markerRoute = L.icon({
         iconUrl: ramblersMap.base + "ramblers/images/marker-route.png",
         iconSize: [33, 50],
@@ -200,7 +224,7 @@ function createWalkMarkers(base) {
         iconSize: [40, 35]
     });
 }
-function createMouseMarkers(base) {
+function createMouseMarkers() {
 // add marker and layer group to contain postcode markers
     postcodeIcon = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/postcode-icon.png',
@@ -232,7 +256,7 @@ function createMouseMarkers(base) {
     ramblersMap.gridsquare10 = L.rectangle([[84, -89], [84.00001, -89.000001]],
             {color: "#884000", weight: 1}).addTo(ramblersMap.map);
 }
-function createPlaceMarkers(base) {
+function createPlaceMarkers() {
     s0 = L.icon({
         iconUrl: ramblersMap.base + 'images/rejected.png',
         iconSize: [15, 15]
@@ -257,7 +281,6 @@ function createPlaceMarkers(base) {
         iconUrl: ramblersMap.base + 'images/5star.png',
         iconSize: [27, 27]
     });
-
 }
 
 function addMarker($popup, $lat, $long, $icon) {
@@ -287,12 +310,11 @@ function addPlace($gr, $no, $lat, $long, $icon)
 }
 function getBounds(list) {
     var bounds = new L.LatLngBounds();
-    var marker;
+    var marker, i;
     for (i = 0; i < list.length; i++) {
         marker = list[i];
         bounds.extend(marker.getLatLng());
     }
-
     return bounds;
 }
 
@@ -326,13 +348,13 @@ function displayPostcodes(e) {
     var gr10 = grid.toString(8);
     var i;
     var marker;
-    var zoom = displaymap.getZoom();
+    var zoom = ramblersMap.map.getZoom();
     var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
     if (gr !== "") {
         desc += "<br/><b>Grid Reference: </b>" + gr +
                 "<br/><b>Grid Reference: </b>" + gr10 + " (8 Figure)";
     }
-    // desc += getBroswerStatus();
+// desc += getBrowserStatus();
     var results = encodeShortest(e.latlng.lat, e.latlng.lng);
     if (results.length > 0) {
         desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode + "<br/>";
@@ -340,7 +362,6 @@ function displayPostcodes(e) {
     if (gr !== "") {
         desc += '<a href="javascript:photos(\'' + gr10 + '\')">[Photos]</a>';
         desc += '<a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
-
     }
     desc += '<a href="javascript:googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
     desc += '<a href="javascript:directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
@@ -391,7 +412,6 @@ function displayPostcodes(e) {
                 }
 
             });
-
         } else {
             point.getPopup().setContent(desc + "<br/><b>Zoom in and right click/tap hold to see nearby postcodes</b>");
         }
@@ -407,7 +427,7 @@ function kFormatter(num) {
     return num > 999 ? (num / 1000).toFixed(1) + 'K' : num;
 }
 
-function getBroswerStatus() {
+function getBrowserStatus() {
     out = "";
     out += "<br/>Mobile: " + L.Browser.mobile.toString();
     out += "<br/>Touch: " + L.Browser.touch.toString();
@@ -436,10 +456,30 @@ var getJSON = function (url, callback) {
     };
     xhr.send();
 };
+var postJSON = function (url, data, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.responseType = "json";
+    xhr.onload = function () {
+        var status = xhr.status;
+        if (status === 200) {
+            if (typeof xhr.response === 'string') {
+                items = JSON.parse(xhr.response);
+            } else {
+                items = xhr.response;
+            }
+            callback(null, items);
+        } else {
+            callback(status);
+        }
+    };
+    xhr.send(data);
+};
 // Helper method to parse the title tag from the response.
-function getTitle(text) {
-    return text.match('<title>(.*)?</title>')[1];
-}
+//function getTitle(text) {
+//    return text.match('<title>(.*)?</title>')[1];
+//}
 
 function getMouseMoveAction(e) {
     var gr, gridref;
@@ -456,22 +496,28 @@ function getMouseMoveAction(e) {
     if (gr === "") {
         gridref = "Outside OS Grid<br/>";
     } else {
-        if (zoom > 12) {
-            var bounds = osGridToLatLongSquare(grid, 100);
-            // change rectangle
-            ramblersMap.gridsquare100.setLatLngs(bounds);
-        }
-        if (zoom > 16) {
-            var bounds2 = osGridToLatLongSquare(grid, 10);
-            // change rectangle
-            ramblersMap.gridsquare10.setLatLngs(bounds2);
+        if (ramblersMap.displayMouseGridSquare) {
+
+            if (zoom > 12) {
+                var bounds = osGridToLatLongSquare(grid, 100);
+                // change rectangle
+                ramblersMap.gridsquare100.setLatLngs(bounds);
+            }
+            if (zoom > 16) {
+                var bounds2 = osGridToLatLongSquare(grid, 10);
+                // change rectangle
+                ramblersMap.gridsquare10.setLatLngs(bounds2);
+            } else {
+                ramblersMap.gridsquare10.setLatLngs([[84, -89], [84.00001, -89.000001]]);
+            }
         } else {
             ramblersMap.gridsquare10.setLatLngs([[84, -89], [84.00001, -89.000001]]);
+            ramblersMap.gridsquare100.setLatLngs([[84, -89], [84.00001, -89.000001]]);
         }
     }
     var lng = e.latlng.lng.toFixed(5);
     var lat = e.latlng.lat.toFixed(5);
-    var value = "Lat/long: " + lat + ", " + lng;
+    var value = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
     return  gridref + value;
 }
 
@@ -527,13 +573,23 @@ function osMapGrid(L, layer) {
     }
 }
 
-function removeClusterMarkers() {
-    ramblersMap.markersCG.removeLayers(ramblersMap.markerList);
-    ramblersMap.markerList = [];
-    //     ramblersMap.markersCG.addLayers(ramblersMap.markerList);
+function m_to_km(v) {
+    return v / 1000;
 }
-function addClusterMarkers() {
-    ramblersMap.markersCG.addLayers(ramblersMap.markerList);
-    var bounds = getBounds(ramblersMap.markerList);
-    ramblersMap.map.fitBounds(bounds);
+
+function  m_to_mi(v) {
+    return v / 1609.34;
+}
+function naismith(dist, elevGain) {
+    var mins = 60 * dist / 5000 + 60 * elevGain / 600;
+    return convertToHoursMins(mins);
+}
+function convertToHoursMins(time) {
+    if (time < 1) {
+        return '';
+    }
+    var h = Math.floor(time / 60);
+    var m = (time % 60);
+    return  h + 'hrs ' + m.toFixed(0) + 'mins';
+    ;
 }

@@ -34,7 +34,8 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
             fputcsv($handle, $fields);
             foreach ($items as $walk) {
                 $fields = $this->displayWalkCSV($walk);
-                $fields = $this->convertToAscii($fields);
+             //   $fields = $this->removeInvalidChars($fields);
+                //   $fields = $this->convertToAscii($fields);
                 fputcsv($handle, $fields);
             }
             fclose($handle);
@@ -51,7 +52,54 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
             }
             return $fields;
         }
+
         return $values;
+    }
+
+    private function removeInvalidChars($values) {
+        $fields = [];
+        foreach ($values as $key => $value) {
+
+            $fields[$key] = $this->convert_ascii($value);
+            //      $fields[$key]=preg_replace('^\PC+$','',$value);
+        }
+        return $fields;
+    }
+
+    function convert_ascii($string) {
+        // Replace Single Curly Quotes
+        $search[] = chr(226) . chr(128) . chr(152);
+        $replace[] = "'";
+        $search[] = chr(226) . chr(128) . chr(153);
+        $replace[] = "'";
+        // Replace Smart Double Curly Quotes
+        $search[] = chr(226) . chr(128) . chr(156);
+        $replace[] = '"';
+        $search[] = chr(226) . chr(128) . chr(157);
+        $replace[] = '"';
+        // Replace En Dash
+        $search[] = chr(226) . chr(128) . chr(147);
+        $replace[] = '--';
+        // Replace Em Dash
+        $search[] = chr(226) . chr(128) . chr(148);
+        $replace[] = '---';
+        // Replace Bullet
+        $search[] = chr(226) . chr(128) . chr(162);
+        $replace[] = '*';
+        // Replace Middle Dot
+        $search[] = chr(194) . chr(183);
+        $replace[] = '*';
+        // Replace Ellipsis with three consecutive dots
+        $search[] = chr(226) . chr(128) . chr(166);
+        $replace[] = '...';
+       // Replace Ellipsis with three consecutive dots
+        $search[] = chr(c2a3);
+        $replace[] = '£';
+        // Apply Replacements
+        $string = str_replace($search, $replace, $string);
+        // Remove any non-ASCII Characters
+        $string = preg_replace("/[^\x01-\x7F]/", "", $string);
+        return $string;
     }
 
     private function displayWalkCSV($walk) {

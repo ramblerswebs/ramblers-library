@@ -1,3 +1,13 @@
+/* pantone0110 '#D7A900';           */
+/* pantone0159 '#C75B12';           */
+/* pantone0186 '#C60C30';           */
+/* pantone0555 '#206C49';           */
+/* pantone0583 '#A8B400';           */
+/* pantone1815 '#782327';           */
+/* pantone4485 '#5B491F';           */
+/* pantone5565 '#8BA69C';           */
+/* pantone7474 '#007A87';           */
+
 p.mapcopyright {
     font-size:8px;
     float:right;
@@ -147,4 +157,21 @@ form input#gpxtitlesearch{
     float:right;
     margin-top:10px;
     margin-right:10px;
+}
+
+.leaflet-div-icon.leaflet-editing-icon.leaflet-touch-icon {
+    background: rgba(120, 35, 39, 0.6) !important;
+}
+.ra-editing-icon{
+
+    background: rgba(120, 35, 39, 0.9) ;
+    border-radius:5px;
+    width:10px ;
+    height:10px ;
+    margin-top:-5px ;
+    margin-left:-5px ;
+    border: 1px solid #ff0000 ;
+}
+.map-print-hidden {
+    display:none !important;
 }

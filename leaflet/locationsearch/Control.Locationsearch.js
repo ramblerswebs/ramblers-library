@@ -13,7 +13,7 @@ L.Control.Locationsearch = L.Control.extend({
         locationsearch: {search: null},
         defaultMarkLocationsearch: true
     },
-    includes: L.Mixin.Events,
+    includes: (L.Evented.prototype || L.Mixin.Events),
     initialize: function (options) {
         L.Util.setOptions(this, options);
         this._requestCount = 0;

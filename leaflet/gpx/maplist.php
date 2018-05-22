@@ -26,7 +26,16 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $items = $stats->getJson();
         $this->addMapScript($items);
         $this->options->cluster = true;
-        $this->addElevation = true;
+        $this->options->displayElevation = true;
+        $this->options->fullscreen = true;
+        $this->options->search = true;
+        $this->options->locationsearch = true;
+        $this->options->osgrid = true;
+        $this->options->mouseposition = true;
+        $this->options->postcodes = true;
+        $this->options->fitbounds = true;
+        $this->options->displayElevation = true;
+         $this->options->print = true;
         if ($this->imperial) {
             $imperial = "true";
         } else {
