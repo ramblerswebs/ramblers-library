@@ -34,7 +34,7 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
             fputcsv($handle, $fields);
             foreach ($items as $walk) {
                 $fields = $this->displayWalkCSV($walk);
-             //   $fields = $this->removeInvalidChars($fields);
+                //   $fields = $this->removeInvalidChars($fields);
                 //   $fields = $this->convertToAscii($fields);
                 fputcsv($handle, $fields);
             }
@@ -92,7 +92,7 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         // Replace Ellipsis with three consecutive dots
         $search[] = chr(226) . chr(128) . chr(166);
         $replace[] = '...';
-       // Replace Ellipsis with three consecutive dots
+        // Replace Ellipsis with three consecutive dots
         $search[] = chr(c2a3);
         $replace[] = '£';
         // Apply Replacements
@@ -119,14 +119,22 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         $array[] = $location->postcode;
         $array[] = $location->gridref;
         $array[] = $location->description;
-        $array[] = $location->time->format('G:i:s');
+        if ($location->time != "") {
+            $array[] = $location->time->format('G:i:s');
+        } else {
+            $array[] = "";
+        }
 
         if ($walk->meetLocation != null) {
             $location = $walk->meetLocation;
             $array[] = $location->postcode;
             $array[] = $location->gridref;
             $array[] = $location->description;
-            $array[] = $location->time->format('G:i:s');
+            if ($location->time != "") {
+                $array[] = $location->time->format('G:i:s');
+            } else {
+                $array[] = "";
+            }
         } else {
             $array[] = "";
             $array[] = "";
@@ -140,7 +148,11 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         $array[] = ""; // walking time
         if ($walk->finishLocation != null) {
             $location = $walk->finishLocation;
-            $array[] = $location->time->format('G:i:s');
+            if ($location->time != "") {
+                $array[] = $location->time->format('G:i:s');
+            } else {
+                $array[] = "";
+            }
             $array[] = $location->postcode;
             $array[] = $location->gridref;
             $array[] = $location->description;
