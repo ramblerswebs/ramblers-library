@@ -8,11 +8,19 @@ L.Control.GpxDownload = L.Control.extend({
     onAdd: function (map) {
         this._map = map;
         this.enabled = false;
+        this.supported = true;
         var container = L.DomUtil.create('div', 'leaflet-control-gpx-download leaflet-bar leaflet-control ra-download-toolbar-button-disabled');
         this._createIcon(container);
         this._container = container;
-
+        var hyperlink = document.createElement("a");
+        // if download property is undefined
+        // browser doesn't support the feature
+        //  if (hyperlink.download === undefined) {
+        //    blurt("Unfortunately your web browser does not support an HTML5 feature which would allow you to download a walking route as a GPX file. You should be able to upload and display a gxp file but not save them.");
+        //    this.supported = false;
+        //   } else {
         L.DomEvent.on(this.link, 'click', this._downloadGpx, this);
+        //    }
         return container;
     },
     setRouteItems: function (itemsCollection) {
@@ -25,6 +33,9 @@ L.Control.GpxDownload = L.Control.extend({
         }
         if (status == "auto") {
             this.enabled = this._itemsCollection.getLayers().length !== 0;
+        }
+        if (this.supported === false) {
+            this.enabled = false;
         }
         if (this.enabled) {
             L.DomUtil.removeClass(this._container, 'ra-download-toolbar-button-disabled');
@@ -48,20 +59,12 @@ L.Control.GpxDownload = L.Control.extend({
             var hasItems = drawnItems.getLayers().length !== 0;
             if (!hasItems) {
                 alert('No routes or markers defined');
-                this.link.removeAttribute('href');
-                this.link.removeAttribute('download');
             } else {
-                // var datajon = drawnItems.toGeoJSON();
-                // console.log(datajon);
-                //  var gpxData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + togpx(data);
-                //  var convertedData = 'data:application/javascript;charset=utf-8,' + encodeURIComponent(gpxData);
                 var data = this._createGPXdata();
-                var convertedData = 'data:application/javascript;charset=utf-8,' + encodeURIComponent(data);
-                // Create export
-                this.link.setAttribute('href', 'data:' + convertedData);
-                this.link.setAttribute('download', 'route.gpx');
+                var blob = new Blob([data], {type: "text/text;charset=utf-8"});
+                saveAs(blob, "route.gpx");
             }
-        } 
+        }
     },
     _createGPXdata: function () {
         var gpxData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -71,7 +74,7 @@ L.Control.GpxDownload = L.Control.extend({
         gpxData += 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + "\n";
         gpxData += 'xmlns="http://www.topografix.com/GPX/1/0"' + "\n";
         gpxData += 'xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">' + "\n";
-        _this=this;
+        _this = this;
         this._itemsCollection.eachLayer(function (layer) {
             if (layer instanceof L.Marker) {
                 gpxData += _this._addMarker(layer);

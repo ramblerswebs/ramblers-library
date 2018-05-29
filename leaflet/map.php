@@ -117,7 +117,8 @@ class RLeafletMap {
             $this->addStyleSheet("ramblers/leaflet/gpx/ra-gpx-tools.css", "text/css");
             $this->addScript("ramblers/vendors/blurt-1.0.2/dist/js/blurt.min.js", "text/javascript");
             $this->addStyleSheet("ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
-        }
+             $this->addScript("ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
+       }
         if (RLicense::isBingKeyMapSet()) {
             // Bing maps
             $this->addScript("ramblers/vendors/bing/bing.js", "text/javascript");

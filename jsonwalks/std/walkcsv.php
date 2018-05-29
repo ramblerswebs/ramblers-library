@@ -119,22 +119,13 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         $array[] = $location->postcode;
         $array[] = $location->gridref;
         $array[] = $location->description;
-        if ($location->time != "") {
-            $array[] = $location->time->format('G:i:s');
-        } else {
-            $array[] = "";
-        }
-
+        $array[] = $location->getTextTime();
         if ($walk->meetLocation != null) {
             $location = $walk->meetLocation;
             $array[] = $location->postcode;
             $array[] = $location->gridref;
             $array[] = $location->description;
-            if ($location->time != "") {
-                $array[] = $location->time->format('G:i:s');
-            } else {
-                $array[] = "";
-            }
+            $array[] = $location->getTextTime();
         } else {
             $array[] = "";
             $array[] = "";
@@ -148,11 +139,7 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         $array[] = ""; // walking time
         if ($walk->finishLocation != null) {
             $location = $walk->finishLocation;
-            if ($location->time != "") {
-                $array[] = $location->time->format('G:i:s');
-            } else {
-                $array[] = "";
-            }
+            $array[] = $location->getTextTime();
             $array[] = $location->postcode;
             $array[] = $location->gridref;
             $array[] = $location->description;

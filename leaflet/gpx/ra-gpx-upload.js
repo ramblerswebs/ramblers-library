@@ -184,7 +184,6 @@ L.Control.GpxUpload = L.Control.extend({
 
         var files = evt.target.files; // FileList object
         var file = files[0];
-
         var reader = new FileReader();
 
         // Closure to capture the file information.

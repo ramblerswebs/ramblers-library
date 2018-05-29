@@ -83,6 +83,13 @@ class RJsonwalksLocation {
         return $textdescription;
     }
 
+    public function getTextTime() {
+        if ($this->time != "") {
+            return $this->time->format('G:i:s');
+        }
+        return "";
+    }
+
     public function distanceFrom($easting, $northing, $distanceKm) {
         $dele = ($this->easting - $easting) / 1000;
         $deln = ($this->northing - $northing) / 1000;

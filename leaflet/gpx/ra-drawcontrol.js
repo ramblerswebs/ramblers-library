@@ -1,13 +1,6 @@
 var L, ramblersMap;
 // code for drawing route/track
 function addDrawControl(lat, long, zoom) {
-    var hyperlink = document.createElement("a");
-
-    // if download property is undefined
-    // browser doesn't support the feature
-    if (hyperlink.download === undefined) {
-        blurt("Unfortunately your web browser does not support an HTML5 feature which would allow you to download a walking route as a GPX file. You should be able to upload and display a gxp file but not save them.");
-    }
     // zoom to correct area
     ramblersMap.map.setZoom(zoom);
     latlong = new L.LatLng(lat, long);
