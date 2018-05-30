@@ -70,7 +70,7 @@ function addDrawControl(lat, long, zoom) {
                 metric: true,
                 shapeOptions: {
                     color: '#007A87',
-                    opacity: 1,
+                    opacity: 1
                 }
             }
         }
@@ -114,6 +114,8 @@ function addDrawControl(lat, long, zoom) {
         }).addTo(e.printMap);
     });
     ramblersMap.drawnItems.on("addline", function (e) {
+        var bounds = ramblersMap.drawnItems.getBounds();
+        ramblersMap.map.fitBounds(bounds);
         setGpxToolStatus('auto');
         addElevations(false);
     });
@@ -170,13 +172,13 @@ function addDrawControl(lat, long, zoom) {
     ramblersMap.map.on('popupopen', function (e) {
         var marker = e.popup._source;
         var popup = marker.getPopup();
-        if (marker.name == "undefined") {
+        if (marker.name === "undefined") {
             marker.name = '';
         }
-        if (marker.desc == "undefined") {
+        if (marker.desc === "undefined") {
             marker.desc = '';
         }
-        if (marker.symbol == "undefined") {
+        if (marker.symbol === "undefined") {
             marker.symbol = '';
         }
         var content = '<span><b>Name</b></span><br/><input id="markerName" type="text"/ value="' + marker.name + '" /><br/><span><b>Description<b/></span><br/><textarea id="markerDesc" cols="25" rows="5">' + marker.desc + '</textarea><br/><span><b>Symbol</b></span><input id="markerSymbol" type="text" value="' + marker.symbol + '"/>';
@@ -224,7 +226,7 @@ function listDrawnItems() {
         text += "</table>";
     }
     var node = document.getElementById("ra-map-details");
-    if (node != null) {
+    if (node !== null) {
         node.innerHTML = text;
     }
 }
@@ -346,7 +348,6 @@ function hasNullElevation(latlngs, nullItems, force) {
 }
 function updateElevations(item) {
     var noItems = ramblersMap.drawnItems.getLayers().length;
-    var latlngs;
     if (noItems > 0) {
         ramblersMap.drawnItems.eachLayer(function (layer) {
             if (layer instanceof L.Polyline) {

@@ -1,4 +1,3 @@
-var ramblersMap;
 L.Control.GpxUpload = L.Control.extend({
     options: {
         title: 'Up load a walking route from a GPX file',
@@ -6,7 +5,7 @@ L.Control.GpxUpload = L.Control.extend({
     },
     onAdd: function (map) {
         this._map = map;
-        _this = this;
+        ra_gpx_upload_this = this;
         var container = L.DomUtil.create('div', 'leaflet-control-gpx-upload leaflet-bar leaflet-control');
         this._createIcon(container);
         container.title = this.options.title;
@@ -189,10 +188,7 @@ L.Control.GpxUpload = L.Control.extend({
         // Closure to capture the file information.
         reader.onload = (function (theFile) {
             return function (e) {
-                _this._gpxreader(reader.result, _this._itemsCollection, {async: false});
-                // listDrawnItems();
-                var bounds = ramblersMap.drawnItems.getBounds();
-                ramblersMap.map.fitBounds(bounds);
+                ra_gpx_upload_this._gpxreader(reader.result, ra_gpx_upload_this._itemsCollection, {async: false});
             };
         })(file);
 

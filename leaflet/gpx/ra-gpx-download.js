@@ -1,4 +1,3 @@
-var ramblersMap;
 L.Control.GpxDownload = L.Control.extend({
     options: {
         title: 'Download a walking route as GPX file',
@@ -12,15 +11,7 @@ L.Control.GpxDownload = L.Control.extend({
         var container = L.DomUtil.create('div', 'leaflet-control-gpx-download leaflet-bar leaflet-control ra-download-toolbar-button-disabled');
         this._createIcon(container);
         this._container = container;
-        var hyperlink = document.createElement("a");
-        // if download property is undefined
-        // browser doesn't support the feature
-        //  if (hyperlink.download === undefined) {
-        //    blurt("Unfortunately your web browser does not support an HTML5 feature which would allow you to download a walking route as a GPX file. You should be able to upload and display a gxp file but not save them.");
-        //    this.supported = false;
-        //   } else {
         L.DomEvent.on(this.link, 'click', this._downloadGpx, this);
-        //    }
         return container;
     },
     setRouteItems: function (itemsCollection) {
@@ -28,10 +19,10 @@ L.Control.GpxDownload = L.Control.extend({
     },
     setStatus: function (status) {
         this.enabled = true;
-        if (status == "off") {
+        if (status === "off") {
             this.enabled = false;
         }
-        if (status == "auto") {
+        if (status === "auto") {
             this.enabled = this._itemsCollection.getLayers().length !== 0;
         }
         if (this.supported === false) {
@@ -54,15 +45,18 @@ L.Control.GpxDownload = L.Control.extend({
     },
     _downloadGpx: function (e) {
         if (this.enabled) {
-            // var mapContainer = this._map.getContainer();
             var drawnItems = this._itemsCollection;
             var hasItems = drawnItems.getLayers().length !== 0;
             if (!hasItems) {
                 alert('No routes or markers defined');
             } else {
                 var data = this._createGPXdata();
-                var blob = new Blob([data], {type: "text/text;charset=utf-8"});
-                saveAs(blob, "route.gpx");
+                try {
+                    var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
+                    saveAs(blob, "route.gpx");
+                } catch (e) {
+                    blurt('Your web browser does not support his option!');
+                }
             }
         }
     },
@@ -74,13 +68,13 @@ L.Control.GpxDownload = L.Control.extend({
         gpxData += 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + "\n";
         gpxData += 'xmlns="http://www.topografix.com/GPX/1/0"' + "\n";
         gpxData += 'xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">' + "\n";
-        _this = this;
+        ra_gpx_download_this = this;
         this._itemsCollection.eachLayer(function (layer) {
             if (layer instanceof L.Marker) {
-                gpxData += _this._addMarker(layer);
+                gpxData += ra_gpx_download_this._addMarker(layer);
             }
             if (layer instanceof L.Polyline) {
-                gpxData += _this._addTrack(layer);
+                gpxData += ra_gpx_download_this._addTrack(layer);
             }
         });
 
@@ -105,7 +99,7 @@ L.Control.GpxDownload = L.Control.extend({
         var data = '<trk>' + "\n";
         data += '<trkseg>' + "\n";
         latlngs = track.getLatLngs();
-        data += _this._listpath(latlngs);
+        data += ra_gpx_download_this._listpath(latlngs);
 
         data += '</trkseg>' + "\n";
         data += '</trk>' + "\n";

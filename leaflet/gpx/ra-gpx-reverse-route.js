@@ -1,4 +1,3 @@
-var ramblersMap;
 L.Control.ReverseRoute = L.Control.extend({
     options: {
         title: 'Reverse the direction of walking route',
@@ -8,7 +7,7 @@ L.Control.ReverseRoute = L.Control.extend({
     onAdd: function (map) {
         this._map = map;
         this.enabled = false;
-        _this = this;
+        _ra_gpx_reverse_this = this;
         var container = L.DomUtil.create('div', 'leaflet-control-reverse-route leaflet-bar leaflet-control ra-reverse-toolbar-button-disabled');
         this._createIcon(container);
         this._container = container;
@@ -19,19 +18,19 @@ L.Control.ReverseRoute = L.Control.extend({
         this._itemsCollection = itemsCollection;
     },
     setStatus: function (status) {
-        _this.enabled = true;
+        _ra_gpx_reverse_this.enabled = true;
         if (status == "off") {
-            _this.enabled = false;
+            _ra_gpx_reverse_this.enabled = false;
         }
         if (status == "auto") {
-            _this.enabled = false;
+            _ra_gpx_reverse_this.enabled = false;
             this._itemsCollection.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
-                    _this.enabled = true;
+                    _ra_gpx_reverse_this.enabled = true;
                 }
             });
         }
-        if (_this.enabled) {
+        if (_ra_gpx_reverse_this.enabled) {
             L.DomUtil.removeClass(this._container, 'ra-reverse-toolbar-button-disabled');
             this.link.title = this.options.title;
         } else {
@@ -47,7 +46,7 @@ L.Control.ReverseRoute = L.Control.extend({
         return this.link;
     },
     _reverse_routes: function (evt) {
-        if (_this.enabled) {
+        if (_ra_gpx_reverse_this.enabled) {
             this._itemsCollection.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
                     var points = layer.getLatLngs();

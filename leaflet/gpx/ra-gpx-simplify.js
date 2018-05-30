@@ -1,4 +1,3 @@
-var ramblersMap;
 L.Control.GpxSimplify = L.Control.extend({
     options: {
         title: 'Simplify - reduce number of point defining walking route',
