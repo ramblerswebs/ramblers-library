@@ -3,11 +3,11 @@ function RamblersLeafletMap(base) {
     this.base = base;
     this.map = null;
     this.mapLayers = null;
-    this.bingkey=null;
-    this.googlekey=null;
+    this.bingkey = null;
+    this.googlekey = null;
     this.gridsquare10 = null;
     this.gridsquare100 = null;
-    this.postcodelayer = null;
+    this.postcodes = null;
     this.markerList = null;
     this.markersCG = null;
     this.progress = null;
@@ -58,7 +58,7 @@ function raLoadLeaflet() {
         maxNativeZoom: 16,
         attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
     if (ramblersMap.options.bing) {
-      //  var bingkey = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
+        //  var bingkey = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
         //   ramblersMap.mapLayers["Aerial"] = new L.BingLayer(bingkey, {type: 'Aerial'});
         ramblersMap.mapLayers["Aerial With Labels"] = new L.BingLayer(ramblersMap.bingkey, {type: 'AerialWithLabels'});
         ramblersMap.mapLayers["Ordnance Survey"] = new L.BingLayer(ramblersMap.bingkey, {type: 'ordnanceSurvey'});
@@ -120,7 +120,7 @@ function raLoadLeaflet() {
     L.control.layers(ramblersMap.mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
     if (ramblersMap.options.search) {
         try {
-            var geocoder = L.Control.geocoder({
+            L.Control.geocoder({
                 defaultMarkGeocode: true,
                 collapsed: true,
                 geocoder: L.Control.Geocoder.nominatim({
@@ -150,9 +150,9 @@ function raLoadLeaflet() {
 
     if (ramblersMap.options.postcodes) {
         try {
-            ramblersMap.postcodelayer = L.featureGroup([]);
-            ramblersMap.postcodelayer.addTo(ramblersMap.map);
-            L.control.postcodeStatus().addTo(ramblersMap.map);
+            //   ramblersMap.postcodelayer = L.featureGroup([]);
+            //   ramblersMap.postcodelayer.addTo(ramblersMap.map);
+            ramblersMap.postcodes = L.control.postcodeStatus().addTo(ramblersMap.map);
         } catch (err) {
             document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
         }
@@ -319,108 +319,26 @@ function getBounds(list) {
 }
 
 function walkdetails($url) {
-    page = $url;
-    window2 = open(page, "_blank", "scrollbars=yes,width=990,height=480,menubar=yes,resizable=yes,status=yes");
+    var page = $url;
+    open(page, "_blank", "scrollbars=yes,width=990,height=480,menubar=yes,resizable=yes,status=yes");
 }
 
 function photos($gr) {
-    page = "http://www.geograph.org.uk/gridref/" + $gr;
-    window2 = open(page, "_blank", "scrollbars=yes,width=990,height=480,menubar=yes,resizable=yes,status=yes");
+    var page = "http://www.geograph.org.uk/gridref/" + $gr;
+    open(page, "_blank", "scrollbars=yes,width=990,height=480,menubar=yes,resizable=yes,status=yes");
 }
 function streetmap($gr) {
-    page = "http://www.streetmap.co.uk/grid/" + $gr + "&z=115";
-    window2 = open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
+    var page = "http://www.streetmap.co.uk/grid/" + $gr + "&z=115";
+    open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 function directions($lat, $long) {
 //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
-    page = "https://maps.google.com?saddr=Current+Location&daddr=" + $lat.toString() + "," + $long.toString();
-    window2 = open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
+    var page = "https://maps.google.com?saddr=Current+Location&daddr=" + $lat.toString() + "," + $long.toString();
+    open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 function googlemap($lat, $long) {
-    page = "https://www.google.com/maps/place/" + $lat.toString() + "+" + $long.toString() + "/@" + $lat.toString() + "," + $long.toString() + ",15z";
-    window2 = open(page, "Google Map", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
-}
-
-function displayPostcodes(e) {
-    var p = new LatLon(e.latlng.lat, e.latlng.lng);
-    var grid = OsGridRef.latLonToOsGrid(p);
-    var gr = grid.toString(6);
-    var gr10 = grid.toString(8);
-    var i;
-    var marker;
-    var zoom = ramblersMap.map.getZoom();
-    var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
-    if (gr !== "") {
-        desc += "<br/><b>Grid Reference: </b>" + gr +
-                "<br/><b>Grid Reference: </b>" + gr10 + " (8 Figure)";
-    }
-// desc += getBrowserStatus();
-    var results = encodeShortest(e.latlng.lat, e.latlng.lng);
-    if (results.length > 0) {
-        desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode + "<br/>";
-    }
-    if (gr !== "") {
-        desc += '<a href="javascript:photos(\'' + gr10 + '\')">[Photos]</a>';
-        desc += '<a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
-    }
-    desc += '<a href="javascript:googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
-    desc += '<a href="javascript:directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
-    ramblersMap.postcodelayer.clearLayers();
-    var msg = "   ";
-    var point = L.marker(p).bindPopup(msg);
-    ramblersMap.postcodelayer.addLayer(point);
-    point.getPopup().setContent(desc);
-    if (gr !== "") {
-        point.openPopup();
-        if (zoom > 12) {
-            point.getPopup().setContent(desc + "<br/><b>Searching for postcodes ...</b>");
-// get postcodes around this point       
-            var east = Math.round(grid.easting);
-            var north = Math.round(grid.northing);
-            var url = "https://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=20";
-            getJSON(url, function (err, items) {
-                if (err !== null) {
-                    var msg = "Error: Something went wrong: " + err;
-                    point.getPopup().setContent(msg);
-                } else {
-                    if (items.length === 0) {
-                        closest = "No postcodes found within 10km";
-                        point.getPopup().setContent(closest);
-                    } else {
-                        for (i = 0; i < items.length; i++) {
-
-                            var item = items[i];
-                            var popup = item.Postcode + "<br />     Distance: " + kFormatter(Math.round(item.Distance)) + "m";
-                            var easting = item.Easting;
-                            var northing = item.Northing;
-                            var gr = new OsGridRef(easting, northing);
-                            var latlong = OsGridRef.osGridToLatLon(gr);
-                            var pt = new L.latLng(latlong.lat, latlong.lon);
-                            if (i === 0) {
-                                marker = L.marker(pt, {icon: postcodeIconClosest}).bindPopup(popup);
-                                style = {color: 'green', weight: 4, opacity: 0.2};
-                            } else {
-                                marker = L.marker(pt, {icon: postcodeIcon}).bindPopup(popup);
-                                style = {color: 'blue', weight: 4, opacity: 0.2};
-                            }
-                            ramblersMap.postcodelayer.addLayer(marker);
-                            ramblersMap.postcodelayer.addLayer(L.polyline([pt, p], style));
-                        }
-                    }
-                    point.getPopup().setContent(desc);
-                    point.openPopup();
-                }
-
-            });
-        } else {
-            point.getPopup().setContent(desc + "<br/><b>Zoom in and right click/tap hold to see nearby postcodes</b>");
-        }
-    } else {
-        desc += "<br/>Outside OS Grid";
-        point.getPopup().setContent(desc);
-        point.openPopup();
-    }
-
+    var page = "https://www.google.com/maps/place/" + $lat.toString() + "+" + $long.toString() + "/@" + $lat.toString() + "," + $long.toString() + ",15z";
+    open(page, "Google Map", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 
 function kFormatter(num) {
@@ -476,10 +394,6 @@ var postJSON = function (url, data, callback) {
     };
     xhr.send(data);
 };
-// Helper method to parse the title tag from the response.
-//function getTitle(text) {
-//    return text.match('<title>(.*)?</title>')[1];
-//}
 
 function getMouseMoveAction(e) {
     var gr, gridref;
@@ -497,7 +411,6 @@ function getMouseMoveAction(e) {
         gridref = "Outside OS Grid<br/>";
     } else {
         if (ramblersMap.displayMouseGridSquare) {
-
             if (zoom > 12) {
                 var bounds = osGridToLatLongSquare(grid, 100);
                 // change rectangle
@@ -592,4 +505,30 @@ function convertToHoursMins(time) {
     var m = (time % 60);
     return  h + 'hrs ' + m.toFixed(0) + 'mins';
     ;
+}
+function getMarkerIcon(name) {
+    var url = getMarkerIconUrl(name);
+    if (url !== null) {
+        var icon = L.icon({
+            iconUrl: url,
+            iconSize: [32, 37], // size of the icon
+            iconAnchor: [16,37], // point of the icon which will correspond to marker's location
+            popupAnchor: [0, -37] // point from which the popup should open relative to the iconAnchor
+        });
+        return icon;
+    }
+    return null;
+}
+function getMarkerIconUrl(name) {
+    var url = ramblersMap.base + "ramblers/gpxsymbols/" + name + ".png";
+    if (imageExists(url)) {
+        return url;
+    }
+    return null;
+}
+function imageExists(image_url) {
+    var http = new XMLHttpRequest();
+    http.open('HEAD', image_url, false);
+    http.send();
+    return http.status !== 404;
 }

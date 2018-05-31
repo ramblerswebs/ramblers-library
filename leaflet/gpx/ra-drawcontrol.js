@@ -100,13 +100,16 @@ function addDrawControl(lat, long, zoom) {
                 layer = e.layer;
         if (type === 'marker') {
             layer.bindPopup('A popup!');
+            var marker = layer;
+            marker.name = '';
+            marker.desc = '';
+            marker.symbol = '';
         }
         ramblersMap.drawnItems.addLayer(layer);
         ramblersMap.map.addLayer(ramblersMap.drawnItems);
         addElevations(false);
     });
     ramblersMap.map.on('browser-print-start', function (e) {
-        var a = e;
         L.control.scale({
             position: 'topleft',
             imperial: false,
@@ -171,50 +174,72 @@ function addDrawControl(lat, long, zoom) {
 
     ramblersMap.map.on('popupopen', function (e) {
         var marker = e.popup._source;
-        var popup = marker.getPopup();
-        if (marker.name === "undefined") {
-            marker.name = '';
+        findMarker(marker);
+        if (marker.found) {
+            var popup = marker.getPopup();
+            var content = '<span><b>Name</b></span><br/><input id="markerName" type="text"/ value="' + marker.name + '" /><br/><span><b>Description<b/></span><br/><textarea id="markerDesc" cols="25" rows="5">' + marker.desc + '</textarea><br/><span><b>Symbol</b></span><br/><input id="markerSymbol" type="text" value="' + marker.symbol + '"/>';
+            popup.setContent(content);
         }
-        if (marker.desc === "undefined") {
-            marker.desc = '';
-        }
-        if (marker.symbol === "undefined") {
-            marker.symbol = '';
-        }
-        var content = '<span><b>Name</b></span><br/><input id="markerName" type="text"/ value="' + marker.name + '" /><br/><span><b>Description<b/></span><br/><textarea id="markerDesc" cols="25" rows="5">' + marker.desc + '</textarea><br/><span><b>Symbol</b></span><input id="markerSymbol" type="text" value="' + marker.symbol + '"/>';
-        popup.setContent(content);
         //    alert('open');
     });
+    function findMarker(marker) {
+        marker.found = false;
+        ramblersMap.drawnItems.eachLayer(function (layer) {
+            if (layer instanceof L.Marker) {
+                if (layer === marker) {
+                    marker.found = true;
+                }
+                ;
+            }
+        });
+    }
     ramblersMap.map.on('popupclose', function (e) {
         var marker = e.popup._source;
-        var popup = marker.getPopup();
-        var sName = document.getElementById('markerName').value;
-        var sDesc = document.getElementById('markerDesc').value;
-        var sSymbol = document.getElementById('markerSymbol').value;
-        popup.setContent("Some content" + sDesc);
-        marker.name = sName;
-        marker.desc = sDesc;
-        marker.symbol = sSymbol;
-        marker.title = sName + " - " + sSymbol;
-
+        findMarker(marker);
+        if (marker.found) {
+            var popup = marker.getPopup();
+            var sName = getElementValue('markerName');
+            var sDesc = getElementValue('markerDesc');
+            var sSymbol = getElementValue('markerSymbol');
+            popup.setContent(sDesc);
+            marker.name = sName;
+            marker.desc = sDesc;
+            marker.symbol = sSymbol;
+            var icon=getMarkerIcon(sSymbol);
+            if (icon!==null){
+                marker.setIcon(icon);
+            }
+            marker.title = sName + " - " + sDesc;
+        }
         //  alert('close');
     });
+    function getElementValue(id) {
+        var node = document.getElementById(id);
+        if (node !== null) {
+            return node.value;
+        }
+        return "Invalid";
+    }
 
     function setGpxToolStatus(status) {
         reverse.setStatus(status);
         download.setStatus(status);
         simplify.setStatus(status);
+        if (ramblersMap.postcodes !== null) {
+            ramblersMap.postcodes.Enabled(status !== 'off');
+        }
+
     }
 }
 function listDrawnItems() {
     var hasItems = ramblersMap.drawnItems.getLayers().length !== 0;
     ramblersMap.elevationcontrol.clear();
-    var text = "<br/>";
+    var text = "";
     if (!hasItems) {
-        text = 'No routes or markers defined';
+        text = '<h4>No routes or markers defined</h4>';
     } else {
         text += "<table>";
-        text += "<tr><th>No</th><th>Length</th><th>Elevation Gain</th><th>Est Time</th><th>Number of points</th></tr>";
+        text += "<tr><th>Segment</th><th>Length</th><th>Elevation Gain</th><th>Est Time</th><th>Number of points</th></tr>";
         ramblersMap.drawnItems.eachLayer(function (layer) {
             var i = 1;
             if (layer instanceof L.Polyline) {

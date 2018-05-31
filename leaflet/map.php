@@ -159,6 +159,7 @@ class RLeafletMap {
         echo "</script>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
         echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";
+        echo "<p class='mapcopyright'>Maps Icons Collection https://mapicons.mapsmarker.com</p>";
         if ($options->draw) {
             echo "<p id='ra-map-details'></div>";
         }
