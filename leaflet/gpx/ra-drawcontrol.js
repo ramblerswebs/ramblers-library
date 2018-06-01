@@ -247,6 +247,44 @@ function addDrawControl(lat, long, zoom) {
         }
 
     }
+    //Move the map around when we're editing or drawing
+    ramblersMap.map.on('draw:editstart', function () {
+        enableMapMoveDrawing();
+    });
+
+    ramblersMap.map.on('draw:editstop', function () {
+        disableMapMoveDrawing();
+    });
+
+    ramblersMap.map.on('draw:drawstart', function () {
+        enableMapMoveDrawing();
+    });
+
+    ramblersMap.map.on('draw:drawstop', function () {
+        disableMapMoveDrawing();
+    });
+    enableMapMoveDrawing = function (layer) {
+        ramblersMap.map.on('mousemove', mapMoveDrawingMouseMove, this);
+    };
+    mapMoveDrawingMouseMove = function (e) {
+        var mousePos = e.containerPoint;
+        var mapSize = ramblersMap.map.getSize();
+
+        if (mousePos.y <= 20) {
+            ramblersMap.map.panBy([0, -20]);
+        } else if (mousePos.y + 20 > mapSize.y) {
+            ramblersMap.map.panBy([0, 20]);
+        }
+
+        if (mousePos.x <= 20) {
+            ramblersMap.map.panBy([-20, 0]);
+        } else if (mousePos.x + 20 > mapSize.x) {
+            ramblersMap.map.panBy([20,0]);
+        }
+    };
+    disableMapMoveDrawing = function () {
+        ramblersMap.map.off('mousemove', mapMoveDrawingMouseMove, this);
+    };
 }
 function listDrawnItems() {
     var hasItems = ramblersMap.drawnItems.getLayers().length !== 0;
