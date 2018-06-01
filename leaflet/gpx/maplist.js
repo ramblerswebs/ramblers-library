@@ -61,6 +61,16 @@ function displayGPX(file, linecolour, imperial) {
     g.on('addline', function (e) {
         el.addData(e.line);
     });
+    g.on('addpoint', function (e) {
+        if (e.point_type === "waypoint") {
+            var marker = e.point;
+            var sSymbol = marker.options.iconkey;
+            var icon = getMarkerIcon(sSymbol);
+            if (icon !== null) {
+                marker.setIcon(icon);
+            }
+        }
+    });
     g.on('loaded', function (e) {
         ramblersMap.map.fitBounds(e.target.getBounds());
         displayGpxdetails(g);
@@ -71,22 +81,24 @@ function displayGPX(file, linecolour, imperial) {
 
 }
 function displayGpxdetails(g) {
-    var info = g._info;
-    if (info !== "undefined" && info !== null) {
-        var header = '<b>Name:</b> ' + info.name + "<br/>";
-        header += '<b>Distance:</b> ' + getGPXDistance(info.length) + '<br/>';
-        if (info.desc !== "undefined" && info.desc !== null) {
-            header += '<b>Description:</b> ' + info.desc + '<br/>';
+    if (document.getElementById('gpxsingleheader') != null) {
+        var info = g._info;
+        if (info !== "undefined" && info !== null) {
+            var header = '<b>Name:</b> ' + info.name + "<br/>";
+            header += '<b>Distance:</b> ' + getGPXDistance(info.length) + '<br/>';
+            if (info.desc !== "undefined" && info.desc !== null) {
+                header += '<b>Description:</b> ' + info.desc + '<br/>';
+            }
+            if (info.elevation.gain === 0) {
+                header += "No elevation data<br/>";
+            } else {
+                header += '<b>Min Altitude:</b> ' + info.elevation.min.toFixed(0) + ' m<br/>';
+                header += '<b>Max Altitude:</b> ' + info.elevation.max.toFixed(0) + ' m<br/>';
+                header += '<b>Elevation Gain:</b> ' + info.elevation.gain.toFixed(0) + ' m<br/>';
+            }
+            header += "<b>Est time:</b> " + naismith(info.length, info.elevation.gain);
+            document.getElementById('gpxsingleheader').innerHTML = header;
         }
-        if (info.elevation.gain === 0) {
-            header += "No elevation data<br/>";
-        } else {
-            header += '<b>Min Altitude:</b> ' + info.elevation.min.toFixed(0) + ' m<br/>';
-            header += '<b>Max Altitude:</b> ' + info.elevation.max.toFixed(0) + ' m<br/>';
-            header += '<b>Elevation Gain:</b> ' + info.elevation.gain.toFixed(0) + ' m<br/>';
-        }
-        header += "<b>Est time:</b> " + naismith(info.length, info.elevation.gain);
-        document.getElementById('gpxsingleheader').innerHTML = header;
     }
 }
 

@@ -87,7 +87,7 @@ L.Control.GpxDownload = L.Control.extend({
             data += '<name>' + marker.name + '</name>' + "\n";
         }
         if (marker.hasOwnProperty('desc')) {
-            data += '<desc><![CDATA[' + marker.desc + ']]</desc>' + "\n";
+            data += '<desc><![CDATA[' + marker.desc + ']]></desc>' + "\n";
         }
         if (marker.hasOwnProperty('symbol')) {
             data += '<sym>' + marker.symbol + '</sym>' + "\n";

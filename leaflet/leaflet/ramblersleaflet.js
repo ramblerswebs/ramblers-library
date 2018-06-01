@@ -16,6 +16,7 @@ function RamblersLeafletMap(base) {
     this.drawnItems = null;
     this.displayMouseGridSquare = true;
     this.elevationcontrol = null;
+    this.processPopups="on";
     this.options = {cluster: false,
         fullscreen: false,
         google: false,
@@ -58,8 +59,8 @@ function raLoadLeaflet() {
         maxNativeZoom: 16,
         attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
     if (ramblersMap.options.bing) {
-        //  var bingkey = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
-        //   ramblersMap.mapLayers["Aerial"] = new L.BingLayer(bingkey, {type: 'Aerial'});
+//  var bingkey = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
+//   ramblersMap.mapLayers["Aerial"] = new L.BingLayer(bingkey, {type: 'Aerial'});
         ramblersMap.mapLayers["Aerial With Labels"] = new L.BingLayer(ramblersMap.bingkey, {type: 'AerialWithLabels'});
         ramblersMap.mapLayers["Ordnance Survey"] = new L.BingLayer(ramblersMap.bingkey, {type: 'ordnanceSurvey'});
     }
@@ -144,14 +145,14 @@ function raLoadLeaflet() {
     if (ramblersMap.options.startingplaces) {
         L.control.usageAgreement().addTo(ramblersMap.map);
     }
-    // if (ramblersMap.options.print) {
-    //     L.browserPrint().addTo(ramblersMap.map);
-    // }
+// if (ramblersMap.options.print) {
+//     L.browserPrint().addTo(ramblersMap.map);
+// }
 
     if (ramblersMap.options.postcodes) {
         try {
-            //   ramblersMap.postcodelayer = L.featureGroup([]);
-            //   ramblersMap.postcodelayer.addTo(ramblersMap.map);
+//   ramblersMap.postcodelayer = L.featureGroup([]);
+//   ramblersMap.postcodelayer.addTo(ramblersMap.map);
             ramblersMap.postcodes = L.control.postcodeStatus().addTo(ramblersMap.map);
         } catch (err) {
             document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
@@ -394,7 +395,6 @@ var postJSON = function (url, data, callback) {
     };
     xhr.send(data);
 };
-
 function getMouseMoveAction(e) {
     var gr, gridref;
     var zoom = ramblersMap.map.getZoom();
@@ -508,27 +508,36 @@ function convertToHoursMins(time) {
 }
 function getMarkerIcon(name) {
     var url = getMarkerIconUrl(name);
+    var icon;
     if (url !== null) {
-        var icon = L.icon({
+        icon = L.icon({
             iconUrl: url,
-            iconSize: [32, 37], // size of the icon
-            iconAnchor: [16,37], // point of the icon which will correspond to marker's location
-            popupAnchor: [0, -37] // point from which the popup should open relative to the iconAnchor
+            iconSize: [32, 37],
+            iconAnchor: [16, 37],
+            popupAnchor: [0, -37]
         });
-        return icon;
+
+    } else {
+        icon = L.icon({
+            iconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-wpt.png',
+            iconSize: [30, 40], // size of the icon
+            iconAnchor: [15, 40]
+        });
     }
-    return null;
+    return icon;
 }
 function getMarkerIconUrl(name) {
-    var url = ramblersMap.base + "ramblers/gpxsymbols/" + name + ".png";
-    if (imageExists(url)) {
+    var file = ramblersMap.base + "ramblers/gpxsymbols/exists.php?file=" + name + ".png";
+    if (imageExists(file)) {
+        var url = ramblersMap.base + "ramblers/gpxsymbols/" + name + ".png";
         return url;
     }
     return null;
 }
 function imageExists(image_url) {
     var http = new XMLHttpRequest();
-    http.open('HEAD', image_url, false);
+    http.open('GET', image_url, false);
     http.send();
-    return http.status !== 404;
+    var response = http.responseText;
+    return response === 'true';
 }

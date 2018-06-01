@@ -116,9 +116,9 @@ L.Control.GpxUpload = L.Control.extend({
                         el[i].getAttribute('lat'),
                         el[i].getAttribute('lon'));
 
-                name = this._ra_get_text(el[i], 'name');
-                desc = this._ra_get_text(el[i], 'desc');
-                symKey = this._ra_get_text(el[i], 'sym');
+                var name = this._ra_get_text(el[i], 'name');
+                var desc = this._ra_get_text(el[i], 'desc');
+                var symKey = this._ra_get_text(el[i], 'sym');
 
                 // add WayPointMarker, based on "sym" element if avail and icon is configured
                 var symIcon;
@@ -142,7 +142,7 @@ L.Control.GpxUpload = L.Control.extend({
                 marker.desc = desc;
                 marker.symbol = symKey;
                 marker.bindPopup("<b>" + name + "</b>" + (desc.length > 0 ? '<br>' + desc : '')).openPopup();
-                //  this.fire('addpoint', {point: marker, point_type: 'waypoint'});
+                drawlayer.fire('addpoint', {point: marker, point_type: 'waypoint'});
                 drawlayer.addLayer(marker);
                 //  layers.push(marker);
             }

@@ -19,7 +19,7 @@ class RLeafletGpxMap extends RLeafletMap {
         $document = JFactory::getDocument();
         $document->addScript("ramblers/leaflet/gpx/maplist.js", "text/javascript");
         $this->options->fullscreen = true;
-        $this->options->cluster=true;
+        $this->options->cluster = false;
         $this->options->search = true;
         $this->options->locationsearch = true;
         $this->options->osgrid = true;

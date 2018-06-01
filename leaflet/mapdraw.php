@@ -30,7 +30,7 @@ class RLeafletMapdraw extends RLeafletMap {
         $this->options->draw = true;
         $this->options->print = true;
         $this->options->bing = true;
-
+       
         $text = "addDrawControl($this->lat,$this->long,$this->zoom)";
         parent::addContent($text);
         parent::display();

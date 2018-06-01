@@ -171,8 +171,21 @@ function addDrawControl(lat, long, zoom) {
         listDrawnItems();
         setGpxToolStatus('auto');
     });
+    ramblersMap.drawnItems.on('addpoint', function (e) {
+        if (e.point_type === "waypoint") {
+            var marker = e.point;
+            var sSymbol = marker.symbol;
+            var icon = getMarkerIcon(sSymbol);
+            if (icon !== null) {
+                marker.setIcon(icon);
+            }
+        }
+    });
 
     ramblersMap.map.on('popupopen', function (e) {
+        if (ramblersMap.processPopups === 'off') {
+            return;
+        }
         var marker = e.popup._source;
         findMarker(marker);
         if (marker.found) {
@@ -189,11 +202,13 @@ function addDrawControl(lat, long, zoom) {
                 if (layer === marker) {
                     marker.found = true;
                 }
-                ;
             }
         });
     }
     ramblersMap.map.on('popupclose', function (e) {
+        if (ramblersMap.processPopups === 'off') {
+            return;
+        }
         var marker = e.popup._source;
         findMarker(marker);
         if (marker.found) {
@@ -205,11 +220,12 @@ function addDrawControl(lat, long, zoom) {
             marker.name = sName;
             marker.desc = sDesc;
             marker.symbol = sSymbol;
-            var icon=getMarkerIcon(sSymbol);
-            if (icon!==null){
+            var icon = getMarkerIcon(sSymbol);
+            if (icon !== null) {
                 marker.setIcon(icon);
             }
             marker.title = sName + " - " + sDesc;
+            //       marker.fire('revert-edited', {layer: marker});
         }
         //  alert('close');
     });
@@ -222,6 +238,7 @@ function addDrawControl(lat, long, zoom) {
     }
 
     function setGpxToolStatus(status) {
+        ramblersMap.processPopups = status;
         reverse.setStatus(status);
         download.setStatus(status);
         simplify.setStatus(status);
