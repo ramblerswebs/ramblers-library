@@ -441,7 +441,7 @@ function updateElevation(latlngs, item) {
     i = 0;
     len = latlngs.length;
     for (i = 0, len = latlngs.length; i < len; i++) {
-        if (latlngs[i].lat.toFixed(9) === item[0].toFixed(9) & latlngs[i].lng.toFixed(9) === item[1].toFixed(9)) {
+        if (Math.abs(latlngs[i].lat -item[0])<.000001 & Math.abs(latlngs[i].lng - item[1])<.000001) {
             latlngs[i].alt = item[2];
         }
     }
