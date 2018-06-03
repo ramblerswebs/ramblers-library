@@ -124,11 +124,11 @@ class RLeafletMap {
             $this->addScript("ramblers/vendors/bing/bing.js", "text/javascript");
         }
 
-//        if ($options->print) {
-//            $path = "ramblers/vendors/leaflet.browser.print-0.4/src/";
-//            $this->addScript($path . "leaflet.browser.print.js", "text/javascript");
-//            $this->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
-//        }
+        if ($options->print) {
+            $path = "ramblers/vendors/leaflet.browser.print-0.4/src/";
+            $this->addScript($path . "leaflet.browser.print.js", "text/javascript");
+            $this->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
+        }
         $this->addScriptandStyleSheets();
         $mapStyle = " #leafletmap { height: " . $this->mapHeight . "; width:" . $this->mapWidth . ";}";
         $document->addStyleDeclaration($mapStyle);

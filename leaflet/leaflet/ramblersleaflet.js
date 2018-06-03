@@ -16,7 +16,7 @@ function RamblersLeafletMap(base) {
     this.drawnItems = null;
     this.displayMouseGridSquare = true;
     this.elevationcontrol = null;
-    this.processPopups="on";
+    this.processPopups = "on";
     this.options = {cluster: false,
         fullscreen: false,
         google: false,
@@ -145,9 +145,9 @@ function raLoadLeaflet() {
     if (ramblersMap.options.startingplaces) {
         L.control.usageAgreement().addTo(ramblersMap.map);
     }
-// if (ramblersMap.options.print) {
-//     L.browserPrint().addTo(ramblersMap.map);
-// }
+    if (ramblersMap.options.print) {
+        L.browserPrint().addTo(ramblersMap.map);
+    }
 
     if (ramblersMap.options.postcodes) {
         try {

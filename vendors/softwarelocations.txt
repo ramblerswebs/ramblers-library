@@ -20,6 +20,7 @@ Drawing route
 Leaflet.Draw - https://github.com/Leaflet/Leaflet.draw
 Display GPX file - https://github.com/mpetazzoni/leaflet-gpx
 Elevation plot - https://github.com/MrMufflon/Leaflet.Elevation - modified??
+Print - https://github.com/Igor-Vladyka/leaflet.browser.print
 
 OS to/from Lat/Long conversion - http://www.movable-type.co.uk/scripts/latlong-os-gridref.html	   
 
