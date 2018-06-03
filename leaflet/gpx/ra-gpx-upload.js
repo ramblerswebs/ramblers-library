@@ -19,7 +19,7 @@ L.Control.GpxUpload = L.Control.extend({
     _createIcon: function (container) {
         //  var div='<div class="image-upload"><label for="gpx-file-upload"><img src="ramblers/leaflet/leaflet/images/icon-48-upload.png"/></label><input id="gpx-file-upload" type="file" accept=".gpx"/></div>';
         var div = L.DomUtil.create('div', 'image-upload', container);
-        div.innerHTML = '<label for="gpx-file-upload"><img src="ramblers/leaflet/gpx/images/upload.png"/></label><input id="gpx-file-upload" type="file" accept=".gpx"/>';
+        div.innerHTML = '<label for="gpx-file-upload"><img src="/ramblers/leaflet/gpx/images/upload.png"/></label><input id="gpx-file-upload" type="file" accept=".gpx"/>';
         return div;
     },
     _gpxreader: function (gpx, drawlayer, options) {
