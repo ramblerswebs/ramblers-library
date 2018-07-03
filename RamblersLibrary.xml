@@ -2,7 +2,7 @@
 <extension type="file"  version="3.0" client="site" method="upgrade">
     <name>RamblersLibrary</name>
     <author>Chris Vaughan Derby and South Derbyshire</author>
-    <creationDate>12 April 2018</creationDate>
+    <creationDate>4 July 2018</creationDate>
     <copyright>Copyright (C) 2016/2018</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
