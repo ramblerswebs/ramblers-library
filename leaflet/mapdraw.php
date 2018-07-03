@@ -35,7 +35,7 @@ class RLeafletMapdraw extends RLeafletMap {
         $this->options->displayElevation = true;
         $this->options->cluster = false;
         $this->options->draw = true;
-        $this->options->print = true;
+        $this->options->print = false;
         $this->options->bing = true;
         $this->options->ramblersPlaces = true;
  //       $this->help->insertTemplate();
