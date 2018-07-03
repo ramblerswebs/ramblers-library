@@ -5,6 +5,7 @@ L.Control.GpxUpload = L.Control.extend({
     },
     onAdd: function (map) {
         this._map = map;
+        this.enabled = true;
         ra_gpx_upload_this = this;
         var container = L.DomUtil.create('div', 'leaflet-control-gpx-upload leaflet-bar leaflet-control');
         this._createIcon(container);
@@ -19,10 +20,21 @@ L.Control.GpxUpload = L.Control.extend({
     _createIcon: function (container) {
         //  var div='<div class="image-upload"><label for="gpx-file-upload"><img src="ramblers/leaflet/leaflet/images/icon-48-upload.png"/></label><input id="gpx-file-upload" type="file" accept=".gpx"/></div>';
         var div = L.DomUtil.create('div', 'image-upload', container);
-        div.innerHTML = '<label for="gpx-file-upload"><img src="/ramblers/leaflet/gpx/images/upload.png"/></label><input id="gpx-file-upload" type="file" accept=".gpx"/>';
+        div.innerHTML = '<label for="gpx-file-upload"><div id="upload-icon"></div></label><input id="gpx-file-upload" type="file" accept=".gpx"/>';
         return div;
     },
-    _gpxreader: function (gpx, drawlayer, options) {
+    setStatus: function (status) {
+        this.enabled = status !== "off";
+
+        if (this.enabled) {
+            document.getElementById("gpx-file-upload").disabled = false;
+            L.DomUtil.removeClass(this._container, 'ra-upload-toolbar-button-disabled');
+        } else {
+            document.getElementById("gpx-file-upload").disabled = true;
+            L.DomUtil.addClass(this._container, 'ra-upload-toolbar-button-disabled');
+        }
+    },
+    _gpxreader: function (gpx, options) {
         var _MAX_POINT_INTERVAL_MS = 15000;
 
         var _DEFAULT_MARKER_OPTS = {
@@ -56,7 +68,7 @@ L.Control.GpxUpload = L.Control.extend({
         L.GPXTrackIcon = L.Icon.extend({options: options.marker_options});
         //this._gpx = gpx;
 
-        this._ra_gpx_parse(gpx, drawlayer, options, this.options.async);
+        this._ra_gpx_parse(gpx, options, this.options.async);
 
     },
     _ra_gpx_merge_objs: function (a, b) {
@@ -69,22 +81,29 @@ L.Control.GpxUpload = L.Control.extend({
         }
         return _;
     },
-    _ra_gpx_parse: function (input, drawlayer, options, async) {
-
-        if (input.substr(0, 5) === '<?xml') { // direct XML has to start with a <
+    _ra_gpx_parse: function (input, options, async) {
+        
+        var cb = function (gpx, options) {
+            var layers = ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
+            if (!layers)
+                return;
+            ra_gpx_upload_this.addLayer(layers);
+            ra_gpx_upload_this.fire('loaded');
+        };
+        if (input.substr(0, 1) === '<') { // direct XML has to start with a <
             var parser = new DOMParser();
             if (async) {
                 setTimeout(function () {
-                    this._ra_gpx_parse_gpx_data(parser.parseFromString(input, "text/xml"), drawlayer, options);
+                    cb(parser.parseFromString(input, "text/xml"), options);
                 });
             } else {
-                this._ra_gpx_parse_gpx_data(parser.parseFromString(input, "text/xml"), drawlayer, options);
+                cb(parser.parseFromString(input, "text/xml"), options);
             }
         } else {
-            // file is not xml
+            this._load_xml(input, cb, options, async);
         }
     },
-    _ra_gpx_parse_gpx_data: function (xml, drawlayer, options) {
+    _ra_gpx_parse_gpx_data: function (xml, options) {
         var j, i, el;
         var tags = [];
         var parseElements = options.gpx_options.parseElements;
@@ -103,8 +122,8 @@ L.Control.GpxUpload = L.Control.extend({
                     continue;
                 // add track
                 var l = new L.Polyline(coords, options.polyline_options);
-                drawlayer.addLayer(l);
-                drawlayer.fire('addline', {line: l});
+                ra_gpx_upload_this._itemsCollection.addLayer(l);
+                ra_gpx_upload_this._itemsCollection.fire('upload:addline', {line: l});
             }
         }
 
@@ -142,8 +161,8 @@ L.Control.GpxUpload = L.Control.extend({
                 marker.desc = desc;
                 marker.symbol = symKey;
                 marker.bindPopup("<b>" + name + "</b>" + (desc.length > 0 ? '<br>' + desc : '')).openPopup();
-                drawlayer.fire('addpoint', {point: marker, point_type: 'waypoint'});
-                drawlayer.addLayer(marker);
+                ra_gpx_upload_this._itemsCollection.fire('upload:addpoint', {point: marker, point_type: 'waypoint'});
+                ra_gpx_upload_this._itemsCollection.addLayer(marker);
                 //  layers.push(marker);
             }
         }
@@ -167,13 +186,6 @@ L.Control.GpxUpload = L.Control.extend({
         for (var i = 0; i < el.length; i++) {
             var tag;
             var ll = new L.LatLng(el[i].getAttribute('lat'), el[i].getAttribute('lon'), -999);
-            //           ll.meta = {ele: null};
-//            tag = el[i].getElementsByTagName('ele');
-//            if (tag.length > 0) {
-//                ll.meta.ele = parseFloat(tag[0].textContent);
-//            }else{
-//                ll.meta.ele=0;
-//            }
             last = ll;
             coords.push(ll);
         }
@@ -188,7 +200,7 @@ L.Control.GpxUpload = L.Control.extend({
         // Closure to capture the file information.
         reader.onload = (function (theFile) {
             return function (e) {
-                ra_gpx_upload_this._gpxreader(reader.result, ra_gpx_upload_this._itemsCollection, {async: false});
+                ra_gpx_upload_this._gpxreader(reader.result, {async: true});
             };
         })(file);
 
@@ -196,7 +208,6 @@ L.Control.GpxUpload = L.Control.extend({
         reader.readAsText(file);
         return false;
     }
-
 });
 
 L.control.gpxupload = function (options) {

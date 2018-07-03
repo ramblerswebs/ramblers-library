@@ -17,7 +17,7 @@ class RLeafletGpxMap extends RLeafletMap {
 
     public function displayPath($gpx) {
         $document = JFactory::getDocument();
-        $document->addScript("ramblers/leaflet/gpx/maplist.js", "text/javascript");
+        $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
         $this->options->fullscreen = true;
         $this->options->cluster = false;
         $this->options->search = true;

@@ -152,7 +152,7 @@ div.gpxlist  ul li{
 
 #gpxdetails th[onclick]::before {
     padding-right:5px;
-    content: url('../../images/updown.png') ;
+    content: url('images/updown.png') ;
 }
 form input#gpxtitlesearch{
     float:right;

@@ -54,9 +54,9 @@ function displayGPX(file, linecolour, imperial) {
     var g = new L.GPX(ramblersMap.base + file, {async: true,
         polyline_options: {color: linecolour},
         marker_options: {
-            startIconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-start.png',
-            endIconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-end.png',
-            shadowUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-shadow.png'
+            startIconUrl: ramblersMap.base + 'ramblers/leaflet/images/pin-icon-start.png',
+            endIconUrl: ramblersMap.base + 'ramblers/leaflet/images/pin-icon-end.png',
+            shadowUrl: ramblersMap.base + 'ramblers/leaflet/images/pin-shadow.png'
         }});
     g.on('addline', function (e) {
         el.addData(e.line);
@@ -81,7 +81,7 @@ function displayGPX(file, linecolour, imperial) {
 
 }
 function displayGpxdetails(g) {
-    if (document.getElementById('gpxsingleheader') != null) {
+    if (document.getElementById('gpxsingleheader') !== null) {
         var info = g._info;
         if (info !== "undefined" && info !== null) {
             var header = '<b>Name:</b> ' + info.name + "<br/>";

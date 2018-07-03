@@ -34,17 +34,31 @@ function addDrawControl(lat, long, zoom) {
 
     ramblersMap.drawnItems = new L.FeatureGroup();
     L.drawLocal.draw.toolbar.buttons.polyline = 'Plot a walking route(s)';
-    L.drawLocal.draw.toolbar.buttons.marker = 'Add a way point/marker';
-    L.drawLocal.edit.toolbar.buttons.edit = 'Edit walking route(s)';
+    L.drawLocal.draw.toolbar.buttons.marker = 'Add a marker';
+    L.drawLocal.edit.toolbar.buttons.edit = 'Edit walking route(s) and markers';
     L.drawLocal.edit.toolbar.buttons.editDisabled = 'No routes(s) to edit';
-    L.drawLocal.edit.toolbar.buttons.remove = 'Delete walking route(s)';
+    L.drawLocal.edit.toolbar.buttons.remove = 'Delete walking route(s) or markers';
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No route(s) to delete';
 
     ramblersMap.map.addLayer(ramblersMap.drawnItems);
+
     // load gpx download control
     var download = new L.Control.GpxDownload();
     download.setRouteItems(ramblersMap.drawnItems);
     ramblersMap.map.addControl(download);
+
+    var upload = new L.Control.GpxUpload();
+    upload.setRouteItems(ramblersMap.drawnItems);
+    ramblersMap.map.addControl(upload);
+
+    var reverse = new L.Control.ReverseRoute();
+    reverse.setRouteItems(ramblersMap.drawnItems);
+    ramblersMap.map.addControl(reverse);
+
+    var simplify = new L.Control.GpxSimplify();
+    simplify.setRouteItems(ramblersMap.drawnItems);
+    ramblersMap.map.addControl(simplify);
+
 
     var drawControl = new L.Control.Draw({
         position: 'bottomright',
@@ -78,23 +92,6 @@ function addDrawControl(lat, long, zoom) {
 
     ramblersMap.map.addControl(drawControl);
 
-    var reverse = new L.Control.ReverseRoute();
-    reverse.setRouteItems(ramblersMap.drawnItems);
-    ramblersMap.map.addControl(reverse);
-
-    var simplify = new L.Control.GpxSimplify();
-    simplify.setRouteItems(ramblersMap.drawnItems);
-    ramblersMap.map.addControl(simplify);
-
-    var upload = new L.Control.GpxUpload();
-    upload.setRouteItems(ramblersMap.drawnItems);
-    ramblersMap.map.addControl(upload);
-
-    //   ramblersMap.map.on(L.Draw.Event.CREATED, function (event) {
-    //       var layer = event.layer;
-    //       ramblersMap.drawnItems.addLayer(layer);
-    //       addElevations(false);
-    //   });
     ramblersMap.map.on(L.Draw.Event.CREATED, function (e) {
         var type = e.layerType,
                 layer = e.layer;
@@ -116,62 +113,13 @@ function addDrawControl(lat, long, zoom) {
             maxWidth: 200
         }).addTo(e.printMap);
     });
-    ramblersMap.drawnItems.on("addline", function (e) {
+    ramblersMap.drawnItems.on("upload:addline", function (e) {
         var bounds = ramblersMap.drawnItems.getBounds();
         ramblersMap.map.fitBounds(bounds);
         setGpxToolStatus('auto');
         addElevations(false);
     });
-    ramblersMap.drawnItems.on("reversed", function (e) {
-        addElevations(false);
-    });
-
-    ramblersMap.drawnItems.on("simplified", function (e) {
-        addElevations(true);
-    });
-
-    ramblersMap.map.on(L.Draw.Event.DRAWSTART, function (e) {
-        ramblersMap.displayMouseGridSquare = false;
-        setGpxToolStatus('off');
-    });
-    ramblersMap.map.on(L.Draw.Event.DRAWSTOP, function () {
-        ramblersMap.displayMouseGridSquare = true;
-        addElevations(false);
-        setGpxToolStatus('auto');
-
-    });
-    ramblersMap.map.on(L.Draw.Event.EDITSTART, function (e) {
-        ramblersMap.displayMouseGridSquare = false;
-        setGpxToolStatus('off');
-    });
-    //    ramblersMap.map.on(L.Draw.Event.EDITVERTEX, function (e) {
-//        a = e;
-//    });
-
-    ramblersMap.map.on(L.Draw.Event.EDITED, function (e) {
-        ramblersMap.displayMouseGridSquare = true;
-        addElevations(true);
-        setGpxToolStatus('auto');
-    });
-    ramblersMap.map.on(L.Draw.Event.EDITSTOP, function (e) {
-        ramblersMap.displayMouseGridSquare = true;
-        setGpxToolStatus('auto');
-    });
-    ramblersMap.map.on(L.Draw.Event.DELETESTART, function (e) {
-        ramblersMap.displayMouseGridSquare = false;
-        setGpxToolStatus('off');
-    });
-    ramblersMap.map.on(L.Draw.Event.DELETESTOP, function (e) {
-        ramblersMap.displayMouseGridSquare = true;
-        listDrawnItems();
-        setGpxToolStatus('auto');
-    });
-    ramblersMap.map.on(L.Draw.Event.DELETED, function (e) {
-        ramblersMap.displayMouseGridSquare = true;
-        listDrawnItems();
-        setGpxToolStatus('auto');
-    });
-    ramblersMap.drawnItems.on('addpoint', function (e) {
+    ramblersMap.drawnItems.on('upload:addpoint', function (e) {
         if (e.point_type === "waypoint") {
             var marker = e.point;
             var sSymbol = marker.symbol;
@@ -181,6 +129,71 @@ function addDrawControl(lat, long, zoom) {
             }
         }
     });
+    ramblersMap.drawnItems.on("reversed", function (e) {
+        addElevations(false);
+    });
+
+    ramblersMap.map.on(L.Draw.Event.DRAWSTART, function (e) {
+        ramblersMap.displayMouseGridSquare = false;
+        enableMapMoveDrawing();
+        setGpxToolStatus('off');
+    });
+    ramblersMap.map.on(L.Draw.Event.DRAWSTOP, function () {
+        ramblersMap.displayMouseGridSquare = true;
+        disableMapMoveDrawing();
+        addElevations(false);
+        setGpxToolStatus('auto');
+
+    });
+    ramblersMap.map.on(L.Draw.Event.EDITSTART, function (e) {
+        ramblersMap.displayMouseGridSquare = false;
+        enableMapMoveDrawing();
+        setGpxToolStatus('off');
+    });
+    ramblersMap.map.on(L.Draw.Event.EDITED, function (e) {
+        ramblersMap.displayMouseGridSquare = true;
+        disableMapMoveDrawing();
+        addElevations(true);
+        setGpxToolStatus('auto');
+    });
+    ramblersMap.map.on(L.Draw.Event.EDITSTOP, function (e) {
+        ramblersMap.displayMouseGridSquare = true;
+        disableMapMoveDrawing();
+        setGpxToolStatus('auto');
+    });
+    ramblersMap.map.on(L.Draw.Event.DELETESTART, function (e) {
+        ramblersMap.displayMouseGridSquare = false;
+        enableMapMoveDrawing();
+        setGpxToolStatus('off');
+    });
+    ramblersMap.map.on(L.Draw.Event.DELETESTOP, function (e) {
+        ramblersMap.displayMouseGridSquare = true;
+        disableMapMoveDrawing();
+        listDrawnItems();
+        setGpxToolStatus('auto');
+    });
+    ramblersMap.map.on(L.Draw.Event.DELETED, function (e) {
+        ramblersMap.displayMouseGridSquare = true;
+        disableMapMoveDrawing();
+        listDrawnItems();
+        setGpxToolStatus('auto');
+    });
+
+    ramblersMap.map.on('simplify:started', function () {
+        setGpxToolStatus('off');
+        ramblersMap.map.removeControl(drawControl);
+
+    });
+    ramblersMap.map.on('simplify:saved', function () {
+        setGpxToolStatus('auto');
+        addElevations(true);
+        ramblersMap.map.addControl(drawControl);
+    });
+    ramblersMap.map.on('simplify:cancelled', function () {
+        setGpxToolStatus('auto');
+        ramblersMap.map.addControl(drawControl);
+    });
+
 
     ramblersMap.map.on('popupopen', function (e) {
         if (ramblersMap.processPopups === 'off') {
@@ -227,7 +240,6 @@ function addDrawControl(lat, long, zoom) {
             marker.title = sName + " - " + sDesc;
             //       marker.fire('revert-edited', {layer: marker});
         }
-        //  alert('close');
     });
     function getElementValue(id) {
         var node = document.getElementById(id);
@@ -242,28 +254,15 @@ function addDrawControl(lat, long, zoom) {
         reverse.setStatus(status);
         download.setStatus(status);
         simplify.setStatus(status);
+        upload.setStatus(status);
         if (ramblersMap.postcodes !== null) {
             ramblersMap.postcodes.Enabled(status !== 'off');
         }
 
     }
-    //Move the map around when we're editing or drawing
-    ramblersMap.map.on('draw:editstart', function () {
-        enableMapMoveDrawing();
-    });
 
-    ramblersMap.map.on('draw:editstop', function () {
-        disableMapMoveDrawing();
-    });
-
-    ramblersMap.map.on('draw:drawstart', function () {
-        enableMapMoveDrawing();
-    });
-
-    ramblersMap.map.on('draw:drawstop', function () {
-        disableMapMoveDrawing();
-    });
-    enableMapMoveDrawing = function (layer) {
+//Move the map around when we're editing or drawing
+    enableMapMoveDrawing = function () {
         ramblersMap.map.on('mousemove', mapMoveDrawingMouseMove, this);
     };
     mapMoveDrawingMouseMove = function (e) {
@@ -279,7 +278,7 @@ function addDrawControl(lat, long, zoom) {
         if (mousePos.x <= 20) {
             ramblersMap.map.panBy([-20, 0]);
         } else if (mousePos.x + 20 > mapSize.x) {
-            ramblersMap.map.panBy([20,0]);
+            ramblersMap.map.panBy([20, 0]);
         }
     };
     disableMapMoveDrawing = function () {
@@ -441,7 +440,7 @@ function updateElevation(latlngs, item) {
     i = 0;
     len = latlngs.length;
     for (i = 0, len = latlngs.length; i < len; i++) {
-        if (Math.abs(latlngs[i].lat -item[0])<.000001 & Math.abs(latlngs[i].lng - item[1])<.000001) {
+        if (Math.abs(latlngs[i].lat - item[0]) < .000001 & Math.abs(latlngs[i].lng - item[1]) < .000001) {
             latlngs[i].alt = item[2];
         }
     }

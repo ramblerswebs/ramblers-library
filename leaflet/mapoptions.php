@@ -20,6 +20,7 @@ class RLeafletMapoptions {
     public $print = false;
     public $displayElevation = false;
     public $bing = false;
+    public $ramblersPlaces = false;
 
     public function __construct() {
         
@@ -27,6 +28,7 @@ class RLeafletMapoptions {
 
     public function text() {
         $options = "";
+     //   $this->print = false;
         if (RLicense::isBingKeyMapSet()) {
             $options .= "ramblersMap.bingkey='" . RLicense::getBingMapKey() . "';" . PHP_EOL;
             $options .= "ramblersMap.options.bing = true;" . PHP_EOL;
@@ -70,6 +72,9 @@ class RLeafletMapoptions {
         }
         if ($this->displayElevation) {
             $options .= "ramblersMap.options.displayElevation = true;" . PHP_EOL;
+        }
+        if ($this->ramblersPlaces) {
+            $options .= "ramblersMap.options.ramblersPlaces = true;" . PHP_EOL;
         }
         return $options;
     }

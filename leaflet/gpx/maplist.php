@@ -20,7 +20,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
 
     public function display() {
         $document = JFactory::getDocument();
-        $document->addScript("ramblers/leaflet/gpx/maplist.js", "text/javascript");
+        $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
         // get all names from folder
         $stats = new RGpxStatistics($this->folder);
         $items = $stats->getJson();

@@ -17,6 +17,7 @@ function RamblersLeafletMap(base) {
     this.displayMouseGridSquare = true;
     this.elevationcontrol = null;
     this.processPopups = "on";
+    this.mapControl = null;
     this.options = {cluster: false,
         fullscreen: false,
         google: false,
@@ -28,7 +29,8 @@ function RamblersLeafletMap(base) {
         fitbounds: false,
         draw: false,
         print: false,
-        displayElevation: false
+        displayElevation: false,
+        ramblersPlaces: false
     };
 }
 
@@ -60,8 +62,8 @@ function raLoadLeaflet() {
         attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
     if (ramblersMap.options.bing) {
 //  var bingkey = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
-//   ramblersMap.mapLayers["Aerial"] = new L.BingLayer(bingkey, {type: 'Aerial'});
-        ramblersMap.mapLayers["Aerial With Labels"] = new L.BingLayer(ramblersMap.bingkey, {type: 'AerialWithLabels'});
+        ramblersMap.mapLayers["Bing Aerial"] = new L.BingLayer(ramblersMap.bingkey, {type: 'Aerial'});
+        ramblersMap.mapLayers["Bing Aerial (Labels)"] = new L.BingLayer(ramblersMap.bingkey, {type: 'AerialWithLabels'});
         ramblersMap.mapLayers["Ordnance Survey"] = new L.BingLayer(ramblersMap.bingkey, {type: 'ordnanceSurvey'});
     }
     if (ramblersMap.options.google) {
@@ -78,7 +80,6 @@ function raLoadLeaflet() {
             type: "terrain" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
         });
     }
-
     createMouseMarkers();
     if (ramblersMap.options.startingplaces) {
         createPlaceMarkers();
@@ -111,14 +112,15 @@ function raLoadLeaflet() {
 
     if (ramblersMap.options.osgrid) {
         osgrid = L.layerGroup([]);
-        osMapGrid(L, osgrid);
-        var overlayMaps = {
+        osMapGrid(osgrid);
+        overlayGraphics = {
             "OS 100km Grid": osgrid
         };
         osgrid.addTo(ramblersMap.map);
     }
 
-    L.control.layers(ramblersMap.mapLayers, overlayMaps, {collapsed: true}).addTo(ramblersMap.map);
+    ramblersMap.mapControl = L.control.layers(ramblersMap.mapLayers, overlayGraphics, {collapsed: true}).addTo(ramblersMap.map);
+
     if (ramblersMap.options.search) {
         try {
             L.Control.geocoder({
@@ -146,7 +148,14 @@ function raLoadLeaflet() {
         L.control.usageAgreement().addTo(ramblersMap.map);
     }
     if (ramblersMap.options.print) {
-        L.browserPrint().addTo(ramblersMap.map);
+        L.control.browserPrint({
+            title: 'The Ramblers - working for walkers',
+            printModes: ["Portrait", "Landscape", "Auto", "Custom"]
+        }).addTo(ramblersMap.map);
+    }
+    if (ramblersMap.options.ramblersPlaces) {
+        createPlaceMarkers();
+        //  L.control.ramblersPlaces().addTo(ramblersMap.map);
     }
 
     if (ramblersMap.options.postcodes) {
@@ -169,6 +178,9 @@ function raLoadLeaflet() {
     }
 // Zoom control
     L.control.scale().addTo(ramblersMap.map);
+    ramblersMap.map.on('LayersControlEvent', function (ev) {
+        alert(ev.latlng); // ev is an event object (MouseEvent in this case)
+    });
 }
 
 
@@ -259,27 +271,27 @@ function createMouseMarkers() {
 }
 function createPlaceMarkers() {
     s0 = L.icon({
-        iconUrl: ramblersMap.base + 'images/rejected.png',
+        iconUrl: ramblersMap.base + 'ramblers/leaflet/images/rejected.png',
         iconSize: [15, 15]
     });
     s1 = L.icon({
-        iconUrl: ramblersMap.base + 'images/1star.png',
+        iconUrl: ramblersMap.base + 'ramblers/leaflet/images/1star.png',
         iconSize: [19, 19]
     });
     s2 = L.icon({
-        iconUrl: ramblersMap.base + 'images/2star.png',
+        iconUrl: ramblersMap.base + 'ramblers/leaflet/images/2star.png',
         iconSize: [21, 21]
     });
     s3 = L.icon({
-        iconUrl: ramblersMap.base + 'images/3star.png',
+        iconUrl: ramblersMap.base + 'ramblers/leaflet/images/3star.png',
         iconSize: [23, 23]
     });
     s4 = L.icon({
-        iconUrl: ramblersMap.base + 'images/4star.png',
+        iconUrl: ramblersMap.base + 'ramblers/leaflet/images/4star.png',
         iconSize: [25, 25]
     });
     s5 = L.icon({
-        iconUrl: ramblersMap.base + 'images/5star.png',
+        iconUrl: ramblersMap.base + 'ramblers/leaflet/images/5star.png',
         iconSize: [27, 27]
     });
 }
@@ -458,7 +470,7 @@ function osGridToLatLongSquare(gridref, size) {
         [ll1.lat, ll1.lon]];
     return bounds;
 }
-function osMapGrid(L, layer) {
+function osMapGrid(layer) {
     style = {color: '#333366', weight: 1, opacity: 0.2};
     for (east = 0; east < 700500; east += 100000) {
         lines = new Array();
