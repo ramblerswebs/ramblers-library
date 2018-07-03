@@ -38,11 +38,7 @@
             <folder>jsonwalks/sx05</folder>
             <folder>leaflet</folder>
             <folder>leaflet/gpx</folder>
-            <folder>leaflet/gpx/images</folder>
             <folder>leaflet/images</folder>
-            <folder>leaflet/leaflet</folder>
-            <folder>leaflet/locationsearch</folder>
-            <folder>leaflet/mouse</folder>
             <folder>license</folder>
             <folder>organisation</folder>
             <folder>osmap</folder>
