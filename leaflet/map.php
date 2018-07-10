@@ -179,7 +179,7 @@ class RLeafletMap {
 
     private function addScriptandStyleSheets() {
 
-        $test = false;
+        $test = true;
         $document = JFactory::getDocument();
         $jsfilename = self::COMBINED_JS . $this->options->getFileName() . ".js";
         foreach ($this->stylesheets as $item) {

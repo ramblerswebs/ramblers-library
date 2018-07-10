@@ -146,17 +146,20 @@ function addDrawControl(lat, long, zoom) {
 
     });
     ramblersMap.map.on(L.Draw.Event.EDITSTART, function (e) {
+        ramblersMap.map.setMaxZoom(22);
         ramblersMap.displayMouseGridSquare = false;
         enableMapMoveDrawing();
         setGpxToolStatus('off');
     });
     ramblersMap.map.on(L.Draw.Event.EDITED, function (e) {
+        ramblersMap.map.setMaxZoom(18);
         ramblersMap.displayMouseGridSquare = true;
         disableMapMoveDrawing();
         addElevations(true);
         setGpxToolStatus('auto');
     });
     ramblersMap.map.on(L.Draw.Event.EDITSTOP, function (e) {
+        ramblersMap.map.setMaxZoom(18);
         ramblersMap.displayMouseGridSquare = true;
         disableMapMoveDrawing();
         setGpxToolStatus('auto');

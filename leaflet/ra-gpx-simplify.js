@@ -7,7 +7,8 @@ L.Control.GpxSimplify = L.Control.extend({
     },
     onAdd: function (map) {
         this._map = map;
-        this.enabled = false;
+        this.enabled = true;
+        this.factor=1000000000;
         this._simplifylayer = null;
         _simplify_this = this;
         this._simplifylayer = L.featureGroup([]);
@@ -30,7 +31,7 @@ L.Control.GpxSimplify = L.Control.extend({
         this.status.innerHTML = "Points";
 
         element = L.DomUtil.create('div', 'slider', this.holder);
-        element.innerHTML = "<input type=\"range\" min=\"1\" max=\"5000\" value=\"49\" class=\"slider\" id=\"gpxsimplify\">";
+        element.innerHTML = "<input type=\"range\" min=\"1\" max=\"1000000\" value=\"49\" class=\"slider\" id=\"gpxsimplify\">";
         this.slider = element.childNodes[0];
 
         var element = L.DomUtil.create('div', 'save', this.holder);
@@ -42,7 +43,7 @@ L.Control.GpxSimplify = L.Control.extend({
         L.DomEvent.addListener(element, 'click', this._cancel, this);
 
         this.slider.oninput = function () {
-            var tolerance = _simplify_this.slider.value / 10000000;
+            var tolerance = _simplify_this.slider.value / _simplify_this.factor;
             _simplify_this._simplifylayer.clearLayers();
             var text = "Pts: ";
             var sub = "";
@@ -50,7 +51,7 @@ L.Control.GpxSimplify = L.Control.extend({
 
                 if (layer instanceof L.Polyline) {
                     var points = layer.getLatLngs();
-                    var newPoints = simplify(points, tolerance);
+                    var newPoints = simplify(points, tolerance, true);
                     var polyline = L.polyline(newPoints, {color: 'red', opacity: '0.7'});
                     _simplify_this._simplifylayer.addLayer(polyline);
                     text += sub + newPoints.length;
@@ -108,7 +109,7 @@ L.Control.GpxSimplify = L.Control.extend({
         }
     },
     _save: function (evt) {
-        var tolerance = this.slider.value / 10000000;
+        var tolerance = this.slider.value /  _simplify_this.factor;
         this._itemsCollection.eachLayer(function (layer) {
             if (layer instanceof L.Polyline) {
                 var points = layer.getLatLngs();

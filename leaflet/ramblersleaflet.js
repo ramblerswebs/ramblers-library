@@ -40,7 +40,7 @@ function raLoadLeaflet() {
             center: new L.LatLng(54.221592, -3.355007),
             zoom: 5,
             zoomSnap: 0.25,
-            maxZoom: 17,
+            maxZoom: 18,
             fullscreenControl: true}
         );
     } else {
@@ -48,16 +48,14 @@ function raLoadLeaflet() {
             center: new L.LatLng(54.221592, -3.355007),
             zoom: 5,
             zoomSnap: 0.25,
-            maxZoom: 17});
+            maxZoom: 18});
     }
 
     ramblersMap.mapLayers = new Object();
 // map types
     ramblersMap.mapLayers["Open Street Map"] = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 18,
         attribution: "Map data &copy; <a href=\"https://openstreetmap.org\">OpenStreetMap</a>"}).addTo(ramblersMap.map);
     ramblersMap.mapLayers["Open Topo Map"] = new L.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-        maxZoom: 18,
         maxNativeZoom: 16,
         attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
     if (ramblersMap.options.bing) {
