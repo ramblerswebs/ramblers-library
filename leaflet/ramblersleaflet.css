@@ -173,6 +173,41 @@ form input#gpxtitlesearch{
     margin-left:-5px ;
     border: 1px solid #ff0000 ;
 }
-.map-print-hidden {
-    display:none !important;
+
+span.placelocation{
+    margin-right: 30px;
+    font-size: 1.2em;
+    font-weight: 700;
+}
+.agreebutton{
+    font-size: 1.5em;
+   
+}
+
+
+
+
+.placebutton-green{
+    background-color: #206C49;
+
+}
+.placebutton-red{
+    background-color: #782327;
+
+}
+.placebutton-green, .placebutton-red {
+    width: auto;
+    font-size: 0.8em;
+    margin: 4px;
+    border-radius: 7px;
+    color: #FFFFFF
+}
+.placebutton-green a, .placebutton-red a{
+    margin:4px;
+    color: #FFFFFF;
+    text-decoration: none
+}
+.placebutton-green a:hover, .placebutton-red a:hover{
+    color: #DDDDDD;
+    text-decoration: none
 }

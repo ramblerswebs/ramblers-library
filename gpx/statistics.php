@@ -9,11 +9,13 @@ class RGpxStatistics {
 
     private $folder;
     private $jsonfile;
+    private $getMetaFromGPX = false;
 
     CONST JSONFILE = "0000gpx_statistics_file.json";
 
-    public function __construct($folder) {
+    public function __construct($folder, $getMetaFromGPX) {
         $this->folder = $folder;
+        $this->getMetaFromGPX = $getMetaFromGPX;
         if (!file_exists($folder)) {
             $text = "Folder does not exist: " . $folder . ". Unable to list contents";
             JFactory::getApplication()->enqueueMessage($text);
@@ -67,8 +69,19 @@ class RGpxStatistics {
         $stat = new RGpxStatistic();
         $gpx = new RGpxFile($this->folder . "/" . $file);
         $stat->filename = $file;
-        $stat->title = $this->getTitlefromName($file);
-        $stat->description = $this->getDescription($file);
+        if ($this->getMetaFromGPX) {
+            $stat->title = $gpx->name;
+            if ($stat->title == "") {
+                $stat->title = $this->getTitlefromName($file);
+            }
+            $stat->description = $gpx->description;
+            if ($stat->description == "") {
+                $stat->description = $this->getDescription($file);
+            }
+        } else {
+            $stat->title = $this->getTitlefromName($file);
+            $stat->description = $this->getDescription($file);
+        }
         $stat->longitude = $gpx->longitude;
         $stat->latitude = $gpx->latitude;
         $stat->distance = $gpx->distance;

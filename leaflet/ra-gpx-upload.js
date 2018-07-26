@@ -7,6 +7,12 @@ L.Control.GpxUpload = L.Control.extend({
         this._map = map;
         this.enabled = true;
         ra_gpx_upload_this = this;
+        this._info = {
+            name: "",
+            desc: "",
+            author: "",
+            copyright: ""
+        };
         var container = L.DomUtil.create('div', 'leaflet-control-gpx-upload leaflet-bar leaflet-control');
         this._createIcon(container);
         container.title = this.options.title;
@@ -33,6 +39,18 @@ L.Control.GpxUpload = L.Control.extend({
             document.getElementById("gpx-file-upload").disabled = true;
             L.DomUtil.addClass(this._container, 'ra-upload-toolbar-button-disabled');
         }
+    },
+    get_name: function () {
+        return this._info.name;
+    },
+    get_desc: function () {
+        return this._info.desc;
+    },
+    get_author: function () {
+        return this._info.author;
+    },
+    get_copyright: function () {
+        return this._info.copyright;
     },
     _gpxreader: function (gpx, options) {
         var _MAX_POINT_INTERVAL_MS = 15000;
@@ -82,13 +100,14 @@ L.Control.GpxUpload = L.Control.extend({
         return _;
     },
     _ra_gpx_parse: function (input, options, async) {
-        
+
         var cb = function (gpx, options) {
-            var layers = ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
-            if (!layers)
-                return;
-            ra_gpx_upload_this.addLayer(layers);
-            ra_gpx_upload_this.fire('loaded');
+             ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
+       //     var layers = ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
+        //    if (!layers)
+       //         return;
+       //     ra_gpx_upload_this.addLayer(layers);
+            ra_gpx_upload_this._itemsCollection.fire('upload:loaded');
         };
         if (input.substr(0, 1) === '<') { // direct XML has to start with a <
             var parser = new DOMParser();
@@ -113,7 +132,22 @@ L.Control.GpxUpload = L.Control.extend({
         if (parseElements.indexOf('track') > -1) {
             tags.push(['trkseg', 'trkpt']);
         }
-
+        var name = xml.getElementsByTagName('name');
+        if (name.length > 0) {
+            this._info.name = name[0].textContent;
+        }
+        var desc = xml.getElementsByTagName('desc');
+        if (desc.length > 0) {
+            this._info.desc = desc[0].textContent;
+        }
+        var author = xml.getElementsByTagName('author');
+        if (author.length > 0) {
+            this._info.author = author[0].textContent;
+        }
+        var copyright = xml.getElementsByTagName('copyright');
+        if (copyright.length > 0) {
+            this._info.copyright = copyright[0].textContent;
+        }
         for (j = 0; j < tags.length; j++) {
             el = xml.getElementsByTagName(tags[j][0]);
             for (i = 0; i < el.length; i++) {
@@ -146,8 +180,8 @@ L.Control.GpxUpload = L.Control.extend({
                 } else if (options.marker_options.wptIconUrls && options.marker_options.wptIconUrls[symKey]) {
                     symIcon = new L.GPXTrackIcon({iconUrl: options.marker_options.wptIconUrls[symKey]});
                 } else {
-                    console.log('No icon or icon URL configured for symbol type "' + symKey
-                            + '"; ignoring waypoint.');
+                 //   console.log('No icon or icon URL configured for symbol type "' + symKey
+                 //           + '"; ignoring waypoint.');
                     symIcon = new L.GPXTrackIcon({iconUrl: options.marker_options.wptIconUrls['']});
 
                 }

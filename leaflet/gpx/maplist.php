@@ -13,6 +13,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
     Public $folder = "images";
     public $addDownloadLink = "Users"; // "None" - no link, "Users" - users link, "Public" - guest link
     public $descriptions = true; // set false if NO description files are to be supplied
+    public $getMetaFromGPX = true;
 
     public function __construct() {
         parent::__construct();
@@ -22,7 +23,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $document = JFactory::getDocument();
         $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
         // get all names from folder
-        $stats = new RGpxStatistics($this->folder);
+        $stats = new RGpxStatistics($this->folder, $this->getMetaFromGPX);
         $items = $stats->getJson();
         $this->addMapScript($items);
         $this->options->cluster = true;
@@ -35,7 +36,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $this->options->postcodes = true;
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
-        $this->options->print = true;
+        $this->options->print = false;
         if ($this->imperial) {
             $imperial = "true";
         } else {

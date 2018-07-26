@@ -27,7 +27,7 @@ class RLeafletGpxMap extends RLeafletMap {
         $this->options->postcodes = true;
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
-        $this->options->print = true;
+        $this->options->print = false;
 
         if ($this->imperial) {
             $imperial = "true";

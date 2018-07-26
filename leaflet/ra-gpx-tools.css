@@ -1,5 +1,17 @@
 /* Download */
+#gpxDesc {
+    width:530px;
+    resize: vertical;
+}
 
+.leaflet-control-gpx-download {
+    margin-bottom: 0px !important;
+    margin-right: 0px !important;
+
+}
+.leaflet-control-gpx-download div{
+    margin-bottom: 3px !important;
+}
 .leaflet-control-gpx-download a {
     background:#fff url(images/download.png) no-repeat 0 0;
     background-size:27px 27px;

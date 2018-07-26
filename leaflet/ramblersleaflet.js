@@ -79,11 +79,8 @@ function raLoadLeaflet() {
         });
     }
     createMouseMarkers();
-    if (ramblersMap.options.startingplaces) {
-        createPlaceMarkers();
-    } else {
-        createWalkMarkers();
-    }
+    createPlaceMarkers();
+    createWalkMarkers();
     if (ramblersMap.options.cluster) {
 // progress bar for cluster
         ramblersMap.progressBar = document.getElementById("ra-cluster-progress-bar");
@@ -118,7 +115,6 @@ function raLoadLeaflet() {
     }
 
     ramblersMap.mapControl = L.control.layers(ramblersMap.mapLayers, overlayGraphics, {collapsed: true}).addTo(ramblersMap.map);
-
     if (ramblersMap.options.search) {
         try {
             L.Control.geocoder({
@@ -153,7 +149,6 @@ function raLoadLeaflet() {
     }
     if (ramblersMap.options.ramblersPlaces) {
         createPlaceMarkers();
-        //  L.control.ramblersPlaces().addTo(ramblersMap.map);
     }
 
     if (ramblersMap.options.postcodes) {
@@ -316,8 +311,42 @@ function addPlace($gr, $no, $lat, $long, $icon)
         $grdisp = $gr;
     }
     marker.bindPopup("<b>Grid Ref " + $grdisp + "</b><br/>Lat/Long " + $lat + " " + $long);
-    marker.on('click', onClick);
+    marker.on('click', onClickPlaceMarker);
     ramblersMap.markerList.push(marker);
+}
+function addPlaceMarker($gr, $no, $lat, $long) {
+    var $icon;
+    switch ($no) {
+        case 0:
+            $icon = s0;
+            break;
+        case 1:
+            $icon = s1;
+            break;
+        case 2:
+            $icon = s2;
+            break;
+        case 3:
+            $icon = s3;
+            break;
+        case 4:
+            $icon = s4;
+            break;
+        case 5:
+            $icon = s5;
+            break;
+    }
+
+    var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long});
+    if ($gr.length === 8) {
+        $grdisp = $gr.substr(0, 2) + " " + $gr.substr(2, 3) + " " + $gr.substr(5, 3);
+    } else {
+        $grdisp = $gr;
+    }
+    marker.gr = $gr;
+    marker.bindPopup("<b>Grid Ref " + $grdisp + "</b><br/>Lat/Long " + $lat + " " + $long, {maxWidth: 800});
+    marker.on('click', onClickPlaceMarker, marker);
+    return marker;
 }
 function getBounds(list) {
     var bounds = new L.LatLngBounds();
@@ -526,7 +555,6 @@ function getMarkerIcon(name) {
             iconAnchor: [16, 37],
             popupAnchor: [0, -37]
         });
-
     } else {
         icon = L.icon({
             iconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-wpt.png',
@@ -551,3 +579,109 @@ function imageExists(image_url) {
     var response = http.responseText;
     return response === 'true';
 }
+
+//function loadPlaceInfo($url) {
+//    var el = document.getElementById("placeinfo");
+//    el.innerHTML = "<p>Fetching descriptions/usage ...</p>";
+//    ajax($url, "", "placeinfo");
+//    var modal = document.getElementById('myModal');
+//    modal.style.display = "block";
+//}
+//
+//function createParams($array) {
+//    for (var i = 0; i < $array.length; i++) {
+//        var $name = $array[i];
+//        var el = document.getElementById($name);
+//        if (el.type) {
+//            switch (el.type) {
+//                case 'checkbox':
+//                    $array[i] = $array[i] + "=" + document.getElementById($name).checked;
+//                    break;
+//                case 'radio':
+//                    $array[i] = $array[i] + "=" + document.getElementById($name).checked;
+//                    break;
+//                default:
+//                    $array[i] = $array[i] + "=" + document.getElementById($name).value;
+//            }
+//        }
+//    }
+//    return $array.join("&");
+//}
+
+function ajax($url, $params, target, displayFunc) {
+    var xmlhttp;
+    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp = new XMLHttpRequest();
+    } else
+    {// code for IE6, IE5
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState === 4 && xmlhttp.status === 200)
+        {
+            displayFunc(target, xmlhttp.responseText);
+
+            // document.getElementById($div).innerHTML = xmlhttp.responseText;
+        }
+    };
+    xmlhttp.open("POST", $url, true);
+    //Send the proper header information along with the request
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    //   xmlhttp.setRequestHeader("Content-length", $params.length);
+    //   xmlhttp.setRequestHeader("Connection", "close");
+    xmlhttp.send($params);
+}
+
+function onClickPlaceMarker(e) {
+    var marker = e.target;
+    var $url = "https://newplaces.walkinginfo.co.uk/details.php?gr=" + this.options.gridref;
+    ajax($url, "", marker, displayDetails);
+}
+function displayDetails(marker, result) {
+    var popup = marker.getPopup();
+    var ll = marker.getLatLng();
+    var json = JSON.parse(result);
+    var nolikes = "";
+    if (json.likes > 0) {
+        nolikes = "<sup>" + json.likes + "</sup>";
+    }
+    var nodislikes = "";
+    if (json.dislikes > 0) {
+        nodislikes = "<sup>" + json.dislikes + "</sup>";
+    }
+    var like = "<span class=\"agreebutton hasTip\" title=\"VOTE: This location is correct\"><a href=\"javascript:placecorrect('" + marker.gr + "') \"> &#9745;</a>" + nolikes + " </span>";
+    var dislike = "<span class=\"agreebutton hasTip\" title=\"VOTE: This location is INCORRECT\"><a href=\"javascript:placeincorrect('" + marker.gr + "') \"> &#9746;</a>" + nodislikes + " </span>";
+    var streetmap = "<span class=\"placebutton-green hasTip\" title=\"View location in streetmap.co.uk\"><a href=\"javascript:streetmap('" + marker.gr + "') \">Streetmap</a></span>";
+    var google = "<span class=\"placebutton-green hasTip\" title=\"View location in Google maps\"><a href=\"javascript:googlemap(" + ll.lat + "," + ll.lng + ") \">Google Map</a></span>";
+    var out = "<span class='placelocation'>Place Grid Ref " + marker.gr + " </span>" + like + dislike + streetmap + google;
+    out += "<div id=" + marker.gr + "></div>";
+    out += "<p><b>Description</b> [Date used / Score]</p>";
+    out += "<ul>";
+    var items = json.records;
+    for (i = 0; i < items.length; i++) {
+        var item = items[i];
+        if (item.desc == "") {
+            item.desc = "<i>no description</i>";
+        }
+        out += "<li>" + item.desc + " [" + item.lastread + "/" + item.score + "%]</li>";
+    }
+    out += "</ul>";
+    popup.setContent(out);
+    popup.update();
+}
+
+function placecorrect(gr) {
+    var $url = "https://newplaces.walkinginfo.co.uk/report.php?gr=" + gr + "&type=like";
+    ajax($url, "", gr, votelike);
+}
+function placeincorrect(gr) {
+    var $url = "https://newplaces.walkinginfo.co.uk/report.php?gr=" + gr + "&type=dislike";
+    ajax($url, "", gr, votedislike);
+}
+function votelike(gr, result) {
+    document.getElementById(gr).innerHTML = "Correct vote recorded";
+}
+function votedislike(gr, result) {
+    document.getElementById(gr).innerHTML = "Incorrect vote recorded";
+}
+

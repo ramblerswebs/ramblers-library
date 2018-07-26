@@ -67,7 +67,7 @@ L.Control.ReverseRoute = L.Control.extend({
                     layer.fire('revert-edited', {layer: layer});
                 }
             });
-            this._itemsCollection.fire('reversed');
+            this._itemsCollection.fire('reverse:reversed');
             this.holder.style.display = "inline-block";
             setTimeout(function () {
                 _ra_gpx_reverse_this.holder.style.display = "none";

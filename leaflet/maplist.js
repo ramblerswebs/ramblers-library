@@ -83,8 +83,11 @@ function displayGPX(file, linecolour, imperial) {
 function displayGpxdetails(g) {
     if (document.getElementById('gpxsingleheader') !== null) {
         var info = g._info;
+        var header="";
         if (info !== "undefined" && info !== null) {
-            var header = '<b>Name:</b> ' + info.name + "<br/>";
+            if (info.name !== "undefined" && info.name !== null) {
+                header = '<b>Name:</b> ' + info.name + "<br/>";
+            }
             header += '<b>Distance:</b> ' + getGPXDistance(info.length) + '<br/>';
             if (info.desc !== "undefined" && info.desc !== null) {
                 header += '<b>Description:</b> ' + info.desc + '<br/>';

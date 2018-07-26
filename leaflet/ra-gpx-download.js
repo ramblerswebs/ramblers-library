@@ -1,3 +1,4 @@
+var L, ramblersMap;
 L.Control.GpxDownload = L.Control.extend({
     options: {
         title: 'Download a walking route as GPX file',
@@ -8,14 +9,53 @@ L.Control.GpxDownload = L.Control.extend({
         this._map = map;
         this.enabled = false;
         this.supported = true;
-        var container = L.DomUtil.create('div', 'leaflet-control-gpx-download leaflet-bar leaflet-control ra-download-toolbar-button-disabled');
+        this._info = {
+            name: "",
+            desc: "",
+            author: "",
+            copyright: ""
+        };
+        var containerAll = L.DomUtil.create('div', 'leaflet-control-gpx-download ra-download-toolbar-button-disabled');
+        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control', containerAll);
         this._createIcon(container);
         this._container = container;
+        L.DomEvent.disableClickPropagation(containerAll);
+        L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(this.link, 'click', this._downloadGpx, this);
-        return container;
+        this._appendButtons(containerAll);
+        this.holder.style.display = "none";
+        this.popup = L.popup({minWidth : 550,maxWidth : 550}).setLatLng([0, 0]).setContent('dummy');
+        return containerAll;
+    },
+    _appendButtons: function (container) {
+        this.holder = L.DomUtil.create('div', 'leaflet-gpx-options', container);
+
+        var element = L.DomUtil.create('div', 'details', this.holder);
+        element.innerHTML = "Edit Details";
+        L.DomEvent.addListener(element, 'click', this._details, this);
+
+        element = L.DomUtil.create('div', 'save', this.holder);
+        element.innerHTML = "Save";
+        L.DomEvent.addListener(element, 'click', this._save, this);
+
+        element = L.DomUtil.create('div', 'cancel', this.holder);
+        element.innerHTML = "Cancel";
+        L.DomEvent.addListener(element, 'click', this._cancel, this);
     },
     setRouteItems: function (itemsCollection) {
         this._itemsCollection = itemsCollection;
+    },
+    set_name: function (value) {
+        this._info.name = value;
+    },
+    set_desc: function (value) {
+        this._info.desc = value;
+    },
+    set_author: function (value) {
+        this._info.author = value;
+    },
+    set_copyright: function (value) {
+        this._info.copyright = value;
     },
     setStatus: function (status) {
         this.enabled = true;
@@ -45,6 +85,46 @@ L.Control.GpxDownload = L.Control.extend({
     },
     _downloadGpx: function (e) {
         if (this.enabled) {
+            this._map.fire('download:started');
+            this.holder.style.display = "inline-block";
+        }
+    },
+    _cancel: function (evt) {
+        this._map.fire('download:cancelled');
+        this.holder.style.display = "none";
+    },
+    _details: function (evt) {
+        this._map.fire('download:cancelled');
+        this.holder.style.display = "none";
+        var bounds = this._map.getBounds();
+        var lng = (bounds.getEast() + bounds.getWest()) / 2;
+        var lat = bounds.getSouth();
+        //var centre = this._map.getCenter();
+        //    var marker = L.marker(centre);
+        gpxName = this._info.name;
+        gpxDesc = this._info.desc;
+        var content = '<form><span><b>Route Name</b></span><br/><input id="gpxName" type="text"/ value="' + gpxName + '" /><br/><span><b>Route Description<b/></span><br/><div><textarea id="gpxDesc" >' + gpxDesc + '</textarea></div></form>';
+        this.popup.setLatLng([lat, lng]);
+        this.popup.setContent(content);
+        this.popup.openOn(this._map);
+
+    },
+    _popupclose: function (e) {
+        var popup = e.popup;
+        if (popup === this.popup) {
+            this._info.name = this.getElementValue('gpxName');
+            this._info.desc = this.getElementValue('gpxDesc');
+        }
+    },
+    getElementValue: function (id) {
+        var node = document.getElementById(id);
+        if (node !== null) {
+            return node.value;
+        }
+        return "Invalid";
+    },
+    _save: function (e) {
+        if (this.enabled) {
             var drawnItems = this._itemsCollection;
             var hasItems = drawnItems.getLayers().length !== 0;
             if (!hasItems) {
@@ -69,6 +149,7 @@ L.Control.GpxDownload = L.Control.extend({
         gpxData += 'xmlns="http://www.topografix.com/GPX/1/0"' + "\n";
         gpxData += 'xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">' + "\n";
         ra_gpx_download_this = this;
+        gpxData += ra_gpx_download_this._addMetaData();
         this._itemsCollection.eachLayer(function (layer) {
             if (layer instanceof L.Marker) {
                 gpxData += ra_gpx_download_this._addMarker(layer);
@@ -80,6 +161,15 @@ L.Control.GpxDownload = L.Control.extend({
 
         gpxData += '</gpx>';
         return gpxData;
+    },
+    _addMetaData: function () {
+        out = "<metadata>";
+        out += "<name>" + ra_gpx_download_this._info.name + "</name>";
+        out += "<desc>" + ra_gpx_download_this._info.desc + "</desc>";
+        //     out += "<author>" + ra_gpx_download_this._info.author + "</author>";
+        //     out += "<copyright>" + ra_gpx_download_this._info.copyright + "</copyright>";
+        out += "</metadata>";
+        return out;
     },
     _addMarker: function (marker) {
         var data = '<wpt lat="' + marker._latlng.lat + '" lon="' + marker._latlng.lng + '">' + "\n";

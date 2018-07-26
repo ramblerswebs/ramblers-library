@@ -15,6 +15,8 @@ class RGpxFile {
     public $maxAltitude = 0;
     public $tracks = 0;
     public $routes = 0;
+    public $name = "";
+    public $description = "";
     private $file = null;
     private $registered = false;
 
@@ -30,7 +32,15 @@ class RGpxFile {
         }
         $gpxfile = new phpGPX\phpGPX();
         $gpx = $gpxfile->load($this->file);
-
+        $meta = $gpx->metadata;
+        if ($meta !== null) {
+            if ($meta->name !== null) {
+                $this->name = $meta->name;
+            }
+            if ($meta->description !== null) {
+                $this->description = $meta->description;
+            }
+        }
         // tracks
         if (count($gpx->tracks) > 0) {
             $track = $gpx->tracks[0];

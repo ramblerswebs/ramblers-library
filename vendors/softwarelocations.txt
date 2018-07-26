@@ -30,7 +30,7 @@ Simplify - reduce number of points
 
 Blurt popup
     https://github.com/brijeshb42/blurt/
-Download savas option
+Download saveas option
     https://github.com/eligrey/FileSaver.js
 
 Bing

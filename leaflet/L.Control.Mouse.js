@@ -219,31 +219,9 @@ L.Control.PostcodeStatus = L.Control.extend({
                         for (i = 0; i < items.length; i++) {
 
                             var item = items[i];
-                            var popup = item.GR;
-
-                            var pt = new L.latLng(item.Lat, item.Lng);
-                            var marker;
-                            switch (item.S) {
-                                case 0:
-                                    marker = L.marker(pt, {icon: s0}).bindPopup(popup);
-                                    break;
-                                case 1:
-                                    marker = L.marker(pt, {icon: s1}).bindPopup(popup);
-                                    break;
-                                case 2:
-                                    marker = L.marker(pt, {icon: s2}).bindPopup(popup);
-                                    break;
-                                case 3:
-                                    marker = L.marker(pt, {icon: s3}).bindPopup(popup);
-                                    break;
-                                case 4:
-                                    marker = L.marker(pt, {icon: s4}).bindPopup(popup);
-                                    break;
-                                case 5:
-                                    marker = L.marker(pt, {icon: s5}).bindPopup(popup);
-                                    break;
-                            }
                             if (item.S > 0 && item.S < 6) {
+                                var marker;
+                                marker = addPlaceMarker(item.GR, item.S, item.Lat, item.Lng);
                                 _mouse_this._placeslayer[item.S].addLayer(marker);
                             }
 

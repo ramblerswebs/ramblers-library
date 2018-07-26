@@ -129,7 +129,13 @@ function addDrawControl(lat, long, zoom) {
             }
         }
     });
-    ramblersMap.drawnItems.on("reversed", function (e) {
+    ramblersMap.drawnItems.on('upload:loaded', function (e) {
+        download.set_name(upload.get_name());
+        download.set_desc(upload.get_desc());
+        download.set_author(upload.get_author());
+        download.set_copyright(upload.get_copyright());
+    });
+    ramblersMap.drawnItems.on("reverse:reversed", function (e) {
         addElevations(false);
     });
 
@@ -198,15 +204,18 @@ function addDrawControl(lat, long, zoom) {
     });
 
 
-    ramblersMap.map.on('popupopen', function (e) {
+    ramblersMap.drawnItems.on('popupopen', function (e) {
         if (ramblersMap.processPopups === 'off') {
             return;
         }
         var marker = e.popup._source;
+        if (typeof (marker) === 'undefined') {
+            return;
+        }
         findMarker(marker);
         if (marker.found) {
             var popup = marker.getPopup();
-            var content = '<span><b>Name</b></span><br/><input id="markerName" type="text"/ value="' + marker.name + '" /><br/><span><b>Description<b/></span><br/><textarea id="markerDesc" cols="25" rows="5">' + marker.desc + '</textarea><br/><span><b>Symbol</b></span><br/><input id="markerSymbol" type="text" value="' + marker.symbol + '"/>';
+            var content = '<span><b>Name</b></span><br/><input id="markerName" type="text"/ value="' + marker.name + '" /><br/><span><b>Description<b/></span><br/><textarea id="markerDesc" style="resize:vertical;">' + marker.desc + '</textarea><br/><span><b>Symbol</b></span><br/><input id="markerSymbol" type="text" value="' + marker.symbol + '"/>';
             popup.setContent(content);
         }
         //    alert('open');
@@ -221,11 +230,14 @@ function addDrawControl(lat, long, zoom) {
             }
         });
     }
-    ramblersMap.map.on('popupclose', function (e) {
+    ramblersMap.drawnItems.on('popupclose', function (e) {
         if (ramblersMap.processPopups === 'off') {
             return;
         }
         var marker = e.popup._source;
+        if (typeof (marker) === 'undefined') {
+            return;
+        }
         findMarker(marker);
         if (marker.found) {
             var popup = marker.getPopup();
@@ -244,6 +256,9 @@ function addDrawControl(lat, long, zoom) {
             //       marker.fire('revert-edited', {layer: marker});
         }
     });
+    ramblersMap.map.on('popupclose', function (e) {
+        download._popupclose(e);
+    });
     function getElementValue(id) {
         var node = document.getElementById(id);
         if (node !== null) {
@@ -251,7 +266,6 @@ function addDrawControl(lat, long, zoom) {
         }
         return "Invalid";
     }
-
     function setGpxToolStatus(status) {
         ramblersMap.processPopups = status;
         reverse.setStatus(status);

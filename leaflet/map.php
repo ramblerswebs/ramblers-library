@@ -20,7 +20,7 @@ class RLeafletMap {
     const COMBINED_JS = "cache/ra_leaflet/ra-leafet";
     const FOLDER = "cache/ra_leaflet";
 
-    public function __construct() {
+    function __construct() {
         $template = "ramblers/leaflet/mapTemplate.js";
         $this->map = new RHtmlTemplate($template);
         $this->mapStyle = " #leafletmap { height: 500px; width:100%;}";
@@ -130,9 +130,9 @@ class RLeafletMap {
             $this->addScript($path . "leaflet.browser.print.sizes.js", "text/javascript");
             $this->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
         }
-   //     if ($options->ramblersPlaces){
-    //        $this->addScript( "ramblers/leaflet/ra-ramblers-places.js", "text/javascript");
-    //    }
+        //     if ($options->ramblersPlaces){
+        //        $this->addScript( "ramblers/leaflet/ra-ramblers-places.js", "text/javascript");
+        //    }
         $this->addScriptandStyleSheets();
         $mapStyle = " #leafletmap { height: " . $this->mapHeight . "; width:" . $this->mapWidth . ";}";
         $document->addStyleDeclaration($mapStyle);
@@ -165,8 +165,10 @@ class RLeafletMap {
         echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";
         echo "<p class='mapcopyright'>Maps Icons Collection https://mapicons.mapsmarker.com</p>";
         if ($options->draw) {
-            echo "<p id='ra-map-details'></div>";
+            echo "<p id='ra-map-details'></p>";
         }
+
+        echo "</div>";
     }
 
     private function addScript($script, $type) {
@@ -179,7 +181,13 @@ class RLeafletMap {
 
     private function addScriptandStyleSheets() {
 
-        $test = true;
+
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            $test = true;
+        } else {
+            $test = false;
+        }
+
         $document = JFactory::getDocument();
         $jsfilename = self::COMBINED_JS . $this->options->getFileName() . ".js";
         foreach ($this->stylesheets as $item) {
