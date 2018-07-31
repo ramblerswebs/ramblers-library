@@ -12,6 +12,9 @@ class RGpxStatistic {
     public $filename = '';
     public $title = '';
     public $description = '';
+    public $date = '';
+    public $author = '';
+ //   public $copyright = '';
     public $longitude = 0;
     public $latitude = 0;
     public $distance = 0;

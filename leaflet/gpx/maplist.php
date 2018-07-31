@@ -14,6 +14,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
     public $addDownloadLink = "Users"; // "None" - no link, "Users" - users link, "Public" - guest link
     public $descriptions = true; // set false if NO description files are to be supplied
     public $getMetaFromGPX = true;
+    public $displayAsPreviousWalks = true;
 
     public function __construct() {
         parent::__construct();
@@ -44,20 +45,34 @@ class RLeafletGpxMaplist extends RLeafletMap {
         }
 
         echo "<div class=\"tab\">";
-        echo "<button class=\"tablinks active\" onclick=\"openTab(event, 'tabRouteList')\">Walking Routes</button>";
+        if ($this->displayAsPreviousWalks) {
+            echo "<button class=\"tablinks active\" onclick=\"openTab(event, 'tabRouteDetails')\">Previous Walks</button>";
+            echo "<button class=\"tablinks\" onclick=\"openTab(event, 'tabRouteList')\">Titles</button>";
+        } else {
+            echo "<button class=\"tablinks active\" onclick=\"openTab(event, 'tabRouteList')\">Walking Routes</button>";
+            echo "<button class=\"tablinks\" onclick=\"openTab(event, 'tabRouteDetails')\">Route Details</button>";
+        }
         if ($this->descriptions) {
             echo "<button class=\"tablinks\" onclick=\"openTab(event, 'tabDescriptions')\">Descriptions</button>";
         }
-        echo "<button class=\"tablinks\" onclick=\"openTab(event, 'tabRouteDetails')\">Route Details</button>";
         echo "<form id=\"searchform\" ACTION=\"\"\ onsubmit=\"return gpxsearch()\">
               <input name=\"titlesearch\" id=\"gpxtitlesearch\" maxlength=\"200\" class=\"inputbox search-query input-medium\" size=\"20\" placeholder=\"Search\" type=\"search\">
          </form>";
         echo "</div>";
-        echo "<div id=\"tabRouteList\" class=\"tabcontent\"  style=\"display:block\">Processing ...</div>";
-        if ($this->descriptions) {
-            echo "<div id=\"tabDescriptions\" class=\"tabcontent\" >Webmaster: Add text files to display descriptions of each route</div>";
+        if ($this->displayAsPreviousWalks) {
+            echo "<div id=\"tabRouteDetails\" class=\"tabcontent\" style=\"display:block\">Processing ...</div>";
+            echo "<div id=\"tabRouteList\" class=\"tabcontent\" >Processing ...</div>";
+            if ($this->descriptions) {
+                echo "<div id=\"tabDescriptions\" class=\"tabcontent\" >Webmaster: Add text files to display descriptions of each route</div>";
+            }
+        } else {
+            echo "<div id=\"tabRouteList\" class=\"tabcontent\"  style=\"display:block\">Processing ...</div>";
+            if ($this->descriptions) {
+                echo "<div id=\"tabDescriptions\" class=\"tabcontent\" >Webmaster: Add text files to display descriptions of each route</div>";
+            }
+            echo "<div id=\"tabRouteDetails\" class=\"tabcontent\">Processing ...</div>";
         }
-        echo "<div id=\"tabRouteDetails\" class=\"tabcontent\">Processing ...</div>";
+
         echo "<p> </p>";
         echo "<div id = \"gpxheader\" ><h4>Click on any walk to display route</h4></div>";
 
@@ -65,16 +80,21 @@ class RLeafletGpxMaplist extends RLeafletMap {
                 ramblersGpx=new RamblersLeafletGpx();
                 ramblersGpx.download=" . $this->downloadState() . ";
                 ramblersGpx.folder= \"" . $this->folder . "\";
-                addRoutes();
-                displayGPXNames();
-                displayGPXTable();
-                addGPXMarkers();";
+                addRoutes();";
         if ($this->descriptions) {
             $text .="ramblersGpx.description='true';";
             $text .="displayGPXDescriptions();";
         } else {
             $text .="ramblersGpx.description='false';";
         }
+        if ($this->displayAsPreviousWalks) {
+            $text .="ramblersGpx.displayAsPreviousWalks=true;";
+        } else {
+            $text .="ramblersGpx.displayAsPreviousWalks=false;";
+        }
+        $text .= "displayGPXNames();
+                displayGPXTable();
+                addGPXMarkers();";
         parent::addContent($text);
         parent::display();
         echo "<br/>";

@@ -11,7 +11,8 @@ L.Control.GpxUpload = L.Control.extend({
             name: "",
             desc: "",
             author: "",
-            copyright: ""
+            copyright: "",
+            date: ""
         };
         var container = L.DomUtil.create('div', 'leaflet-control-gpx-upload leaflet-bar leaflet-control');
         this._createIcon(container);
@@ -51,6 +52,9 @@ L.Control.GpxUpload = L.Control.extend({
     },
     get_copyright: function () {
         return this._info.copyright;
+    },
+    get_date: function () {
+        return this._info.date;
     },
     _gpxreader: function (gpx, options) {
         var _MAX_POINT_INTERVAL_MS = 15000;
@@ -102,11 +106,11 @@ L.Control.GpxUpload = L.Control.extend({
     _ra_gpx_parse: function (input, options, async) {
 
         var cb = function (gpx, options) {
-             ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
-       //     var layers = ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
-        //    if (!layers)
-       //         return;
-       //     ra_gpx_upload_this.addLayer(layers);
+            ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
+            //     var layers = ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
+            //    if (!layers)
+            //         return;
+            //     ra_gpx_upload_this.addLayer(layers);
             ra_gpx_upload_this._itemsCollection.fire('upload:loaded');
         };
         if (input.substr(0, 1) === '<') { // direct XML has to start with a <
@@ -132,6 +136,10 @@ L.Control.GpxUpload = L.Control.extend({
         if (parseElements.indexOf('track') > -1) {
             tags.push(['trkseg', 'trkpt']);
         }
+        this._info.name = '';
+        this._info.desc = '';
+        this._info.author = '';
+        this._info.date = '';
         var name = xml.getElementsByTagName('name');
         if (name.length > 0) {
             this._info.name = name[0].textContent;
@@ -144,9 +152,13 @@ L.Control.GpxUpload = L.Control.extend({
         if (author.length > 0) {
             this._info.author = author[0].textContent;
         }
-        var copyright = xml.getElementsByTagName('copyright');
-        if (copyright.length > 0) {
-            this._info.copyright = copyright[0].textContent;
+        //    var copyright = xml.getElementsByTagName('copyright');
+        //    if (copyright.length > 0) {
+        //        this._info.copyright = copyright[0].textContent;
+        //    }
+        var date = xml.getElementsByTagName('time');
+        if (date.length > 0) {
+            this._info.date = date[0].textContent;
         }
         for (j = 0; j < tags.length; j++) {
             el = xml.getElementsByTagName(tags[j][0]);
@@ -180,8 +192,8 @@ L.Control.GpxUpload = L.Control.extend({
                 } else if (options.marker_options.wptIconUrls && options.marker_options.wptIconUrls[symKey]) {
                     symIcon = new L.GPXTrackIcon({iconUrl: options.marker_options.wptIconUrls[symKey]});
                 } else {
-                 //   console.log('No icon or icon URL configured for symbol type "' + symKey
-                 //           + '"; ignoring waypoint.');
+                    //   console.log('No icon or icon URL configured for symbol type "' + symKey
+                    //           + '"; ignoring waypoint.');
                     symIcon = new L.GPXTrackIcon({iconUrl: options.marker_options.wptIconUrls['']});
 
                 }

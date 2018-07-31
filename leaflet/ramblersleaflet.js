@@ -634,7 +634,7 @@ function ajax($url, $params, target, displayFunc) {
 
 function onClickPlaceMarker(e) {
     var marker = e.target;
-    var $url = "https://newplaces.walkinginfo.co.uk/details.php?gr=" + this.options.gridref;
+    var $url = "https://places.walkinginfo.co.uk/details.php?gr=" + this.options.gridref;
     ajax($url, "", marker, displayDetails);
 }
 function displayDetails(marker, result) {
@@ -671,11 +671,11 @@ function displayDetails(marker, result) {
 }
 
 function placecorrect(gr) {
-    var $url = "https://newplaces.walkinginfo.co.uk/report.php?gr=" + gr + "&type=like";
+    var $url = "https://places.walkinginfo.co.uk/report.php?gr=" + gr + "&type=like";
     ajax($url, "", gr, votelike);
 }
 function placeincorrect(gr) {
-    var $url = "https://newplaces.walkinginfo.co.uk/report.php?gr=" + gr + "&type=dislike";
+    var $url = "https://places.walkinginfo.co.uk/report.php?gr=" + gr + "&type=dislike";
     ajax($url, "", gr, votedislike);
 }
 function votelike(gr, result) {

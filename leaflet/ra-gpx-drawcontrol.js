@@ -134,6 +134,7 @@ function addDrawControl(lat, long, zoom) {
         download.set_desc(upload.get_desc());
         download.set_author(upload.get_author());
         download.set_copyright(upload.get_copyright());
+        download.set_date(upload.get_date());
     });
     ramblersMap.drawnItems.on("reverse:reversed", function (e) {
         addElevations(false);

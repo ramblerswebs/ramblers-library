@@ -13,7 +13,8 @@ L.Control.GpxDownload = L.Control.extend({
             name: "",
             desc: "",
             author: "",
-            copyright: ""
+            copyright: "",
+            date: ""
         };
         var containerAll = L.DomUtil.create('div', 'leaflet-control-gpx-download ra-download-toolbar-button-disabled');
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control', containerAll);
@@ -24,7 +25,7 @@ L.Control.GpxDownload = L.Control.extend({
         L.DomEvent.on(this.link, 'click', this._downloadGpx, this);
         this._appendButtons(containerAll);
         this.holder.style.display = "none";
-        this.popup = L.popup({minWidth : 550,maxWidth : 550}).setLatLng([0, 0]).setContent('dummy');
+        this.popup = L.popup({minWidth: 550, maxWidth: 550}).setLatLng([0, 0]).setContent('dummy');
         return containerAll;
     },
     _appendButtons: function (container) {
@@ -56,6 +57,9 @@ L.Control.GpxDownload = L.Control.extend({
     },
     set_copyright: function (value) {
         this._info.copyright = value;
+    },
+    set_date: function (value) {
+        this._info.date = value;
     },
     setStatus: function (status) {
         this.enabled = true;
@@ -101,9 +105,17 @@ L.Control.GpxDownload = L.Control.extend({
         var lat = bounds.getSouth();
         //var centre = this._map.getCenter();
         //    var marker = L.marker(centre);
-        gpxName = this._info.name;
-        gpxDesc = this._info.desc;
-        var content = '<form><span><b>Route Name</b></span><br/><input id="gpxName" type="text"/ value="' + gpxName + '" /><br/><span><b>Route Description<b/></span><br/><div><textarea id="gpxDesc" >' + gpxDesc + '</textarea></div></form>';
+        var gpxName = this._info.name;
+        var gpxDesc = this._info.desc;
+        var gpxAuthor = this._info.author;
+        var gpxDate = this._info.date;
+        var gpxCopyright = this._info.copyright;
+        var content = '<form><span><b>Route Name</b></span><br/><input id="gpxName" type="text"/ value="' + gpxName + '" /><br/>';
+        content += '<span><b>Route Description<b/></span><br/><textarea id="gpxDesc" >' + gpxDesc + '</textarea><br/>';
+        content += '<span><b>Author/Leader</b></span><br/><input id="gpxAuthor" type="text"/ value="' + gpxAuthor + '" /><br/>';
+        content += '<span><b>Date</b></span><br/><input type="date" id="gpxDate" name="trip" value=' + gpxDate + ' min="1970-01-01" max="2100-12-31" /><br/>';
+        //    content += '<span><b>Copyright</b></span><br/><input id="gpxCopyright" type="text"/ value="' + gpxCopyright + '" /><br/>';
+        content += '</form>';
         this.popup.setLatLng([lat, lng]);
         this.popup.setContent(content);
         this.popup.openOn(this._map);
@@ -114,6 +126,9 @@ L.Control.GpxDownload = L.Control.extend({
         if (popup === this.popup) {
             this._info.name = this.getElementValue('gpxName');
             this._info.desc = this.getElementValue('gpxDesc');
+            this._info.author = this.getElementValue('gpxAuthor');
+            //        this._info.copyright = this.getElementValue('gpxCopyright');
+            this._info.date = this.getElementValue('gpxDate');
         }
     },
     getElementValue: function (id) {
@@ -164,10 +179,18 @@ L.Control.GpxDownload = L.Control.extend({
     },
     _addMetaData: function () {
         out = "<metadata>";
-        out += "<name>" + ra_gpx_download_this._info.name + "</name>";
-        out += "<desc>" + ra_gpx_download_this._info.desc + "</desc>";
-        //     out += "<author>" + ra_gpx_download_this._info.author + "</author>";
-        //     out += "<copyright>" + ra_gpx_download_this._info.copyright + "</copyright>";
+        if (ra_gpx_download_this._info.name !== "") {
+            out += "<name>" + ra_gpx_download_this._info.name + "</name>";
+        }
+        if (ra_gpx_download_this._info.desc !== "") {
+            out += "<desc>" + ra_gpx_download_this._info.desc + "</desc>";
+        }
+        if (ra_gpx_download_this._info.author !== "") {
+            out += "<author><name>" + ra_gpx_download_this._info.author + "</name></author>";
+        }
+        if (ra_gpx_download_this._info.date !== "") {
+            out += "<time>" + ra_gpx_download_this._info.date + "</time>";
+        }
         out += "</metadata>";
         return out;
     },

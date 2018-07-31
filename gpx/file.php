@@ -17,6 +17,9 @@ class RGpxFile {
     public $routes = 0;
     public $name = "";
     public $description = "";
+    public $date = '';
+    public $author = '';
+ //   public $copyright = '';
     private $file = null;
     private $registered = false;
 
@@ -39,6 +42,17 @@ class RGpxFile {
             }
             if ($meta->description !== null) {
                 $this->description = $meta->description;
+            }
+            if ($meta->author->name !== null) {
+                if ($meta->author !== null) {
+                    $this->author = $meta->author->name;
+                }
+            }
+            //   if ($meta->copyright !== null) {
+            //       $this->copyright = $meta->copyright->year . $meta->copyright->license;
+            //   }
+            if ($meta->time !== null) {
+                $this->date = substr($meta->time->date, 0, 10);
             }
         }
         // tracks

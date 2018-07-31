@@ -19,7 +19,8 @@ class RLicense {
     }
 
     public static function isGoogleKeyMapSet() {
-        return self::$googlelicensekey != "undefined";
+        return false;
+        //   return self::$googlelicensekey != "undefined";
     }
 
     public static function BingMapKey($value) {
@@ -28,9 +29,11 @@ class RLicense {
 
     public static function getBingMapKey() {
         return self::$binglicensekey;
+        // return  $key='AkD_CLFHRmiumGnu7sGZ4bR7gNGlbEWO3WSSOTASUbMtQ8J4On9WxSbEJkwPO_uy';
     }
 
     public static function isBingKeyMapSet() {
+        //   return false;
         return self::$binglicensekey != "undefined";
     }
 
