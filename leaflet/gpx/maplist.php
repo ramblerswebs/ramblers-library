@@ -14,8 +14,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
     public $addDownloadLink = "Users"; // "None" - no link, "Users" - users link, "Public" - guest link
     public $descriptions = true; // set false if NO description files are to be supplied
     public $getMetaFromGPX = true;
-    public $displayAsPreviousWalks = true;
-
+    public $displayAsPreviousWalks = false;
     public function __construct() {
         parent::__construct();
     }
