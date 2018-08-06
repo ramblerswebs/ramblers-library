@@ -10,6 +10,7 @@ class RLeafletMap {
 
     private $map;
     public $debugoptions = false;
+    public $defaultMap = "";
     public $mapStyle;
     public $mapHeight;
     public $mapWidth;
@@ -41,6 +42,9 @@ class RLeafletMap {
 
     public function display() {
         $options = $this->options;
+        if ($this->defaultMap == "Topo") {
+            $options->topoMapDefault = true;
+        }
         JHtml::_('jquery.framework');
 
         $document = JFactory::getDocument();

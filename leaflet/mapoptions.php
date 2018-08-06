@@ -21,6 +21,7 @@ class RLeafletMapoptions {
     public $displayElevation = false;
     public $bing = false;
     public $ramblersPlaces = false;
+    public $topoMapDefault=false;
 
     public function __construct() {
         
@@ -75,6 +76,9 @@ class RLeafletMapoptions {
         }
         if ($this->ramblersPlaces) {
             $options .= "ramblersMap.options.ramblersPlaces = true;" . PHP_EOL;
+        }
+        if ($this->topoMapDefault) {
+            $options .= "ramblersMap.options.topoMapDefault = true;" . PHP_EOL;
         }
         return $options;
     }

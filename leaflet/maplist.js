@@ -110,7 +110,7 @@ function displayGpxdetails(g) {
 
 // Tab control
 
-function ra_tab(evt, cityName) {
+function ra_tab(evt, name) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("ra_tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
@@ -120,7 +120,7 @@ function ra_tab(evt, cityName) {
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    document.getElementById(cityName).style.display = "block";
+    document.getElementById(name).style.display = "block";
     evt.currentTarget.className += " active";
 }
 
@@ -142,6 +142,16 @@ function openTab(evt, tabName) {
 // Show the current tab, and add an "active" class to the button that opened the tab
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
+}
+
+function showhide(evt, idName) {
+    var x = document.getElementById(idName);
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+
 }
 
 // code to handle list of GPX Routes
@@ -172,7 +182,7 @@ function displayGPXTable() {
         out = '<table id="gpxdetails">';
         if (ramblersGpx.displayAsPreviousWalks) {
             extra = "<th onclick='sortGPXTable(\"date\")'>Date</th><th onclick='sortGPXTable(\"author\")'>Leader</th>";
-                   }
+        }
         out += "<tr>" + extra + "<th onclick='sortGPXTable(\"title\")'>Title</th><th onclick='sortGPXTable(\"distance\")'>Distance</th><th>min Altitude</th><th>max Altitude</th><th onclick='sortGPXTable(\"gain\")'>Elevation Gain</th>";
         if (ramblersGpx.download === 0) {
             out += "</tr>";
@@ -223,7 +233,8 @@ function getGPXDistance(distance) {
 function updateGPXid(id) {
     var header, path;
     var route = getRoutefromID(id);
-    header = "<h2>" + route.title + "</h2><p>";
+    header = "<h2>" + route.title + "</h2>";
+    header += "<button style='float:right' class=\"link-button button-p5565 small white\" onclick=\"showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><p>";
     if (ramblersGpx.displayAsPreviousWalks) {
         header += '<b>Date:</b> ' + route.date + '<br/>';
         header += '<b>Leader:</b> ' + route.author + '<br/>';
@@ -243,7 +254,7 @@ function updateGPXid(id) {
         header += "<b>Routes:</b> " + route.routes.toFixed(0);
     }
 
-    header += "</p>";
+    header += "</p></div>";
     path = ramblersGpx.folder + "/" + route.filename;
     document.getElementById('gpxheader').innerHTML = header;
     displayGPX(path, "#782327", 0);

@@ -30,7 +30,8 @@ function RamblersLeafletMap(base) {
         draw: false,
         print: false,
         displayElevation: false,
-        ramblersPlaces: false
+        ramblersPlaces: false,
+        topoMapDefault:false
     };
 }
 
@@ -115,6 +116,9 @@ function raLoadLeaflet() {
     }
 
     ramblersMap.mapControl = L.control.layers(ramblersMap.mapLayers, overlayGraphics, {collapsed: true}).addTo(ramblersMap.map);
+    if (ramblersMap.options.topoMapDefault) {
+        ramblersMap.map.addLayer(ramblersMap.mapLayers["Open Topo Map"]);
+    }
     if (ramblersMap.options.search) {
         try {
             L.Control.geocoder({
@@ -315,7 +319,7 @@ function addPlace($gr, $no, $lat, $long, $icon)
     ramblersMap.markerList.push(marker);
 }
 function addPlaceMarker($gr, $no, $lat, $long) {
-    var $icon;
+    var $icon, $grdisp;
     switch ($no) {
         case 0:
             $icon = s0;
@@ -344,7 +348,8 @@ function addPlaceMarker($gr, $no, $lat, $long) {
         $grdisp = $gr;
     }
     marker.gr = $gr;
-    marker.bindPopup("<b>Grid Ref " + $grdisp + "</b><br/>Lat/Long " + $lat + " " + $long, {maxWidth: 800});
+    var text = "<br/><b>Searching for usage details ...</b>";
+    marker.bindPopup("<b>Grid Ref " + $grdisp + "</b><br/>Lat/Long " + $lat + " " + $long + text, {maxWidth: 800});
     marker.on('click', onClickPlaceMarker, marker);
     return marker;
 }
@@ -580,34 +585,6 @@ function imageExists(image_url) {
     return response === 'true';
 }
 
-//function loadPlaceInfo($url) {
-//    var el = document.getElementById("placeinfo");
-//    el.innerHTML = "<p>Fetching descriptions/usage ...</p>";
-//    ajax($url, "", "placeinfo");
-//    var modal = document.getElementById('myModal');
-//    modal.style.display = "block";
-//}
-//
-//function createParams($array) {
-//    for (var i = 0; i < $array.length; i++) {
-//        var $name = $array[i];
-//        var el = document.getElementById($name);
-//        if (el.type) {
-//            switch (el.type) {
-//                case 'checkbox':
-//                    $array[i] = $array[i] + "=" + document.getElementById($name).checked;
-//                    break;
-//                case 'radio':
-//                    $array[i] = $array[i] + "=" + document.getElementById($name).checked;
-//                    break;
-//                default:
-//                    $array[i] = $array[i] + "=" + document.getElementById($name).value;
-//            }
-//        }
-//    }
-//    return $array.join("&");
-//}
-
 function ajax($url, $params, target, displayFunc) {
     var xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -640,6 +617,12 @@ function onClickPlaceMarker(e) {
 function displayDetails(marker, result) {
     var popup = marker.getPopup();
     var ll = marker.getLatLng();
+    var $grdisp = marker.gr;
+    if ($grdisp.length === 8) {
+        $grdisp = $grdisp.substr(0, 2) + " " + $grdisp.substr(2, 3) + " " + $grdisp.substr(5, 3);
+    }
+    var gr = new LatLon(ll.lat, ll.lng);
+    gr = OsGridRef.latLonToOsGrid(gr);
     var json = JSON.parse(result);
     var nolikes = "";
     if (json.likes > 0) {
@@ -653,8 +636,9 @@ function displayDetails(marker, result) {
     var dislike = "<span class=\"agreebutton hasTip\" title=\"VOTE: This location is INCORRECT\"><a href=\"javascript:placeincorrect('" + marker.gr + "') \"> &#9746;</a>" + nodislikes + " </span>";
     var streetmap = "<span class=\"placebutton-green hasTip\" title=\"View location in streetmap.co.uk\"><a href=\"javascript:streetmap('" + marker.gr + "') \">Streetmap</a></span>";
     var google = "<span class=\"placebutton-green hasTip\" title=\"View location in Google maps\"><a href=\"javascript:googlemap(" + ll.lat + "," + ll.lng + ") \">Google Map</a></span>";
-    var out = "<span class='placelocation'>Place Grid Ref " + marker.gr + " </span>" + like + dislike + streetmap + google;
+    var out = "<span class='placelocation'>Place Grid Ref " + $grdisp + " </span>" + like + dislike + streetmap + google;
     out += "<div id=" + marker.gr + "></div>";
+    out += "<div >" + gr.toString(8) + "</div>";
     out += "<p><b>Description</b> [Date used / Score]</p>";
     out += "<ul>";
     var items = json.records;

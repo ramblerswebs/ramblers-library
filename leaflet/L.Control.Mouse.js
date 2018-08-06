@@ -192,17 +192,15 @@ L.Control.PostcodeStatus = L.Control.extend({
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
         var i;
-        var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
-
+        var desc = "<b>Grid Ref " + gr + "</b><br/><b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
         this._clearPlacesLayers();
         var msg = "   ";
         var point = L.marker(p).bindPopup(msg);
         this.map.postcodelayer.addLayer(point);
         point.getPopup().setContent(desc);
         if (gr !== "") {
-            point.openPopup();
-
             point.getPopup().setContent(desc + "<br/><b>Searching for Ramblers meeting/starting places ...</b>");
+            point.openPopup();
 
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
