@@ -214,3 +214,7 @@ span.placelocation{
     color: #DDDDDD;
     text-decoration: none
 }
+.leaflet-popup-content p {
+    margin-top:5px;
+    margin-bottom:5px;
+}
