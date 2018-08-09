@@ -52,6 +52,8 @@ L.Control.PostcodeStatus = L.Control.extend({
         _mouse_this = this;
         this.map.postcodelayer = L.featureGroup([]);
         this.map.postcodelayer.addTo(this.map);
+        this.map.placePointLayer = L.featureGroup([]);
+        this.map.placePointLayer.addTo(this.map);
         this.enabled = true;
         //  L.control.layers( overlayMaps).addTo(this.map);
         this._container = L.DomUtil.create('div', 'leaflet-control-postcodeposition');
@@ -150,10 +152,10 @@ L.Control.PostcodeStatus = L.Control.extend({
                                 var style;
                                 if (i === 0) {
                                     marker = L.marker(pt, {icon: postcodeIconClosest}).bindPopup(popup);
-                                    style = {color: 'green', weight: 4, opacity: 0.2};
+                                    style = {color: 'green', weight: 3, opacity: 0.2};
                                 } else {
                                     marker = L.marker(pt, {icon: postcodeIcon}).bindPopup(popup);
-                                    style = {color: 'blue', weight: 4, opacity: 0.2};
+                                    style = {color: 'blue', weight: 3, opacity: 0.2};
                                 }
                                 _mouse_this.map.postcodelayer.addLayer(marker);
                                 _mouse_this.map.postcodelayer.addLayer(L.polyline([pt, p], style));
@@ -192,11 +194,12 @@ L.Control.PostcodeStatus = L.Control.extend({
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
         var i;
-        var desc = "<b>Grid Ref " + gr + "</b><br/><b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
+        var desc = "<b>Meeting/Starting Places<b><br/><b>Grid Ref " + gr + "</b><br/><b>Latitude: </b>" + p.lat.toFixed(5) + " ,  <b>Longitude: </b>" + p.lon.toFixed(5);
         this._clearPlacesLayers();
+        this.map.placePointLayer.clearLayers();
         var msg = "   ";
         var point = L.marker(p).bindPopup(msg);
-        this.map.postcodelayer.addLayer(point);
+        this.map.placePointLayer.addLayer(point);
         point.getPopup().setContent(desc);
         if (gr !== "") {
             point.getPopup().setContent(desc + "<br/><b>Searching for Ramblers meeting/starting places ...</b>");
@@ -207,29 +210,35 @@ L.Control.PostcodeStatus = L.Control.extend({
             var url = "https://places.walkinginfo.co.uk/get.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=100";
             getJSON(url, function (err, items) {
                 if (err !== null) {
-                    var msg = "Error: Something went wrong: " + err;
-                    point.getPopup().setContent(msg);
+                    desc += "<br/>Error: Something went wrong: " + err;
                 } else {
-                    if (items.length === 0) {
-                        closest = "No meeting/starting places found within 10km";
-                        point.getPopup().setContent(closest);
+                    var no = 0;
+                    for (i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        if (item.S > 0 && item.S < 6) {
+                            var marker;
+                            marker = addPlaceMarker(item.GR, item.S, item.Lat, item.Lng);
+                            _mouse_this._placeslayer[item.S].addLayer(marker);
+                            no += 1;
+                        }
+                    }
+                    if (no === 0) {
+                        desc += "<br/>No meeting/starting places found within 10km";
                     } else {
-                        for (i = 0; i < items.length; i++) {
+                        if (no === 100) {
+                            desc += "<br/>100+ locations found within 10Km";
 
-                            var item = items[i];
-                            if (item.S > 0 && item.S < 6) {
-                                var marker;
-                                marker = addPlaceMarker(item.GR, item.S, item.Lat, item.Lng);
-                                _mouse_this._placeslayer[item.S].addLayer(marker);
-                            }
-
+                        } else {
+                            desc += "<br/>" + no + " locations found within 10Km";
                         }
                     }
                     point.getPopup().setContent(desc);
-                    point.openPopup();
-                    ramblersMap.map.removeLayer(point);
-                }
+                    // point.openPopup();
 
+                }
+                setTimeout(function (point) {
+                    _mouse_this.map.removeLayer(point);
+                }, 3000, point);
             });
 
         } else {
