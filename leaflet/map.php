@@ -158,6 +158,9 @@ class RLeafletMap {
             echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
         }
         echo "<div id='ra-error-text'></div> " . PHP_EOL;
+         if ($options->draw) {
+            echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
+        }
         echo "<div class='map-container'>" . PHP_EOL;
 
 
@@ -168,10 +171,6 @@ class RLeafletMap {
         echo "</div>" . PHP_EOL;
         echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";
         echo "<p class='mapcopyright'>Maps Icons Collection https://mapicons.mapsmarker.com</p>";
-        if ($options->draw) {
-            echo "<p id='ra-map-details'></p>";
-        }
-
         echo "</div>";
     }
 

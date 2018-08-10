@@ -105,25 +105,21 @@ L.Control.GpxUpload = L.Control.extend({
     },
     _ra_gpx_parse: function (input, options, async) {
 
-        var cb = function (gpx, options) {
+        var cb = function (input, options) {
+            var gpx = ra_gpx_upload_this.BuildXMLFromString(input);
             ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
-            //     var layers = ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
-            //    if (!layers)
-            //         return;
-            //     ra_gpx_upload_this.addLayer(layers);
             ra_gpx_upload_this._itemsCollection.fire('upload:loaded');
         };
         if (input.substr(0, 1) === '<') { // direct XML has to start with a <
-            var parser = new DOMParser();
             if (async) {
                 setTimeout(function () {
-                    cb(parser.parseFromString(input, "text/xml"), options);
+                    cb(input, options);
                 });
             } else {
-                cb(parser.parseFromString(input, "text/xml"), options);
+                cb(input, options);
             }
         } else {
-            this._load_xml(input, cb, options, async);
+            alert("File does not appear to be an GPX file");
         }
     },
     _ra_gpx_parse_gpx_data: function (xml, options) {
@@ -253,6 +249,38 @@ L.Control.GpxUpload = L.Control.extend({
         // Read in the image file as a data URL.
         reader.readAsText(file);
         return false;
+    },
+    BuildXMLFromString: function (text) {
+
+        var parser = new DOMParser();
+        var xmlDoc = null;
+        try {
+            xmlDoc = parser.parseFromString(text, "text/xml");
+        } catch (e) {
+            alert("XML parsing error.");
+            return null;
+        }
+        var errorMsg = null;
+        if (xmlDoc.parseError && xmlDoc.parseError.errorCode != 0) {
+            errorMsg = "XML Parsing Error: " + xmlDoc.parseError.reason
+                    + " at line " + xmlDoc.parseError.line
+                    + " at position " + xmlDoc.parseError.linepos;
+        } else {
+            if (xmlDoc.documentElement) {
+                if (xmlDoc.documentElement.nodeName == "parsererror") {
+                    errorMsg = xmlDoc.documentElement.childNodes[0].nodeValue;
+                }
+            } else {
+                errorMsg = "XML Parsing Error!";
+            }
+        }
+
+        if (errorMsg) {
+            alert(errorMsg);
+            return null;
+        }
+
+        return xmlDoc;
     }
 });
 

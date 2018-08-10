@@ -308,7 +308,7 @@ function listDrawnItems() {
     ramblersMap.elevationcontrol.clear();
     var text = "";
     if (!hasItems) {
-        text = '<h4>No routes or markers defined</h4>';
+        text = '<p>No routes or markers defined</p>';
     } else {
         text += "<table>";
         text += "<tr><th>Segment</th><th>Length</th><th>Elevation Gain</th><th>Est Time</th><th>Number of points</th></tr>";
