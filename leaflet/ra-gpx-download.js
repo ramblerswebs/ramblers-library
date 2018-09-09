@@ -1,7 +1,7 @@
 var L, ramblersMap;
 L.Control.GpxDownload = L.Control.extend({
     options: {
-        title: 'Download a walking route as GPX file',
+        title: 'Download your walking routes as a GPX file',
         titledisabled: 'No routes or markers defined',
         position: 'bottomright'
     },
@@ -109,9 +109,9 @@ L.Control.GpxDownload = L.Control.extend({
         var gpxDesc = this._info.desc;
         var gpxAuthor = this._info.author;
         var gpxDate = this._info.date;
-        var gpxCopyright = this._info.copyright;
-        var content = '<form><span><b>Route Name</b></span><br/><input id="gpxName" type="text"/ value="' + gpxName + '" /><br/>';
-        content += '<span><b>Route Description<b/></span><br/><textarea id="gpxDesc" >' + gpxDesc + '</textarea><br/>';
+        // var gpxCopyright = this._info.copyright;
+        var content = '<form><span><b>File Name/Title</b></span><br/><input id="gpxName" type="text"/ value="' + gpxName + '" /><br/>';
+        content += '<span><b>File Description<b/></span><br/><textarea id="gpxDesc" >' + gpxDesc + '</textarea><br/>';
         content += '<span><b>Author/Leader</b></span><br/><input id="gpxAuthor" type="text"/ value="' + gpxAuthor + '" /><br/>';
         content += '<span><b>Date</b></span><br/><input type="date" id="gpxDate" name="trip" value=' + gpxDate + ' min="1970-01-01" max="2100-12-31" /><br/>';
         //    content += '<span><b>Copyright</b></span><br/><input id="gpxCopyright" type="text"/ value="' + gpxCopyright + '" /><br/>';
@@ -148,7 +148,11 @@ L.Control.GpxDownload = L.Control.extend({
                 var data = this._createGPXdata();
                 try {
                     var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
-                    saveAs(blob, "route.gpx");
+                    var name =this._info.name+".gpx";
+                    if (name===""){
+                        name="route.gpx";
+                    }
+                    saveAs(blob, name);
                 } catch (e) {
                     blurt('Your web browser does not support his option!');
                 }
@@ -158,11 +162,11 @@ L.Control.GpxDownload = L.Control.extend({
     _createGPXdata: function () {
         var gpxData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         gpxData += '<gpx' + "\n";
-        gpxData += 'version="1.0"' + "\n";
+        gpxData += 'version="1.1"' + "\n";
         gpxData += 'creator="Ramblers-Webs - http://www.ramblers-webs.org.uk"' + "\n";
         gpxData += 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + "\n";
-        gpxData += 'xmlns="http://www.topografix.com/GPX/1/0"' + "\n";
-        gpxData += 'xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">' + "\n";
+        gpxData += 'xmlns="http://www.topografix.com/GPX/1/1"' + "\n";
+        gpxData += 'xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">' + "\n";
         ra_gpx_download_this = this;
         gpxData += ra_gpx_download_this._addMetaData();
         this._itemsCollection.eachLayer(function (layer) {

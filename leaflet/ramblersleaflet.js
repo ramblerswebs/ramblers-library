@@ -18,6 +18,7 @@ function RamblersLeafletMap(base) {
     this.elevationcontrol = null;
     this.processPopups = "on";
     this.mapControl = null;
+    this.maphelppage='';
     this.options = {cluster: false,
         fullscreen: false,
         google: false,
@@ -31,7 +32,7 @@ function RamblersLeafletMap(base) {
         print: false,
         displayElevation: false,
         ramblersPlaces: false,
-        topoMapDefault:false
+        topoMapDefault: false
     };
 }
 
@@ -51,7 +52,11 @@ function raLoadLeaflet() {
             zoomSnap: 0.25,
             maxZoom: 18});
     }
-
+    if (ramblersMap.maphelppage!==""){
+        var helpbutton = new L.Control.DisplayHelp();
+    ramblersMap.map.addControl(helpbutton);
+    }
+    
     ramblersMap.mapLayers = new Object();
 // map types
     ramblersMap.mapLayers["Open Street Map"] = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {

@@ -129,7 +129,7 @@ L.Control.PostcodeStatus = L.Control.extend({
 // get postcodes around this point       
                 var east = Math.round(grid.easting);
                 var north = Math.round(grid.northing);
-                var url = "https://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=20";
+                var url = "https://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=30";
                 getJSON(url, function (err, items) {
                     if (err !== null) {
                         var msg = "Error: Something went wrong: " + err;
@@ -207,7 +207,7 @@ L.Control.PostcodeStatus = L.Control.extend({
 
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
-            var url = "https://places.walkinginfo.co.uk/get.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=100";
+            var url = "https://places.walkinginfo.co.uk/get.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=300";
             getJSON(url, function (err, items) {
                 if (err !== null) {
                     desc += "<br/>Error: Something went wrong: " + err;

@@ -78,5 +78,5 @@ L.Control.ReverseRoute = L.Control.extend({
 });
 
 L.control.reverseroute = function (options) {
-    return new L.Control.GpxUpload(options);
+    return new L.Control.ReverseRoute(options);
 };

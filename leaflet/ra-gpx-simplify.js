@@ -134,5 +134,5 @@ L.Control.GpxSimplify = L.Control.extend({
 
 });
 L.control.gpxsimplify = function (options) {
-    return new L.Control.GpxDownload(options);
+    return new L.Control.GpxSimplify(options);
 };

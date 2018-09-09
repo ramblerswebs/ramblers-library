@@ -34,16 +34,21 @@ class RDirectoryList {
             closedir($handle);
         }
         if ($sort == self::ASC) {
-            asort($this->names);
+            asort($this->names, SORT_STRING or SORT_NATURAL);
         }
         if ($sort == self::DESC) {
-            arsort($this->names);
+            arsort($this->names, SORT_STRING or SORT_NATURAL);
         }
         echo "<ul>";
         foreach ($this->names as $value) {
             foreach ($this->fileTypes as $type) {
                 $desc = "";
                 $descfile = $folder . "/" . $value . ".text";
+                if (file_exists($descfile)) {
+                    $desc = " - " . file_get_contents($descfile);
+                    $desc = strip_tags($desc, '<b><i><br><br/>');
+                }
+                $descfile = $folder . "/" . $value . ".txt";
                 if (file_exists($descfile)) {
                     $desc = " - " . file_get_contents($descfile);
                     $desc = strip_tags($desc, '<b><i><br><br/>');

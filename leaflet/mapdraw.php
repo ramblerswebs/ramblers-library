@@ -10,12 +10,9 @@ class RLeafletMapdraw extends RLeafletMap {
     private $zoom = 10;
     private $lat = 52.89;
     private $long = -1.48;
-    private $help;
 
     public function __construct() {
         parent::__construct();
-        $template = "ramblers/leaflet/ra-gpx-draw-help.html";
-        $this->help = new RHtmlTemplate($template);
     }
 
     public function setCenter($lat, $long, $zoom) {
@@ -25,6 +22,7 @@ class RLeafletMapdraw extends RLeafletMap {
     }
 
     public function display() {
+        //$this->help_page = "somepage.html";
         $this->options->fullscreen = true;
         $this->options->search = true;
         $this->options->locationsearch = true;
@@ -38,7 +36,6 @@ class RLeafletMapdraw extends RLeafletMap {
         $this->options->print = false;
         $this->options->bing = true;
         $this->options->ramblersPlaces = true;
- //       $this->help->insertTemplate();
         $text = "addDrawControl($this->lat,$this->long,$this->zoom)";
         parent::addContent($text);
         parent::display();

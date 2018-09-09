@@ -15,6 +15,7 @@ class RLeafletMap {
     public $mapHeight;
     public $mapWidth;
     public $options;
+    public $help_page = "";
     private $scripts = [];
     private $stylesheets = [];
 
@@ -134,6 +135,9 @@ class RLeafletMap {
             $this->addScript($path . "leaflet.browser.print.sizes.js", "text/javascript");
             $this->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
         }
+        if ($this->help_page != "") {
+            $this->addScript("ramblers/leaflet/ra-map-help.js", "text/javascript");
+        }
         //     if ($options->ramblersPlaces){
         //        $this->addScript( "ramblers/leaflet/ra-ramblers-places.js", "text/javascript");
         //    }
@@ -149,6 +153,9 @@ class RLeafletMap {
         }
 
         $optionstext = $options->text();
+        if ($this->help_page != "") {
+            $optionstext.="ramblersMap.maphelppage='" . $this->help_page . "';";
+        }
 
         $this->map->replaceString("// [set MapOptions]", $optionstext);
         if ($this->debugoptions) {
@@ -158,7 +165,7 @@ class RLeafletMap {
             echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
         }
         echo "<div id='ra-error-text'></div> " . PHP_EOL;
-         if ($options->draw) {
+        if ($options->draw) {
             echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
         }
         echo "<div class='map-container'>" . PHP_EOL;
