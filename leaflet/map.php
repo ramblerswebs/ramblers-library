@@ -51,7 +51,7 @@ class RLeafletMap {
         $document = JFactory::getDocument();
         // Leaflet
         $this->addStyleSheet("ramblers/vendors/leaflet1.3.1/leaflet.css", "text/css");
-        $this->addScript("ramblers/vendors/leaflet1.3.1/leaflet-src.js", "text/javascript");
+        $this->addScript("ramblers/vendors/leaflet1.3.1/leaflet.js", "text/javascript");
         $this->addScript("ramblers/leaflet/ramblersleaflet.js", "text/javascript");
         $this->addStyleSheet("ramblers/leaflet/ramblersleaflet.css", "text/css");
         if ($options->search) {
@@ -95,7 +95,7 @@ class RLeafletMap {
             $path = "ramblers/vendors/Leaflet.markercluster-1.3.0/dist/";
             $this->addStyleSheet($path . "MarkerCluster.css", "text/css");
             $this->addStyleSheet($path . "MarkerCluster.Default.css", "text/css");
-            $this->addScript($path . "leaflet.markercluster-src.js", "text/javascript");
+            $this->addScript($path . "leaflet.markercluster.js", "text/javascript");
         }
         if ($options->mouseposition or $options->postcodes) {
             $this->addScript("ramblers/leaflet/L.Control.Mouse.js", "text/javascript");
@@ -111,8 +111,8 @@ class RLeafletMap {
         if ($options->draw) {
             $this->addScript("ramblers/leaflet/ra-gpx-drawcontrol.js", "text/javascript");
             $path = "ramblers/vendors/Leaflet.draw-0.4.14/dist/";
-            $this->addStyleSheet($path . "leaflet.draw-src.css", "text/css");
-            $this->addScript($path . "leaflet.draw-src.js", "text/javascript");
+            $this->addStyleSheet($path . "leaflet.draw.css", "text/css");
+            $this->addScript($path . "leaflet.draw.js", "text/javascript");
             $this->addScript("ramblers/leaflet/maplist.js", "text/javascript");
             $this->addScript("ramblers/leaflet/ra-gpx-upload.js", "text/javascript");
             $this->addScript("ramblers/leaflet/ra-gpx-download.js", "text/javascript");
@@ -197,7 +197,7 @@ class RLeafletMap {
         } else {
             $test = false;
         }
-
+       // $test = false;
         $document = JFactory::getDocument();
         $jsfilename = self::COMBINED_JS . $this->options->getFileName() . ".js";
         foreach ($this->stylesheets as $item) {

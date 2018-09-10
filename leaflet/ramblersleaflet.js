@@ -556,12 +556,13 @@ function convertToHoursMins(time) {
     ;
 }
 function setMarkerIcon(marker, name) {
+    var icon;
     if (name === "") {
         icon = L.icon({
             iconUrl: ramblersMap.base + 'ramblers/leaflet/images/marker-icon.png',
             iconSize: [25, 41], // size of the icon
             iconAnchor: [12, 41],
-            popupAnchor: [0, 0]
+            popupAnchor: [0, -41]
         });
 
         marker.setIcon(icon);
@@ -573,20 +574,21 @@ function setMarkerIcon(marker, name) {
 }
 function setIcon(marker, response) {
     var url = marker.file;
+    var icon;
     marker.file = null;
     if (response === 'true') {
         icon = L.icon({
             iconUrl: url,
             iconSize: [32, 37],
             iconAnchor: [16, 37],
-            popupAnchor: [0, 0]
+            popupAnchor: [0, -41]
         });
     } else {
         icon = L.icon({
             iconUrl: ramblersMap.base + 'ramblers/leaflet/images/redmarker.png',
             iconSize: [36, 41], // size of the icon
             iconAnchor: [18, 41],
-            popupAnchor: [0, 0]
+            popupAnchor: [0, -41]
         });
     }
     marker.setIcon(icon);

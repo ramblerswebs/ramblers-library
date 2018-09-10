@@ -98,7 +98,7 @@ class RLeafletMapoptions {
         $name .= ($this->print) ? 'p' : '';
         $name .= ($this->displayElevation) ? 'e' : '';
         $name .= ($this->bing) ? 'b-' : '';
-        $name.="v002";
+        $name.="v003";
         return $name;
     }
 
