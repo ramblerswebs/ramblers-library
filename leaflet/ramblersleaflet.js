@@ -18,7 +18,7 @@ function RamblersLeafletMap(base) {
     this.elevationcontrol = null;
     this.processPopups = "on";
     this.mapControl = null;
-    this.maphelppage='';
+    this.maphelppage = '';
     this.options = {cluster: false,
         fullscreen: false,
         google: false,
@@ -52,11 +52,11 @@ function raLoadLeaflet() {
             zoomSnap: 0.25,
             maxZoom: 18});
     }
-    if (ramblersMap.maphelppage!==""){
+    if (ramblersMap.maphelppage != "") {
         var helpbutton = new L.Control.DisplayHelp();
-    ramblersMap.map.addControl(helpbutton);
+        ramblersMap.map.addControl(helpbutton);
     }
-    
+
     ramblersMap.mapLayers = new Object();
 // map types
     ramblersMap.mapLayers["Open Street Map"] = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -555,41 +555,66 @@ function convertToHoursMins(time) {
     return  h + 'hrs ' + m.toFixed(0) + 'mins';
     ;
 }
-function getMarkerIcon(name) {
-    var url = getMarkerIconUrl(name);
-    var icon;
-    if (url !== null) {
+function setMarkerIcon(marker, name) {
+    if (name === "") {
+        icon = L.icon({
+            iconUrl: ramblersMap.base + 'ramblers/leaflet/images/marker-icon.png',
+            iconSize: [25, 41], // size of the icon
+            iconAnchor: [12, 41],
+            popupAnchor: [0, 0]
+        });
+
+        marker.setIcon(icon);
+        return;
+    }
+    var file = ramblersMap.base + "ramblers/gpxsymbols/exists.php?file=" + name + ".png";
+    marker.file = ramblersMap.base + "ramblers/gpxsymbols/" + name + ".png";
+    ajaxGet(file, "", marker, setIcon);
+}
+function setIcon(marker, response) {
+    var url = marker.file;
+    marker.file = null;
+    if (response === 'true') {
         icon = L.icon({
             iconUrl: url,
             iconSize: [32, 37],
             iconAnchor: [16, 37],
-            popupAnchor: [0, -37]
+            popupAnchor: [0, 0]
         });
     } else {
         icon = L.icon({
-            iconUrl: ramblersMap.base + 'ramblers/leaflet/gpx/images/pin-icon-wpt.png',
-            iconSize: [30, 40], // size of the icon
-            iconAnchor: [15, 40]
+            iconUrl: ramblersMap.base + 'ramblers/leaflet/images/redmarker.png',
+            iconSize: [36, 41], // size of the icon
+            iconAnchor: [18, 41],
+            popupAnchor: [0, 0]
         });
     }
-    return icon;
-}
-function getMarkerIconUrl(name) {
-    var file = ramblersMap.base + "ramblers/gpxsymbols/exists.php?file=" + name + ".png";
-    if (imageExists(file)) {
-        var url = ramblersMap.base + "ramblers/gpxsymbols/" + name + ".png";
-        return url;
-    }
-    return null;
-}
-function imageExists(image_url) {
-    var http = new XMLHttpRequest();
-    http.open('GET', image_url, false);
-    http.send();
-    var response = http.responseText;
-    return response === 'true';
+    marker.setIcon(icon);
 }
 
+function ajaxGet($url, $params, target, displayFunc) {
+    var xmlhttp;
+    if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp = new XMLHttpRequest();
+    } else
+    {// code for IE6, IE5
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState === 4 && xmlhttp.status === 200)
+        {
+            displayFunc(target, xmlhttp.responseText);
+
+            // document.getElementById($div).innerHTML = xmlhttp.responseText;
+        }
+    };
+    xmlhttp.open("GET", $url, true);
+    //Send the proper header information along with the request
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    //   xmlhttp.setRequestHeader("Content-length", $params.length);
+    //   xmlhttp.setRequestHeader("Connection", "close");
+    xmlhttp.send($params);
+}
 function ajax($url, $params, target, displayFunc) {
     var xmlhttp;
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari

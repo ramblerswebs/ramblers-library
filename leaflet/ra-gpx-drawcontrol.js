@@ -123,10 +123,7 @@ function addDrawControl(lat, long, zoom) {
         if (e.point_type === "waypoint") {
             var marker = e.point;
             var sSymbol = marker.symbol;
-            var icon = getMarkerIcon(sSymbol);
-            if (icon !== null) {
-                marker.setIcon(icon);
-            }
+            setMarkerIcon(marker, sSymbol);
         }
     });
     ramblersMap.drawnItems.on('upload:loaded', function (e) {
@@ -249,17 +246,16 @@ function addDrawControl(lat, long, zoom) {
             marker.name = sName;
             marker.desc = sDesc;
             marker.symbol = sSymbol;
-            var icon = getMarkerIcon(sSymbol);
-            if (icon !== null) {
-                marker.setIcon(icon);
-            }
             marker.title = sName + " - " + sDesc;
+            setMarkerIcon(marker, sSymbol);
+
             //       marker.fire('revert-edited', {layer: marker});
         }
     });
     ramblersMap.map.on('popupclose', function (e) {
         download._popupclose(e);
     });
+
     function getElementValue(id) {
         var node = document.getElementById(id);
         if (node !== null) {
