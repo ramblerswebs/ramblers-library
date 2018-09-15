@@ -604,7 +604,7 @@ class RAccountsLogfile {
                         $options = ["compare" => "ini", "file" => ".user.ini", "path" => ""];
                         break;
                     case self::FILE_PUBLIC_HTACCESS:
-                        $options = ["compare" => "htaccess", "file" => "public_html/.htaccess", "path" => "ramblers/conf/htaccess/new-public_html", "replace" => true];
+                        $options = ["compare" => "htaccess", "file" => "public_html/.htaccess", "path" => ""];
                         break;
                     case self::FILE_PUBLIC_PHPINI:
                         $options = ["compare" => "ini", "file" => "public_html/php.ini", "path" => ""];
