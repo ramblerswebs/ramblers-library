@@ -8,10 +8,10 @@
 class RLicense {
 
     private static $googlelicensekey = "undefined";
-    private static $binglicensekey = "undefined";
+    private static $binglicensekey = false;
 
     public static function GoogleMapKey($value) {
-       // self::$googlelicensekey = $value;
+        // self::$googlelicensekey = $value;
     }
 
     public static function getGoogleMapKey() {
@@ -24,17 +24,21 @@ class RLicense {
     }
 
     public static function BingMapKey($value) {
-       // self::$binglicensekey = $value;
+        self::$binglicensekey = $value;
     }
 
     public static function getBingMapKey() {
-        return self::$binglicensekey;
-       //  return  $key='AkD_CLFHRmiumGnu7sGZ4bR7gNGlbEWO3WSSOTASUbMtQ8J4On9WxSbEJkwPO_uy';
+        // return self::$binglicensekey;
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            return $key = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
+        } else {
+            return $key = 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
+        }
     }
 
     public static function isBingKeyMapSet() {
         //   return false;
-        return self::$binglicensekey != "undefined";
+        return self::$binglicensekey;
     }
 
 }

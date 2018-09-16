@@ -28,6 +28,7 @@ class RLeafletGpxMap extends RLeafletMap {
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
         $this->options->print = false;
+        RLicense::BingMapKey(false);
 
         if ($this->imperial) {
             $imperial = "true";

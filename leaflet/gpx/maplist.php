@@ -15,6 +15,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
     public $descriptions = true; // set false if NO description files are to be supplied
     public $getMetaFromGPX = true;
     public $displayAsPreviousWalks = false;
+
     public function __construct() {
         parent::__construct();
     }
@@ -37,6 +38,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
         $this->options->print = false;
+        RLicense::BingMapKey(false);
         if ($this->imperial) {
             $imperial = "true";
         } else {
