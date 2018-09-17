@@ -461,3 +461,8 @@ div.nextWalksWithGrade img{
     width:25px;
     height:25px;
 }
+span.mappopup:hover{
+    content:' ';
+    background: url(../../images/new-win.png) no-repeat right ;
+    padding-right:15px;
+}

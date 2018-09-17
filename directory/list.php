@@ -33,11 +33,10 @@ class RDirectoryList {
             }
             closedir($handle);
         }
-        if ($sort == self::ASC) {
-            asort($this->names, SORT_STRING or SORT_NATURAL);
-        }
+        natcasesort($this->names);
+
         if ($sort == self::DESC) {
-            arsort($this->names, SORT_STRING or SORT_NATURAL);
+            $this->names = array_reverse($this->names);
         }
         echo "<ul>";
         foreach ($this->names as $value) {
