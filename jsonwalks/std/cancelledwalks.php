@@ -12,8 +12,8 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
 
     private $walksClass = "cancelledWalks";
     private $walkClass = "cancelledWalk";
-    Public $message = "<h3>Sorry - the following walk(s) have been cancelled</h3>";
-
+    public $message = "<h3>Sorry - the following walk(s) have been cancelled</h3>";
+    
     public function DisplayWalks($walks) {
 
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
@@ -42,8 +42,7 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
         $out = "";
         if ($walk->isCancelled()) {
             $out.= "<div class='" . $this->walkClass . "' >" . PHP_EOL;
-
-            $out .= "<b>Walk: " . $walk->walkDate->format('F l, jS') . "</b>";
+            $out .= "<b>" . $walk->groupName . " " . "Walk: " . $walk->walkDate->format('F l, jS') . "</b>";
             if ($walk->hasMeetPlace) {
                 $text = ", " . $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
             }
@@ -59,8 +58,8 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
                 $text.=", Contact " . $walk->contactName . " " . $walk->telephone1;
             }
             $out.= $text . PHP_EOL;
-            $out.= "</div>" . PHP_EOL;
             $out.= "<div class='cancelreason' ><b>Reason:</b> " . $walk->cancellationReason . "</div>" . PHP_EOL;
+            $out.= "</div>" . PHP_EOL;
         }
         return $out;
     }

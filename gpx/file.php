@@ -19,7 +19,7 @@ class RGpxFile {
     public $description = "";
     public $date = '';
     public $author = '';
- //   public $copyright = '';
+    //   public $copyright = '';
     private $file = null;
     private $registered = false;
 
@@ -43,8 +43,8 @@ class RGpxFile {
             if ($meta->description !== null) {
                 $this->description = $meta->description;
             }
-            if ($meta->author->name !== null) {
-                if ($meta->author !== null) {
+            if ($meta->author !== null) {
+                if ($meta->author->name !== null) {
                     $this->author = $meta->author->name;
                 }
             }
@@ -52,7 +52,9 @@ class RGpxFile {
             //       $this->copyright = $meta->copyright->year . $meta->copyright->license;
             //   }
             if ($meta->time !== null) {
-                $this->date = substr($meta->time->date, 0, 10);
+                if ($meta->time->date !== null) {
+                    $this->date = substr($meta->time->date, 0, 10);
+                }
             }
         }
         // tracks

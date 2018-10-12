@@ -146,10 +146,11 @@ class RLeafletMap {
         $document->addStyleDeclaration($mapStyle);
 
         $base = JURI::base();
+        $folder = JURI::base(true);
         if (strpos($base, 'localhost') !== false) {
             $this->map->replaceString("[base]", "");
         } else {
-            $this->map->replaceString("[base]", "/");
+            $this->map->replaceString("[base]", $folder . "/");
         }
 
         $optionstext = $options->text();
@@ -197,7 +198,7 @@ class RLeafletMap {
         } else {
             $test = false;
         }
-       // $test = false;
+        // $test = false;
         $document = JFactory::getDocument();
         $jsfilename = self::COMBINED_JS . $this->options->getFileName() . ".js";
         foreach ($this->stylesheets as $item) {

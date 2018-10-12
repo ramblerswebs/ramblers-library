@@ -42,7 +42,10 @@ span.walksummary img:hover{
 }
 
 .cancelledWalk {color:#000000; }
-.cancelreason {color:#C60C30; font-size: 130%;}
+.cancelreason {
+    margin-left: 30px;
+    color:#C60C30; 
+    font-size: 110%;}
 
 .nextwalkCancelled,
 .walkCancelled {

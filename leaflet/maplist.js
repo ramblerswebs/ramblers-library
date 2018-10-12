@@ -67,11 +67,15 @@ function displayGPX(file, linecolour, imperial) {
     g.on('addpoint', function (e) {
         if (e.point_type === "waypoint") {
             var marker = e.point;
+            icon = L.icon({
+                iconUrl: ramblersMap.base + 'ramblers/leaflet/images/redmarker.png',
+                iconSize: [36, 41], // size of the icon
+                iconAnchor: [18, 41],
+                popupAnchor: [0, -41]
+            });
+            marker.setIcon(icon);
             var sSymbol = marker.options.iconkey;
-            var icon = getMarkerIcon(sSymbol);
-            if (icon !== null) {
-                marker.setIcon(icon);
-            }
+            setMarkerIcon(marker, sSymbol);
         }
     });
     g.on('loaded', function (e) {
