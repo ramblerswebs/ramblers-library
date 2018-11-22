@@ -81,6 +81,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
                 ramblersGpx=new RamblersLeafletGpx();
                 ramblersGpx.download=" . $this->downloadState() . ";
                 ramblersGpx.folder= \"" . $this->folder . "\";
+                ramblersGpx.linecolour= \"" . $this->linecolour . "\";
                 addRoutes();";
         if ($this->descriptions) {
             $text .="ramblersGpx.description='true';";
