@@ -156,7 +156,8 @@ function raLoadLeaflet() {
         L.control.browserPrint({
             title: 'The Ramblers - working for walkers',
             documentTitle: 'The Ramblers - working for walkers',
-            printModes: ["Portrait", "Landscape"]
+            printModes: ["Portrait", "Landscape"],
+            closePopupsOnPrint: false
         }).addTo(ramblersMap.map);
         if (ramblersMap.options.bing) {
             L.Control.BrowserPrint.Utils.registerLayer(
