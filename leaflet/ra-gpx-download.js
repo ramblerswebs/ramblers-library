@@ -140,6 +140,7 @@ L.Control.GpxDownload = L.Control.extend({
     },
     _save: function (e) {
         if (this.enabled) {
+            this.holder.style.display = "none";
             var drawnItems = this._itemsCollection;
             var hasItems = drawnItems.getLayers().length !== 0;
             if (!hasItems) {
