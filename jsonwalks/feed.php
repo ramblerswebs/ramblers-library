@@ -20,7 +20,7 @@ class RJsonwalksFeed {
     public function __construct($rafeedurl) {
         $this->rafeedurl = trim($rafeedurl);
         $this->walks = new RJsonwalksWalks(NULL);
-        $CacheTime = 5; // minutes
+        $CacheTime = 15; // minutes
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(30);
@@ -218,6 +218,7 @@ class RJsonwalksFeed {
         $display->setLinkText($linktext);
         $display->setPostText($posttext);
         $display->Display("de02walks", $events); // display walks information
+        // is this line correct and is function used
     }
 
     private function getTogglePair($one, $two) {
