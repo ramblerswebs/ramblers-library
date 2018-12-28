@@ -26,7 +26,7 @@ class RGpxStatistics {
         if ($lastModFile !== self::JSONFILE) {
             $this->jsonfile = new RGpxJsonlog($this->folder . "/" . self::JSONFILE);
             $this->processFolder();
-            $this->jsonfile->storeItems();
+            $this->jsonfile->writeFile();
         }
     }
 
@@ -58,6 +58,7 @@ class RGpxStatistics {
         //       get stats and create new record
         echo "<h2>Processing GPX files</h2>";
         echo "<p>Diagnostics while generating file: " . self::JSONFILE . "</p>";
+        echo "<p>The diagnostics only appear when the file is generated. They will be displayed until the Joomla Cache expires (usually 15 mins), clearing the cache manually will also remove them.</p>";
         echo "<table>";
         echo RHtml::addTableHeader(['Filename/<b>Title</b>', 'Longitude', 'Latitude', 'Distance', 'Elevation Gain', 'min Alt', 'max Alt', 'Tracks,Segments', 'Routes']);
         foreach ($files as $file) {

@@ -87,8 +87,8 @@ class RFeedhelper {
                     "Referer: " . JURI::base() . "\r\n",]
             ];
             $context = stream_context_create($options);
-            // $fgcOutput = file_get_contents($url, false, $context);
-            $fgcOutput = file_get_contents($url);
+            $fgcOutput = file_get_contents($url, false, $context);
+            // $fgcOutput = file_get_contents($url);
             // echo "<br/>" . $url . "<br/>Read feed<br/>";
             if ($fgcOutput === false) {
                 $this->status = self::READFAILED;
