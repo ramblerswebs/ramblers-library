@@ -170,8 +170,9 @@ class RJsonwalksFeed {
         if ($this->walks->totalWalks() == 0) {
             return;
         }
-        $doc = JFactory::getDocument();
-        $doc->addStyleSheet('ramblers/jsonwalks/css/ramblerswalks.css');
+        $document = JFactory::getDocument();
+        $document->addStyleSheet('ramblers/jsonwalks/css/ramblerswalks.css');
+        $document->addScript("ramblers/js/ramblerswalks.js", "text/javascript");
         $printOn = JRequest::getVar('print') == 1;
         if ($printOn) {
 
@@ -181,9 +182,6 @@ class RJsonwalksFeed {
         if ($this->displayLimit == 0 OR $printOn) {
             $displayclass->DisplayWalks($this->walks);
         } else {
-            $document = JFactory::getDocument();
-            $document->addScript("ramblers/js/racalendar.js", "text/javascript");
-
             $groups = $this->createGroupsOfWalks();
             $numItems = count($groups);
             $i = 1;
