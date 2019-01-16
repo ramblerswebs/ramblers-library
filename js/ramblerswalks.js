@@ -4,7 +4,7 @@
 
 function ra_toggle_visibility(id) {
     var e = document.getElementById(id);
-    if (e.style.display != 'none' )
+    if (e.style.display != 'none')
         e.style.display = 'none';
     else
         e.style.display = '';
@@ -18,7 +18,7 @@ function ra_toggle_visibilities(id1, id2) {
 function dispGrade(item) {
     grade = item.alt;
     var offsets = item.getBoundingClientRect();
-    var bottom = Math.round(window.innerHeight - offsets.top-15) + "px";
+    var bottom = Math.round(window.innerHeight - offsets.top - 15) + "px";
     var right = Math.round(offsets.left + 45) + "px";
 
     var x;
@@ -65,4 +65,31 @@ function noGrade(item) {
     x.style.visibility = "hidden";
     x = document.getElementById("grade-t");
     x.style.visibility = "hidden";
+}
+function gotoURL(dispArticle, dispMenu, walkid) {
+    var url = "?option=com_content&view=article&id=" + dispArticle + "&Itemid=" + dispMenu;
+
+    if (getWalkUrl() === url) {
+        gotoWalk(walkid);
+    } else {
+        url = "index.php?option=com_content&view=article&id=" + dispArticle + "&Itemid=" + dispMenu + "&walk=" + walkid;
+        window.location = url;
+    }
+}
+function gotoWalk(walkid) {
+    var tag = document.getElementById("w" + walkid);
+    if (tag != null) {
+        tag.click();
+        setTimeout(function () {
+            window.location.hash = "#w" + walkid;
+        }, 800);
+    } else {
+        alert("Walk not found");
+    }
+}
+function getWalkUrl() {
+    var search = window.location.search;
+    var n = search.indexOf("&walk=");
+    var compare = search.substr(0, n);
+    return compare;
 }

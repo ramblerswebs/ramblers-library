@@ -37,17 +37,18 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         $id = "accordion_ra1_id" . self::$accordianId;
-        echo "<div class='" . $this->walksClass . "' >";
+        echo "<p id='fullDetailsTop' >ABC </p>";
+        echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         echo '<script type="text/javascript">jQuery(function($) {$(\'#' . $id . '\').raAccordion({hidefirst: 1 });});</script>' . PHP_EOL;
-        echo '<div id="' . $id . '" class="ra-accordion ra-accordion-style4 ">';
+        echo '<div id="' . $id . '" class="ra-accordion ra-accordion-style4 ">' . PHP_EOL;
         foreach ($items as $walk) {
             echo '<div class="ra-accordion-item ' . $this->walkClass . $walk->status . '">' . PHP_EOL;
             if ($this->printOn) {
                 echo '<div class="printfulldetails">' . PHP_EOL;
             } else {
-                echo '<div class="toggler">' . PHP_EOL;
+                echo '<div class="toggler" id="w' . $walk->id . '">' . PHP_EOL;
             }
-            echo '<span><span class="walksummary">' . PHP_EOL;
+            echo '<span><span class="walksummary" >' . PHP_EOL;
 
             $this->displayWalkSummary($walk);
             echo '</span></span>' . PHP_EOL;
@@ -67,6 +68,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         }
         // echo "</div>" . PHP_EOL;
         echo '</div></div>' . PHP_EOL;
+          $this->addGotoWalk();
     }
 
     public function setWalksClass($class) {
@@ -282,10 +284,9 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "<div class='updated " . $class . "'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
-    }
+          }
 
-    private
-            function addLocationInfo($title, $location, $detailsPageUrl) {
+    private function addLocationInfo($title, $location, $detailsPageUrl) {
 
         if ($location->exact) {
             $note = "Click Google Directions to see map and directions from your current location";
@@ -356,6 +357,18 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             $timeHHMMshort = "No time";
         }
         return $timeHHMMshort;
+    }
+
+    private function addGotoWalk() {
+
+        $walk = $_GET["walk"];
+        if ($walk != null) {
+            if (is_numeric($walk)) {
+                $add = "<script type=\"text/javascript\">window.onload = function () {
+                gotoWalk($walk);};</script>";
+                echo $add;
+            }
+        }
     }
 
 }

@@ -36,13 +36,8 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
                 $desc .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
             }
             $out = "<span class='" . $this->walkClass . $walk->status . "' " . ">";
-//            if ($this->dispArticle > 0) {
-//                $out.="index.php?option=com_content&view=article&id=" . $this->dispArticle . "&Itemid=" . $this->dispMenu . "&walk=" . $walk->id . "'";
-//            } else {
-//                $out .= $walk->detailsPageUrl . "' target='_blank' ";
-//            }
-            $out .= $this->getWalkHref($walk);
-            $out .=  $desc . "</a></span>";
+            $out .= $this->getWalkHref($walk, $desc);
+            $out .= "</span>";
 
             if ($this->displayGradesIcon) {
                 $image = $walk->getGradeImage();
