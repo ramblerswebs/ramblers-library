@@ -17,9 +17,9 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
     public $removeHTML = false;
     public $convertToASCII = false;
 
-    public function __construct($filename = "tmp/walks-download.csv") {
+    public function __construct($filename = "tmp/walks-download") {
         parent::__construct();
-        $this->filename = $filename;
+        $this->filename = $filename. (new DateTime())->format('YmdHis').".csv";
     }
 
     public function DisplayWalks($walks) {

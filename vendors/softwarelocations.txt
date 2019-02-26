@@ -35,3 +35,6 @@ Download saveas option
 
 Bing/OS maps
 https://github.com/shramov/leaflet-plugins
+
+JPList pagination 
+https://www.jplist.org/

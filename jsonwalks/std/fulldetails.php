@@ -37,7 +37,6 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         $id = "accordion_ra1_id" . self::$accordianId;
-        echo "<p id='fullDetailsTop' >ABC </p>";
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         echo '<script type="text/javascript">jQuery(function($) {$(\'#' . $id . '\').raAccordion({hidefirst: 1 });});</script>' . PHP_EOL;
         echo '<div id="' . $id . '" class="ra-accordion ra-accordion-style4 ">' . PHP_EOL;
