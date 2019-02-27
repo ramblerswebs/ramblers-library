@@ -200,7 +200,7 @@ class RLeafletMap {
         if (strpos(JURI::base(), 'localhost') !== false) {
             $test = true;
         } else {
-            $test = false;
+            $test = true;
         }
         // $test = false;
         $document = JFactory::getDocument();
