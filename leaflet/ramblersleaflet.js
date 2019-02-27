@@ -114,9 +114,9 @@ function raLoadLeaflet() {
     }
 
     if (ramblersMap.options.osgrid) {
-        osgrid = L.layerGroup([]);
+        var osgrid = L.layerGroup([]);
         osMapGrid(osgrid);
-        overlayGraphics = {
+        var overlayGraphics = {
             "OS 100km Grid": osgrid
         };
         osgrid.addTo(ramblersMap.map);
@@ -228,39 +228,39 @@ function addClusterMarkers() {
 }
 
 function createWalkMarkers() {
-    markerRoute = L.icon({
+    ramblersMap.markerRoute = L.icon({
         iconUrl: ramblersMap.base + "ramblers/images/marker-route.png",
         iconSize: [33, 50],
         iconAnchor: [16, 45]
     });
-    markerStart = L.icon({
+    ramblersMap.markerStart = L.icon({
         iconUrl: ramblersMap.base + "ramblers/images/marker-start.png",
         iconSize: [35, 35]
     });
-    markerArea = L.icon({
+    ramblersMap.markerArea = L.icon({
         iconUrl: ramblersMap.base + "ramblers/images/marker-area.png",
         iconSize: [35, 35]
     });
-    markerCancelled = L.icon({
+    ramblersMap.markerCancelled = L.icon({
         iconUrl: ramblersMap.base + "ramblers/images/marker-cancelled.png",
         iconSize: [35, 35]
     });
-    walkingarea = L.icon({
+    ramblersMap.walkingarea = L.icon({
         iconUrl: ramblersMap.base + "ramblers/images/area.png",
         iconSize: [40, 35]
     });
-    walkinggroup = L.icon({
+    ramblersMap.walkinggroup = L.icon({
         iconUrl: ramblersMap.base + "ramblers/images/group.png",
         iconSize: [40, 35]
     });
-    walkingspecial = L.icon({
+    ramblersMap.walkingspecial = L.icon({
         iconUrl: ramblersMap.base + "ramblers/images/specialgroup.png",
         iconSize: [40, 35]
     });
 }
 function createMouseMarkers() {
 // add marker and layer group to contain postcode markers
-    postcodeIcon = L.icon({
+    ramblersMap.postcodeIcon = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/postcode-icon.png',
         iconSize: [24, 18], // size of the icon
         shadowSize: [26, 20], // size of the shadow
@@ -268,7 +268,7 @@ function createMouseMarkers() {
         shadowAnchor: [0, 0], // the same for the shadow
         popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
     });
-    postcodeIconClosest = L.icon({
+    ramblersMap.postcodeIconClosest = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/postcode-icon-closest.png',
         iconSize: [24, 18], // size of the icon
         shadowSize: [26, 20], // size of the shadow
@@ -276,7 +276,7 @@ function createMouseMarkers() {
         shadowAnchor: [0, 0], // the same for the shadow
         popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
     });
-    redmarkericon = L.icon({
+    ramblersMap.redmarkericon = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/redmarker.png',
         iconSize: [32, 32], // size of the icon
         shadowSize: [26, 20], // size of the shadow
@@ -291,27 +291,27 @@ function createMouseMarkers() {
             {color: "#884000", weight: 1}).addTo(ramblersMap.map);
 }
 function createPlaceMarkers() {
-    s0 = L.icon({
+    ramblersMap.s0 = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/rejected.png',
         iconSize: [15, 15]
     });
-    s1 = L.icon({
+    ramblersMap.s1 = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/1star.png',
         iconSize: [19, 19]
     });
-    s2 = L.icon({
+    ramblersMap.s2 = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/2star.png',
         iconSize: [21, 21]
     });
-    s3 = L.icon({
+    ramblersMap.s3 = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/3star.png',
         iconSize: [23, 23]
     });
-    s4 = L.icon({
+    ramblersMap.s4 = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/4star.png',
         iconSize: [25, 25]
     });
-    s5 = L.icon({
+    ramblersMap.s5 = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/5star.png',
         iconSize: [27, 27]
     });
@@ -319,19 +319,19 @@ function createPlaceMarkers() {
 
 function addMarker($popup, $lat, $long, $icon) {
     var marker = L.marker([$lat, $long], {icon: $icon});
-    $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
+    var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
     marker.bindPopup($pop);
     ramblersMap.markerList.push(marker);
 }
 
 function addMarkerToLayer($layer, $popup, $lat, $long, $icon) {
     var marker = L.marker([$lat, $long], {icon: $icon});
-    $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text 
+    var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text 
     marker.bindPopup($pop);
     $layer.add.push(marker);
 }
-function addPlace($gr, $no, $lat, $long, $icon)
-{
+function addPlace($gr, $no, $lat, $long, $icon) {
+    var $grdisp;
     var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long});
     if ($gr.length === 8) {
         $grdisp = $gr.substr(0, 2) + " " + $gr.substr(2, 3) + " " + $gr.substr(5, 3);
@@ -346,22 +346,22 @@ function addPlaceMarker($gr, $no, $lat, $long) {
     var $icon, $grdisp;
     switch ($no) {
         case 0:
-            $icon = s0;
+            $icon = ramblersMap.s0;
             break;
         case 1:
-            $icon = s1;
+            $icon = ramblersMap.s1;
             break;
         case 2:
-            $icon = s2;
+            $icon = ramblersMap.s2;
             break;
         case 3:
-            $icon = s3;
+            $icon = ramblersMap.s3;
             break;
         case 4:
-            $icon = s4;
+            $icon = ramblersMap.s4;
             break;
         case 5:
-            $icon = s5;
+            $icon = ramblersMap.s5;
             break;
     }
 
@@ -415,7 +415,7 @@ function kFormatter(num) {
 }
 
 function getBrowserStatus() {
-    out = "";
+    var out = "";
     out += "<br/>Mobile: " + L.Browser.mobile.toString();
     out += "<br/>Touch: " + L.Browser.touch.toString();
     out += "<br/>Pointer : " + L.Browser.pointer.toString();
@@ -430,6 +430,7 @@ var getJSON = function (url, callback) {
     xhr.responseType = "json";
     xhr.onload = function () {
         var status = xhr.status;
+        var items;
         if (status === 200) {
             if (typeof xhr.response === 'string') {
                 items = JSON.parse(xhr.response);
@@ -450,6 +451,7 @@ var postJSON = function (url, data, callback) {
     xhr.responseType = "json";
     xhr.onload = function () {
         var status = xhr.status;
+        var items;
         if (status === 200) {
             if (typeof xhr.response === 'string') {
                 items = JSON.parse(xhr.response);
@@ -527,23 +529,24 @@ function osGridToLatLongSquare(gridref, size) {
     return bounds;
 }
 function osMapGrid(layer) {
-    style = {color: '#333366', weight: 1, opacity: 0.2};
+    var style = {color: '#333366', weight: 1, opacity: 0.2};
+    var lines;
     for (east = 0; east < 700500; east += 100000) {
         lines = new Array();
         i = 0;
         for (north = 0; north < 1300500; north += 10000) {
-            gr = new OsGridRef(east, north);
-            latlong = OsGridRef.osGridToLatLon(gr);
+            var gr = new OsGridRef(east, north);
+            var latlong = OsGridRef.osGridToLatLon(gr);
             lines[i] = new L.latLng(latlong.lat, latlong.lon);
             i++;
         }
 // L.polyline(lines, style).addTo(map);
         layer.addLayer(L.polyline(lines, style));
     }
-    for (north = 0; north < 1300500; north += 100000) {
+    for (var north = 0; north < 1300500; north += 100000) {
         lines = new Array();
         i = 0;
-        for (east = 0; east < 700500; east += 10000) {
+        for (var east = 0; east < 700500; east += 10000) {
             gr = new OsGridRef(east, north);
             latlong = OsGridRef.osGridToLatLon(gr);
             lines[i] = new L.latLng(latlong.lat, latlong.lon);

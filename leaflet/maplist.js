@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var L, ramblersMap, ramblersGpx, markerRoute;
+var L, ramblersMap, ramblersGpx, markerRoute, jplist;
 
 function RamblersLeafletGpx() {
     this.routes = null;
@@ -20,6 +20,15 @@ function RamblersLeafletGpx() {
     this.displayAsPreviousWalks = false;
     this.gpx = null;
     this.searchtext = '';
+}
+function displayData() {
+    setTagHtml('ra-pagination1',addPagination());
+    displayGPXTable();
+    addGPXMarkers();
+    jplist.init({
+        storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
+        storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
+    });
 }
 function displayGPX(file, linecolour, imperial) {
     // remove old gpx route
@@ -68,7 +77,7 @@ function displayGPX(file, linecolour, imperial) {
     g.on('addpoint', function (e) {
         if (e.point_type === "waypoint") {
             var marker = e.point;
-            icon = L.icon({
+            var icon = L.icon({
                 iconUrl: ramblersMap.base + 'ramblers/leaflet/images/redmarker.png',
                 iconSize: [36, 41], // size of the icon
                 iconAnchor: [18, 41],
@@ -115,41 +124,49 @@ function displayGpxdetails(g) {
 
 // Tab control
 
-function ra_tab(evt, name) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("ra_tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("ra_tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(name).style.display = "block";
-    evt.currentTarget.className += " active";
-}
+//function ra_tab(evt, name) {
+//    var i, tabcontent, tablinks;
+//    tabcontent = document.getElementsByClassName("ra_tabcontent");
+//    for (i = 0; i < tabcontent.length; i++) {
+//        tabcontent[i].style.display = "none";
+//    }
+//    tablinks = document.getElementsByClassName("ra_tablinks");
+//    for (i = 0; i < tablinks.length; i++) {
+//        tablinks[i].className = tablinks[i].className.replace(" active", "");
+//    }
+//    document.getElementById(name).style.display = "block";
+//    evt.currentTarget.className += " active";
+//}
 
-function openTab(evt, tabName) {
-// Declare all variables
-    var i, tabcontent, tablinks;
-    // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
+//function openTab(evt, tabName) {
+//// Declare all variables
+//    var i, tablinks;
+//// Get all elements with class="tablinks" and remove the class "active"
+//    tablinks = document.getElementsByClassName("tablinks");
+//    for (i = 0; i < tablinks.length; i++) {
+//        tablinks[i].className = tablinks[i].className.replace(" active", "");
+//    }
+//
+//    evt.currentTarget.className += " active";
+//    switch (tabName) {
+//        case "tabRouteDetails":
+//            displayGPXTable();
+//            break;
+//        case "tabRouteList":
+//            displayGPXNames();
+//            break;
+//        case "tabDescriptions":
+//            displayGPXDescriptions();
+//            break;
+//    }
+//    jplist.init({
+//    storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
+//            storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
+//
+//            });
+//        }
 
-// Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-
-// Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-}
-
-function showhide(evt, idName) {
+    function showhide(evt, idName) {
     var x = document.getElementById(idName);
     if (x.style.display === "none") {
         x.style.display = "block";
@@ -159,50 +176,52 @@ function showhide(evt, idName) {
 
 }
 
-// code to handle list of GPX Routes
-function displayGPXNames() {
-    var out;
-    out = "<div class='gpxlist'>";
-    out += '<ul>';
-    for (index = 0; index < ramblersGpx.routes.length; ++index) {
-        var route = ramblersGpx.routes[index];
-        if (displayRoute(route)) {
-            out += "<li>" + displayGPXName(route) + "</li>";
-        }
-    }
-    out += '</ul>';
-    out += '</div>';
-    document.getElementById("tabRouteList").innerHTML = out;
-}
+//// code to handle list of GPX Routes
+//function displayGPXNames() {
+//    var out, index;
+//    out = "<div class='gpxlist'>";
+//    out += '<ul data-jplist-group=\"group1\">';
+//    for (index = 0; index < ramblersGpx.routes.length; ++index) {
+//        var route = ramblersGpx.routes[index];
+//        if (displayRoute(route)) {
+//            out += "<li data-jplist-item>" + displayGPXName(route) + "</li>";
+//        }
+//    }
+//    out += '</ul>';
+//    out += '</div>';
+//    document.getElementById("dataTab").innerHTML = out;
+//}
 function displayGPXName(route) {
-    link = '<b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b>';
+    var link = '<b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b>';
     return link;
 }
 function displayGPXTable() {
-    var out;
+    var out, index;
     var tag;
     var extra = "";
-    tag = document.getElementById("tabRouteDetails");
+    tag = document.getElementById("dataTab");
     if (tag !== null) {
-        out = '<table id="gpxdetails">';
+        out = '<table id="gpxdetails"><thead>';
         if (ramblersGpx.displayAsPreviousWalks) {
-            extra = "<th onclick='sortGPXTable(\"date\")'>Date</th><th onclick='sortGPXTable(\"author\")'>Leader</th>";
+            extra = "<th>Date</th><th>Leader</th>";
         }
-        out += "<tr>" + extra + "<th onclick='sortGPXTable(\"title\")'>Title</th><th onclick='sortGPXTable(\"distance\")'>Distance</th><th>min Altitude</th><th>max Altitude</th><th onclick='sortGPXTable(\"gain\")'>Elevation Gain</th>";
+        out += "<tr>" + extra + "<th>Title</th><th>Distance Km</th><th>Miles</th><th>min Altitude</th><th>max Altitude</th><th>Elevation Gain</th>";
         if (ramblersGpx.download === 0) {
             out += "</tr>";
         } else {
             out += "<th>GPX</th></tr>";
         }
+        out += "</thead>";
+        out += '<tbody data-jplist-group=\"group1\">';
         for (index = 0; index < ramblersGpx.routes.length; ++index) {
             var route = ramblersGpx.routes[index];
             if (displayRoute(route)) {
-                out += '<tr>';
+                out += '<tr data-jplist-item>';
                 out += displayGPXRow(route);
                 out += '</tr>';
             }
         }
-        out += '</table>';
+        out += '</tbody></table>';
         if (ramblersGpx.download === 1) {
             out += "<p>* To be able to download GPX Routes, you need to log on to our web site.</p>";
         }
@@ -212,19 +231,20 @@ function displayGPXTable() {
 function displayGPXRow(route) {
     var link = "";
     if (ramblersGpx.displayAsPreviousWalks) {
-        link += '<td><b>' + route.date + '</b></td>';
-        link += '<td class="alignleft">' + route.author + '</td>';
+        link += '<td class="wDate"><b>' + route.date + '</b></td>';
+        link += '<td class="wAuthor alignleft">' + route.author + '</td>';
     }
-    link += '<td class="alignleft"><b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b></td>';
-    link += '<td>' + getGPXDistance(route.distance) + '</td>';
-    if (route.cumulativeElevationGain === 0) {
+    link += '<td class="wTitle alignleft"><b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b></td>';
+    link += '<td class="wDistance">' + (route.distance/1000).toFixed(1) + '</td>';
+    link += '<td>' + m_to_mi(route.distance).toFixed(2) + '</td>';
+        if (route.cumulativeElevationGain === 0) {
         link += '<td>...</td>';
         link += '<td>...</td>';
-        link += '<td>...</td>';
+        link += '<td class="wElevation">...</td>';
     } else {
         link += '<td>' + route.minAltitude.toFixed(0) + '</td>';
         link += '<td>' + route.maxAltitude.toFixed(0) + '</td>';
-        link += '<td>' + route.cumulativeElevationGain.toFixed(0) + '</td>';
+        link += '<td class="wElevation">' + route.cumulativeElevationGain.toFixed(0) + '</td>';
     }
     link += '<td>' + getGPXdownloadLink(route) + '</td>';
     return link;
@@ -266,7 +286,7 @@ function updateGPXid(id) {
     location.hash = '#gpxheader';
 }
 function getRoutefromID(id) {
-    for (index = 0; index < ramblersGpx.routes.length; ++index) {
+    for (var index = 0; index < ramblersGpx.routes.length; ++index) {
         var route = ramblersGpx.routes[index];
         if (route.id === id) {
             return route;
@@ -274,24 +294,24 @@ function getRoutefromID(id) {
     }
     return null;
 }
-function displayGPXDescriptions() {
-    var out;
-    out = "<div class='gpxdescriptions'>";
-    out += '<p>';
-    for (index = 0; index < ramblersGpx.routes.length; ++index) {
-        var route = ramblersGpx.routes[index];
-        if (route.description !== '') {
-            if (displayRoute(route)) {
-                out += displayGPXName(route) + " [" + getGPXDistance(route.distance) + "] - " + route.description;
-            }
-        }
-        out += '</p>';
-    }
-    out += '</div>';
-    document.getElementById("tabDescriptions").innerHTML = out;
-}
+//function displayGPXDescriptions() {
+//    var out;
+//    out = "<div class='gpxdescriptions' data-jplist-group=\"group1\">";
+//    out += '<p data-jplist-item>';
+//    for (var index = 0; index < ramblersGpx.routes.length; ++index) {
+//        var route = ramblersGpx.routes[index];
+//        if (route.description !== '') {
+//            if (displayRoute(route)) {
+//                out += displayGPXName(route) + " [" + getGPXDistance(route.distance) + "] - " + route.description;
+//            }
+//        }
+//        out += '</p>';
+//    }
+//    out += '</div>';
+//    document.getElementById("dataTab").innerHTML = out;
+//}
 function addGPXMarkers() {
-    for (index = 0; index < ramblersGpx.routes.length; ++index) {
+    for (var index = 0; index < ramblersGpx.routes.length; ++index) {
         var route = ramblersGpx.routes[index];
         if (displayRoute(route)) {
             addGPXMarker(route);
@@ -300,12 +320,12 @@ function addGPXMarkers() {
 }
 function addGPXMarker(route) {
     var $popup, $lat, $long;
-    $popup = "<span style='font-size:120%'>" + displayGPXName(route) + "</span>";
-    $popup += ' - ' + getGPXDistance(route.distance) + '<br/>';
+    $popup = "<div style='font-size:120%'>" + displayGPXName(route) + "</div>";
+    $popup += '<b>Distance</b> - ' + getGPXDistance(route.distance) + '<br/>';
     $popup += formatAltitude(route);
     $lat = route.latitude;
     $long = route.longitude;
-    addMarker($popup, $lat, $long, markerRoute);
+    addMarker($popup, $lat, $long, ramblersMap.markerRoute);
 }
 function formatAltitude(route) {
     var popup;
@@ -331,29 +351,33 @@ function getGPXdownloadLink(route) {
     }
     return link;
 }
-function sortGPXTable(order) {
-    if (order === "date") {
-        sortOn(ramblersGpx.routes, 'date', ramblersGpx.dateorder, false);
-        ramblersGpx.dateorder = !ramblersGpx.dateorder;
-    }
-    if (order === "author") {
-        sortOn(ramblersGpx.routes, 'author', ramblersGpx.authororder, false);
-        ramblersGpx.authororder = !ramblersGpx.authororder;
-    }
-    if (order === "distance") {
-        sortOn(ramblersGpx.routes, 'distance', ramblersGpx.distorder, true);
-        ramblersGpx.distorder = !ramblersGpx.distorder;
-    }
-    if (order === "title") {
-        sortOn(ramblersGpx.routes, 'title', ramblersGpx.titleorder, false);
-        ramblersGpx.titleorder = !ramblersGpx.titleorder;
-    }
-    if (order === "gain") {
-        sortOn(ramblersGpx.routes, 'cumulativeElevationGain', ramblersGpx.gainorder, true);
-        ramblersGpx.gainorder = !ramblersGpx.gainorder;
-    }
-    displayGPXTable();
-}
+//function sortGPXTable(order) {
+//    if (order === "date") {
+//        sortOn(ramblersGpx.routes, 'date', ramblersGpx.dateorder, false);
+//        ramblersGpx.dateorder = !ramblersGpx.dateorder;
+//    }
+//    if (order === "author") {
+//        sortOn(ramblersGpx.routes, 'author', ramblersGpx.authororder, false);
+//        ramblersGpx.authororder = !ramblersGpx.authororder;
+//    }
+//    if (order === "distance") {
+//        sortOn(ramblersGpx.routes, 'distance', ramblersGpx.distorder, true);
+//        ramblersGpx.distorder = !ramblersGpx.distorder;
+//    }
+//    if (order === "title") {
+//        sortOn(ramblersGpx.routes, 'title', ramblersGpx.titleorder, false);
+//        ramblersGpx.titleorder = !ramblersGpx.titleorder;
+//    }
+//    if (order === "gain") {
+//        sortOn(ramblersGpx.routes, 'cumulativeElevationGain', ramblersGpx.gainorder, true);
+//        ramblersGpx.gainorder = !ramblersGpx.gainorder;
+//    }
+//    displayGPXTable();
+//    jplist.init({
+//        storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
+//        storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
+//    });
+//}
 function displayRoute(route) {
     if (ramblersGpx.searchtext === '') {
         return true;
@@ -366,65 +390,140 @@ function displayRoute(route) {
 function gpxsearch() {
     var x = document.getElementById("searchform");
     var text = "";
-    var i;
+    var i, y;
     for (i = 0; i < x.length; i++) {
         text += x.elements[i].value;
         y = x.elements[i];
     }
     ramblersGpx.searchtext = text.toLowerCase();
-    displayGPXNames();
-    displayGPXDescriptions();
-    displayGPXTable();
-
+    displayTabs();
     removeClusterMarkers();
     addGPXMarkers();
     ramblersMap.markersCG.addLayers(ramblersMap.markerList);
     return false;
 }
-var sortOn = function (arr, prop, reverse, numeric) {
-
-// Ensure there's a property
-    if (!prop || !arr) {
-        return arr;
+//var sortOn = function (arr, prop, reverse, numeric) {
+//
+//// Ensure there's a property
+//    if (!prop || !arr) {
+//        return arr;
+//    }
+//
+//// Set up sort function
+//    var sort_by = function (field, rev, primer) {
+//
+//// Return the required a,b function
+//        return function (a, b) {
+//
+//// Reset a, b to the field
+//            a = primer(a[field]), b = primer(b[field]);
+//            // Do actual sorting, reverse as needed
+//            return ((a < b) ? -1 : ((a > b) ? 1 : 0)) * (rev ? -1 : 1);
+//        };
+//    };
+//    // Distinguish between numeric and string to prevent 100's from coming before smaller
+//    // e.g.
+//    // 1
+//    // 20
+//    // 3
+//    // 4000
+//    // 50
+//
+//    if (numeric) {
+//
+//// Do sort "in place" with sort_by function
+//        arr.sort(sort_by(prop, reverse, function (a) {
+//
+//// - Force value to a string.
+//// - Replace any non numeric characters.
+//// - Parse as float to allow 0.02 values.
+//            return parseFloat(String(a).replace(/[^0-9.-]+/g, ''));
+//        }));
+//    } else {
+//
+//// Do sort "in place" with sort_by function
+//        arr.sort(sort_by(prop, reverse, function (a) {
+//
+//// - Force value to string.
+//            return String(a).toUpperCase();
+//        }));
+//    }
+//};
+function addPagination() {
+    var $div = '<div data-jplist-control=\"pagination\" \
+            data-group=\"group1\" \
+            data-items-per-page=\"10\" \
+            data-current-page=\"0\" \
+            data-name=\"pagination1\"> \
+            <span> \
+            <button type=\"button\" data-type=\"first\">First</button> \
+            <button type=\"button\" data-type=\"prev\">Previous</button> \
+            <span class=\"jplist-holder\" data-type=\"pages\"> \
+                <button type=\"button\" data-type=\"page\">{pageNumber}</button> \
+            </span> \
+            <button type=\"button\" data-type=\"next\">Next</button> \
+            <button type=\"button\" data-type=\"last\">Last</button> \
+            </span> \
+            <span data-type=\"info\"> \
+            {startItem} - {endItem} of {itemsNumber} \
+            </span> \
+            <!-- items per page select --> \
+    <select data-type=\"items-per-page\"> \
+        <option value=\"10\"> 10 per page </option> \
+        <option value=\"20\"> 20 per page </option> \
+        <option value=\"30\"> 30 per page </option> \
+        <option value=\"0\"> view all </option> \
+    </select> \
+        </div> \
+<div class="ra-route-filter"><span><button>Sort By:</button> \
+<button \
+        data-jplist-control="sort-buttons" \
+        data-path=".wTitle" \
+        data-group="group1" \
+        data-order="asc" \
+        data-type="text" \\n\
+        data-selected="true" \
+        data-mode="radio"> \
+    Title\
+</button> \
+<button \
+        data-jplist-control="sort-buttons" \
+        data-path=".wDistance" \
+        data-group="group1" \
+        data-order="asc" \
+        data-type="number" \
+        data-mode="radio"> \
+    Distance \
+</button> \
+<button \
+        data-jplist-control="sort-buttons" \
+        data-path=".wElevation" \
+        data-group="group1" \
+        data-order="asc" \
+        data-type="number" \
+        data-mode="radio"> \
+    Elevation \
+</button>\
+</span> \
+<span> \
+<input class="ra-route-search" \
+     data-jplist-control="textbox-filter" \
+     data-group="group1" \
+     data-name="my-filter-1" \
+     data-path=".wTitle" \
+     data-clear-btn-id="title-clear-btn" \
+     type="text" \
+     value="" \
+     placeholder="Filter by Title" \
+/> \               \
+<button type="button" id="title-clear-btn">Clear</button> \
+</span></div>';
+   
+    return $div;
+}
+function setTagHtml(id, html) {
+    var tag = document.getElementById(id);
+    if (tag) {
+        tag.innerHTML = html;
     }
-
-// Set up sort function
-    var sort_by = function (field, rev, primer) {
-
-// Return the required a,b function
-        return function (a, b) {
-
-// Reset a, b to the field
-            a = primer(a[field]), b = primer(b[field]);
-            // Do actual sorting, reverse as needed
-            return ((a < b) ? -1 : ((a > b) ? 1 : 0)) * (rev ? -1 : 1);
-        };
-    };
-    // Distinguish between numeric and string to prevent 100's from coming before smaller
-    // e.g.
-    // 1
-    // 20
-    // 3
-    // 4000
-    // 50
-
-    if (numeric) {
-
-// Do sort "in place" with sort_by function
-        arr.sort(sort_by(prop, reverse, function (a) {
-
-// - Force value to a string.
-// - Replace any non numeric characters.
-// - Parse as float to allow 0.02 values.
-            return parseFloat(String(a).replace(/[^0-9.-]+/g, ''));
-        }));
-    } else {
-
-// Do sort "in place" with sort_by function
-        arr.sort(sort_by(prop, reverse, function (a) {
-
-// - Force value to string.
-            return String(a).toUpperCase();
-        }));
-    }
-};
+}

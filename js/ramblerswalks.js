@@ -16,7 +16,7 @@ function ra_toggle_visibilities(id1, id2) {
 /* code to display or not grade information */
 
 function dispGrade(item) {
-    grade = item.alt;
+    var grade = item.alt;
     var offsets = item.getBoundingClientRect();
     var bottom = Math.round(window.innerHeight - offsets.top - 15) + "px";
     var right = Math.round(offsets.left + 45) + "px";
@@ -52,8 +52,8 @@ function dispGrade(item) {
 }
 
 function noGrade(item) {
-    grade = item.alt;
-    x = document.getElementById("grade-ea");
+    var grade = item.alt;
+    var x = document.getElementById("grade-ea");
     x.style.visibility = "hidden";
     x = document.getElementById("grade-e");
     x.style.visibility = "hidden";

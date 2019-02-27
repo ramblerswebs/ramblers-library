@@ -30,7 +30,7 @@ class RJsonwalksStdFulldetails2 extends RJsonwalksDisplaybase {
         $document = JFactory::getDocument();
 
         $document->addScript("ramblers/jsonwalks/std/fulldetails.js", "text/javascript");
-        $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.1.2/jplist.min.js", "text/javascript");
+        $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         $items = $walks->allWalks();
         $text = "ramblerswalks='" . addslashes(json_encode($items)) . "'";
         //  echo $text;

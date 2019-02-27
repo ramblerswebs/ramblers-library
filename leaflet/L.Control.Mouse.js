@@ -1,5 +1,4 @@
-var L, ramblersMap, OsGridRef, postcodeIconClosest, postcodeIcon;
-var s0, s1, s2, s3, s4, s5;
+var L, ramblersMap, OsGridRef;
 L.Control.Mouse = L.Control.extend({
     options: {
         position: 'bottomleft',
@@ -136,7 +135,7 @@ L.Control.PostcodeStatus = L.Control.extend({
                         point.getPopup().setContent(msg);
                     } else {
                         if (items.length === 0) {
-                            closest = "No postcodes found within 10km";
+                            var closest = "No postcodes found within 10km";
                             point.getPopup().setContent(closest);
                         } else {
                             for (i = 0; i < items.length; i++) {
@@ -151,10 +150,10 @@ L.Control.PostcodeStatus = L.Control.extend({
                                 var pt = new L.latLng(latlong.lat, latlong.lon);
                                 var style;
                                 if (i === 0) {
-                                    marker = L.marker(pt, {icon: postcodeIconClosest}).bindPopup(popup);
+                                    marker = L.marker(pt, {icon: ramblersMap.postcodeIconClosest}).bindPopup(popup);
                                     style = {color: 'green', weight: 3, opacity: 0.2};
                                 } else {
-                                    marker = L.marker(pt, {icon: postcodeIcon}).bindPopup(popup);
+                                    marker = L.marker(pt, {icon: ramblersMap.postcodeIcon}).bindPopup(popup);
                                     style = {color: 'blue', weight: 3, opacity: 0.2};
                                 }
                                 _mouse_this.map.postcodelayer.addLayer(marker);
@@ -178,7 +177,7 @@ L.Control.PostcodeStatus = L.Control.extend({
     },
     _addPlacesLayers: function () {
         this._placeslayer = [];
-        for (i = 1; i < 6; i++) {
+        for (var i = 1; i < 6; i++) {
             this._placeslayer[i] = L.layerGroup([]);
             this._placeslayer[i].addTo(ramblersMap.map);
             ramblersMap.mapControl.addOverlay(this._placeslayer[i], "<span class='ramblers-places-icon'><img src='ramblers/leaflet/images/" + i + "star.png' alt='" + i + " Star'> places</span>");

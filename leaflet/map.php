@@ -16,6 +16,7 @@ class RLeafletMap {
     public $mapWidth;
     public $options;
     public $help_page = "";
+    public $leafletLoad = true;
     private $scripts = [];
     private $stylesheets = [];
 
@@ -175,6 +176,9 @@ class RLeafletMap {
         echo "<div id='leafletmap'></div>" . PHP_EOL;
         echo "<script type='text/javascript'>";
         echo $this->map->getContents();
+        if ($this->leafletLoad) {
+            echo "window.onload = function () {raLoadLeaflet();};";
+        }
         echo "</script>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
         echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";

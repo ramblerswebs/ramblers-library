@@ -58,5 +58,15 @@ abstract class RJsonwalksDisplaybase {
         $out.=$desc . "</a>";
         return $out;
     }
+       public function getWalkMapHref($walk, $desc) {
+        $out = "<a href=";
+        if ($this->dispArticle > 0) {
+            $out .= "'javascript:gotoURL(" . $this->dispArticle . "," . $this->dispMenu . "," . $walk->id . ");' >";
+        } else {
+            $out .= "'" . $walk->detailsPageUrl . "' target='_blank'>";
+        }
+        $out.=$desc . "</a>";
+        return $out;
+    }
 
 }

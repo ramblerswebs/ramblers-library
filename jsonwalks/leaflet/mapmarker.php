@@ -78,7 +78,8 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $gr = $walk->startLocation->gridref;
         $long = $walk->startLocation->longitude;
         $lat = $walk->startLocation->latitude;
-        $url = $walk->detailsPageUrl;
+        $desc = "<b>" . $date . "<br/>" . $title . "<br/>" . $dist . " " . $walk->nationalGrade . "</b>";
+        $url = $this->getWalkMapHref($walk, $desc);
         if ($walk->startLocation->exact) {
             $icon = "markerStart";
         } else {
@@ -90,7 +91,8 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $class = $this->walkClass . $walk->status;
         $grade = $walk->getGradeImage();
         $grade = "<img src='" . JURI::base() . $grade . "' alt='" . $walk->nationalGrade . "' width='30px'>";
-        $details = "<div class='" . $class . "'>" . $grade . "<b><a href=&quot;javascript:walkdetails('" . $url . "')&quot; >" . $date . "<br/>" . $title . "<br/>" . $dist . " " . $walk->nationalGrade . "</a></b></div>";
+      //  $details = "<div class='" . $class . "'>" . $grade . "<b><a href=&quot;javascript:walkdetails('" . $url . "')&quot; >" . $date . "<br/>" . $title . "<br/>" . $dist . " " . $walk->nationalGrade . "</a></b></div>";
+        $details = "<div class='" . $class . "'>" . $grade . $url . "</div>";
         $map = "<a href=&quot;javascript:streetmap('" . $gr . "')&quot; >[OS Map]</a>";
         $directions = "<a href=&quot;javascript:directions(" . $lat . "," . $long . ")&quot; >[Directions]</a>";
         //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
@@ -101,4 +103,6 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         return $marker;
     }
 
-}
+    
+    
+        }
