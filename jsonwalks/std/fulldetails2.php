@@ -17,26 +17,40 @@ class RJsonwalksStdFulldetails2 extends RJsonwalksDisplaybase {
     private $legendposition = "top";
     public $addContacttoHeader = false;
     public $displayGroup = null;  // should the Group name be displayed
-    public $displayClass="pantone7474white";
+    public $displayClass = "pantone7474white";
     private $walksClass = "walks";
     private $walkClass = "walk";
     private $map = null;
 
     public function DisplayWalks($walks) {
-
-        if ($this->displayGradesIcon) {
-            RJsonwalksWalk::gradeToolTips();
+        if ($this->printOn) {
+            echo "<p>Web master please disable this print option</p>";
+            echo "<p>Use: Please use the Print option next to the pagination controls</p>";
+            return;
         }
-        $document = JFactory::getDocument();
 
+        $items = $walks->allWalks();
+        $document = JFactory::getDocument();
+        $display = new RJsonwalksStdCancelledwalks();
+        $number = $this->noCancelledWalks($items);
+
+// Display anyway
+        $diagnostics = 0;
+        if ($diagnostics == 1) {
+            echo '<div class="cancelledWalks">';
+            echo "<h3>Cancelled walks - Diagnostics</h3>";
+            echo "<h4>Number of cancelled walks: " . $number . "</h4>";
+            echo '</div><p></p>';
+        }
+        $display->DisplayWalks($walks);  // display cancelled walks information
         $document->addScript("ramblers/jsonwalks/std/fulldetails.js", "text/javascript");
         $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
-        $items = $walks->allWalks();
+
         $text = "ramblerswalks='" . addslashes(json_encode($items)) . "'";
         //  echo $text;
         $out = "window.addEventListener('load', function(event) {
             ramblerswalksDetails = new RamblersWalksDetails();
-            ramblerswalksDetails.displayClass='".$this->displayClass."';
+            ramblerswalksDetails.displayClass='" . $this->displayClass . "';
     FullDetailsLoad();
   });
                 function addContent() {" . $text . "};";
@@ -90,18 +104,30 @@ class RJsonwalksStdFulldetails2 extends RJsonwalksDisplaybase {
                 echo $legend;
             }
         }
+        $this->addGotoWalk();
     }
 
     private function addGotoWalk() {
-
-        $walk = $_GET["walk"];
-        if ($walk != null) {
-            if (is_numeric($walk)) {
-                $add = "<script type=\"text/javascript\">window.onload = function () {
+        if (array_key_exists("walk", $_GET)) {
+            $walk = $_GET["walk"];
+            if ($walk != null) {
+                if (is_numeric($walk)) {
+                    $add = "<script type=\"text/javascript\">window.onload = function () {
                 gotoWalk($walk);};</script>";
-                echo $add;
+                    echo $add;
+                }
             }
         }
+    }
+
+    private function noCancelledWalks($walks) {
+        $number = 0;
+        foreach ($walks as $walk) {
+            if ($walk->isCancelled()) {
+                $number+=1;
+            }
+        }
+        return $number;
     }
 
 }

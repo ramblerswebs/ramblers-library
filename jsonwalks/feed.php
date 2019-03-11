@@ -177,7 +177,7 @@ class RJsonwalksFeed {
         if ($printOn) {
 
             $style = 'BODY {color: #000000;}';
-            $doc->addStyleDeclaration($style);
+            $document->addStyleDeclaration($style);
         }
         if ($this->displayLimit == 0 OR $printOn) {
             $displayclass->DisplayWalks($this->walks);

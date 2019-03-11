@@ -23,7 +23,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
     public function display() {
         $document = JFactory::getDocument();
         $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
-        $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.1.2/jplist.min.js", "text/javascript");
+        $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         // get all names from folder
         $stats = new RGpxStatistics($this->folder, $this->getMetaFromGPX);
         $items = $stats->getJson();

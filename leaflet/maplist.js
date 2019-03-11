@@ -450,32 +450,7 @@ function gpxsearch() {
 //    }
 //};
 function addPagination() {
-    var $div = '<div data-jplist-control=\"pagination\" \
-            data-group=\"group1\" \
-            data-items-per-page=\"10\" \
-            data-current-page=\"0\" \
-            data-name=\"pagination1\"> \
-            <span> \
-            <button type=\"button\" data-type=\"first\">First</button> \
-            <button type=\"button\" data-type=\"prev\">Previous</button> \
-            <span class=\"jplist-holder\" data-type=\"pages\"> \
-                <button type=\"button\" data-type=\"page\">{pageNumber}</button> \
-            </span> \
-            <button type=\"button\" data-type=\"next\">Next</button> \
-            <button type=\"button\" data-type=\"last\">Last</button> \
-            </span> \
-            <span data-type=\"info\"> \
-            {startItem} - {endItem} of {itemsNumber} \
-            </span> \
-            <!-- items per page select --> \
-    <select data-type=\"items-per-page\"> \
-        <option value=\"10\"> 10 per page </option> \
-        <option value=\"20\"> 20 per page </option> \
-        <option value=\"30\"> 30 per page </option> \
-        <option value=\"0\"> view all </option> \
-    </select> \
-        </div> \
-<div class="ra-route-filter"><span><button>Sort By:</button> \
+    var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> \
 <button \
         data-jplist-control="sort-buttons" \
         data-path=".wTitle" \
@@ -517,7 +492,32 @@ function addPagination() {
      placeholder="Filter by Title" \
 /> \               \
 <button type="button" id="title-clear-btn">Clear</button> \
-</span></div>';
+</span></div><div class="clear"></div>\
+<div data-jplist-control=\"pagination\" \
+            data-group=\"group1\" \
+            data-items-per-page=\"10\" \
+            data-current-page=\"0\" \
+            data-name=\"pagination1\"> \
+            <span data-type=\"info\"> \
+            {startItem} - {endItem} of {itemsNumber} \
+            </span> \
+            <span> \
+            <button type=\"button\" data-type=\"first\">First</button> \
+            <button type=\"button\" data-type=\"prev\">Previous</button> \
+            <span class=\"jplist-holder\" data-type=\"pages\"> \
+                <button type=\"button\" data-type=\"page\">{pageNumber}</button> \
+            </span> \
+            <button type=\"button\" data-type=\"next\">Next</button> \
+            <button type=\"button\" data-type=\"last\">Last</button> \
+            </span> \
+            <!-- items per page select --> \
+    <select data-type=\"items-per-page\"> \
+        <option value=\"10\"> 10 per page </option> \
+        <option value=\"20\"> 20 per page </option> \
+        <option value=\"30\"> 30 per page </option> \
+        <option value=\"0\"> view all </option> \
+    </select> \
+        </div> ';
    
     return $div;
 }

@@ -404,8 +404,6 @@ div.leaflet-popup-content div.walkNew img{
 }
 div.leaflet-popup-content div.walkCancelled img{
     display:none;
-
-
 }
 
 table.gradeTable  div.EasyAccess {
@@ -569,6 +567,7 @@ div.even {
     background-color:#DDDDDD !important;
 }
 div#RADisplayOptions table {
+    table-layout: fixed; 
     width:100%;
     margin-bottom:0px;
     cursor: pointer;
@@ -581,6 +580,11 @@ div#RADisplayOptions table {
 .jplist-selected {
     background-color: #AAAAAA;
     border-color: #AAAAAA;
+}
+.jplist-disabled {
+    opacity: 0.3;
+    filter: alpha(opacity=30); /* For IE8 and earlier */
+    cursor: default;
 }
 [data-page] {
     min-height: 30px;
@@ -613,9 +617,7 @@ span.walksummary img.ra-right {
         display:inline;
     }
     .ra-route-filter {
-        display: flex;
-        justify-content: space-between;
-
+        float: right;
     }
 }
 

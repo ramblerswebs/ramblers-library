@@ -152,7 +152,7 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         $array[] = ""; //forename
         $array[] = ""; //surname
         $array[] = $walk->contactName;
-        $array[] = $walk->email;
+        $array[] = $walk->getEmail();
         $array[] = $walk->telephone1;
         $array[] = $walk->telephone2;
         if ($walk->isLeader) {

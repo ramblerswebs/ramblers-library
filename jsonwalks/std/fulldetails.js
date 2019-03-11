@@ -6,21 +6,25 @@
 var ramblerswalksDetails, ramblerswalks, ramblersMap, jplist;
 function RamblersWalksDetails() {
     this.walkClass = "walk";
-    this.printOn = false;
-    this.displayGroup = false;
-    this.hasMeetPlace = true;
-    this.displayGradesIcon = true;
-    this.emailDisplayFormat = 2;
     this.displayClass = "pantone1815";
-    this.options = "";
+    this.displayDefault = "OptionTable";
+    this.displayStartTime = true;
+    this.displayStartDescription = true;
+    this.tableFormat = '[{ "title": "Date",    "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}",",meetPC"]},{    "title": "Start",    "items": ["{start}","{,startGR}",",startPC"]},{    "title": "Title",    "items": ["{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
+    this.listFormat = '[ "{dowddmm}", "{,meet}", "{,start}","{,title}","{,contactname}","{,telephone}" ] ';
+    this.gradeFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
+    this.options;
     this.modal = null;
     this.filter = {};
-
 }
 function FullDetailsLoad() {
-    // executes when complete page is fully loaded, including all frames, objects and images
-    getOptions();
+// executes when complete page is fully loaded, including all frames, objects and images
+    if (typeof addFilterFormats === 'function') {
+        addFilterFormats();
+    }
+
     addContent();
+    getOptions();
     initFilters();
     var $walks = getAllWalks();
     setGroups($walks);
@@ -29,9 +33,10 @@ function FullDetailsLoad() {
     raLoadLeaflet();
     displayWalks($walks);
 }
+
 function getOptions() {
+    ramblerswalksDetails.filter.RA_Display_Format = "Option" + ramblerswalksDetails.displayDefault;
     var $tag = document.getElementById("raDisplayOptions");
-    ramblerswalksDetails.filter.RA_Display_Format = "OptionFull";
     if ($tag) {
         var $text = $tag.innerHTML;
         ramblerswalksDetails.options = "<div id='RADisplayOptions'>" + $text + "</div>";
@@ -39,22 +44,16 @@ function getOptions() {
         document.getElementById("raoptions").innerHTML = ramblerswalksDetails.options;
         document.getElementById(ramblerswalksDetails.filter.RA_Display_Format).style.backgroundColor = '#AAAAAA';
     }
-
 }
+
 function setLimits() {
     var $walks = JSON.parse(ramblerswalks);
-    var index, len, $walk;
+    var len;
     var minDate = "";
     var maxDate = "";
-    ramblerswalksDetails.hasMeetPlace = false;
-    for (index = 0, len = $walks.length; index < len; ++index) {
-        $walk = $walks[index];
-        if ($walk.hasMeetPlace) {
-            ramblerswalksDetails.hasMeetPlace = true;
-        }
-    }
-    minDate = $walks[0].walkDate.date.substr(0, 10);
-    maxDate = $walks[len - 1].walkDate.date.substr(0, 10);
+    len = $walks.length;
+    minDate = $walks[0].walkDate.date.substring(0, 10);
+    maxDate = $walks[len - 1].walkDate.date.substring(0, 10);
     var tag = document.getElementById('RA_DateStart');
     if (tag) {
         tag.min = minDate;
@@ -73,7 +72,6 @@ function setLimits() {
 function getAllWalks() {
     var $walks = JSON.parse(ramblerswalks);
     var index, len, $walk;
-
     for (index = 0, len = $walks.length; index < len; ++index) {
         $walk = $walks[index];
         $walk.display = displayWalk($walk);
@@ -84,7 +82,6 @@ function getAllWalks() {
 function getWalks() {
     var $walks = JSON.parse(ramblerswalks);
     var index, len, $walk;
-
     for (index = 0, len = $walks.length; index < len; ++index) {
         $walk = $walks[index];
         $walk.display = displayWalk($walk);
@@ -106,11 +103,12 @@ function getWalk(id) {
 
 function displayWalks($walks) {
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "OptionFull":
+        case "OptionGrades":
         case "OptionList":
         case "OptionTable":
             displayMap("hidden");
             setTagHtml("rapagination-1", addPagination());
+            setTagHtml("rapagination-2", addPagination());
             setTagHtml("rawalks", displayWalksText($walks));
             // jplist.init();
             jplist.init({
@@ -127,6 +125,16 @@ function displayWalks($walks) {
             displayWalksMap($walks);
             var bounds = getBounds(ramblersMap.markerList);
             ramblersMap.map.fitBounds(bounds);
+            break;
+        case "OptionContacts":
+            displayMap("hidden");
+            setTagHtml("rapagination-1", addPagination());
+            setTagHtml("rapagination-2", addPagination());
+            setTagHtml("rawalks", displayContacts($walks));
+            jplist.init({
+                storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
+                storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
+            });
             break;
     }
 }
@@ -154,25 +162,31 @@ function displayWalksText($walks) {
     var footer = "";
     var odd = true;
     var month = "";
+    var $class = "";
     var no = 0;
     header = displayWalksHeader($walks);
     for (index = 0, len = $walks.length; index < len; ++index) {
         $walk = $walks[index];
         if ($walk.display) {
             no += 1;
+            if (odd) {
+                $class = "odd";
+            } else {
+                $class = "even";
+            }
             switch (ramblerswalksDetails.filter.RA_Display_Format) {
-                case "OptionFull":
-                    $out += displayWalk_Full($walk, odd);
+                case "OptionGrades":
+                    $out += displayWalk_Grade($walk, $class);
                     break;
                 case "OptionList":
                     if (month !== $walk.month) {
                         month = $walk.month
                         $out += "<h3 data-jplist-item>" + month + "</h3>";
                     }
-                    $out += displayWalk_List($walk, odd);
+                    $out += displayWalk_List($walk, $class);
                     break;
                 case "OptionTable":
-                    $out += displayWalkForProgrammeTable($walk, odd);
+                    $out += displayWalk_Table($walk, $class);
                     break;
             }
             odd = !odd;
@@ -181,25 +195,15 @@ function displayWalksText($walks) {
     footer = displayWalksFooter();
     if (no === 0) {
         $out = "<h3>Sorry, but no walks meet your filter search</h3>";
-    } else {
-        switch (ramblerswalksDetails.filter.RA_Display_Format) {
-            case "OptionFull":
-            case "OptionList":
-            case "OptionTable":
-                setTagHtml("rapagination-2", addPagination());
-                break;
-            case "OptionMap":
-                setTagHtml("rapagination-2", "");
-                break;
-        }
+        setTagHtml("rapagination-1", "");
+        setTagHtml("rapagination-2", "");
     }
-
     return  header + $out + footer;
 }
 function displayWalksHeader($walks) {
     var $out = "";
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "OptionFull":
+        case "OptionGrades":
             $out += "<div data-jplist-group=\"group1\">";
             break;
         case "OptionList":
@@ -207,28 +211,36 @@ function displayWalksHeader($walks) {
             break;
         case "OptionTable":
             $out += "<table class='" + ramblerswalksDetails.displayClass + "'>\n";
-            if (ramblerswalksDetails.hasMeetPlace) {
-                $out += addTableHeader(["Date", "Meet", "Start", "Title", "Difficulty", "Contact"]);
-                $out += "<tbody data-jplist-group=\"group1\">";
-            } else {
-                $out += addTableHeader(["Date", "Start", "Title", "Difficulty", "Contact"]);
-                $out += "<tbody data-jplist-group=\"group1\">";
-            }
+            $out += displayTableHeader();
+            $out += "<tbody data-jplist-group=\"group1\">";
             break;
     }
     return $out;
 }
+function displayTableHeader() {
+    var $cols = JSON.parse(ramblerswalksDetails.tableFormat);
+    var $out = "<tr>";
+    var index, len, $heading;
+    for (index = 0, len = $cols.length; index < len; ++index) {
+        $heading = $cols[index].title;
+        $out += "<th>" + $heading + "</th>";
+    }
+    return $out + "</tr>";
+}
 function displayWalksFooter() {
     var $out = "";
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "OptionFull":
+        case "OptionGrades":
             $out += "</div>";
+            $out += "</br><p>Click on item to display full details of walk</p>";
             break;
         case "OptionList":
             $out += "</div>";
+            $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             break;
         case "OptionTable":
             $out += "</tbody></table>\n";
+            $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             break;
     }
     return $out;
@@ -238,10 +250,8 @@ function displayModal($html) {
     // Get the modal
     RamblersWalksDetails.modal = document.getElementById('raModal');
     RamblersWalksDetails.modal.style.display = "block";
-
 // Get the <span> element that closes the modal
     var span = document.getElementById("btnClose");
-
 // When the user clicks on <span> (x), close the modal
     span.onclick = function () {
         RamblersWalksDetails.modal.style.display = "none";
@@ -252,10 +262,7 @@ function displayModal($html) {
     };
 }
 function dispGradesHelp() {
-
     var $url = "ramblers/pages/grades2.html";
-//   var $html = "Hello";
-    //   displayModal($html);
     var marker;
     ajax($url, "", marker, displayGradesModal);
 }
@@ -268,11 +275,10 @@ function printElem(divId) {
     mywindow.document.write('<html><head><title>Print</title>');
     var index, len;
     var sheets = document.styleSheets;
-
     for (index = 0, len = sheets.length; index < len; ++index) {
         var sheet = sheets[index];
         if (sheet.href !== null) {
-            //         if (sheet.href.includes("/ramblers/") || sheet.href.includes("/mod_rafooter/")) {
+//         if (sheet.href.includes("/ramblers/") || sheet.href.includes("/mod_rafooter/")) {
             var link = '<link rel="stylesheet" href="' + sheet.href + '">';
             mywindow.document.write(link);
             //        }
@@ -281,7 +287,6 @@ function printElem(divId) {
     mywindow.document.write('</head><body ><div class="div.component-content">');
     mywindow.document.write(content);
     mywindow.document.write('</div></body></html>');
-
     mywindow.document.close();
     mywindow.focus();
     mywindow.print();
@@ -297,7 +302,12 @@ function walksPrint() {
 }
 function displayWalkID(id) {
     var $walk = getWalk(id);
-    var $html = displayWalkDetails($walk);
+    var $html;
+    if ($walk === null) {
+        $html = "<h3>Sorry cannot find that walk</h3>";
+    } else {
+        $html = displayWalkDetails($walk);
+    }
     displayModal($html);
 }
 function getGradeImage($walk) {
@@ -370,7 +380,6 @@ function addFilterEvents() {
 function setGroups($walks) {
     var index, len, $walk, i;
     var groups = {};
-
     for (index = 0, len = $walks.length; index < len; ++index) {
         $walk = $walks[index];
         groups[$walk.groupCode] = $walk.groupName;
@@ -415,7 +424,7 @@ function ra_filter(event) {
     var $walks = getWalks();
     displayWalks($walks);
 }
-function ra_format(id, option) {
+function ra_format(option) {
     document.getElementById(ramblerswalksDetails.filter.RA_Display_Format).style.backgroundColor = '#DDDDDD';
     ramblerswalksDetails.filter.RA_Display_Format = option;
     document.getElementById(ramblerswalksDetails.filter.RA_Display_Format).style.backgroundColor = '#AAAAAA';
@@ -539,7 +548,7 @@ function displayWalk($walk) {
     if (!$display) {
         return false;
     }
-    var d1 = $walk.walkDate.date.substr(0, 10);
+    var d1 = $walk.walkDate.date.substring(0, 10);
     var d = ramblerswalksDetails.filter["RA_DateStart"];
     if (d !== "") {
         $display = d1 >= d;
@@ -556,240 +565,311 @@ function displayWalk($walk) {
     }
     return $display;
 }
+function displayWalk_List($walk, $class) {
+    var $items = JSON.parse(ramblerswalksDetails.listFormat);
+    var $out = "<div data-jplist-item class='" + $class + " " + $walk.status + "' >"
+    //   var $out = "<div data-jplist-item>";
+    var index, len, $items, $text, $item;
+    for (index = 0, len = $items.length; index < len; ++index) {
+        $item = $items[index];
+        $text = getWalkValue($walk, $item, true);
+        $out += $text;
+    }
+    return $out + "</div>\n";
+}
 
-function displayWalk_List($walk, odd) {
-    var $this = ramblerswalksDetails;
-    var $text;
-    var $class = "";
-    if (odd) {
-        $class = "odd";
-    } else {
-        $class = "even";
-    }
-    $text = "<b>" + $walk.dayofweek + ", " + $walk.day + "</b>";
-    if ($walk.hasMeetPlace) {
-        $text += ", " + $walk.meetLocation.timeHHMMshort + " at " + $walk.meetLocation.description;
-        if ($this.addGridRef === true) {
-            $text += " [" + $walk.meetLocation.gridref + "]";
-        }
-    }
-    if ($walk.startLocation.exact) {
-        $text += ", " + $walk.startLocation.timeHHMMshort + " at " + $walk.startLocation.description;
-        if ($this.addGridRef === true || $this.addStartGridRef) {
-            $text += " [" + $walk.startLocation.gridref + "]";
-        }
-    } else {
-        if ($walk.startLocation.description) {
-            $text += ", " + $walk.startLocation.description + " area";
-        }
-    }
+function displayWalk_Grade($walk, $class) {
 
-    if ($walk.title) {
-        $text += ", <b>" + $walk.title + "</b>";
+    var $items = JSON.parse(ramblerswalksDetails.gradeFormat);
+    var $text, $image;
+    var $out = "";
+    $image = '<span class="walksummary" >';
+    $image += ' <img class="ra-grade pointer" src="' + getGradeImage($walk) + '" alt="' + $walk.nationalGrade + '" onclick="javascript:dispGradesHelp()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
+    var index, len, $items, $text, $item;
+    for (index = 0, len = $items.length; index < len; ++index) {
+        $item = $items[index];
+        $text = getWalkValue($walk, $item, false);
+        $out += $text;
     }
-    if ($this.addDescription) {
-        if ($walk.description !== $walk.title) {
-            if (!empty($walk.description)) {
-                $text += ", " + $walk.description;
+    $out += '<img class="ra-right" src="ramblers/jsonwalks/std/accordian/style/style4/close.png" alt="open,close" >';
+    //return $out + "</span>\n";
+    $text = "<div data-jplist-item class='" + $class + " " + $walk.status + "' \n>" + $image + addWalkLink($walk, $out, true) + "\n</div>\n";
+    return $text;
+}
+function displayContacts($walks) {
+    var $contacts = [];
+    var index, len, $walk, out;
+    for (index = 0, len = $walks.length; index < len; ++index) {
+        $walk = $walks[index];
+        if ($walk.display) {
+            var $contact = {name: $walk.contactName, email: $walk.email, telephone1: $walk.telephone1, telephone2: $walk.telephone2};
+            if (!contains($contacts, $contact)) {
+                $contacts.push($contact);
             }
         }
     }
-    $text += ", " + $walk.distanceMiles + "mi/" + $walk.distanceKm + "km";
-    if ($walk.isLeader) {
-        $text += ", Leader ";
-    } else {
-        $text += ", Contact ";
+//  $contacts.sort();
+    $contacts.sort(function (a, b) {
+        return a.name.toLowerCase() > b.name.toLowerCase();
+    });
+    out = "<table>";
+    out += "<tr><th>Name</th><th>Email</th><th>Telephone1</th><th>Telephone2</th></tr>";
+    out += "<tbody data-jplist-group=\"group1\">";
+    for (index = 0, len = $contacts.length; index < len; ++index) {
+        $contact = $contacts[index];
+        out += "<tr data-jplist-item><td>" + $contact.name + "</td><td>" + $contact.email + "</td><td>" + $contact.telephone1 + "</td><td>" + $contact.telephone2 + "</td></tr>";
     }
-    $text += $walk.contactName;
-    if ($walk.telephone1 !== "") {
-        $text += " " + $walk.telephone1;
-    } else {
-        if ($walk.telephone2 !== "") {
-            $text += " " + $walk.telephone2;
-        }
-    }
-    $text = "<div data-jplist-item class='" + $class + " " + $walk.status + "' >\n" + "<span>" + addWalkLink($walk, $text) + "</span>\n</div>\n";
-    return $text;
+    out += "</tbody></table>";
+    return out;
 }
-function displayWalk_Full($walk, odd) {
-    var $this = ramblerswalksDetails;
-    var $text, $image;
-    var $class = "";
-    if (odd) {
-        $class = "odd";
-    } else {
-        $class = "even";
-    }
-    $text = "";
-    $image = '<span class="walksummary" >';
-    $image += ' <img class="ra-grade pointer" src="' + getGradeImage($walk) + '" alt="' + $walk.nationalGrade + '" onclick="javascript:dispGradesHelp()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
-
-// $text = "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + " " + $walk.year + "</b>";
-    $text += "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + "</b>";
-    $text += ", " + $walk.title;
-    if ($walk.distanceMiles > 0) {
-        $text += ", " + $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
-    }
-    if ($this.addContacttoHeader) {
-        if ($walk.contactName !== "") {
-            $text += ", " + $walk.contactName;
-        }
-        if ($walk.telephone1 !== "") {
-            $text += ", " + $walk.telephone1;
+function contains(items, item) {
+    var index, len;
+    for (index = 0, len = items.length; index < len; ++index) {
+        if (isEquivalent(items[index], item)) {
+            return true;
         }
     }
-    $text = $text + '<img class="ra-right" src="ramblers/jsonwalks/std/accordian/style/style4/close.png" alt="open,close" >';
+    return false;
+}
+function isEquivalent(a, b) {
+// Create arrays of property names
+    var aProps = Object.getOwnPropertyNames(a);
+    var bProps = Object.getOwnPropertyNames(b);
+    // If number of properties is different,
+    // objects are not equivalent
+    if (aProps.length != bProps.length) {
+        return false;
+    }
 
-    $text = "<div data-jplist-item class='" + $class + " " + $walk.status + "' \n>" + $image + addWalkLink($walk, $text) + "\n</div></span>\n";
-    return $text;
+    for (var i = 0; i < aProps.length; i++) {
+        var propName = aProps[i];
+        // If values of same property are not equal,
+        // objects are not equivalent
+        if (a[propName] !== b[propName]) {
+            return false;
+        }
+    }
+
+// If we made it this far, objects
+// are considered equivalent
+    return true;
 }
 
-function displayWalkForProgrammeTable($walk, odd) {
+function displayWalk_Table($walk, $class) {
+    var $cols = JSON.parse(ramblerswalksDetails.tableFormat);
+    //  var $out = "<tr data-jplist-item>";
+    var $out = "<tr data-jplist-item class='" + $class + " " + $walk.status + "' >"
+
+    var index, len, $items;
+    for (index = 0, len = $cols.length; index < len; ++index) {
+        $out += "<td>";
+        $items = $cols[index].items;
+        $out += getColValue($walk, $items);
+        $out += "</td>";
+    }
+    return $out + "</tr>";
+}
+function getColValue($walk, $items) {
+    var index, len, $out, $item, $text;
+    $out = "";
+    for (index = 0, len = $items.length; index < len; ++index) {
+        $item = $items[index];
+        $text = getWalkValue($walk, $item, true);
+        $out += $text;
+    }
+    return $out;
+}
+
+function getWalkValue($walk, $option, addlink) {
     var BR = "<br/>";
-    var $this = ramblerswalksDetails;
-    var $class = "";
-    if (odd) {
-        $class = "odd";
-    } else {
-        $class = "even";
+    var out = "";
+    var $prefix;
+    var values = getPrefix($option);
+    $prefix = values[0];
+    $option = values[1];
+    switch ($option) {
+        case "{lf}":
+            out = "<br/>";
+            break;
+        case "{dowdd}":
+            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + "</b>", addlink);
+            break;
+        case "{dowddmm}":
+            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + "</b>", addlink);
+            break;
+        case "{dowddmmyyyy}":
+            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + " " + $walk.walkDate.date.substr(0, 4) + "</b>", addlink);
+            break;
+        case "{meet}":
+            if ($walk.hasMeetPlace) {
+                out = $walk.meetLocation.timeHHMMshort + " at " + $walk.meetLocation.description;
+            }
+            break;
+        case "{meetGR}":
+            if ($walk.hasMeetPlace) {
+                out = $walk.meetLocation.gridref;
+            }
+            break;
+        case "{meetPC}":
+            if ($walk.hasMeetPlace) {
+                out = $walk.meetLocation.postcode;
+            }
+            break;
+        case "{start}":
+            if ($walk.startLocation.exact) {
+                out = $walk.startLocation.timeHHMMshort;
+                if ($walk.startLocation.description) {
+                    out += " at " + $walk.startLocation.description;
+                }
+            }
+            break;
+        case "{startGR}":
+            if ($walk.startLocation.exact) {
+                out = $walk.startLocation.gridref;
+            }
+            break;
+        case "{startPC}":
+            if ($walk.startLocation.exact) {
+                out = $walk.startLocation.postcode;
+            }
+            break;
+        case "{title}":
+            out = addWalkLink($walk, $walk.title, addlink);
+            out = "<b>" + out + "</b>";
+            break;
+        case "{description}":
+            out = $walk.description;
+            break;
+        case "{difficulty}":
+            var $dist = getWalkValue($walk, "{distance}", addlink);
+            var $grade = "<div class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dispGradesHelp()'>" + $walk.nationalGrade + "</div>";
+            $grade += $walk.localGrade;
+            out = $dist + "<br/>" + $grade;
+            break;
+        case "{distance}":
+            if ($walk.distanceMiles > 0) {
+                out = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
+            }
+            break;
+        case "{nationalGrade}":
+            out = "<div class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dispGradesHelp()'>" + $walk.nationalGrade + "</div>";
+            break;
+        case "{nGrade}":
+            out = "<div class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dispGradesHelp()'>" + $walk.nationalGrade.substr(0, 1) + "</div>";
+            break;
+        case "{localGrade}":
+            out = $walk.localGrade;
+            break;
+        case "{contact}":
+            if ($walk.isLeader) {
+                out = "Leader";
+            } else {
+                out = "Contact";
+            }
+            if ($walk.contactName !== "") {
+                out += BR + "<strong>" + $walk.contactName + "</strong>";
+            }
+            if ($walk.email !== "") {
+                out += BR + getEmailLink($walk);
+            }
+            if ($walk.telephone1 !== "") {
+                out += BR + $walk.telephone1;
+            }
+            if ($walk.telephone2 !== "") {
+                out += BR + $walk.telephone2;
+            }
+            break;
+        case "{contactname}":
+            var $contact = "";
+            if ($walk.isLeader) {
+                $contact = "Leader ";
+            } else {
+                $contact = "Contact ";
+            }
+            if ($walk.contactName !== "") {
+                $contact += $walk.contactName;
+            }
+            out = $contact;
+            break;
+        case "{telephone}":
+        case "{telephone1}":
+            if ($walk.telephone1 !== "") {
+                out += $walk.telephone1;
+            }
+            break;
+        case "{telephone2}":
+            if ($walk.telephone2 !== "") {
+                out += $walk.telephone2;
+            }
+            break;
+        case "{email}":
+        case "{emailat}":
+            var $contact = "";
+            if ($walk.email !== "") {
+                $contact += $walk.email;
+            }
+            out = $contact;
+            break;
+        case "{emaillink}":
+            out = getEmailLink($walk);
+            break;
+        default:
+            $option = $option.replace("{", "");
+            out = $option.replace("}", "");
     }
-    var $group, $date, $meet, $start, $text, $title, $dist, $contact, $grade, $difficult;
-    $group = "";
-    if ($this.addGroupName) {
-        $group = BR + $walk.groupName;
+    if (out !== "") {
+        return  $prefix + out;
     }
-    $date = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + "</b>");
-
-//    $date = "<b>"+$walk.walkDate.format('l, jS F') + "</b>";
-    if ($this.printOn) {
-        $date = "<div class='" + $this.walkClass + $walk.status + " printon'>" + $date + $group + "</div>";
-    } else {
-        $date = "<div class='" + $this.walkClass + $walk.status + "'>" + $date + $group + "</div>";
-    }
-    if ($walk.hasMeetPlace) {
-        $meet = $walk.meetLocation.timeHHMMshort + " at " + $walk.meetLocation.description;
-        if ($this.addLocation) {
-            $meet += $this.addLocation($walk.meetLocation);
-        }
-    } else {
-        $meet = ".";
-    }
-
-    if ($walk.startLocation.exact) {
-        $start = $walk.startLocation.timeHHMMshort + " at " + $walk.startLocation.description;
-        if ($this.addLocation) {
-            $start += $this.addLocation($walk.startLocation);
-        }
-    } else {
-        $start = ".";
-    }
-    if ($this.link) {
-        if ($this.printOn) {
-            $text = $walk.title;
-        } else {
-            $text = "<a href='" + $walk.detailsPageUrl + "' target='_blank' >" + $walk.title + "</a>";
-        }
-    } else {
-        $text = addWalkLink($walk, $walk.title);
-    }
-    $text = "<strong>" + $text + "</strong>";
-    $title = "<div class='" + $walk.status + "'>" + $text + " </div>";
-    if ($this.addDescription) {
-        $title += $walk.description;
-    }
-
-    $dist = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
-    $contact = "";
-    if ($walk.isLeader) {
-        $contact = "Leader";
-    } else {
-        $contact = "Contact";
-    }
-    if ($walk.contactName !== "") {
-        $contact += BR + "<strong>" + $walk.contactName + "</strong>";
-    }
-    if ($walk.email !== "") {
-        $contact += BR + getEmail($walk, $this.emailDisplayFormat, false);
-    }
-    if ($walk.telephone1 !== "") {
-        $contact += BR + $walk.telephone1;
-    }
-    if ($walk.telephone2 !== "") {
-        $contact += BR + $walk.telephone2;
-    }
-    $grade = $walk.nationalGrade + BR + $walk.localGrade;
-    if ($this.displayGradesIcon && $this.printOn === false) {
-        $grade = "<div class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dispGradesHelp()'>" + $walk.nationalGrade + BR + $walk.localGrade + "</div>";
-    }
-    $difficult = $dist + "<br/>" + $grade;
-    // $class = $this.tableClass;
-    if (ramblerswalksDetails.hasMeetPlace) {
-        return  addTableRow([$date, $meet, $start, $title, $difficult, $contact], $class);
-    } else {
-        return   addTableRow([$date, $start, $title, $difficult, $contact], $class);
-    }
+    return "";
 }
-function addTableHeader($cols) {
-    var $out, $value;
-
-    $out = "<tr>";
-    var index, len;
-
-    for (index = 0, len = $cols.length; index < len; ++index) {
-        $value = $cols[index];
-        $out += "<th>" + $value + "</th>";
-    }
-    $out += "</tr>\n";
-    return $out;
-
+function getPrefix($option) {
+    var $prefix = "";
+    var loop = true;
+    do {
+        switch ($option.substr(0, 2)) {
+            case "{;":
+                $prefix += "<br/>";
+                $option = $option.replace("{;", "{");
+                break;
+            case "{,":
+                $prefix += ", ";
+                $option = $option.replace("{,", "{");
+                break;
+            case "{[":
+                var close = $option.indexOf("]");
+                if (close > 0) {
+                    $prefix += $option.substr(2, close - 2);
+                    $option = "{" + $option.substr(close + 1);
+                }
+                break;
+            default:
+                loop = false;
+        }
+    } while (loop);
+    return [$prefix, $option];
 }
-function addTableRow($cols, $class) {
-    var $out, $value;
-    if ($class === "") {
-        $out = "<tr data-jplist-item>";
-    } else {
-        $out = "<tr data-jplist-item class='" + $class + "'>";
-    }
 
-    var index, len;
-
-    for (index = 0, len = $cols.length; index < len; ++index) {
-        $value = $cols[index];
-        $out += "<td>" + $value + "</td>";
-    }
-    $out += "</tr>\n";
-    return $out;
-
-}
 function isCancelled($walk) {
     return $walk.status.toLowerCase() === "cancelled";
 }
-function addWalkLink($walk, $text) {
-    return  "<span class='pointer' onclick=\"javascript:displayWalkID(" + $walk.id + ")\">" + $text + "</span>";
+function addWalkLink($walk, $text, addlink) {
+    if (addlink) {
+        return  "<span class='pointer' onclick=\"javascript:displayWalkID(" + $walk.id + ")\">" + $text + "</span>";
+    }
+    return $text;
 }
 function displayWalkDetails($walk) {
     var PHP_EOL = "\n";
     var $html = "";
-    var $this = ramblerswalksDetails;
-    var $link, $out, $class, $text;
+    var $link, $out, $text;
     $html += "<div class='walkstdfulldetails'>\n";
-    // if ($this.displayGroup === true) {
     $html += "<div class='group " + gradeCSS($walk) + "'><b>Group</b>: " + $walk.groupName + "</div>" + PHP_EOL;
-    //  }
     if (isCancelled($walk)) {
         $html += "<div class='reason'>WALK CANCELLED: " + $walk.cancellationReason + "</div>" + PHP_EOL;
     }
     $html += "<div class='basics'>" + PHP_EOL;
-    if ($this.printOn) {
-
-    } else {
-        //   "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + "</b>";
-        //   $html += "<div class='description'><b>" + $walk.walkDate.format('l, jS F Y') + PHP_EOL;
-        $html += "<div class='description'><b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + PHP_EOL;
-        $html += "<br/>" + $walk.title + "</b></div>" + PHP_EOL;
-    }
-
-
+    $html += "<div class='description'><b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + PHP_EOL;
+    $html += "<br/>" + $walk.title + "</b></div>" + PHP_EOL;
     if ($walk.description !== "") {
         $html += "<div class='description'> " + $walk.descriptionHtml + "</div>" + PHP_EOL;
     }
@@ -820,8 +900,8 @@ function displayWalkDetails($walk) {
         $html += $out;
         $html += "</div>" + PHP_EOL;
     } else {
-        //echo "<div class='nomeetplace'><b>No meeting place specified</b>";
-        //echo "</div>";
+//echo "<div class='nomeetplace'><b>No meeting place specified</b>";
+//echo "</div>";
     }
     if ($walk.startLocation.exact) {
         $html += "<div class='startplace'>";
@@ -829,9 +909,7 @@ function displayWalkDetails($walk) {
         $html += "<div class='nostartplace'><b>No start place - Rough location only</b>: ";
     }
     $html += addLocationInfo("Start", $walk.startLocation, $walk.detailsPageUrl);
-
     $html += "</div>" + PHP_EOL;
-
     if ($walk.isLinear) {
         $html += "<div class='finishplace'>";
         if ($walk.finishLocation !== null) {
@@ -843,22 +921,18 @@ function displayWalkDetails($walk) {
     }
     $html += "<div class='difficulty'><b>Difficulty</b>: ";
     if ($walk.distanceMiles > 0) {
-        $html += RHtmlwithDiv("distance", "<b>Distance</b>: " + $walk.distanceMiles + "mi / " + $walk.distanceKm + "km", $this.printOn);
+        $html += RHtmlwithDiv("distance", "<b>Distance</b>: " + $walk.distanceMiles + "mi / " + $walk.distanceKm + "km");
     }
-    $html += RHtmlwithDiv("nationalgrade", "<b>National Grade</b>: " + $walk.nationalGrade, $this.printOn);
-
+    $html += RHtmlwithDiv("nationalgrade", "<b>National Grade</b>: " + $walk.nationalGrade);
     if ($walk.localGrade !== "") {
         $link = $walk.localGrade;
-        if ($this.localGradeHelp !== "") {
-            $link = "<a href='" + $this.localGradeHelp + "' target='" + $this.localGradeTarget + "'>" + $link + "</a>";
-        }
-        $html += RHtmlwithDiv("localgrade", "<b>Local Grade</b>: " + $link, $this.printOn);
+        $html += RHtmlwithDiv("localgrade", "<b>Local Grade</b>: " + $link);
     }
     if ($walk.pace !== "") {
-        $html += RHtmlwithDiv("pace", "<b>Pace</b>: " + $walk.pace, $this.printOn);
+        $html += RHtmlwithDiv("pace", "<b>Pace</b>: " + $walk.pace);
     }
     if ($walk.ascentFeet !== null) {
-        $html += RHtmlwithDiv("ascent", "<b>Ascent</b>: " + $walk.ascentFeet + " ft " + $walk.ascentMetres + " ms", $this.printOn);
+        $html += RHtmlwithDiv("ascent", "<b>Ascent</b>: " + $walk.ascentFeet + " ft " + $walk.ascentMetres + " ms");
     }
     $html += "</div>" + PHP_EOL;
     if ($walk.isLeader === false) {
@@ -866,11 +940,7 @@ function displayWalkDetails($walk) {
     } else {
         $html += "<div class='walkcontact'><b>Contact Leader</b>: ";
     }
-    $html += RHtmlwithDiv("contactname", "<b>Name</b>: " + $walk.contactName, $this.printOn);
-
-    if ($walk.email !== "" && !$this.printOn) {
-        //   $html += $walk.getEmail($this.emailDisplayFormat, true);
-    }
+    $html += RHtmlwithDiv("contactname", "<b>Name</b>: " + $walk.contactName);
     if ($walk.telephone1 + $walk.telephone2 !== "") {
         $text = "<b>Telephone</b>: ";
         if ($walk.telephone1 !== "") {
@@ -882,7 +952,7 @@ function displayWalkDetails($walk) {
         if ($walk.telephone2 !== "") {
             $text += $walk.telephone2;
         }
-        $html += RHtmlwithDiv("telephone", $text, $this.printOn);
+        $html += RHtmlwithDiv("telephone", $text);
     }
     if ($walk.isLeader === false) {
         if ($walk.walkLeader !== "") {
@@ -898,19 +968,8 @@ function displayWalkDetails($walk) {
     $html += addItemInfo("specialStatus", "Special Status", $walk.specialStatus);
     $html += addItemInfo("facilities", "Facilities", $walk.facilities);
     $html += "<div class='walkdates'>" + PHP_EOL;
-
-    if (!$this.printOn) {
-        $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on Walks Finder</a></div>" + PHP_EOL;
-    }
-    $class = "";
-    if ($this.printOn) {
-        $class = "printon";
-    } else {
-        if ($this.displayGroup === null) {
-            $html += "<div class='groupfootnote " + $class + "'>Group: " + $walk.groupName + "</div>" + PHP_EOL;
-        }
-    }
-    $html += "<div class='updated " + $class + "'>Last update: " + getDate($walk.dateUpdated.date) + "</div>" + PHP_EOL;
+    $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on Walks Finder</a></div>" + PHP_EOL;
+    $html += "<div class='updated'>Last update: " + getDate($walk.dateUpdated.date) + "</div>" + PHP_EOL;
     $html += "</div>" + PHP_EOL;
     $html += "</div>" + PHP_EOL;
     return $html;
@@ -922,37 +981,24 @@ function addLocationInfo($title, $location, $detailsPageUrl) {
     if ($location.exact) {
         $note = "Click Google Directions to see map and directions from your current location";
         $out = "<div class='place'><b>" + $title + " Place</b>:<abbr title='" + $note + "'> " + $location.description + " ";
-        if (!$this.printOn) {
-            $out += getDirectionsMap($location, "Google directions");
-        }
-        if ($this.printOn) {
-            if ($location.time !== "") {
-                $out += RHtmlwithDiv("time", "<b>Time</b>: " + $location.timeHHMMshort, $this.printOn);
-            }
-        }
+        $out += getDirectionsMap($location, "Google directions");
         $out += "</abbr></div>";
-        if (!$this.printOn) {
-            if ($location.time !== "") {
-                $out += RHtmlwithDiv("time", "<b>Time</b>: " + $location.timeHHMMshort, $this.printOn);
-            }
+        if ($location.time !== "") {
+            $out += RHtmlwithDiv("time", "<b>Time</b>: " + $location.timeHHMMshort);
         }
-        $gr = "<abbr title='Click Map to see Ordnance Survey map of location'><b>Grid Ref</b>: " + $location.gridref + " ";
-        if (!$this.printOn) {
-            $gr += getOSMap($location, "OS Map");
-        }
-        $gr += "</abbr>";
-        $out += RHtmlwithDiv("gridref", $gr, $this.printOn);
-        $out += RHtmlwithDiv("latlong", "<b>Latitude</b>: " + $location.latitude + " , <b>Longitude</b>: " + $location.longitude, $this.printOn);
 
+        $gr = "<abbr title='Click Map to see Ordnance Survey map of location'><b>Grid Ref</b>: " + $location.gridref + " ";
+        $gr += getOSMap($location, "OS Map");
+        $gr += "</abbr>";
+        $out += RHtmlwithDiv("gridref", $gr);
+        $out += RHtmlwithDiv("latlong", "<b>Latitude</b>: " + $location.latitude + " , <b>Longitude</b>: " + $location.longitude);
         if ($location.postcode !== "") {
             $out += displayPostcode($location, $detailsPageUrl);
         }
     } else {
         $out = "<div class='place'>";
         $out += "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
-        if (!$this.printOn) {
-            $out += getAreaMap($location, "Map of area");
-        }
+        $out += getAreaMap($location, "Map of area");
         if ($location.type === "Start") {
             if ($this.displayStartTime) {
                 $out += "<div class='starttime'>Start time: " + $location.timeHHMMshort + "</div>";
@@ -969,7 +1015,6 @@ function addLocationInfo($title, $location, $detailsPageUrl) {
 
 function addItemInfo($class, $title, $value) {
     var $html = "";
-
     if ($value !== null) {
         $html += "<div class='" + $class + "'><b>" + $title + "</b>";
         $html += "<ul>";
@@ -983,15 +1028,11 @@ function addItemInfo($class, $title, $value) {
     }
     return $html;
 }
-function RHtmlwithDiv($class, $text, $printOn) {
+function RHtmlwithDiv($class, $text) {
     var $out = "";
-    if ($printOn) {
-        $out += "&nbsp;&nbsp;&nbsp;" + $text;
-    } else {
-        $out += "<div class='" + $class + "'>";
-        $out += $text;
-        $out += "</div>";
-    }
+    $out += "<div class='" + $class + "'>";
+    $out += $text;
+    $out += "</div>";
     return $out;
 }
 function getShortTime($text) {
@@ -1081,17 +1122,17 @@ function getWalkMapHref($walk, $desc) {
     return $out;
 }
 function addslashes(str) {
-    //  discuss at: http://locutus.io/php/addslashes/
-    // original by: Kevin van Zonneveld (http://kvz.io)
-    // improved by: Ates Goral (http://magnetiq.com)
-    // improved by: marrtins
-    // improved by: Nate
-    // improved by: Onno Marsman (https://twitter.com/onnomarsman)
-    // improved by: Brett Zamir (http://brett-zamir.me)
-    // improved by: Oskar Larsson Högfeldt (http://oskar-lh.name/)
-    //    input by: Denny Wardhana
-    //   example 1: addslashes("kevin's birthday")
-    //   returns 1: "kevin\\'s birthday"
+//  discuss at: http://locutus.io/php/addslashes/
+// original by: Kevin van Zonneveld (http://kvz.io)
+// improved by: Ates Goral (http://magnetiq.com)
+// improved by: marrtins
+// improved by: Nate
+// improved by: Onno Marsman (https://twitter.com/onnomarsman)
+// improved by: Brett Zamir (http://brett-zamir.me)
+// improved by: Oskar Larsson Högfeldt (http://oskar-lh.name/)
+//    input by: Denny Wardhana
+//   example 1: addslashes("kevin's birthday")
+//   returns 1: "kevin\\'s birthday"
 
     return (str + '')
             .replace(/[\\"']/g, '\\$&')
@@ -1189,7 +1230,7 @@ function displayPostcode($location, $detailsPageUrl) {
     $pc = "<abbr title='" + $note + "'><b>Postcode</b>: " + $this.postcode + " ";
     $pc += $link;
     $pc += "</abbr>";
-    $out = RHtmlwithDiv("postcode " + $distclass, $pc, ramblerswalksDetails.printOn);
+    $out = RHtmlwithDiv("postcode " + $distclass, $pc);
     return $out;
 }
 function getPostcodeMap($location, $text, $detailsPageUrl) {
@@ -1202,46 +1243,8 @@ function getPostcodeMap($location, $text, $detailsPageUrl) {
         return "";
     }
 }
-function getEmail($walk, $option, $withtitle) {
-    var $this = $walk;
-    var $printOn, $link;
-    if ($withtitle) {
-        switch ($option) {
-            case 1:
-                return "<b>Email: </b>" + $this.email;
-                break;
-            case 2:
-                $printOn = ramblerswalksDetails.printOn;
-                $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
-                return RHtmlwithDiv("email", "<b>Email: </b><a href='" + $link + $this.id + "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
-            case 3:
-                return "";
-                break;
-            case 4:
-                return "<b>Email: </b>" + str_replace("@", " (at) ", $this.email);
-                break;
-            default:
-                return "Invalid option specified for \$display->emailDisplayFormat";
-                break;
-        }
-    } else {
-        switch ($option) {
-            case 1:
-                return $this.email;
-                break;
-            case 2:
-                $printOn = ramblerswalksDetails.printOn;
-                $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
-                return "<a href='" + $link + $this.id + "' target='_blank'>Email contact via ramblers.org.uk</a>";
-                break;
-            case 3:
-                return "";
-                break;
-            case 4:
-                return str_replace("@", " (at) ", $this.email);
-                break;
-            default:
-                return "Invalid option specified for \$display->emailDisplayFormat";
-        }
-    }
+function getEmailLink($walk) {
+    var $link;
+    $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
+    return "<a href='" + $link + $walk.id + "' target='_blank'>Email contact via ramblers.org.uk</a>";
 }

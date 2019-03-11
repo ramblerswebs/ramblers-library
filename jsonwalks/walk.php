@@ -28,6 +28,7 @@ class RJsonwalksWalk extends REvent {
     public $walkLeader = "";        // walk leader if isLeader is false
     public $contactName = "";       // contact name
     public $email = "";             // email address for contact
+    private $emailAddr = "";             // email address for contact
     public $telephone1 = "";        // first telephone number of contact
     public $telephone2 = "";        // second telephone number of contact
 // meeting place
@@ -115,7 +116,8 @@ class RJsonwalksWalk extends REvent {
             if ($item->walkContact != null) {
                 $this->isLeader = $item->walkContact->isWalkLeader == "true";
                 $this->contactName = trim($item->walkContact->contact->displayName);
-                $this->email = $item->walkContact->contact->email;
+                $this->emailAddr = $item->walkContact->contact->email;
+                $this->email = str_replace("@", " (at) ", $this->emailAddr);
                 $this->telephone1 = $item->walkContact->contact->telephone1;
                 $this->telephone2 = $item->walkContact->contact->telephone2;
             }
@@ -156,11 +158,11 @@ class RJsonwalksWalk extends REvent {
         }
     }
 
-    public function getEmail($option, $withtitle = false) {
+    public function getEmail($option=1, $withtitle = false) {
         if ($withtitle) {
             switch ($option) {
                 case 1:
-                    return "<b>Email: </b>" . $this->email;
+                    return "<b>Email: </b>" . $this->emailAddr;
                     break;
                 case 2:
                     $printOn = JRequest::getVar('print') == 1;
@@ -170,7 +172,7 @@ class RJsonwalksWalk extends REvent {
                     return "";
                     break;
                 case 4:
-                    return "<b>Email: </b>" . str_replace("@", " (at) ", $this->email);
+                    return "<b>Email: </b>" . str_replace("@", " (at) ", $this->emailAddr);
                     break;
                 default:
                     return "Invalid option specified for \$display->emailDisplayFormat";
@@ -179,7 +181,7 @@ class RJsonwalksWalk extends REvent {
         } else {
             switch ($option) {
                 case 1:
-                    return $this->email;
+                    return $this->emailAddr;
                     break;
                 case 2:
                     $printOn = JRequest::getVar('print') == 1;
@@ -190,7 +192,7 @@ class RJsonwalksWalk extends REvent {
                     return "";
                     break;
                 case 4:
-                    return str_replace("@", " (at) ", $this->email);
+                    return str_replace("@", " (at) ", $this->emailAddr);
                     break;
                 default:
                     return "Invalid option specified for \$display->emailDisplayFormat";

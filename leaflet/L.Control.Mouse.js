@@ -87,6 +87,7 @@ L.Control.PostcodeStatus = L.Control.extend({
             this._container.innerHTML = this.options.zoominString;
             if (zoom <= 9) {
                 this.map.postcodelayer.clearLayers();
+                this._clearPlacesLayers();
             }
         } else {
             this._container.innerHTML = this.options.displayString;

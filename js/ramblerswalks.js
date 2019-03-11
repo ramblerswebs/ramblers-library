@@ -84,8 +84,14 @@ function gotoWalk(walkid) {
             window.location.hash = "#w" + walkid;
         }, 800);
     } else {
-        alert("Walk not found");
+        if (typeof displayWalkID === 'function') {
+            displayWalkID(walkid);
+        } else {
+            alert("Walk not found");
+        }
+
     }
+
 }
 function getWalkUrl() {
     var search = window.location.search;
