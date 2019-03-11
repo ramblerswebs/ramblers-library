@@ -7,7 +7,7 @@ var ramblerswalksDetails, ramblerswalks, ramblersMap, jplist;
 function RamblersWalksDetails() {
     this.walkClass = "walk";
     this.displayClass = "pantone1815";
-    this.displayDefault = "OptionTable";
+    this.displayDefault = "Table";
     this.displayStartTime = true;
     this.displayStartDescription = true;
     this.tableFormat = '[{ "title": "Date",    "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}",",meetPC"]},{    "title": "Start",    "items": ["{start}","{,startGR}",",startPC"]},{    "title": "Title",    "items": ["{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
