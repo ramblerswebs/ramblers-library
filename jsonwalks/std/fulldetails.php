@@ -22,12 +22,10 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private static $accordianId = 100;
 
     public function DisplayWalks($walks) {
-        if ($this->displayGradesSidebar) {
-            RJsonwalksWalk::gradeSidebar();
-        }
-        if ($this->displayGradesIcon) {
-            RJsonwalksWalk::gradeToolTips();
-        }
+
+//        if ($this->displayGradesIcon) {
+//            RJsonwalksWalk::gradeToolTips();
+//        }
 
         self::$accordianId +=1;
         $document = JFactory::getDocument();
@@ -40,19 +38,13 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         echo '<script type="text/javascript">jQuery(function($) {$(\'#' . $id . '\').raAccordion({hidefirst: 1 });});</script>' . PHP_EOL;
         echo '<div id="' . $id . '" class="ra-accordion ra-accordion-style4 ">' . PHP_EOL;
+        $odd = true;
         foreach ($items as $walk) {
             echo '<div class="ra-accordion-item ' . $this->walkClass . $walk->status . '">' . PHP_EOL;
-            if ($this->printOn) {
-                echo '<div class="printfulldetails">' . PHP_EOL;
-            } else {
-                echo '<div class="toggler" id="w' . $walk->id . '">' . PHP_EOL;
-            }
-            echo '<span><span class="walksummary" >' . PHP_EOL;
 
-            $this->displayWalkSummary($walk);
-            echo '</span></span>' . PHP_EOL;
-            echo '</div>' . PHP_EOL;
-            echo '<div class="clr"></div>' . PHP_EOL;
+            $this->displayWalkSummary($walk, $odd);
+
+            // echo '<div class="clr"></div>' . PHP_EOL;
             if ($this->printOn) {
                 echo '<div class="ra-fulldetails-container style="display: block;">' . PHP_EOL;
                 echo '<div class="ra-fulldetails-inner">' . PHP_EOL;
@@ -64,10 +56,11 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
             echo '</div></div>' . PHP_EOL;
 
             echo "</div>" . PHP_EOL;
+            $odd = !$odd;
         }
         // echo "</div>" . PHP_EOL;
         echo '</div></div>' . PHP_EOL;
-          $this->addGotoWalk();
+        $this->addGotoWalk();
     }
 
     public function setWalksClass($class) {
@@ -78,8 +71,23 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         $this->walkClass = $class;
     }
 
-    private function displayWalkSummary($walk) {
-        $text = $this->addGradeImage($walk);
+    private function displayWalkSummary($walk, $odd) {
+        $text = "";
+        if ($this->printOn) {
+            $text.= '<div class="printfulldetails">' . PHP_EOL;
+        } else {
+            $text.= '<div class="toggler" id="w' . $walk->id . '">' . PHP_EOL;
+        }
+        if ($odd) {
+            $text.='<span class="walksummary odd" >' . PHP_EOL;
+        } else {
+            $text.='<span class="walksummary even" >' . PHP_EOL;
+        }
+
+        $text .= $walk->getGradeSpan("middle");
+
+
+
         $text .= "<b> " . $walk->walkDate->format('l, jS F Y') . "</b>";
 
         $text .= ", " . $walk->title;
@@ -94,16 +102,17 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
                 $text .= ", " . $walk->telephone1;
             }
         }
-
+        $text.= '</span>' . PHP_EOL;
+        $text.= '</div>' . PHP_EOL;
         echo $text . PHP_EOL;
     }
 
     private function addGradeImage($walk) {
         $out = '';
         if ($this->displayGradesIcon) {
-            $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
+            $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" onclick="javascript:displayGradesHelp()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
         } else {
-            $out .= ' <img src="ramblers/images/grades/base.jpg" alt="' . $walk->nationalGrade . '" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
+            $out .= ' <img src="ramblers/images/grades/base.jpg" alt="' . $walk->nationalGrade . '" onclick="javascript:displayGradesHelp()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
         }
         return $out;
     }
@@ -279,7 +288,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo "<div class='updated " . $class . "'>Last update: " . $walk->dateUpdated->format('l, jS F Y') . "</div>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
-          }
+    }
 
     private function addLocationInfo($title, $location, $detailsPageUrl) {
 
@@ -355,13 +364,14 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     }
 
     private function addGotoWalk() {
-
-        $walk = $_GET["walk"];
-        if ($walk != null) {
-            if (is_numeric($walk)) {
-                $add = "<script type=\"text/javascript\">window.onload = function () {
+         if (array_key_exists("walk", $_GET)) {
+            $walk = $_GET["walk"];
+            if ($walk != null) {
+                if (is_numeric($walk)) {
+                    $add = "<script type=\"text/javascript\">window.onload = function () {
                 gotoWalk($walk);};</script>";
-                echo $add;
+                    echo $add;
+                }
             }
         }
     }

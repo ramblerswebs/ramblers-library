@@ -48,9 +48,6 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $legend = '<p><strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.</p>
 <p><img src="ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.</p>';
 
-        if ($this->displayGradesSidebar) {
-            RJsonwalksWalk::gradeSidebar();
-        }
         if (isset($this->map)) {
             if (strpos($this->legendposition, "top") !== false) {
                 echo $legend;
@@ -81,12 +78,12 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $desc = "<b>" . $date . "<br/>" . $title . "<br/>" . $dist . " " . $walk->nationalGrade . "</b>";
         $url = $this->getWalkMapHref($walk, $desc);
         if ($walk->startLocation->exact) {
-            $icon = "markerStart";
+            $icon = "ramblersMap.markerStart";
         } else {
-            $icon = "markerArea";
+            $icon = ramblersMap."markerArea";
         }
         if ($walk->isCancelled()) {
-            $icon = "markerCancelled";
+            $icon = "ramblersMap.markerCancelled";
         }
         $class = $this->walkClass . $walk->status;
         $grade = $walk->getGradeImage();

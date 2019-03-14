@@ -185,8 +185,10 @@ L.Control.PostcodeStatus = L.Control.extend({
         }
     },
     _clearPlacesLayers: function () {
-        for (i = 1; i < 6; i++) {
-            this._placeslayer[i].clearLayers();
+        if (this._placeslayer !== null) {
+            for (i = 1; i < 6; i++) {
+                this._placeslayer[i].clearLayers();
+            }
         }
     },
     _displayPlaces: function (e) {

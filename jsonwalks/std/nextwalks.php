@@ -15,9 +15,6 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
     private $nowalks = 5;
 
     function DisplayWalks($walks) {
-        if ($this->displayGradesSidebar) {
-            RJsonwalksWalk::gradeSidebar();
-        }
         $schemawalks = array();
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
@@ -40,9 +37,8 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             $out .= "</span>";
 
             if ($this->displayGradesIcon) {
-                $image = $walk->getGradeImage();
-                $tooltip = "<span class='ntooltiptext'>" . $walk->nationalGrade . "</span>";
-                echo "<div class='nextWalksWithGrade ntooltip'><img src=\"" . $image . "\" alt=\"" . $walk->nationalGrade . "\" />" . $tooltip . $out . "</div>" . PHP_EOL;
+                echo "<div class='nextWalksWithGrade'>".$walk->getGradeSpan("left"). $out."</div>";
+             
             } else {
                 echo "<li> " . $out . "</li>" . PHP_EOL;
             }

@@ -8,7 +8,7 @@
 // no direct access
 defined("_JEXEC") or die("Restricted access");
 
-class RJsonwalksStdFulldetails2 extends RJsonwalksDisplaybase {
+class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
     public $nationalGradeHelp = "";
     public $localGradeHelp = "";
@@ -28,7 +28,8 @@ class RJsonwalksStdFulldetails2 extends RJsonwalksDisplaybase {
             echo "<p>Use: Please use the Print option next to the pagination controls</p>";
             return;
         }
-
+// echo "<span class='grade'>this some text <span class='grade easy'/> and some more";
+// echo "<p>....  <span data-descr='Easy'><span class='grade easy middle' onclick='javascript:dGH()'></span></span><span> with a few</span></p>";
         $items = $walks->allWalks();
         $document = JFactory::getDocument();
         $display = new RJsonwalksStdCancelledwalks();
@@ -43,7 +44,7 @@ class RJsonwalksStdFulldetails2 extends RJsonwalksDisplaybase {
             echo '</div><p></p>';
         }
         $display->DisplayWalks($walks);  // display cancelled walks information
-        $document->addScript("ramblers/jsonwalks/std/fulldetails.js", "text/javascript");
+        $document->addScript("ramblers/jsonwalks/std/display.js", "text/javascript");
         $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
 
         $text = "ramblerswalks='" . addslashes(json_encode($items)) . "'";
@@ -55,16 +56,6 @@ class RJsonwalksStdFulldetails2 extends RJsonwalksDisplaybase {
   });
                 function addContent() {" . $text . "};";
         $document->addScriptDeclaration($out, "text/javascript");
-        echo '<div id="raModal" class="modal">
-        <!-- Modal Content (The Image) -->
-        <div class="modal-content" >
-        <div class="modal-header">
-        <button id="btnPrint" class="btn" type="button" >Print</button>
-        <button id="btnClose" class="btn" data-dismiss="modal" >Close</button>
-        </div>
-        <p style="clear:right;"> </p>
-        <div id="modal-data"></div>
-        </div></div>';
         echo "<div id='raprint' ></div>";
         echo "<div id='raoptions' ></div><p></p>";
         echo "<div id='rapagination-1' ></div>";

@@ -158,7 +158,7 @@ class RJsonwalksWalk extends REvent {
         }
     }
 
-    public function getEmail($option=1, $withtitle = false) {
+    public function getEmail($option = 1, $withtitle = false) {
         if ($withtitle) {
             switch ($option) {
                 case 1:
@@ -440,23 +440,50 @@ class RJsonwalksWalk extends REvent {
         return $image;
     }
 
-    public static function gradeSidebar() {
-        if (!self::$gradeSidebarDisplayed) {
-            self::$gradeSidebarDisplayed = true;
-            echo '<div class = "gradeSidebar" >';
-            echo '<a href="ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">';
-            echo 'Walks difficulty</a>';
-            echo '</div>';
-        }
-    }
+//    public static function gradeSidebar() {
+//        if (!self::$gradeSidebarDisplayed) {
+//            self::$gradeSidebarDisplayed = true;
+//            echo '<div class = "gradeSidebar" >';
+//            echo '<a href="ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">';
+//            echo 'Walks difficulty</a>';
+//            echo '</div>';
+//        }
+//    }
+//    public static function gradeToolTips() {
+//        echo '<span  class = "gradeBar" id = "grade-ea">Easy Access</span>';
+//        echo '<span  class = "gradeBar" id = "grade-e">Easy</span>';
+//        echo '<span  class = "gradeBar" id = "grade-l">Leisurely</span>';
+//        echo '<span  class = "gradeBar" id = "grade-m">Moderate</span>';
+//        echo '<span  class = "gradeBar" id = "grade-s">Strenuous</span>';
+//        echo '<span  class = "gradeBar" id = "grade-t">Technical</span>';
+//    }
 
-    public static function gradeToolTips() {
-        echo '<span  class = "gradeBar" id = "grade-ea">Easy Access</span>';
-        echo '<span  class = "gradeBar" id = "grade-e">Easy</span>';
-        echo '<span  class = "gradeBar" id = "grade-l">Leisurely</span>';
-        echo '<span  class = "gradeBar" id = "grade-m">Moderate</span>';
-        echo '<span  class = "gradeBar" id = "grade-s">Strenuous</span>';
-        echo '<span  class = "gradeBar" id = "grade-t">Technical</span>';
+    public function getGradeSpan($class) {
+      //  echo "<span data-descr='Easy'><span class='grade-easy' onclick='javascript:dGH()'/></span>";
+        $tag = "";
+        switch ($this->nationalGrade) {
+            case "Easy Access":
+               $tag = "<span data-descr='Easy Access' class='" . $class . "'><span class='grade easy-access ".$class."' onclick='javascript:dGH()'></span></span>";
+                break;
+            case "Easy":
+                $tag = "<span data-descr='Easy' class='" . $class . "'><span class='grade easy ".$class."' onclick='javascript:dGH()'></span></span>";
+                break;
+            case "Leisurely":
+               $tag = "<span data-descr='Leisurely' class='" . $class . "'><span class='grade leisurely ".$class."' onclick='javascript:dGH()'></span></span>";
+                break;
+            case "Moderate":
+               $tag = "<span data-descr='Moderate' class='" . $class . "'><span class='grade moderate ".$class."' onclick='javascript:dGH()'></span></span>";
+                break;
+            case "Strenuous":
+               $tag = "<span data-descr='Strenuous' class='" . $class . "'><span class='grade strenuous ".$class."' onclick='javascript:dGH()'></span></span>";
+                break;
+            case "Technical":
+               $tag = "<span data-descr='Technical' class='" . $class . "'><span class='grade technical ".$class."' onclick='javascript:dGH()'></span></span>";
+                break;
+            default:
+                break;
+        }
+        return $tag;
     }
 
     public function distanceFrom($easting, $northing, $distanceKm) {
