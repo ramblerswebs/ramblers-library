@@ -521,8 +521,7 @@ function displayWalk_Grade($walk, $class) {
         $text = getWalkValue($walk, $item, false);
         $out += $text;
     }
-    $out += '<img class="ra-right" src="ramblers/jsonwalks/std/accordian/style/style4/close.png" alt="open,close" >';
-    //return $out + "</span>\n";
+    $out += '<span class="ra-rightopen" ></span>';
     $text = "<div data-jplist-item class='" + $class + " " + $walk.status + "' \n>" + $image + addWalkLink($walk, $out, true) + "\n</div>\n";
     return $text;
 }

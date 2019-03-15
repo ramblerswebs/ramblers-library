@@ -498,10 +498,11 @@ img.ra-grade.pointer {
 #ra_filter_dates span input[type="date"] {
     margin-left:30px !important;   
 }
-span.walksummary img.ra-right {
+span.ra-rightopen {
     float: right;
     width:35px;
     height:26px;
+    content:url("../std/accordian/style/style4/close.png");
 }
 span.walksummary  {
     padding-top:5px !important;
