@@ -10,7 +10,7 @@ function RamblersWalksDetails() {
     this.displayDefault = "Grades";
     this.displayStartTime = true;
     this.displayStartDescription = true;
-    this.tableFormat = '[{ "title": "Date",    "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}","{,meetPC}"]},{    "title": "Start",    "items": ["{start}","{,startGR}",",startPC"]},{    "title": "Title",    "items": ["{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
+    this.tableFormat = '[{ "title": "Date",    "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}","{,meetPC}"]},{    "title": "Start",    "items": ["{start}","{,startGR}","{,startPC"]},{    "title": "Title",    "items": ["{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
     this.listFormat = '[ "{dowddmm}", "{,meet}", "{,start}","{,title}","{,contactname}","{,telephone}" ] ';
     this.gradeFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
     this.options;
