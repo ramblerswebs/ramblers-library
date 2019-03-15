@@ -44,7 +44,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
             echo '</div><p></p>';
         }
         $display->DisplayWalks($walks);  // display cancelled walks information
-        $document->addScript("ramblers/jsonwalks/std/display.js", "text/javascript");
+        $document->addScript("ramblers/jsonwalks/std/display.js", "text/javascript"); 
         $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
 
         $text = "ramblerswalks='" . addslashes(json_encode($items)) . "'";

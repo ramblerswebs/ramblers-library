@@ -110,9 +110,9 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     private function addGradeImage($walk) {
         $out = '';
         if ($this->displayGradesIcon) {
-            $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" onclick="javascript:displayGradesHelp()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
+            $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" onclick="javascript:dGH()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
         } else {
-            $out .= ' <img src="ramblers/images/grades/base.jpg" alt="' . $walk->nationalGrade . '" onclick="javascript:displayGradesHelp()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
+            $out .= ' <img src="ramblers/images/grades/base.jpg" alt="' . $walk->nationalGrade . '" onclick="javascript:dGH()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
         }
         return $out;
     }

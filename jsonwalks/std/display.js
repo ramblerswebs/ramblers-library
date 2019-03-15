@@ -10,7 +10,7 @@ function RamblersWalksDetails() {
     this.displayDefault = "Grades";
     this.displayStartTime = true;
     this.displayStartDescription = true;
-    this.tableFormat = '[{ "title": "Date",    "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}",",meetPC"]},{    "title": "Start",    "items": ["{start}","{,startGR}",",startPC"]},{    "title": "Title",    "items": ["{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
+    this.tableFormat = '[{ "title": "Date",    "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}","{,meetPC}"]},{    "title": "Start",    "items": ["{start}","{,startGR}",",startPC"]},{    "title": "Title",    "items": ["{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
     this.listFormat = '[ "{dowddmm}", "{,meet}", "{,start}","{,title}","{,contactname}","{,telephone}" ] ';
     this.gradeFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
     this.options;
@@ -513,7 +513,7 @@ function displayWalk_Grade($walk, $class) {
     var $text, $image;
     var $out = "";
     $image = '<span class="walksummary" >';
-    //   $image += ' <img class="ra-grade pointer" src="' + getGradeImage($walk) + '" alt="' + $walk.nationalGrade + '" onclick="javascript:displayGradesHelp()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
+    //   $image += ' <img class="ra-grade pointer" src="' + getGradeImage($walk) + '" alt="' + $walk.nationalGrade + '" onclick="javascript:dGH()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
     $image += getGradeSpan($walk, 'middle');
     var index, len, $items, $text, $item;
     for (index = 0, len = $items.length; index < len; ++index) {
@@ -705,7 +705,7 @@ function getWalkValue($walk, $option, addlink) {
             break;
         case "{difficulty}":
             var $dist = getWalkValue($walk, "{distance}", addlink);
-            var $grade = "<span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:displayGradesHelp()'>" + $walk.nationalGrade + "</span>";
+            var $grade = "<span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dGH()'>" + $walk.nationalGrade + "</span>";
             $grade += $walk.localGrade;
             out = $dist + "<br/>" + $grade;
             break;
@@ -715,10 +715,10 @@ function getWalkValue($walk, $option, addlink) {
             }
             break;
         case "{nationalGrade}":
-            out = "<span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:displayGradesHelp()'>" + $walk.nationalGrade + "</span>";
+            out = "<span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dGH()'>" + $walk.nationalGrade + "</span>";
             break;
         case "{nGrade}":
-            out = "<span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:displayGradesHelp()'>" + $walk.nationalGrade.substr(0, 1) + "</span>";
+            out = "<span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dGH()'>" + $walk.nationalGrade.substr(0, 1) + "</span>";
             break;
         case "{localGrade}":
             out = $walk.localGrade;
@@ -1095,7 +1095,7 @@ function addWalkMarker($walk) {
         $icon = ramblersMap.markerCancelled;
     }
     $class = $this.walkClass + $walk.status;
-    $grade = "<span class='pointer' class='pointer' onclick='javascript:displayGradesHelp()'>";
+    $grade = "<span class='pointer' class='pointer' onclick='javascript:dGH()'>";
     //  $grade += "<img src='" + ramblersMap.base + getGradeImage($walk) + "' alt='" + $walk.nationalGrade + "' width='30px'>";
     $grade += getGradeSpan($walk, 'right');
     $grade += "</span>";

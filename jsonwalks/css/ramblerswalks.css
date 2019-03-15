@@ -586,7 +586,6 @@ span.grade.technical {
 
 span[data-descr] {
     position: relative;
-    color: #00F;
     cursor: pointer;
 }
 

@@ -88,14 +88,24 @@ function displayModal($html) {
         printTag("modal-data");
     };
 }
-function displayGradesHelp() {
-    var $url = "ramblers/pages/grades2.html";
+function localhost() {
+    if (window.location.hostname.includes("localhost")) {
+        return true;
+    } else {
+        return false;
+    }
+}
+function dGH() {
+    var $url;
+    if (localhost()) {
+        $url = "ramblers/pages/grades.html";
+    } else {
+        $url = "/ramblers/pages/grades.html";
+    }
     var marker;
     ajax($url, "", marker, displayGradesModal);
 }
-function dGH(){
-    displayGradesHelp();
-}
+
 function displayGradesModal(marker, $html) {
     displayModal($html);
 }
@@ -134,7 +144,7 @@ function createModalTag() {
     var modaltag = document.getElementById('modal-data');
     if (modaltag === null) {
         // create modal tag
-        var body = document.getElementsByTagName("BODY")[0]; 
+        var body = document.getElementsByTagName("BODY")[0];
         var div = document.createElement("div");
         body.appendChild(div);
         $tag = '<div id="raModal" class="modal" style="display:none">';
@@ -149,4 +159,4 @@ function createModalTag() {
         $tag += '</div></div>';
         div.innerHTML = $tag;
     }
-    }
+}
