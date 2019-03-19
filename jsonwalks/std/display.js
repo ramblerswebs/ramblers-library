@@ -15,7 +15,7 @@ function RamblersWalksDetails() {
     this.gradeFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
     this.options;
     this.filter = {};
-    this.defaultOptions = "<table><tr><td id='OptionGrades' class='active' onclick=\"javascript:ra_format('OptionGrades')\">Grades</td><td id='OptionTable' onclick=\"javascript:ra_format('OptionTable')\">Table</td><td id='OptionList' onclick=\"javascript:ra_format('OptionList')\">List</td><td id='OptionMap' onclick=\"javascript:ra_format('OptionMap')\">Map</td></tr></table>";
+    this.defaultOptions = "<table><tr><td id='Grades' class='active' onclick=\"javascript:ra_format('Grades')\">Grades</td><td id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td id='List' onclick=\"javascript:ra_format('List')\">List</td><td id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
 }
 function FullDetailsLoad() {
 // executes when complete page is fully loaded, including all frames, objects and images
@@ -35,7 +35,7 @@ function FullDetailsLoad() {
 }
 
 function getOptions() {
-    ramblerswalksDetails.filter.RA_Display_Format = "Option" + ramblerswalksDetails.displayDefault;
+    ramblerswalksDetails.filter.RA_Display_Format = ramblerswalksDetails.displayDefault;
     var $tag = document.getElementById("raDisplayOptions");
     if ($tag) {
         var $text = $tag.innerHTML;
@@ -106,9 +106,9 @@ function getWalk(id) {
 
 function displayWalks($walks) {
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "OptionGrades":
-        case "OptionList":
-        case "OptionTable":
+        case "Grades":
+        case "List":
+        case "Table":
             displayMap("hidden");
             setTagHtml("rapagination-1", addPagination());
             setTagHtml("rapagination-2", addPagination());
@@ -119,7 +119,7 @@ function displayWalks($walks) {
                 storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
             });
             break;
-        case "OptionMap":
+        case "Map":
             //    setTagHtml("raprint", "");
             setTagHtml("rapagination-1", "");
             setTagHtml("rapagination-2", "");
@@ -129,7 +129,7 @@ function displayWalks($walks) {
             var bounds = getBounds(ramblersMap.markerList);
             ramblersMap.map.fitBounds(bounds);
             break;
-        case "OptionContacts":
+        case "Contacts":
             displayMap("hidden");
             setTagHtml("rapagination-1", addPagination());
             setTagHtml("rapagination-2", addPagination());
@@ -173,17 +173,17 @@ function displayWalksText($walks) {
                 $class = "even";
             }
             switch (ramblerswalksDetails.filter.RA_Display_Format) {
-                case "OptionGrades":
+                case "Grades":
                     $out += displayWalk_Grade($walk, $class);
                     break;
-                case "OptionList":
+                case "List":
                     if (month !== $walk.month) {
                         month = $walk.month
                         $out += "<h3 data-jplist-item>" + month + "</h3>";
                     }
                     $out += displayWalk_List($walk, $class);
                     break;
-                case "OptionTable":
+                case "Table":
                     $out += displayWalk_Table($walk, $class);
                     break;
             }
@@ -201,13 +201,16 @@ function displayWalksText($walks) {
 function displayWalksHeader($walks) {
     var $out = "";
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "OptionGrades":
+        case "Grades":
+            $out += "</br><p>Click on item to display full details of walk</p>";
             $out += "<div data-jplist-group=\"group1\">";
             break;
-        case "OptionList":
+        case "List":
+            $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             $out += "<div data-jplist-group=\"group1\">";
             break;
-        case "OptionTable":
+        case "Table":
+            $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             $out += "<table class='" + ramblerswalksDetails.displayClass + "'>\n";
             $out += displayTableHeader();
             $out += "<tbody data-jplist-group=\"group1\">";
@@ -228,15 +231,15 @@ function displayTableHeader() {
 function displayWalksFooter() {
     var $out = "";
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "OptionGrades":
+        case "Grades":
             $out += "</div>";
             $out += "</br><p>Click on item to display full details of walk</p>";
             break;
-        case "OptionList":
+        case "List":
             $out += "</div>";
             $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             break;
-        case "OptionTable":
+        case "Table":
             $out += "</tbody></table>\n";
             $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             break;
@@ -703,10 +706,11 @@ function getWalkValue($walk, $option, addlink) {
             out = $walk.description;
             break;
         case "{difficulty}":
-            var $dist = getWalkValue($walk, "{distance}", addlink);
-            var $grade = "<span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dGH()'>" + $walk.nationalGrade + "</span>";
-            $grade += $walk.localGrade;
-            out = $dist + "<br/>" + $grade;
+            out = getWalkValue($walk, "{distance}", addlink);
+            out += "<br/><span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dGH()'>" + $walk.nationalGrade + "</span>";
+            if ($walk.localGrade !== "") {
+                out += "<br/>" + $walk.localGrade;
+            }
             break;
         case "{distance}":
             if ($walk.distanceMiles > 0) {
@@ -1095,7 +1099,6 @@ function addWalkMarker($walk) {
     }
     $class = $this.walkClass + $walk.status;
     $grade = "<span class='pointer' class='pointer' onclick='javascript:dGH()'>";
-    //  $grade += "<img src='" + ramblersMap.base + getGradeImage($walk) + "' alt='" + $walk.nationalGrade + "' width='30px'>";
     $grade += getGradeSpan($walk, 'right');
     $grade += "</span>";
     $details = "<div class='" + $class + "'>" + $grade + $url + "</div>";

@@ -53,10 +53,6 @@ function raLoadLeaflet() {
             zoomSnap: 0.25,
             maxZoom: 18});
     }
-    if (ramblersMap.maphelppage != "") {
-        var helpbutton = new L.Control.DisplayHelp();
-        ramblersMap.map.addControl(helpbutton);
-    }
 
     ramblersMap.mapLayers = new Object();
 // map types
@@ -203,6 +199,11 @@ function raLoadLeaflet() {
     ramblersMap.map.on('LayersControlEvent', function (ev) {
         alert(ev.latlng); // ev is an event object (MouseEvent in this case)
     });
+    // help button
+    if (ramblersMap.maphelppage != "") {
+        var helpbutton = new L.Control.DisplayHelp();
+        ramblersMap.map.addControl(helpbutton);
+    }
 }
 
 function updateClusterProgressBar(processed, total, elapsed) {

@@ -18,6 +18,7 @@ class RLeafletGpxMap extends RLeafletMap {
     public function displayPath($gpx) {
         $document = JFactory::getDocument();
         $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
+        $this->help_page = "https://maphelp.ramblers-webs.org.uk/walking-route.html";
         $this->options->fullscreen = true;
         $this->options->cluster = false;
         $this->options->search = true;
@@ -28,7 +29,7 @@ class RLeafletGpxMap extends RLeafletMap {
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
         $this->options->print = true;
-    //    RLicense::BingMapKey(false);
+        //    RLicense::BingMapKey(false);
 
         if ($this->imperial) {
             $imperial = "true";

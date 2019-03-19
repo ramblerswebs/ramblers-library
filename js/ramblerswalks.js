@@ -105,6 +105,16 @@ function dGH() {
     var marker;
     ajax($url, "", marker, displayGradesModal);
 }
+function dMH() {
+    var $url;
+    if (localhost()) {
+        $url = "ramblers/pages/maphelp.html";
+    } else {
+        $url = "/ramblers/pages/maphelp.html";
+    }
+    var marker;
+    ajax($url, "", marker, displayGradesModal);
+}
 
 function displayGradesModal(marker, $html) {
     displayModal($html);

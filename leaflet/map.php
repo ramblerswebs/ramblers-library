@@ -109,6 +109,7 @@ class RLeafletMap {
             $this->addScript("ramblers/vendors/geodesy/latlon-ellipsoidal.js", "text/javascript");
             $this->addScript("ramblers/vendors/geodesy/osgridref.js", "text/javascript");
         }
+         $this->addStyleSheet("ramblers/leaflet/ra-gpx-tools.css", "text/css");
         if ($options->draw) {
             $this->addScript("ramblers/leaflet/ra-gpx-drawcontrol.js", "text/javascript");
             $path = "ramblers/vendors/Leaflet.draw-0.4.14/dist/";
@@ -120,7 +121,6 @@ class RLeafletMap {
             $this->addScript("ramblers/leaflet/ra-gpx-reverse-route.js", "text/javascript");
             $this->addScript("ramblers/leaflet/ra-gpx-simplify.js", "text/javascript");
             $this->addScript("ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");
-            $this->addStyleSheet("ramblers/leaflet/ra-gpx-tools.css", "text/css");
             $this->addScript("ramblers/vendors/blurt-1.0.2/dist/js/blurt.min.js", "text/javascript");
             $this->addStyleSheet("ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
             $this->addScript("ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
@@ -183,7 +183,7 @@ class RLeafletMap {
         echo "</div>" . PHP_EOL;
         echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";
         echo "<p class='mapcopyright'>Maps Icons Collection https://mapicons.mapsmarker.com</p>";
-        echo "</div>";
+     //   echo "</div>";
     }
 
     private function addScript($script, $type) {

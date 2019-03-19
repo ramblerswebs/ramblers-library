@@ -411,7 +411,7 @@ h3.ra_openclose {
 .modal-content {
     /* Add Animation - Zoom in the Modal */
     animation-name: zoom;
-    animation-duration: 0.6s;
+    animation-duration: 0.5s;
 
 }
 
@@ -565,10 +565,22 @@ span.right.grade {
     padding-left:10px;
     padding-top:5px;
 }
+span.map{
+    top:10px;
+    height:30px;
+    width:30px;
+}
+span.map.help {
+    content:url(../../leaflet/images/help.png);
+}
+span.maphelp[data-descr]:hover::after {
+    width:150px;
+}
 
 span.grade.easy-access {
     content:url(../../images/grades/grade-ea.jpg);
 }
+
 span.grade.easy {
     content:url(../../images/grades/grade-e.jpg);
 }
@@ -595,7 +607,6 @@ span[data-descr]:hover::after {
     position: absolute;
     left: 0px;
     top: -30px;
-
     border: 2px #ffffff solid;
     border-radius: 10px;
     background-color: #206C49;
@@ -614,25 +625,19 @@ span.left[data-descr]:hover::after{
 }
 span[data-descr="Technical"]:hover::after {
     background-color: #5B491F;
-    color: #eeeeee; 
 }
 span[data-descr="Strenuous"]:hover::after {
     background-color: #782327;
-    color: #eeeeee; 
 }
 span[data-descr="Moderate"]:hover::after {
     background-color: #C75B12;
-    color: #eeeeee; 
 }
 span[data-descr="Leisurely"]:hover::after {
     background-color: #007A87;
-    color: #eeeeee; 
 }
 span[data-descr="Easy"]:hover::after {
     background-color: #A8B400;
-    color: #eeeeee; 
 }
 span[data-descr="Easy Access"]:hover::after {
     background-color: #8BA69C;
-    color: #eeeeee; 
 }
