@@ -268,7 +268,7 @@ function createMouseMarkers() {
         iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
         shadowAnchor: [0, 0], // the same for the shadow
         popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
-    });
+      });
     ramblersMap.postcodeIconClosest = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/postcode-icon-closest.png',
         iconSize: [24, 18], // size of the icon

@@ -467,11 +467,21 @@ div#raoptions table {
     cursor: pointer;
     font-weight: bold;
     font-size:115%;
-    background-color: #DDDDDD;
+    background-color: green;
+}
+div#raoptions table td{
+    background-color: #CCCCCC;
+    border-color: #C0C0C0;
+    border-style: solid;
+    border-width: 1px;
+
 }
 div#raoptions table td.active {
     background-color: #AAAAAA;
-}    
+} 
+div#raoptions table td:hover {
+    background-color: #BBBBBB;
+} 
 .pointer {
     cursor: pointer;
 }
@@ -493,6 +503,12 @@ img.ra-grade.pointer {
 }
 #rawalks table{
     width:100%;
+}
+#rawalks table.contacts{
+    width:auto;
+}
+#rawalks table.contacts td{
+    width:25%;
 }
 
 #ra_filter_dates span input[type="date"] {

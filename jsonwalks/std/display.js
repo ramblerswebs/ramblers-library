@@ -105,13 +105,20 @@ function getWalk(id) {
 }
 
 function displayWalks($walks) {
+    var no = 0;
+    for (index = 0, len = $walks.length; index < len; ++index) {
+        $walk = $walks[index];
+        if ($walk.display) {
+            no += 1;
+        }
+    }
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
         case "Grades":
         case "List":
         case "Table":
             displayMap("hidden");
-            setTagHtml("rapagination-1", addPagination());
-            setTagHtml("rapagination-2", addPagination());
+            setTagHtml("rapagination-1", addPagination(no));
+            setTagHtml("rapagination-2", addPagination(no));
             setTagHtml("rawalks", displayWalksText($walks));
             // jplist.init();
             jplist.init({
@@ -131,8 +138,8 @@ function displayWalks($walks) {
             break;
         case "Contacts":
             displayMap("hidden");
-            setTagHtml("rapagination-1", addPagination());
-            setTagHtml("rapagination-2", addPagination());
+            setTagHtml("rapagination-1", addPagination(no));
+            setTagHtml("rapagination-2", addPagination(no));
             setTagHtml("rawalks", displayContacts($walks));
             jplist.init({
                 storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
@@ -177,11 +184,8 @@ function displayWalksText($walks) {
                     $out += displayWalk_Grade($walk, $class);
                     break;
                 case "List":
-                    if (month !== $walk.month) {
-                        month = $walk.month
-                        $out += "<h3 data-jplist-item>" + month + "</h3>";
-                    }
-                    $out += displayWalk_List($walk, $class);
+                    $out += displayWalk_List($walk, $class, month !== $walk.month);
+                    month = $walk.month
                     break;
                 case "Table":
                     $out += displayWalk_Table($walk, $class);
@@ -497,16 +501,26 @@ function displayWalk($walk) {
     return $display;
 }
 
-function displayWalk_List($walk, $class) {
+function displayWalk_List($walk, $class, $displayMonth) {
     var $items = JSON.parse(ramblerswalksDetails.listFormat);
-    var $out = "<div data-jplist-item class='" + $class + " " + $walk.status + "' >"
-    //   var $out = "<div data-jplist-item>";
+    var $out="";
+    if ($displayMonth){
+        $out += "<div data-jplist-item >"
+       $out += "<h3>" + $walk.month + "</h3>";
+       $out += "<div class='"  + $class + " " + $walk.status + "' >"
+   } else {
+       $out += "<div data-jplist-item class='" + $class + " " + $walk.status + "' >"
+     
+    }
     var index, len, $items, $text, $item;
     for (index = 0, len = $items.length; index < len; ++index) {
         $item = $items[index];
         $text = getWalkValue($walk, $item, true);
         $out += $text;
     }
+     if ($displayMonth){
+         $out += "</div>\n";
+     }
     return $out + "</div>\n";
 }
 
@@ -543,16 +557,50 @@ function displayContacts($walks) {
     $contacts.sort(function (a, b) {
         return a.name.toLowerCase() > b.name.toLowerCase();
     });
-    out = "<table>";
-    out += "<tr><th>Name</th><th>Email</th><th>Telephone1</th><th>Telephone2</th></tr>";
-    out += "<tbody data-jplist-group=\"group1\">";
+    typeof x === "undefined"
+    var dispEmail = typeof $contacts.find(checkContactEmail) !== "undefined";
+    var dispTel1 = typeof $contacts.find(checkContactTelephone1) !== "undefined";
+    var dispTel2 = typeof $contacts.find(checkContactTelephone2) !== "undefined";
+    out = "<table class='" + ramblerswalksDetails.displayClass + " contacts'>\n";
+    out += "<tr><th>Name";
+    if (dispEmail) {
+        out += "</th><th>Email";
+    }
+    if (dispTel1) {
+        out += "</th><th>Telephone1";
+    }
+    if (dispTel2) {
+        out += "</th><th>Telephone2";
+    }
+    out += "</th></tr><tbody data-jplist-group=\"group1\">";
     for (index = 0, len = $contacts.length; index < len; ++index) {
         $contact = $contacts[index];
-        out += "<tr data-jplist-item><td>" + $contact.name + "</td><td>" + $contact.email + "</td><td>" + $contact.telephone1 + "</td><td>" + $contact.telephone2 + "</td></tr>";
+        out += "<tr data-jplist-item><td>" + $contact.name;
+        if (dispEmail) {
+            out += "</td><td>" + $contact.email;
+        }
+        if (dispTel1) {
+            out += "</td><td>" + $contact.telephone1;
+        }
+        if (dispTel2) {
+            out += "</td><td>" + $contact.telephone2;
+        }
+        out += "</td></tr>";
     }
     out += "</tbody></table>";
     return out;
 }
+
+function checkContactEmail(contact) {
+    return contact.email !== "";
+}
+function checkContactTelephone1(contact) {
+    return contact.telephone1 !== "";
+}
+function checkContactTelephone2(contact) {
+    return contact.telephone2 !== "";
+}
+
 function contains(items, item) {
     var index, len;
     for (index = 0, len = items.length; index < len; ++index) {
@@ -1133,7 +1181,12 @@ function addslashes(str) {
             .replace(/[\\"']/g, '\\$&')
             .replace(/\u0000/g, '\\0');
 }
-function addPagination() {
+function addPagination(no) {
+    var $class = "";
+    if (no < 14) {
+        $class = " hidden";
+    }
+
     var $div = "<div data-jplist-control=\"pagination\" \
             data-group=\"group1\" \
             data-items-per-page=\"20\" \
@@ -1143,24 +1196,23 @@ function addPagination() {
              <span data-type=\"info\"> \
              <a class='link-button button-p4485' onclick=\"javascript:printTag('rawalks')\">Print</a> \
             {startItem} - {endItem} of {itemsNumber} \
-            </span> \
-            <span class='center'> \
+            </span> ";
+    $div += "<span class='center" + $class + "'> \
             <button type=\"button\" data-type=\"first\">First</button> \
             <button type=\"button\" data-type=\"prev\">Previous</button> \
             <span class=\"jplist-holder\" data-type=\"pages\"> \
                 <button type=\"button\" data-type=\"page\">{pageNumber}</button> \
-            </span> \
-            <button type=\"button\" data-type=\"next\">Next</button> \
+            </span> <button type=\"button\" data-type=\"next\">Next</button> \
             <button type=\"button\" data-type=\"last\">Last</button> \
             </span> \
             <!-- items per page select --> \
-    <select data-type=\"items-per-page\"> \
+    <select data-type=\"items-per-page\" class=\"" + $class + "\"> \
         <option value=\"10\"> 10 per page </option> \
         <option value=\"20\"> 20 per page </option> \
         <option value=\"30\"> 30 per page </option> \
         <option value=\"0\"> view all </option> \
-    </select> \
-        </div>";
+    </select> ";
+    $div += " </div>";
     return $div;
 }
 function getDirectionsMap($location, $text) {

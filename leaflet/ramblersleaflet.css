@@ -218,3 +218,11 @@ span.placelocation{
     margin-top:5px;
     margin-bottom:5px;
 }
+
+/* Help */
+div.leaflet-control-display-help a {
+    background:#fff url(images/help.png) no-repeat 0 0;
+    background-size:27px 27px;
+    background-position: center; 
+    cursor: pointer;
+}
