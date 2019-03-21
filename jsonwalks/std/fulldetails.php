@@ -8,7 +8,7 @@
 // no direct access
 defined("_JEXEC") or die("Restricted access");
 
-class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
+class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
     public $nationalGradeHelp = "";
     public $localGradeHelp = "";
@@ -56,10 +56,12 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
   });
                 function addContent() {" . $text . "};";
         $document->addScriptDeclaration($out, "text/javascript");
-        echo "<div id='raprint' ></div>";
-        echo "<div id='raoptions' ></div><p></p>";
+//        echo "<div id='raprint' ></div>";
+        echo "<div id='raouter'>";
+        echo "<div id='raoptions' ></div>";
+        echo "<div id='rainner'>";
         echo "<div id='rapagination-1' ></div>";
-        echo "<div id='rawalks' >Page error - No walks</div>";
+        echo "<div id='rawalks' >Processing data - this should be replaced shortly.</div>";
         echo "<div id='rapagination-2' ></div>";
         // send walks as json file
         // write json to display a number of them
@@ -80,12 +82,13 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         echo "<div id='ra-map' >";
         $this->displayMap();
         echo "</div>";
+        echo "</div></div>";
     }
 
     private function displayMap() {
         $legend = '<p><strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.</p>
 <p><img src="ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.</p>';
-  
+
         if (isset($this->map)) {
             if (strpos($this->legendposition, "top") !== false) {
                 echo $legend;
