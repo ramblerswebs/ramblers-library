@@ -68,11 +68,12 @@ span.walksummary img{
     text-decoration: line-through;
 }
 
-.ra-accordion-item.walkNew {
-    padding-left: 0px;
-    background: url('../../images/new.gif') no-repeat scroll 0 50% rgba(0, 0, 0, 0);
-    background-position: 60px 0px ;
+.DELra-accordion-item.walkNew {
+    color:blue;
 
+}
+.ra-accordion-container {
+    color:black;
 }
 .nextwalkNew::before {
     content: url('../../images/new.gif');
@@ -84,7 +85,7 @@ span.walksummary img{
     padding-left: 0px;;
 
 }
-.walkNew {
+.updated.walkNew {
     padding-left: 35px;
     background: url(../../images/new.gif) no-repeat scroll 0 50% rgba(0,0,0,0);
 }
@@ -375,6 +376,9 @@ h3.ra_openclose {
     cursor: pointer;
     padding-left:10px;
 }
+h3.ra_openclose:hover {
+    background-color:#CCCCCC;
+}
 
 /* The Modal (background) TESTING */
 .modal {
@@ -460,24 +464,39 @@ div.even {
 .even:hover {
     background-color:#DDDDDD !important;
 }
+#rapotions {
+
+    background-color:green;
+}
+div#rainner {
+    padding-top:25px;
+    padding-left:10px;
+    padding-bottom:10px;
+    padding-right:10px;
+    background-color: #D8D8D8;
+    border-radius: 0px 10px 10px 10px;
+    border: 0px;
+    border-color:#C0C0C0;
+    border-style: solid;
+}
 div#raoptions table {
-    table-layout: fixed; 
-    width:100%;
+    table-layout: auto; 
+    border-width: 0px;
     margin-bottom:0px;
     cursor: pointer;
     font-weight: bold;
     font-size:115%;
-    background-color: green;
+    background-color:rgba(0, 0, 0, 0);
 }
-div#raoptions table td{
-    background-color: #CCCCCC;
-    border-color: #C0C0C0;
-    border-style: solid;
-    border-width: 1px;
-
+div#raoptions table tr td{
+    background-color: #E1E1E1;
+    border-width: 0px;
+    padding-left:30px;
+    padding-right:30px;
+    border-radius: 10px 10px 0px 0px;
 }
 div#raoptions table td.active {
-    background-color: #AAAAAA;
+    background-color: #D8D8D8;
 } 
 div#raoptions table td:hover {
     background-color: #BBBBBB;
@@ -638,6 +657,9 @@ span.middle[data-descr]:hover::after{
 }
 span.left[data-descr]:hover::after{
     top:-15px;
+}
+span.walkNew[data-descr] {
+    color: #206C49;
 }
 span[data-descr="Technical"]:hover::after {
     background-color: #5B491F;

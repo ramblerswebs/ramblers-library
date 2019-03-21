@@ -17,6 +17,8 @@ function RamblersWalksDetails() {
     this.filter = {};
     this.defaultOptions = "<table><tr><td id='Grades' class='active' onclick=\"javascript:ra_format('Grades')\">Grades</td><td id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td id='List' onclick=\"javascript:ra_format('List')\">List</td><td id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
 }
+//    this.defaultOptions = "<table><tr><td id='Grades' class='active' onclick=\"javascript:ra_format('Grades')\">Grades</td><td id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td id='List' onclick=\"javascript:ra_format('List')\">List</td><td id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
+
 function FullDetailsLoad() {
 // executes when complete page is fully loaded, including all frames, objects and images
     if (typeof addFilterFormats === 'function') {
@@ -127,7 +129,6 @@ function displayWalks($walks) {
             });
             break;
         case "Map":
-            //    setTagHtml("raprint", "");
             setTagHtml("rapagination-1", "");
             setTagHtml("rapagination-2", "");
             setTagHtml("rawalks", "");
@@ -154,8 +155,23 @@ function displayMap(which) {
         tag.style.visibility = which;
         if (which === "hidden") {
             tag.style.height = "10px";
+            setPaginationMargin("on");
         } else {
-            tag.style.height = "500px";
+            tag.style.height = "auto";
+            setPaginationMargin("off");
+        }
+    }
+}
+function setPaginationMargin(which) {
+    var tag1 = document.getElementById("rapagination-1");
+    var tag2 = document.getElementById("rapagination-2");
+    if (tag1 && tag2) {
+        if (which === "on") {
+            tag1.style.paddingBottom = "20px";
+            tag2.style.paddingTop = "20px";
+        } else {
+            tag1.style.paddingBottom = "0px";
+            tag2.style.paddingTop = "0px";
         }
     }
 }
@@ -503,14 +519,14 @@ function displayWalk($walk) {
 
 function displayWalk_List($walk, $class, $displayMonth) {
     var $items = JSON.parse(ramblerswalksDetails.listFormat);
-    var $out="";
-    if ($displayMonth){
+    var $out = "";
+    if ($displayMonth) {
         $out += "<div data-jplist-item >"
-       $out += "<h3>" + $walk.month + "</h3>";
-       $out += "<div class='"  + $class + " " + $walk.status + "' >"
-   } else {
-       $out += "<div data-jplist-item class='" + $class + " " + $walk.status + "' >"
-     
+        $out += "<h3>" + $walk.month + "</h3>";
+        $out += "<div class='" + $class + " walk" + $walk.status + "' >"
+    } else {
+        $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >"
+
     }
     var index, len, $items, $text, $item;
     for (index = 0, len = $items.length; index < len; ++index) {
@@ -518,19 +534,18 @@ function displayWalk_List($walk, $class, $displayMonth) {
         $text = getWalkValue($walk, $item, true);
         $out += $text;
     }
-     if ($displayMonth){
-         $out += "</div>\n";
-     }
+    if ($displayMonth) {
+        $out += "</div>\n";
+    }
     return $out + "</div>\n";
 }
 
 function displayWalk_Grade($walk, $class) {
-
+//    $out += "<span data-descr='Walk updated 1/4/2020' class=' walkNew'><span>some text</span></span";
     var $items = JSON.parse(ramblerswalksDetails.gradeFormat);
     var $text, $image;
     var $out = "";
     $image = '<span class="walksummary" >';
-    //   $image += ' <img class="ra-grade pointer" src="' + getGradeImage($walk) + '" alt="' + $walk.nationalGrade + '" onclick="javascript:dGH()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
     $image += getGradeSpan($walk, 'middle');
     var index, len, $items, $text, $item;
     for (index = 0, len = $items.length; index < len; ++index) {
@@ -539,7 +554,13 @@ function displayWalk_Grade($walk, $class) {
         $out += $text;
     }
     $out += '<span class="ra-rightopen" ></span>';
-    $text = "<div data-jplist-item class='" + $class + " " + $walk.status + "' \n>" + $image + addWalkLink($walk, $out, true) + "\n</div>\n";
+    $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true)) + "\n</span></div>\n";
+    return $text;
+}
+function newTooltip($walk, $text) {
+    if ($walk.status === "New") {
+        return "<span data-descr='Walk updated " + getDate($walk.dateUpdated.date) + "' class=' walkNew'><span>" + $text + "</span></span";
+    }
     return $text;
 }
 function displayContacts($walks) {
@@ -637,7 +658,7 @@ function isEquivalent(a, b) {
 function displayWalk_Table($walk, $class) {
     var $cols = JSON.parse(ramblerswalksDetails.tableFormat);
     //  var $out = "<tr data-jplist-item>";
-    var $out = "<tr data-jplist-item class='" + $class + " " + $walk.status + "' >"
+    var $out = "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >"
 
     var index, len, $items;
     for (index = 0, len = $cols.length; index < len; ++index) {
@@ -905,7 +926,7 @@ function displayWalkDetails($walk) {
     var PHP_EOL = "\n";
     var $html = "";
     var $link, $out, $text;
-    $html += "<div class='walkstdfulldetails'>\n";
+    $html += "<div class='walkstdfulldetails walk" + $walk.status + "' >" + PHP_EOL;
     $html += "<div class='group " + gradeCSS($walk) + "'><b>Group</b>: " + $walk.groupName + "</div>" + PHP_EOL;
     if (isCancelled($walk)) {
         $html += "<div class='reason'>WALK CANCELLED: " + $walk.cancellationReason + "</div>" + PHP_EOL;
@@ -1012,7 +1033,7 @@ function displayWalkDetails($walk) {
     $html += addItemInfo("facilities", "Facilities", $walk.facilities);
     $html += "<div class='walkdates'>" + PHP_EOL;
     $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on Walks Finder</a></div>" + PHP_EOL;
-    $html += "<div class='updated'>Last update: " + getDate($walk.dateUpdated.date) + "</div>" + PHP_EOL;
+    $html += "<div class='updated walk" + $walk.status + "'>Last update: " + getDate($walk.dateUpdated.date) + "</div>" + PHP_EOL;
     $html += "</div>" + PHP_EOL;
     $html += "</div>" + PHP_EOL;
     return $html;
