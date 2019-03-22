@@ -553,7 +553,8 @@ function displayWalk_Grade($walk, $class) {
         $text = getWalkValue($walk, $item, false);
         $out += $text;
     }
-    $out += '<span class="ra-rightopen" ></span>';
+    //   $out += '<span class="ra-rightopen" ></span>';
+    $out = "<span class='grade" + $walk.status + "' >" + $out + '</span><span class="ra-rightopen" ></span>';
     $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true)) + "\n</span></div>\n";
     return $text;
 }
@@ -926,7 +927,7 @@ function displayWalkDetails($walk) {
     var PHP_EOL = "\n";
     var $html = "";
     var $link, $out, $text;
-    $html += "<div class='walkstdfulldetails walk" + $walk.status + "' >" + PHP_EOL;
+    $html += "<div class='walkstdfulldetails stdfulldetails walk" + $walk.status + "' >" + PHP_EOL;
     $html += "<div class='group " + gradeCSS($walk) + "'><b>Group</b>: " + $walk.groupName + "</div>" + PHP_EOL;
     if (isCancelled($walk)) {
         $html += "<div class='reason'>WALK CANCELLED: " + $walk.cancellationReason + "</div>" + PHP_EOL;
