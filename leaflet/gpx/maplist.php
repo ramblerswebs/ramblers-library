@@ -52,7 +52,9 @@ class RLeafletGpxMaplist extends RLeafletMap {
         } else {
             echo "<h2>Walking Routes</h2>";
         }
-
+        echo "<table id='gpxoptions' ><tr><td id='Map' class='active' onclick=\"javascript:ra_format('Map')\">Map</td><td id='List' onclick=\"javascript:ra_format('List')\">List</td></tr></table>";
+       echo "<div id='gpxouter' >";
+       echo "<div id='gpxmap'>";
         echo "<p> </p>";
         echo "<div id = \"gpxheader\" ><h4>Click on any walk to display route</h4></div>";
 
@@ -72,7 +74,9 @@ class RLeafletGpxMaplist extends RLeafletMap {
         parent::addContent($text);
         parent::display();
         echo "<br/>";
-        if ($this->displayAsPreviousWalks) {
+        echo "</div>";
+        echo "<div id='gpxlist' style='display:none;' >";
+         if ($this->displayAsPreviousWalks) {
             echo "<h3>List of Previous Walks</h3>";
         } else {
             echo "<h3>List of Walking Routes</h3>";
@@ -80,6 +84,8 @@ class RLeafletGpxMaplist extends RLeafletMap {
         echo "<div id='ra-pagination1'></div>";
 
         echo "<div id=\"dataTab\">Program error if this does not vanish!</div>";
+        echo "</div>";
+        echo "</div>";
     }
 
     private function addMapScript($items) {

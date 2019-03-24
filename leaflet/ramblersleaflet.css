@@ -95,14 +95,6 @@ div#rt-header {
     padding:5px;
 }
 
-#gpxdetails tr:nth-child(even){background-color: #f0f0f0;}
-
-#gpxdetails  td{
-    text-align:right;
-}
-#gpxdetails td.alignleft{
-    text-align:left;
-}
 div.gpxlist  ul li{
     list-style-type:circle;
 }
@@ -143,6 +135,17 @@ div.gpxlist  ul li{
     border: 1px solid #ccc;
     border-top: none;
 } 
+#gpxdetails {
+    width:100%;
+}
+#gpxdetails tr:nth-child(even){background-color: #f0f0f0;}
+
+#gpxdetails  td{
+    text-align:right;
+}
+#gpxdetails td.alignleft{
+    text-align:left;
+}
 #gpxdetails  th[onclick]{
     color: #782327;
     cursor:pointer;
@@ -184,7 +187,7 @@ span.placelocation{
 }
 .agreebutton{
     font-size: 1.5em;
-   
+
 }
 
 
@@ -225,4 +228,25 @@ div.leaflet-control-display-help a {
     background-size:27px 27px;
     background-position: center; 
     cursor: pointer;
+}
+div#gpxouter {
+    background-color:#DDDDDD;
+    border-radius: 0px 10px 10px 10px;
+    padding:25px;
+}
+
+table#gpxoptions{
+    background-color:#EEEEEE;
+    margin-bottom:0px;;
+    cursor: pointer;
+}
+table#gpxoptions td{
+    padding-left:25px;
+    padding-right:25px;
+}
+table#gpxoptions td.active{
+    background-color:#DDDDDD;
+}
+table#gpxoptions td::hover{
+    background-color:#CCCCCC;
 }

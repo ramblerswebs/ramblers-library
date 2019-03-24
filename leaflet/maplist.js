@@ -22,7 +22,7 @@ function RamblersLeafletGpx() {
     this.searchtext = '';
 }
 function displayData() {
-    setTagHtml('ra-pagination1',addPagination());
+    setTagHtml('ra-pagination1', addPagination());
     displayGPXTable();
     addGPXMarkers();
     jplist.init({
@@ -166,7 +166,7 @@ function displayGpxdetails(g) {
 //            });
 //        }
 
-    function showhide(evt, idName) {
+function showhide(evt, idName) {
     var x = document.getElementById(idName);
     if (x.style.display === "none") {
         x.style.display = "block";
@@ -235,9 +235,9 @@ function displayGPXRow(route) {
         link += '<td class="wAuthor alignleft">' + route.author + '</td>';
     }
     link += '<td class="wTitle alignleft"><b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b></td>';
-    link += '<td class="wDistance">' + (route.distance/1000).toFixed(1) + '</td>';
+    link += '<td class="wDistance">' + (route.distance / 1000).toFixed(1) + '</td>';
     link += '<td>' + m_to_mi(route.distance).toFixed(2) + '</td>';
-        if (route.cumulativeElevationGain === 0) {
+    if (route.cumulativeElevationGain === 0) {
         link += '<td>...</td>';
         link += '<td>...</td>';
         link += '<td class="wElevation">...</td>';
@@ -256,6 +256,7 @@ function getGPXDistance(distance) {
     return dist.toFixed(1) + ' km / ' + miles.toFixed(2) + 'mi';
 }
 function updateGPXid(id) {
+    ra_format("Map");
     var header, path;
     var route = getRoutefromID(id);
     header = "<h2>" + route.title + "</h2>";
@@ -518,12 +519,28 @@ function addPagination() {
         <option value=\"0\"> view all </option> \
     </select> \
         </div> ';
-   
+
     return $div;
 }
 function setTagHtml(id, html) {
     var tag = document.getElementById(id);
     if (tag) {
         tag.innerHTML = html;
+    }
+}
+function ra_format(option) {
+    document.getElementById("Map").classList.remove('active');
+    document.getElementById("List").classList.remove('active');
+
+    document.getElementById(option).classList.add('active');
+    switch (option) {
+        case 'List':
+            document.getElementById("gpxmap").style.display = "none"; 
+            document.getElementById("gpxlist").style.display = "initial"; 
+            break;
+        case 'Map':
+            document.getElementById("gpxmap").style.display = "initial"; 
+            document.getElementById("gpxlist").style.display = "none"; 
+            break;
     }
 }
