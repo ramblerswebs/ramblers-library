@@ -154,11 +154,12 @@ function displayMap(which) {
     if (tag) {
         tag.style.visibility = which;
         if (which === "hidden") {
-            tag.style.height = "10px";
+            tag.style.display = "none";
             setPaginationMargin("on");
         } else {
-            tag.style.height = "auto";
+            tag.style.display = "auto";
             setPaginationMargin("off");
+            ramblersMap.map.invalidateSize();
         }
     }
 }

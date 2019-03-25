@@ -53,8 +53,8 @@ class RGpxFile {
             //   if ($meta->copyright !== null) {
             //       $this->copyright = $meta->copyright->year . $meta->copyright->license;
             //   }
-            if ($meta->time !== null) {
-                if ($meta->time->date !== null) {
+            if (isset($meta->time)) {
+                if (isset($meta->time->date)) {
                     $this->date = substr($meta->time->date, 0, 10);
                 }
             }
@@ -62,7 +62,7 @@ class RGpxFile {
         // tracks
         $firstpointset = false;
         foreach ($gpx->tracks as $track) {
-       //     $s = $track->stats;
+            //     $s = $track->stats;
             $this->tracks += 1;
 //            $this->distance += $s->distance;
 //            $this->cumulativeElevationGain += $s->cumulativeElevationGain;

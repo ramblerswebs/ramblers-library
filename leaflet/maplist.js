@@ -501,8 +501,12 @@ function addPagination() {
             data-name=\"pagination1\"> \
             <span data-type=\"info\"> \
             {startItem} - {endItem} of {itemsNumber} \
-            </span> \
-            <span> \
+            </span> ';
+    var $display = "";
+    if (ramblersGpx.routes.length < 15) {
+        $display = ' style=\"display:none;\" ';
+    }
+    $div += '  <span' + $display + '> \
             <button type=\"button\" data-type=\"first\">First</button> \
             <button type=\"button\" data-type=\"prev\">Previous</button> \
             <span class=\"jplist-holder\" data-type=\"pages\"> \
@@ -512,13 +516,14 @@ function addPagination() {
             <button type=\"button\" data-type=\"last\">Last</button> \
             </span> \
             <!-- items per page select --> \
-    <select data-type=\"items-per-page\"> \
+    <select data-type=\"items-per-page\"' + $display + '> \
         <option value=\"10\"> 10 per page </option> \
         <option value=\"20\"> 20 per page </option> \
         <option value=\"30\"> 30 per page </option> \
         <option value=\"0\"> view all </option> \
-    </select> \
-        </div> ';
+    </select> ';
+
+    $div += '</div> ';
 
     return $div;
 }
@@ -535,12 +540,13 @@ function ra_format(option) {
     document.getElementById(option).classList.add('active');
     switch (option) {
         case 'List':
-            document.getElementById("gpxmap").style.display = "none"; 
-            document.getElementById("gpxlist").style.display = "initial"; 
+            document.getElementById("gpxmap").style.display = "none";
+            document.getElementById("gpxlist").style.display = "initial";
             break;
         case 'Map':
-            document.getElementById("gpxmap").style.display = "initial"; 
-            document.getElementById("gpxlist").style.display = "none"; 
+            document.getElementById("gpxlist").style.display = "none";
+            document.getElementById("gpxmap").style.display = "initial";
+            ramblersMap.map.invalidateSize();
             break;
     }
 }
