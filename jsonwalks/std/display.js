@@ -152,12 +152,12 @@ function displayWalks($walks) {
 function displayMap(which) {
     var tag = document.getElementById("ra-map");
     if (tag) {
-        tag.style.visibility = which;
+      //  tag.style.visibility = which;
         if (which === "hidden") {
             tag.style.display = "none";
             setPaginationMargin("on");
         } else {
-            tag.style.display = "auto";
+            tag.style.display = "initial";
             setPaginationMargin("off");
             ramblersMap.map.invalidateSize();
         }
