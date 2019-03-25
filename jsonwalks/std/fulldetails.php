@@ -23,20 +23,15 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
     public function DisplayWalks($walks) {
 
-//        if ($this->displayGradesIcon) {
-//            RJsonwalksWalk::gradeToolTips();
-//        }
-
         self::$accordianId +=1;
-        echo "<span data-descr='Walk updated 1/4/2019' ><span class='grade fgfdg' >  </span></span>";
-        echo "<span data-descr='Walk updated 1/4/2020' ><span>some text</span></span";
-      $document = JFactory::getDocument();
+
+        $document = JFactory::getDocument();
         JHtml::_('jquery.framework');
         $document->addStyleSheet(JURI::base() . 'ramblers/jsonwalks/std/accordian/style/style4.css');
         $document->addScript(JURI::base() . 'ramblers/jsonwalks/std/accordian/js/ra-accordion.js', "text/javascript");
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
-          $id = "accordion_ra1_id" . self::$accordianId;
+        $id = "accordion_ra1_id" . self::$accordianId;
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         echo '<script type="text/javascript">jQuery(function($) {$(\'#' . $id . '\').raAccordion({hidefirst: 1 });});</script>' . PHP_EOL;
         echo '<div id="' . $id . '" class="ra-accordion ra-accordion-style4 ">' . PHP_EOL;
@@ -366,7 +361,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
     }
 
     private function addGotoWalk() {
-         if (array_key_exists("walk", $_GET)) {
+        if (array_key_exists("walk", $_GET)) {
             $walk = $_GET["walk"];
             if ($walk != null) {
                 if (is_numeric($walk)) {
