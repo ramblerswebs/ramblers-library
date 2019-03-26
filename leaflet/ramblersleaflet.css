@@ -140,9 +140,11 @@ div.gpxlist  ul li{
 }
 #gpxdetails tr:nth-child(even){background-color: #f0f0f0;}
 
+#gpxdetails  th,
 #gpxdetails  td{
     text-align:right;
 }
+#gpxdetails  th.alignleft,
 #gpxdetails td.alignleft{
     text-align:left;
 }

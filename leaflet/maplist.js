@@ -205,7 +205,7 @@ function displayGPXTable() {
         if (ramblersGpx.displayAsPreviousWalks) {
             extra = "<th>Date</th><th>Leader</th>";
         }
-        out += "<tr>" + extra + "<th>Title</th><th>Distance Km</th><th>Miles</th><th>min Altitude</th><th>max Altitude</th><th>Elevation Gain</th>";
+        out += "<tr>" + extra + "<th class=\"alignleft\">Title</th><th>Distance Km</th><th>Miles</th><th>min Altitude</th><th>max Altitude</th><th>Elevation Gain</th>";
         if (ramblersGpx.download === 0) {
             out += "</tr>";
         } else {
