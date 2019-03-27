@@ -78,9 +78,9 @@ class RLeafletGpxMaplist extends RLeafletMap {
         echo "</div>";
         echo "<div id='gpxlist' style='display:none;' >";
          if ($this->displayAsPreviousWalks) {
-            echo "<h3>List of Previous Walks</h3>";
+            echo "<h4>List of Previous Walks</h4>";
         } else {
-            echo "<h3>List of Walking Routes</h3>";
+            echo "<h4>List of Walking Routes</h4>";
         }
         echo "<div id='ra-pagination1'></div>";
 
