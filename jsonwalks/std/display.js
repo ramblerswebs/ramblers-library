@@ -152,7 +152,7 @@ function displayWalks($walks) {
 function displayMap(which) {
     var tag = document.getElementById("ra-map");
     if (tag) {
-      //  tag.style.visibility = which;
+        //  tag.style.visibility = which;
         if (which === "hidden") {
             tag.style.display = "none";
             setPaginationMargin("on");
@@ -692,6 +692,9 @@ function getWalkValue($walk, $option, addlink) {
     switch ($option) {
         case "{lf}":
             out = "<br/>";
+            break;
+        case "{group}":
+            out = $walk.groupName;
             break;
         case "{dowShortdd}":
             out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + ", " + $walk.day + "</b>", addlink);
