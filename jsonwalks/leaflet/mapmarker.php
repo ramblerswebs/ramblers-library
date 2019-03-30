@@ -81,7 +81,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         if ($walk->startLocation->exact) {
             $icon = "ramblersMap.markerStart";
         } else {
-            $icon = ramblersMap . "markerArea";
+            $icon = "ramblersMap.markerArea";
         }
         if ($walk->isCancelled()) {
             $icon = "ramblersMap.markerCancelled";

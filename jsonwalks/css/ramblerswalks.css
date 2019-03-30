@@ -547,6 +547,20 @@ img.ra-grade.pointer {
 #ra_filter_dates span input[type="date"] {
     margin-left:30px !important;   
 }
+span.ra-closed {
+    padding-top:7px;
+    float: right;
+    width:35px;
+    height:26px;
+    content:url("../std/accordian/style/style4/close.png");
+}
+span.ra-open {
+    padding-top:7px;
+    float: right;
+    width:35px;
+    height:26px;
+    content:url("../std/accordian/style/style4/open.png");
+}
 span.ra-rightopen {
     float: right;
     width:35px;

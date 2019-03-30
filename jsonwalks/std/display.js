@@ -315,11 +315,17 @@ function addFilterEvents() {
         if (anchor.className === "ra_openclose") {
             anchor.onclick = function (event) {
                 var anchor = event.target;
+
+                var child = anchor.children[0];
                 var tag = anchor.nextElementSibling;
                 if (tag.style.display !== "none") {
                     tag.style.display = "none";
+                    child.classList.add('ra-closed');
+                    child.classList.remove('ra-open');
                 } else {
                     tag.style.display = "block";
+                    child.classList.add('ra-open');
+                    child.classList.remove('ra-closed');
                 }
             };
         }
@@ -336,7 +342,7 @@ function setGroups($walks) {
         return groups[a] > groups[b];
     });
 
-    var $out = "<h3 class='ra_openclose'>Groups</h3><ul class='ra_filter' style='display:none;'>";
+    var $out = "<h3 class='ra_openclose'>Groups<span class='ra-closed'></span></h3><ul class='ra_filter' style='display:none;'>";
     for (i = 0, len = keysSorted.length; i < len; i++) {
         var key = keysSorted[i];
         var group = groups[key];
