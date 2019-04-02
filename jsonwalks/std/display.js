@@ -15,7 +15,7 @@ function RamblersWalksDetails() {
     this.gradeFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
     this.options;
     this.filter = {};
-    this.defaultOptions = "<table><tr><td id='Grades' class='active' onclick=\"javascript:ra_format('Grades')\">Grades</td><td id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td id='List' onclick=\"javascript:ra_format('List')\">List</td><td id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
+    this.defaultOptions = "<table><tr><td class='ra-tab' id='Grades' class='active' onclick=\"javascript:ra_format('Grades')\">Grades</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
 }
 //    this.defaultOptions = "<table><tr><td id='Grades' class='active' onclick=\"javascript:ra_format('Grades')\">Grades</td><td id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td id='List' onclick=\"javascript:ra_format('List')\">List</td><td id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
 

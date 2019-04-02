@@ -53,7 +53,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         } else {
             echo "<h2>Walking Routes</h2>";
         }
-        echo "<table id='gpxoptions' ><tr><td id='Map' class='active' onclick=\"javascript:ra_format('Map')\">Map</td><td id='List' onclick=\"javascript:ra_format('List')\">List</td></tr></table>";
+        echo "<table id='gpxoptions' ><tr><td class='ra-tab active' id='Map' class='active' onclick=\"javascript:ra_format('Map')\">Map</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td></tr></table>";
        echo "<div id='gpxouter' >";
        echo "<div id='gpxmap'>";
         echo "<p> </p>";
