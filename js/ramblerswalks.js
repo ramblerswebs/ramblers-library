@@ -89,7 +89,8 @@ function displayModal($html) {
     };
 }
 function localhost() {
-    if (window.location.hostname.includes("localhost")) {
+    var host=window.location.hostname;
+    if (host==="localhost") {
         return true;
     } else {
         return false;

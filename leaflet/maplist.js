@@ -203,7 +203,7 @@ function displayGPXTable() {
     if (tag !== null) {
         out = '<table id="gpxdetails"><thead>';
         if (ramblersGpx.displayAsPreviousWalks) {
-            extra = "<th>Date</th><th>Leader</th>";
+            extra = "<th class=\"alignleft\">Date</th><th class=\"alignleft\">Leader</th>";
         }
         out += "<tr>" + extra + "<th class=\"alignleft\">Title</th><th>Distance Km</th><th>Miles</th><th>min Altitude</th><th>max Altitude</th><th>Elevation Gain</th>";
         if (ramblersGpx.download === 0) {

@@ -25,7 +25,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
     public function DisplayWalks($walks) {
         if ($this->printOn) {
             echo "<p>Web master please disable this print option</p>";
-            echo "<p>Use: Please use the Print option next to the pagination controls</p>";
+            echo "<p>User: Please use the Print option next to the pagination controls</p>";
             return;
         }
 // echo "<span class='grade'>this some text <span class='grade easy'/> and some more";

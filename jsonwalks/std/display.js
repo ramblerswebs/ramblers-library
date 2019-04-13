@@ -5,20 +5,31 @@
  */
 var ramblerswalksDetails, ramblerswalks, ramblersMap, jplist;
 function RamblersWalksDetails() {
+    this.isES6 = isES6();
     this.walkClass = "walk";
     this.displayClass = "pantone1815";
-    this.displayDefault = "Grades";
+    this.displayDefault = "Details";
     this.displayStartTime = true;
     this.displayStartDescription = true;
-    this.tableFormat = '[{ "title": "Date",    "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}","{,meetPC}"]},{    "title": "Start",    "items": ["{start}","{,startGR}","{,startPC}"]},{    "title": "Title",    "items": ["{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
-    this.listFormat = '[ "{dowddmm}", "{,meet}", "{,start}","{,title}","{,contactname}","{,telephone}" ] ';
-    this.gradeFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
+    this.tableFormat = '[{ "title": "Date", "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}","{,meetPC}"]},{    "title": "Start",    "items": ["{start}","{,startGR}","{,startPC}"]},{    "title": "Title",    "items": ["{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
+    this.listFormat = '[ "{dowddmm}", "{,meet}", "{,start}","{,title}","{,distance}","{,contactname}","{,telephone}" ] ';
+    this.detailsFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
     this.options;
     this.filter = {};
-    this.defaultOptions = "<table><tr><td class='ra-tab' id='Grades' class='active' onclick=\"javascript:ra_format('Grades')\">Grades</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
+    this.defaultOptions = "<table><tr><td class='ra-tab' id='Details' class='active' onclick=\"javascript:ra_format('Details')\">Details</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
 }
-//    this.defaultOptions = "<table><tr><td id='Grades' class='active' onclick=\"javascript:ra_format('Grades')\">Grades</td><td id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td id='List' onclick=\"javascript:ra_format('List')\">List</td><td id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
 
+function isES6()
+{
+    try
+    {
+        Function("() => {};");
+        return true;
+    } catch (exception)
+    {
+        return false;
+    }
+}
 function FullDetailsLoad() {
 // executes when complete page is fully loaded, including all frames, objects and images
     if (typeof addFilterFormats === 'function') {
@@ -32,6 +43,7 @@ function FullDetailsLoad() {
     setGroups($walks);
     setLimits();
     addFilterEvents();
+    addSelectAll();
     raLoadLeaflet();
     displayWalks($walks);
 }
@@ -115,7 +127,7 @@ function displayWalks($walks) {
         }
     }
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "Grades":
+        case "Details":
         case "List":
         case "Table":
             displayMap("hidden");
@@ -123,10 +135,12 @@ function displayWalks($walks) {
             setTagHtml("rapagination-2", addPagination(no));
             setTagHtml("rawalks", displayWalksText($walks));
             // jplist.init();
-            jplist.init({
-                storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
-            });
+            if (ramblerswalksDetails.isES6) {
+                jplist.init({
+                    storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
+                    storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
+                });
+            }
             break;
         case "Map":
             setTagHtml("rapagination-1", "");
@@ -142,10 +156,12 @@ function displayWalks($walks) {
             setTagHtml("rapagination-1", addPagination(no));
             setTagHtml("rapagination-2", addPagination(no));
             setTagHtml("rawalks", displayContacts($walks));
-            jplist.init({
-                storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
-            });
+            if (ramblerswalksDetails.isES6) {
+                jplist.init({
+                    storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
+                    storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
+                });
+            }
             break;
     }
 }
@@ -157,7 +173,7 @@ function displayMap(which) {
             tag.style.display = "none";
             setPaginationMargin("on");
         } else {
-            tag.style.display = "initial";
+            tag.style.display = "inline";
             setPaginationMargin("off");
             ramblersMap.map.invalidateSize();
         }
@@ -197,7 +213,7 @@ function displayWalksText($walks) {
                 $class = "even";
             }
             switch (ramblerswalksDetails.filter.RA_Display_Format) {
-                case "Grades":
+                case "Details":
                     $out += displayWalk_Grade($walk, $class);
                     break;
                 case "List":
@@ -222,7 +238,7 @@ function displayWalksText($walks) {
 function displayWalksHeader($walks) {
     var $out = "";
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "Grades":
+        case "Details":
             $out += "</br><p>Click on item to display full details of walk</p>";
             $out += "<div data-jplist-group=\"group1\">";
             break;
@@ -252,7 +268,7 @@ function displayTableHeader() {
 function displayWalksFooter() {
     var $out = "";
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "Grades":
+        case "Details":
             $out += "</div>";
             $out += "</br><p>Click on item to display full details of walk</p>";
             break;
@@ -315,9 +331,11 @@ function addFilterEvents() {
         if (anchor.className === "ra_openclose") {
             anchor.onclick = function (event) {
                 var anchor = event.target;
-
-                var child = anchor.children[0];
-                var tag = anchor.nextElementSibling;
+                if (anchor.className === "ra-closed" || anchor.className === "ra-open") {
+                    anchor = anchor.parentNode;
+                }
+                var child = anchor.lastChild; /* ra-closed */
+                var tag = anchor.parentNode.lastChild; /* content */
                 if (tag.style.display !== "none") {
                     tag.style.display = "none";
                     child.classList.add('ra-closed');
@@ -328,6 +346,21 @@ function addFilterEvents() {
                     child.classList.remove('ra-closed');
                 }
             };
+        }
+    }
+}
+function addSelectAll() {
+    var anchors = document.getElementsByTagName('h3');
+    for (var i = 0; i < anchors.length; i++) {
+        var anchor = anchors[i];
+        if (anchor.className === "ra_openclose") {
+            var next = anchor.nextSibling;
+            if (next.className === "ra_filter") {
+                var children = next.childNodes;
+                if (children.length > 2) {
+
+                }
+            }
         }
     }
 }
@@ -342,7 +375,10 @@ function setGroups($walks) {
         return groups[a] > groups[b];
     });
 
-    var $out = "<h3 class='ra_openclose'>Groups<span class='ra-closed'></span></h3><ul class='ra_filter' style='display:none;'>";
+    var $out = "<h3 class='ra_openclose'>Groups<span class='ra-closed'></span></h3><div class='ra_filter' style='display:none;'>";
+    $out += "<span class='ra_select'>Select <span onclick=\"javascript:ra_select(event)\">All</span>/<span onclick=\"javascript:ra_select(event)\">None</span></span>";
+    $out += "<ul>";
+
     for (i = 0, len = keysSorted.length; i < len; i++) {
         var key = keysSorted[i];
         var group = groups[key];
@@ -350,7 +386,7 @@ function setGroups($walks) {
         $out += $item;
         ramblerswalksDetails.filter[key] = true;
     }
-    $out += "</ul>";
+    $out += "</ul></div>";
     var htmltag = document.getElementById("ra_groups");
     if (htmltag) {
         htmltag.innerHTML = $out;
@@ -378,6 +414,21 @@ function ra_filter(event) {
         ramblerswalksDetails.filter[event.target.id] = event.target.value;
     } else {
         ramblerswalksDetails.filter[event.target.id] = event.target.checked;
+    }
+    var $walks = getWalks();
+    displayWalks($walks);
+}
+function ra_select(event) {
+    var all = event.target.innerHTML == "All";
+    var parent = event.target.parentNode;
+    var next = parent.nextElementSibling;
+    if (next.tagName == "UL") {
+        var children = next.children;
+        Object.keys(children).forEach(function (key) {
+            var node = children[key].childNodes[0];
+            node.checked = all;
+            ramblerswalksDetails.filter[node.id] = all;
+        });
     }
     var $walks = getWalks();
     displayWalks($walks);
@@ -549,7 +600,7 @@ function displayWalk_List($walk, $class, $displayMonth) {
 
 function displayWalk_Grade($walk, $class) {
 //    $out += "<span data-descr='Walk updated 1/4/2020' class=' walkNew'><span>some text</span></span";
-    var $items = JSON.parse(ramblerswalksDetails.gradeFormat);
+    var $items = JSON.parse(ramblerswalksDetails.detailsFormat);
     var $text, $image;
     var $out = "";
     $image = '<span class="walksummary" >';
@@ -586,10 +637,17 @@ function displayContacts($walks) {
     $contacts.sort(function (a, b) {
         return a.name.toLowerCase() > b.name.toLowerCase();
     });
-    typeof x === "undefined"
-    var dispEmail = typeof $contacts.find(checkContactEmail) !== "undefined";
-    var dispTel1 = typeof $contacts.find(checkContactTelephone1) !== "undefined";
-    var dispTel2 = typeof $contacts.find(checkContactTelephone2) !== "undefined";
+    var dispEmail, dispTel1, dispTel2;
+    if (ramblerswalksDetails.isES6) {
+        typeof x === "undefined"
+        dispEmail = typeof $contacts.find(checkContactEmail) !== "undefined";
+        dispTel1 = typeof $contacts.find(checkContactTelephone1) !== "undefined";
+        dispTel2 = typeof $contacts.find(checkContactTelephone2) !== "undefined";
+    } else {
+        dispEmail = true;
+        dispTel1 = true;
+        dispTel2 = false;
+    }
     out = "<table class='" + ramblerswalksDetails.displayClass + " contacts'>\n";
     out += "<tr><th>Name";
     if (dispEmail) {
@@ -813,7 +871,7 @@ function getWalkValue($walk, $option, addlink) {
                 out = "Contact";
             }
             if ($walk.contactName !== "") {
-                out += BR + "<strong>" + $walk.contactName + "</strong>";
+                out += " <strong>" + $walk.contactName + "</strong>";
             }
             if ($walk.email !== "") {
                 out += BR + getEmailLink($walk);
@@ -1214,6 +1272,9 @@ function addslashes(str) {
             .replace(/\u0000/g, '\\0');
 }
 function addPagination(no) {
+    if (!ramblerswalksDetails.isES6) {
+        return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
+    }
     var $class = "";
     if (no < 14) {
         $class = " hidden";

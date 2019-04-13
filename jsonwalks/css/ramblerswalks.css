@@ -14,6 +14,7 @@
 
 /* Ramblers additions */
 .cancelled {color:#C60C30;}
+.oldBrowser {color:#C60C30;}
 
 /* css code to handle json walk feeds */
 span.walksummary img{
@@ -376,11 +377,11 @@ span.mappopup:hover{
     background: url(../../images/new-win.png) no-repeat right ;
     padding-right:15px;
 }
-ul.ra_filter  li input {
+div.ra_filter  ul li input {
     float:right;
 
 }
-ul.ra_filter li  {
+div.ra_filter ul li  {
     list-style-type: none;
 }
 h3.ra_openclose {
@@ -707,4 +708,9 @@ span[data-descr="Easy"]:hover::after {
 }
 span[data-descr="Easy Access"]:hover::after {
     background-color: #8BA69C;
+}
+span.ra_select span{
+    cursor:pointer;
+    color: #782327;
+    font-weight: bold;
 }
