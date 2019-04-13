@@ -550,24 +550,32 @@ img.ra-grade.pointer {
     margin-left:30px !important;   
 }
 span.ra-closed {
+     margin-top:7px;
     padding-top:7px;
     float: right;
     width:35px;
     height:26px;
-    content:url("../std/accordian/style/style4/close.png");
+    background-image:url("../std/accordian/style/style4/close.png");
+    background-size: 35px 26px;
+    background-repeat: no-repeat;
 }
 span.ra-open {
+    margin-top:7px;
     padding-top:7px;
     float: right;
     width:35px;
     height:26px;
-    content:url("../std/accordian/style/style4/open.png");
+    background-image:url("../std/accordian/style/style4/open.png");
+    background-size:  35px 26px;
+    background-repeat: no-repeat;
 }
 span.ra-rightopen {
     float: right;
     width:35px;
     height:26px;
-    content:url("../std/accordian/style/style4/close.png");
+    background-image:url("../std/accordian/style/style4/close.png");
+    background-size:  35px 26px;
+    background-repeat: no-repeat;
 }
 span.walksummary  {
     padding-top:5px !important;
@@ -614,6 +622,8 @@ span.grade{
     top:10px;
     height:30px;
     width:30px;
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
 }
 span.middle.grade {
     vertical-align:middle;
@@ -629,6 +639,8 @@ span.right.grade {
     float:right;
     padding-left:10px;
     padding-top:5px;
+    margin-left:10px;
+    margin-bottom:5px;
 }
 span.map{
     top:10px;
@@ -643,23 +655,22 @@ span.maphelp[data-descr]:hover::after {
 }
 
 span.grade.easy-access {
-    content:url(../../images/grades/grade-ea.jpg);
+    background-image:url(../../images/grades/grade-ea.jpg);
 }
-
 span.grade.easy {
-    content:url(../../images/grades/grade-e.jpg);
+    background-image:url(../../images/grades/grade-e.jpg);
 }
 span.grade.leisurely {
-    content:url(../../images/grades/grade-l.jpg);
+    background-image: url(../../images/grades/grade-l.jpg);
 }
 span.grade.moderate {
-    content:url(../../images/grades/grade-m.jpg);
+    background-image:url(../../images/grades/grade-m.jpg);
 }
 span.grade.strenuous {
-    content:url(../../images/grades/grade-s.jpg);
+    background-image:url(../../images/grades/grade-s.jpg);
 }
 span.grade.technical {
-    content:url(../../images/grades/grade-t.jpg);
+    background-image:url(../../images/grades/grade-t.jpg);
 }
 
 span[data-descr] {
