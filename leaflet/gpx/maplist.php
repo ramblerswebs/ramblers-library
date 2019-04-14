@@ -25,7 +25,9 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
         $document->addStyleSheet('ramblers/jsonwalks/css/ramblerswalks.css');
         $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
-        // get all names from folder
+        $document->addScript("ramblers/js/ramblerswalks.js", "text/javascript");
+
+// get all names from folder
         $stats = new RGpxStatistics($this->folder, $this->getMetaFromGPX);
         $items = $stats->getJson();
         $this->addMapScript($items);
@@ -54,8 +56,8 @@ class RLeafletGpxMaplist extends RLeafletMap {
             echo "<h2>Walking Routes</h2>";
         }
         echo "<table id='gpxoptions' ><tr><td class='ra-tab active' id='Map' class='active' onclick=\"javascript:ra_format('Map')\">Map</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td></tr></table>";
-       echo "<div id='gpxouter' >";
-       echo "<div id='gpxmap'>";
+        echo "<div id='gpxouter' >";
+        echo "<div id='gpxmap'>";
         echo "<p> </p>";
         echo "<div id = \"gpxheader\" ><h4>Click on any walk to display route</h4></div>";
 
@@ -77,7 +79,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         echo "<br/>";
         echo "</div>";
         echo "<div id='gpxlist' style='display:none;' >";
-         if ($this->displayAsPreviousWalks) {
+        if ($this->displayAsPreviousWalks) {
             echo "<h4>List of Previous Walks</h4>";
         } else {
             echo "<h4>List of Walking Routes</h4>";
