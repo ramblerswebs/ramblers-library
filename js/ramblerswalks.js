@@ -1,4 +1,4 @@
-var ramblerswalks
+var ramblerswalks;
 /* 
  * Change visibilty of calandar items for event calendar
  */
@@ -93,6 +93,17 @@ function localhost() {
     if (host==="localhost") {
         return true;
     } else {
+        return false;
+    }
+}
+function isES6()
+{
+    try
+    {
+        Function("() => {};");
+        return true;
+    } catch (exception)
+    {
         return false;
     }
 }

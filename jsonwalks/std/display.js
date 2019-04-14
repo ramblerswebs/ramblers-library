@@ -19,17 +19,7 @@ function RamblersWalksDetails() {
     this.defaultOptions = "<table><tr><td class='ra-tab' id='Details' class='active' onclick=\"javascript:ra_format('Details')\">Details</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
 }
 
-function isES6()
-{
-    try
-    {
-        Function("() => {};");
-        return true;
-    } catch (exception)
-    {
-        return false;
-    }
-}
+
 function FullDetailsLoad() {
 // executes when complete page is fully loaded, including all frames, objects and images
     if (typeof addFilterFormats === 'function') {

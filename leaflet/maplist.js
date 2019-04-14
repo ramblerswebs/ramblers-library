@@ -6,6 +6,7 @@
 var L, ramblersMap, ramblersGpx, markerRoute, jplist;
 
 function RamblersLeafletGpx() {
+    this.isES6 = isES6();
     this.routes = null;
     this.folder = null;
     this.linecolour = "#782327";
@@ -25,10 +26,12 @@ function displayData() {
     setTagHtml('ra-pagination1', addPagination());
     displayGPXTable();
     addGPXMarkers();
-    jplist.init({
-        storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
-        storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
-    });
+    if (ramblersGpx.isES6) {
+        jplist.init({
+            storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
+            storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
+        });
+    }
 }
 function displayGPX(file, linecolour, imperial) {
     // remove old gpx route
@@ -451,6 +454,10 @@ function gpxsearch() {
 //    }
 //};
 function addPagination() {
+    if (!ramblersGpx.isES6) {
+        return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
+    }
+
     var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> \
 <button \
         data-jplist-control="sort-buttons" \
@@ -522,9 +529,7 @@ function addPagination() {
         <option value=\"30\"> 30 per page </option> \
         <option value=\"0\"> view all </option> \
     </select> ';
-
     $div += '</div> ';
-
     return $div;
 }
 function setTagHtml(id, html) {
@@ -541,11 +546,11 @@ function ra_format(option) {
     switch (option) {
         case 'List':
             document.getElementById("gpxmap").style.display = "none";
-            document.getElementById("gpxlist").style.display = "initial";
+            document.getElementById("gpxlist").style.display = "inline";
             break;
         case 'Map':
             document.getElementById("gpxlist").style.display = "none";
-            document.getElementById("gpxmap").style.display = "initial";
+            document.getElementById("gpxmap").style.display = "inline";
             ramblersMap.map.invalidateSize();
             break;
     }
