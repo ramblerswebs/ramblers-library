@@ -204,7 +204,7 @@ function displayWalksText($walks) {
             }
             switch (ramblerswalksDetails.filter.RA_Display_Format) {
                 case "Details":
-                    $out += displayWalk_Grade($walk, $class);
+                    $out += displayWalk_Details($walk, $class);
                     break;
                 case "List":
                     $out += displayWalk_List($walk, $class, month !== $walk.month);
@@ -588,7 +588,7 @@ function displayWalk_List($walk, $class, $displayMonth) {
     return $out + "</div>\n";
 }
 
-function displayWalk_Grade($walk, $class) {
+function displayWalk_Details($walk, $class) {
 //    $out += "<span data-descr='Walk updated 1/4/2020' class=' walkNew'><span>some text</span></span";
     var $items = JSON.parse(ramblerswalksDetails.detailsFormat);
     var $text, $image;
@@ -602,7 +602,7 @@ function displayWalk_Grade($walk, $class) {
         $out += $text;
     }
     //   $out += '<span class="ra-rightopen" ></span>';
-    $out = "<span class='grade" + $walk.status + "' >" + $out + '</span><span class="ra-rightopen" ></span>';
+    $out = "<span>" + $out + '</span><span class="ra-rightopen" ></span>';
     $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true)) + "\n</span></div>\n";
     return $text;
 }

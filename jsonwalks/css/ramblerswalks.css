@@ -468,10 +468,10 @@ h3.ra_openclose:hover {
     background-color:#EEEEEE !important;
 }
 div.odd {
-    padding:5px;
+    padding:3px;
 }
 div.even {
-    padding:5px;
+    padding:3px;
 }
 .odd:hover {
     background-color:#DDDDDD !important;
@@ -578,8 +578,8 @@ span.ra-rightopen {
     background-repeat: no-repeat;
 }
 span.walksummary  {
-    padding-top:5px !important;
-    padding-bottom:5px !important;
+    padding-top:2px !important;
+    padding-bottom:2px !important;
 }
 @media only screen and (min-width: 960px) {
     [data-jplist-control]{

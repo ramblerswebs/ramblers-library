@@ -146,13 +146,13 @@ function printTag(divId) {
             //        }
         }
     }
-    mywindow.document.write('</head><body ><div class="div.component-content">');
+    mywindow.document.write('</head><body ><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');
     mywindow.document.write(content);
     mywindow.document.write('</div></body></html>');
     mywindow.document.close();
     mywindow.focus();
-    mywindow.print();
-    mywindow.close();
+  //  mywindow.print();
+  //  mywindow.close();
     return true;
 }
 function setTagHtml(id, html) {
