@@ -36,6 +36,7 @@ class RLeafletMap {
         $document = JFactory::getDocument();
         $out = "function addContent(ramblersMap) {" . $text . "}";
         $document->addScriptDeclaration($out, "text/javascript");
+        $document->addScript("ramblers/js/ramblerswalks.js", "text/javascript");
     }
 
     public function addBounds() {
