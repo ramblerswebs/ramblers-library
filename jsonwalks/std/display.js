@@ -602,8 +602,8 @@ function displayWalk_Details($walk, $class) {
         $out += $text;
     }
     //   $out += '<span class="ra-rightopen" ></span>';
-    $out = "<span>" + $out + '</span><span class="ra-rightopen" ></span>';
-    $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true)) + "\n</span></div>\n";
+    $out = "<span class='ra-details'>" + $out + '</span><span class="ra-rightopen" ></span>';
+    $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + " ra-details' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true)) + "\n</span></div>\n";
     return $text;
 }
 function newTooltip($walk, $text) {

@@ -520,6 +520,13 @@ table tr td.ra-tab:hover {
 .pointer {
     cursor: pointer;
 }
+span.ra-details {
+    position: relative;
+    top:-8px;
+}
+div.ra-details {
+    height:30px;
+}
 .jplist-selected {
     background-color: #AAAAAA;
     border-color: #AAAAAA;
@@ -550,7 +557,7 @@ img.ra-grade.pointer {
     margin-left:30px !important;   
 }
 span.ra-closed {
-     margin-top:7px;
+    margin-top:7px;
     padding-top:7px;
     float: right;
     width:35px;
@@ -597,50 +604,26 @@ span.walksummary  {
     }
 }
 
-div#ra-grade-modal  h1 {color:#782327;font-size:22px;text-align: center;
-                        border-bottom: 1px solid #d1d1d1;
-                        -webkit-box-shadow: 0 1px 0 #ffffff;
-                        -moz-box-shadow: 0 1px 0 #ffffff;
-                        box-shadow: 0 1px 0 #ffffff;
-                        padding-bottom: 15px;
-                        margin-bottom: 15px;
+divDDD#ra-grade-modal  h1 {color:#782327;font-size:22px;text-align: center;
+                           border-bottom: 1px solid #d1d1d1;
+                           -webkit-box-shadow: 0 1px 0 #ffffff;
+                           -moz-box-shadow: 0 1px 0 #ffffff;
+                           box-shadow: 0 1px 0 #ffffff;
+                           padding-bottom: 15px;
+                           margin-bottom: 15px;
 }
-div#ra-grade-modal  h2 {color:#782327;font-size:18px;text-align: center;}
-div#ra-grade-modal  p {font-size:12px;}
-div#ra-grade-modal  img{
+divDDD#ra-grade-modal  h2 {color:#782327;font-size:18px;text-align: center;}
+divDDD#ra-grade-modal  p {font-size:12px;}
+divDDD#ra-grade-modal  img{
     height:30px;
     width:30px;
     padding: 2px;
     vertical-align:middle;
 }
-div#ra-grade-modal  img:hover{
+divDDD#ra-grade-modal  img:hover{
     height:40px;
     width:40px;
     padding: 5px 5px 5px 0px;
-}
-span.grade{
-    top:10px;
-    height:30px;
-    width:30px;
-    background-size: 30px 30px;
-    background-repeat: no-repeat;
-}
-span.middle.grade {
-    vertical-align:middle;
-    display:inline-block !important;
-    padding-right:10px;
-}
-span.left.grade {
-    float:left;
-    padding-right:10px;
-    padding-top:5px;
-}
-span.right.grade {
-    float:right;
-    padding-left:10px;
-    padding-top:5px;
-    margin-left:10px;
-    margin-bottom:5px;
 }
 span.map{
     top:10px;
@@ -654,23 +637,47 @@ span.maphelp[data-descr]:hover::after {
     width:150px;
 }
 
-span.grade.easy-access {
-    background-image:url(../../images/grades/grade-ea.jpg);
+span.grade{
+    height:30px;
 }
-span.grade.easy {
-    background-image:url(../../images/grades/grade-e.jpg);
+span.middle.grade {
+    height:30px;
+    vertical-align: middle;
+    padding-right:10px;
+    display: inline;
 }
-span.grade.leisurely {
-    background-image: url(../../images/grades/grade-l.jpg);
+span.left.grade {
+    float:left;
+    padding-right:10px;
+    padding-bottom:5px;
+
 }
-span.grade.moderate {
-    background-image:url(../../images/grades/grade-m.jpg);
+span.right.grade {
+    float:right;
+    padding-left:10px;
+    padding-top:5px;
+    margin-left:10px;
+    margin-bottom:5px;
 }
-span.grade.strenuous {
-    background-image:url(../../images/grades/grade-s.jpg);
+
+
+span.grade.easy-access:before {
+    content:url(../../images/grades/grade-ea30.jpg);
 }
-span.grade.technical {
-    background-image:url(../../images/grades/grade-t.jpg);
+span.grade.easy:before {
+    content:url(../../images/grades/grade-e30.jpg);
+}
+span.grade.leisurely:before {
+    content: url(../../images/grades/grade-l30.jpg);
+}
+span.grade.moderate:before {
+    content: url(../../images/grades/grade-m30.jpg);
+}
+span.grade.strenuous:before {
+    content:url(../../images/grades/grade-s30.jpg);
+}
+span.grade.technical:before {
+    content:url(../../images/grades/grade-t30.jpg);
 }
 
 span[data-descr] {

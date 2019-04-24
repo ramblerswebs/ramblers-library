@@ -141,7 +141,7 @@ function printTag(divId) {
         var sheet = sheets[index];
         if (sheet.href !== null) {
 //         if (sheet.href.includes("/ramblers/") || sheet.href.includes("/mod_rafooter/")) {
-            var link = '<link rel="stylesheet" href="' + sheet.href + '">';
+            var link = '<link rel="stylesheet" href="' + sheet.href + '">\n';
             mywindow.document.write(link);
             //        }
         }
