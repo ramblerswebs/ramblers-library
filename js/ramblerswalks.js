@@ -79,6 +79,12 @@ function displayModal($html) {
     modal.style.display = "block";
 // Get the <span> element that closes the modal
     var span = document.getElementById("btnClose");
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+        setTagHtml("modal-data", "");
+    };
+    var span = document.getElementById("modal-data");
 // When the user clicks on <span> (x), close the modal
     span.onclick = function () {
         modal.style.display = "none";
@@ -89,8 +95,8 @@ function displayModal($html) {
     };
 }
 function localhost() {
-    var host=window.location.hostname;
-    if (host==="localhost") {
+    var host = window.location.hostname;
+    if (host === "localhost") {
         return true;
     } else {
         return false;
@@ -146,13 +152,17 @@ function printTag(divId) {
             //        }
         }
     }
-    mywindow.document.write('</head><body ><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');
+    mywindow.document.write('</head><body><div id="document"><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');
     mywindow.document.write(content);
-    mywindow.document.write('</div></body></html>');
+    mywindow.document.write('</div></div></body></html>');
+
+    var span = mywindow.document.getElementById("document");
+// When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        mywindow.close();
+    };
     mywindow.document.close();
     mywindow.focus();
-  //  mywindow.print();
-  //  mywindow.close();
     return true;
 }
 function setTagHtml(id, html) {

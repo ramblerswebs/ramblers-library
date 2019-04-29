@@ -467,11 +467,9 @@ h3.ra_openclose:hover {
 .even {
     background-color:#EEEEEE !important;
 }
-div.odd {
-    padding:3px;
-}
+div.odd ,
 div.even {
-    padding:3px;
+    padding:2px;
 }
 .odd:hover {
     background-color:#DDDDDD !important;
