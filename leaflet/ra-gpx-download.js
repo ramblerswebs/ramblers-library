@@ -135,7 +135,7 @@ L.Control.GpxDownload = L.Control.extend({
             //this._info.gpxTrack = this.getElementValue('gpxTrack').checked;
             var ele = document.getElementById('gpxTrack');
             this._info.gpxTrack = ele.checked;
-            this._info.date = this.getElementValue('gpxDate');
+            this._info.date = this.getElementValue('gpxDate')+"T12:00:00Z";
         }
     },
     getElementValue: function (id) {

@@ -57,6 +57,8 @@ class RGpxFile {
                 if (isset($meta->time->date)) {
                     $this->date = substr($meta->time->date, 0, 10);
                 }
+            } else {
+                $this->date="Not set";
             }
         }
         // tracks

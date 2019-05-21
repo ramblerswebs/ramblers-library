@@ -94,7 +94,7 @@ class RLeafletMap {
         }
         if ($options->cluster) {
             // clustering
-            $path = "ramblers/vendors/Leaflet.markercluster-1.3.0/dist/";
+            $path = "ramblers/vendors/Leaflet.markercluster-1.4.1/dist/";
             $this->addStyleSheet($path . "MarkerCluster.css", "text/css");
             $this->addStyleSheet($path . "MarkerCluster.Default.css", "text/css");
             $this->addScript($path . "leaflet.markercluster.js", "text/javascript");

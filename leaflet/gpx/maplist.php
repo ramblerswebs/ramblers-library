@@ -21,11 +21,6 @@ class RLeafletGpxMaplist extends RLeafletMap {
     }
 
     public function display() {
-        $document = JFactory::getDocument();
-        $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
-        $document->addStyleSheet('ramblers/jsonwalks/css/ramblerswalks.css');
-        $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
-
 // get all names from folder
         $stats = new RGpxStatistics($this->folder, $this->getMetaFromGPX);
         $items = $stats->getJson();
@@ -75,6 +70,12 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $text .= "displayData();";
         parent::addContent($text);
         parent::display();
+        $document = JFactory::getDocument();
+        $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
+        $document->addStyleSheet('ramblers/jsonwalks/css/ramblerswalks.css');
+        $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
+        $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js", "text/javascript");
         echo "<br/>";
         echo "</div>";
         echo "<div id='gpxlist' style='display:none;' >";
@@ -93,7 +94,6 @@ class RLeafletGpxMaplist extends RLeafletMap {
     private function addMapScript($items) {
         $script = "function addRoutes() {"
                 . "ramblersGpx.routes=" . $items . ";}";
-
         $document = JFactory::getDocument();
         $document->addScriptDeclaration($script, "text/javascript");
     }
