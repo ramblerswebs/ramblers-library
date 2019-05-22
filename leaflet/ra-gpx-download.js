@@ -110,6 +110,9 @@ L.Control.GpxDownload = L.Control.extend({
         var gpxDesc = this._info.desc;
         var gpxAuthor = this._info.author;
         var gpxDate = this._info.date;
+        if (gpxDate.length > 10) {
+            gpxDate = gpxDate.substring(0, 10)
+        }
         var gpxTrack = this._info.gpxTrack;
         var content = '<form><span><b>File Name/Title</b></span><br/><input id="gpxName" type="text"/ value="' + gpxName + '" /><br/>';
         content += '<span><b>File Description<b/></span><br/><textarea id="gpxDesc" >' + gpxDesc + '</textarea><br/>';
@@ -135,7 +138,11 @@ L.Control.GpxDownload = L.Control.extend({
             //this._info.gpxTrack = this.getElementValue('gpxTrack').checked;
             var ele = document.getElementById('gpxTrack');
             this._info.gpxTrack = ele.checked;
-            this._info.date = this.getElementValue('gpxDate')+"T12:00:00Z";
+            this._info.date = this.getElementValue('gpxDate');
+            if (this._info.date != "") {
+                this._info.date += "T12:00:00Z";
+            }
+
         }
     },
     getElementValue: function (id) {
@@ -245,7 +252,7 @@ L.Control.GpxDownload = L.Control.extend({
         for (i = 0, len = latlngs.length; i < len; i++) {
             text += '<trkpt lat="' + latlngs[i].lat + '" lon="' + latlngs[i].lng + '">\n';
             if (latlngs[i].alt !== -999) {
-                text+= ' <ele>' + latlngs[i].alt + '</ele>\n';
+                text += ' <ele>' + latlngs[i].alt + '</ele>\n';
             }
             text += '</trkpt>\n';
         }
@@ -261,7 +268,7 @@ L.Control.GpxDownload = L.Control.extend({
             if (latlngs[i].alt !== -999) {
                 text += ' <ele>' + latlngs[i].alt + '</ele>\n';
             }
-             text += ' </rtept>\n';
+            text += ' </rtept>\n';
         }
         return text;
     }
