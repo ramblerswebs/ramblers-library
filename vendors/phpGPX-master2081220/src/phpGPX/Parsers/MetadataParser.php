@@ -77,8 +77,7 @@ abstract class MetadataParser
 					break;
 				case 'time':
 					$metadata->time = isset($node->time) ? DateTimeHelper::parseDateTime($node->time) : null;
-			echo "<br/>Time: ".$node->time;
-                        break;
+			                break;
 				case 'bounds':
 					$metadata->bounds = isset($node->bounds) ? BoundsParser::parse($node->bounds) : null;
 					break;

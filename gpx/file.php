@@ -53,14 +53,10 @@ class RGpxFile {
             //   if ($meta->copyright !== null) {
             //       $this->copyright = $meta->copyright->year . $meta->copyright->license;
             //   }
-          $this->date = "...";
-          if (isset($meta->time)) {
-                if (isset($meta->time->date)) {
-                    $this->date = substr($meta->time->date, 0, 10);
-                } else {
-                    $this->date = "Incorrect";
-                }
-            }
+            $this->date = "...";
+            if (isset($meta->time)) {
+                $this->date = $meta->time->format("Y-m-d");
+            } 
         }
         // tracks
         $firstpointset = false;
