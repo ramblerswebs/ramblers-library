@@ -53,12 +53,13 @@ class RGpxFile {
             //   if ($meta->copyright !== null) {
             //       $this->copyright = $meta->copyright->year . $meta->copyright->license;
             //   }
-            if (isset($meta->time)) {
+          $this->date = "...";
+          if (isset($meta->time)) {
                 if (isset($meta->time->date)) {
                     $this->date = substr($meta->time->date, 0, 10);
+                } else {
+                    $this->date = "Incorrect";
                 }
-            } else {
-                $this->date="Not set";
             }
         }
         // tracks

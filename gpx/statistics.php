@@ -60,7 +60,7 @@ class RGpxStatistics {
         echo "<p>Diagnostics while generating file: " . self::JSONFILE . "</p>";
         echo "<p>The diagnostics only appear when the file is generated. They will be displayed until the Joomla Cache expires (usually 15 mins), clearing the cache manually will also remove them.</p>";
         echo "<table>";
-        echo RHtml::addTableHeader(['Filename/<b>Title</b>', 'Longitude', 'Latitude', 'Distance', 'Elevation Gain', 'min Alt', 'max Alt', 'Tracks,Segments', 'Routes']);
+        echo RHtml::addTableHeader(['Filename/<b>Title</b>', 'Author','Date',  'Longitude', 'Latitude', 'Distance', 'Elevation Gain', 'min Alt', 'max Alt', 'Tracks,Segments', 'Routes']);
         foreach ($files as $file) {
             if ($this->endsWith($file, ".gpx")) {
                 $stat = $this->processGPXFile($file);
@@ -106,6 +106,8 @@ class RGpxStatistics {
         $stat->routes = $gpx->routes;
         $cols = [];
         $cols[] = $stat->filename . "<br/><b>" . $stat->title . "</b>";
+        $cols[] = $stat->author;
+        $cols[] = $stat->date;
         $cols[] = round($stat->longitude, 4);
         $cols[] = round($stat->latitude, 4);
         $cols[] = round($stat->distance, 0) . " m";
