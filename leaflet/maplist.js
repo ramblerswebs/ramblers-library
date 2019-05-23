@@ -125,49 +125,6 @@ function displayGpxdetails(g) {
     }
 }
 
-// Tab control
-
-//function ra_tab(evt, name) {
-//    var i, tabcontent, tablinks;
-//    tabcontent = document.getElementsByClassName("ra_tabcontent");
-//    for (i = 0; i < tabcontent.length; i++) {
-//        tabcontent[i].style.display = "none";
-//    }
-//    tablinks = document.getElementsByClassName("ra_tablinks");
-//    for (i = 0; i < tablinks.length; i++) {
-//        tablinks[i].className = tablinks[i].className.replace(" active", "");
-//    }
-//    document.getElementById(name).style.display = "block";
-//    evt.currentTarget.className += " active";
-//}
-
-//function openTab(evt, tabName) {
-//// Declare all variables
-//    var i, tablinks;
-//// Get all elements with class="tablinks" and remove the class "active"
-//    tablinks = document.getElementsByClassName("tablinks");
-//    for (i = 0; i < tablinks.length; i++) {
-//        tablinks[i].className = tablinks[i].className.replace(" active", "");
-//    }
-//
-//    evt.currentTarget.className += " active";
-//    switch (tabName) {
-//        case "tabRouteDetails":
-//            displayGPXTable();
-//            break;
-//        case "tabRouteList":
-//            displayGPXNames();
-//            break;
-//        case "tabDescriptions":
-//            displayGPXDescriptions();
-//            break;
-//    }
-//    jplist.init({
-//    storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
-//            storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
-//
-//            });
-//        }
 
 function showhide(evt, idName) {
     var x = document.getElementById(idName);
@@ -179,21 +136,6 @@ function showhide(evt, idName) {
 
 }
 
-//// code to handle list of GPX Routes
-//function displayGPXNames() {
-//    var out, index;
-//    out = "<div class='gpxlist'>";
-//    out += '<ul data-jplist-group=\"group1\">';
-//    for (index = 0; index < ramblersGpx.routes.length; ++index) {
-//        var route = ramblersGpx.routes[index];
-//        if (displayRoute(route)) {
-//            out += "<li data-jplist-item>" + displayGPXName(route) + "</li>";
-//        }
-//    }
-//    out += '</ul>';
-//    out += '</div>';
-//    document.getElementById("dataTab").innerHTML = out;
-//}
 function displayGPXName(route) {
     var link = '<b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b>';
     return link;
@@ -298,22 +240,7 @@ function getRoutefromID(id) {
     }
     return null;
 }
-//function displayGPXDescriptions() {
-//    var out;
-//    out = "<div class='gpxdescriptions' data-jplist-group=\"group1\">";
-//    out += '<p data-jplist-item>';
-//    for (var index = 0; index < ramblersGpx.routes.length; ++index) {
-//        var route = ramblersGpx.routes[index];
-//        if (route.description !== '') {
-//            if (displayRoute(route)) {
-//                out += displayGPXName(route) + " [" + getGPXDistance(route.distance) + "] - " + route.description;
-//            }
-//        }
-//        out += '</p>';
-//    }
-//    out += '</div>';
-//    document.getElementById("dataTab").innerHTML = out;
-//}
+
 function addGPXMarkers() {
     for (var index = 0; index < ramblersGpx.routes.length; ++index) {
         var route = ramblersGpx.routes[index];
@@ -355,33 +282,7 @@ function getGPXdownloadLink(route) {
     }
     return link;
 }
-//function sortGPXTable(order) {
-//    if (order === "date") {
-//        sortOn(ramblersGpx.routes, 'date', ramblersGpx.dateorder, false);
-//        ramblersGpx.dateorder = !ramblersGpx.dateorder;
-//    }
-//    if (order === "author") {
-//        sortOn(ramblersGpx.routes, 'author', ramblersGpx.authororder, false);
-//        ramblersGpx.authororder = !ramblersGpx.authororder;
-//    }
-//    if (order === "distance") {
-//        sortOn(ramblersGpx.routes, 'distance', ramblersGpx.distorder, true);
-//        ramblersGpx.distorder = !ramblersGpx.distorder;
-//    }
-//    if (order === "title") {
-//        sortOn(ramblersGpx.routes, 'title', ramblersGpx.titleorder, false);
-//        ramblersGpx.titleorder = !ramblersGpx.titleorder;
-//    }
-//    if (order === "gain") {
-//        sortOn(ramblersGpx.routes, 'cumulativeElevationGain', ramblersGpx.gainorder, true);
-//        ramblersGpx.gainorder = !ramblersGpx.gainorder;
-//    }
-//    displayGPXTable();
-//    jplist.init({
-//        storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
-//        storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
-//    });
-//}
+
 function displayRoute(route) {
     if (ramblersGpx.searchtext === '') {
         return true;
@@ -406,88 +307,21 @@ function gpxsearch() {
     ramblersMap.markersCG.addLayers(ramblersMap.markerList);
     return false;
 }
-//var sortOn = function (arr, prop, reverse, numeric) {
-//
-//// Ensure there's a property
-//    if (!prop || !arr) {
-//        return arr;
-//    }
-//
-//// Set up sort function
-//    var sort_by = function (field, rev, primer) {
-//
-//// Return the required a,b function
-//        return function (a, b) {
-//
-//// Reset a, b to the field
-//            a = primer(a[field]), b = primer(b[field]);
-//            // Do actual sorting, reverse as needed
-//            return ((a < b) ? -1 : ((a > b) ? 1 : 0)) * (rev ? -1 : 1);
-//        };
-//    };
-//    // Distinguish between numeric and string to prevent 100's from coming before smaller
-//    // e.g.
-//    // 1
-//    // 20
-//    // 3
-//    // 4000
-//    // 50
-//
-//    if (numeric) {
-//
-//// Do sort "in place" with sort_by function
-//        arr.sort(sort_by(prop, reverse, function (a) {
-//
-//// - Force value to a string.
-//// - Replace any non numeric characters.
-//// - Parse as float to allow 0.02 values.
-//            return parseFloat(String(a).replace(/[^0-9.-]+/g, ''));
-//        }));
-//    } else {
-//
-//// Do sort "in place" with sort_by function
-//        arr.sort(sort_by(prop, reverse, function (a) {
-//
-//// - Force value to string.
-//            return String(a).toUpperCase();
-//        }));
-//    }
-//};
+
 function addPagination() {
     if (!ramblersGpx.isES6) {
         return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
     }
 
-    var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> \
-<button \
-        data-jplist-control="sort-buttons" \
-        data-path=".wTitle" \
-        data-group="group1" \
-        data-order="asc" \
-        data-type="text" \\n\
-        data-selected="true" \
-        data-mode="radio"> \
-    Title\
-</button> \
-<button \
-        data-jplist-control="sort-buttons" \
-        data-path=".wDistance" \
-        data-group="group1" \
-        data-order="asc" \
-        data-type="number" \
-        data-mode="radio"> \
-    Distance \
-</button> \
-<button \
-        data-jplist-control="sort-buttons" \
-        data-path=".wElevation" \
-        data-group="group1" \
-        data-order="asc" \
-        data-type="number" \
-        data-mode="radio"> \
-    Elevation \
-</button>\
-</span> \
+    var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
+    if (ramblersGpx.displayAsPreviousWalks) {
+        $div += addJPlistSortButton('.wDate', 'Date', 'text', true);
+        $div += addJPlistSortButton('.wAuthor', 'Author', 'text', false);
+    }
+    $div += addJPlistSortButton('.wTitle', 'Title', 'text', true);
+    $div += addJPlistSortButton('.wDistance', 'Distance', 'number', false);
+    $div += addJPlistSortButton('.wElevation', 'Elevation', 'number', false);
+    $div += '</span> \
 <span> \
 <input class="ra-route-search" \
      data-jplist-control="textbox-filter" \
@@ -531,6 +365,15 @@ function addPagination() {
     </select> ';
     $div += '</div> ';
     return $div;
+}
+function addJPlistSortButton(col, title, type, selected) {
+    var sel = '';
+    if (selected) {
+        sel = ' data-selected="true"';
+    }
+    var out = '<button data-jplist-control="sort-buttons" data-path="' + col + '" data-group="group1" \
+        data-order="asc" data-type="' + type + '"' + sel + ' data-mode="radio">' + title + '</button> ';
+    return out;
 }
 function setTagHtml(id, html) {
     var tag = document.getElementById(id);
