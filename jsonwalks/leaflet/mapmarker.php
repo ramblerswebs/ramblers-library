@@ -97,7 +97,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $popup = $details . $map . $directions;
         // $popup = str_replace('"', "&quot;", $popup);
         $marker = 'addMarker("' . $popup . '", ' . $lat . ', ' . $long . ', ' . $icon . ');';
-        //     $marker = "addWalk(markerList,'" . $this->walkClass . $walk->status . "', '" . $date . "', '" . $title . "', '" . $dist . "', '" . $gr . "', " . $lat . ", " . $long . ", '" . $url . "', " . $icon . ");";
+        //     $marker = "addWalk(ramblersMap.markerList,'" . $this->walkClass . $walk->status . "', '" . $date . "', '" . $title . "', '" . $dist . "', '" . $gr . "', " . $lat . ", " . $long . ", '" . $url . "', " . $icon . ");";
         return $marker;
     }
 

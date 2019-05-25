@@ -191,6 +191,7 @@ class ROrganisation {
     public function addMapMarkers($map) {
         if (isset($map)) {
             $map->addBounds();
+            $map->options->cluster=true;
             $text = "";
             foreach ($this->groups as $key => $group) {
                 $areatext = "";

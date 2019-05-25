@@ -113,12 +113,12 @@ class RAccounts {
         switch (strlen($item->code) == 2) {
             case true:
                 $title = str_replace("'", "", $item->areaname);
-                $icon = "walkingarea";
+                $icon = "ramblersMap.walkingarea";
                 $text = "Area: " . $title . " [" . $item->code . "]";
                 break;
             case false:
                 $title = str_replace("'", "", $item->groupname);
-                $icon = "walkinggroup";
+                $icon = "ramblersMap.walkinggroup";
                 $text = str_replace("'", "", "Area: " . $item->areaname) . "<br/>";
                 if (strlen($item->code) == 4) {
                     $text .= "Group: " . $title . " [" . $item->code . "]";

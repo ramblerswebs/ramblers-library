@@ -313,16 +313,49 @@ function addPagination() {
         return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
     }
 
-    var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
+  //  var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
+    var $div = '<div class="ra-route-filter">';
+   
+   $div += ' <span class="dropdown mr-3" \
+       data-jplist-control="dropdown-sort" \
+       data-opened-class="show" \
+       data-group="group1" \
+       data-name="sort1"> \
+    \
+    <button \
+            data-type="panel" \
+            class="btn btn-sort dropdown-toggle" \
+            type="button"> \
+        Sort by \
+    </button> \
+     \
+    <span \
+            data-type="content" \
+            class="dropdown-menu" \
+            aria-labelledby="dropdownMenuButton"> \
+            <a class="dropdown-item" \
+           href="#" \
+           data-path="default">Sort By</a>';
     if (ramblersGpx.displayAsPreviousWalks) {
-        $div += addJPlistSortButton('.wDate', 'Date', 'text', true);
-        $div += addJPlistSortButton('.wAuthor', 'Author', 'text', false);
+        $div += addJPlistSortItem('.wDate', 'Date ▲', 'text','asc', true);
+        $div += addJPlistSortItem('.wDate', 'Date ▼', 'text','desc', false);
+        $div += addJPlistSortItem('.wAuthor', 'Author ▲', 'text','asc', false);
+        $div += addJPlistSortItem('.wAuthor', 'Author ▼', 'text','desc',false);
+        $div += addJPlistSortItem('.wTitle', 'Title ▲', 'text','asc', false);
+        $div += addJPlistSortItem('.wTitle', 'Title ▼', 'text','desc', false);
+        $div += addJPlistSortItem('.wDistance', 'Distance ▲', 'number','asc', false);
+        $div += addJPlistSortItem('.wDistance', 'Distance ▼', 'number','desc', false);
+        $div += addJPlistSortItem('.wElevation', 'Elevation ▲', 'number','asc', false);
+        $div += addJPlistSortItem('.wElevation', 'Elevation ▼', 'number','desc', false);
+    } else {
+         $div += addJPlistSortItem('.wTitle', 'Title ▲', 'text','asc', true);
+        $div += addJPlistSortItem('.wTitle', 'Title ▼', 'text','desc', false);
+        $div += addJPlistSortItem('.wDistance', 'Distance ▲', 'number','asc', false);
+        $div += addJPlistSortItem('.wDistance', 'Distance ▼', 'number','desc', false);
+        $div += addJPlistSortItem('.wElevation', 'Elevation ▲', 'number','asc', false);
+        $div += addJPlistSortItem('.wElevation', 'Elevation ▼', 'number','desc', false);
     }
-    $div += addJPlistSortButton('.wTitle', 'Title', 'text', true);
-    $div += addJPlistSortButton('.wDistance', 'Distance', 'number', false);
-    $div += addJPlistSortButton('.wElevation', 'Elevation', 'number', false);
     $div += '</span> \
-<span> \
 <input class="ra-route-search" \
      data-jplist-control="textbox-filter" \
      data-group="group1" \
@@ -332,7 +365,7 @@ function addPagination() {
      type="text" \
      value="" \
      placeholder="Filter by Title" \
-/> \               \
+/>                \
 <button type="button" id="title-clear-btn">Clear</button> \
 </span></div><div class="clear"></div>\
 <div data-jplist-control=\"pagination\" \
@@ -366,15 +399,17 @@ function addPagination() {
     $div += '</div> ';
     return $div;
 }
-function addJPlistSortButton(col, title, type, selected) {
+
+function addJPlistSortItem(col, title, type, order, selected) {
     var sel = '';
     if (selected) {
         sel = ' data-selected="true"';
     }
-    var out = '<button data-jplist-control="sort-buttons" data-path="' + col + '" data-group="group1" \
-        data-order="asc" data-type="' + type + '"' + sel + ' data-mode="radio">' + title + '</button> ';
+    var out = '<a class="dropdown-item"href="#" data-path="' + col +
+            '" data-order="' + order + '" data-type="' + type + '"' + sel + ' >' + title + '</a> ';
     return out;
 }
+
 function setTagHtml(id, html) {
     var tag = document.getElementById(id);
     if (tag) {

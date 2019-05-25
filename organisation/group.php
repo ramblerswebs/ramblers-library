@@ -48,15 +48,15 @@ class ROrganisationGroup {
         $url = $this->url;
         switch ($this->scope) {
             case "A":
-                $icon = "walkingarea";
+                $icon = "ramblersMap.walkingarea";
                 $text = "Ramblers Area";
                 break;
             case "G":
-                $icon = "walkinggroup";
+                $icon = "ramblersMap.walkinggroup";
                 $text = $areatext."Group [".$this->code."]";
                 break;
             default:
-                $icon = "walkingspecial";
+                $icon = "ramblersMap.walkingspecial";
                 $text = $areatext."Special Group [".$this->code."]";
                 break;
         }
