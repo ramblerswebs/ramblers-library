@@ -521,10 +521,21 @@ table tr td.ra-tab:hover {
 span.ra-details {
     position: relative;
     top:-8px;
+    width:100%;
 }
+span.ra-details:after {
+    float:right;
+    content: url("../../images/close.png");
+    line-height: 1em;
+    padding-top:3px;
+}
+
 div.ra-details {
-    height:30px;
+    overflow: auto;
+    padding-top:0px;
+    padding-bottom:0px;
 }
+
 .jplist-selected {
     background-color: #AAAAAA;
     border-color: #AAAAAA;
@@ -554,6 +565,7 @@ img.ra-grade.pointer {
 #ra_filter_dates span input[type="date"] {
     margin-left:30px !important;   
 }
+
 span.ra-closed {
     margin-top:7px;
     padding-top:7px;
@@ -585,6 +597,7 @@ span.ra-rightopen {
 span.walksummary  {
     padding-top:2px !important;
     padding-bottom:2px !important;
+    width:100%;
 }
 @media only screen and (min-width: 960px) {
     [data-jplist-control]{

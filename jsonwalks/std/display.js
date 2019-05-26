@@ -589,11 +589,11 @@ function displayWalk_List($walk, $class, $displayMonth) {
 }
 
 function displayWalk_Details($walk, $class) {
-//    $out += "<span data-descr='Walk updated 1/4/2020' class=' walkNew'><span>some text</span></span";
     var $items = JSON.parse(ramblerswalksDetails.detailsFormat);
     var $text, $image;
     var $out = "";
     $image = '<span class="walksummary" >';
+    $image = '';
     $image += getGradeSpan($walk, 'middle');
     var index, len, $items, $text, $item;
     for (index = 0, len = $items.length; index < len; ++index) {
@@ -601,9 +601,7 @@ function displayWalk_Details($walk, $class) {
         $text = getWalkValue($walk, $item, false);
         $out += $text;
     }
-    //   $out += '<span class="ra-rightopen" ></span>';
-    $out = "<span class='ra-details'>" + $out + '</span><span class="ra-rightopen" ></span>';
-    $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + " ra-details' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true)) + "\n</span></div>\n";
+   $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + " ra-details' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</div>\n";
     return $text;
 }
 function newTooltip($walk, $text) {
@@ -751,22 +749,22 @@ function getWalkValue($walk, $option, addlink) {
             out = $walk.groupName;
             break;
         case "{dowShortdd}":
-            out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + ", " + $walk.day + "</b>", addlink);
+            out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + ", " + $walk.day + "</b>", addlink, "");
             break;
         case "{dowShortddmm}":
-            out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + ", " + $walk.day + " " + $walk.month + "</b>", addlink);
+            out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + ", " + $walk.day + " " + $walk.month + "</b>", addlink, "");
             break;
         case "{dowShortddyyyy}":
-            out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + " " + $walk.walkDate.date.substr(0, 4) + "</b>", addlink);
+            out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + " " + $walk.walkDate.date.substr(0, 4) + "</b>", addlink, "");
             break;
         case "{dowdd}":
-            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + "</b>", addlink);
+            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + "</b>", addlink, "");
             break;
         case "{dowddmm}":
-            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + "</b>", addlink);
+            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + "</b>", addlink, "");
             break;
         case "{dowddmmyyyy}":
-            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + " " + $walk.walkDate.date.substr(0, 4) + "</b>", addlink);
+            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + " " + $walk.walkDate.date.substr(0, 4) + "</b>", addlink, "");
             break;
         case "{meet}":
             if ($walk.hasMeetPlace) {
@@ -827,7 +825,7 @@ function getWalkValue($walk, $option, addlink) {
             }
             break;
         case "{title}":
-            out = addWalkLink($walk, $walk.title, addlink);
+            out = addWalkLink($walk, $walk.title, addlink, "");
             out = "<b>" + out + "</b>";
             break;
         case "{description}":
@@ -975,9 +973,9 @@ function getPrefix($option) {
 function isCancelled($walk) {
     return $walk.status.toLowerCase() === "cancelled";
 }
-function addWalkLink($walk, $text, addlink) {
+function addWalkLink($walk, $text, addlink, $class) {
     if (addlink) {
-        return  "<span class='pointer' onclick=\"javascript:displayWalkID(" + $walk.id + ")\">" + $text + "</span>";
+        return  "<span class='pointer " + $class + "' onclick=\"javascript:displayWalkID(" + $walk.id + ")\">" + $text + "</span>";
     }
     return $text;
 }
