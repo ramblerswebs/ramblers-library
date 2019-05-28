@@ -592,16 +592,16 @@ function displayWalk_Details($walk, $class) {
     var $items = JSON.parse(ramblerswalksDetails.detailsFormat);
     var $text, $image;
     var $out = "";
-    $image = '<span class="walksummary" >';
-    $image = '';
-    $image += getGradeSpan($walk, 'middle');
+    $image = '<span class="walkdetail" >';
+    $image += getGradeSpan($walk, 'details');
     var index, len, $items, $text, $item;
     for (index = 0, len = $items.length; index < len; ++index) {
         $item = $items[index];
         $text = getWalkValue($walk, $item, false);
         $out += $text;
     }
-   $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + " ra-details' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</div>\n";
+    $out += "<span class='ra-detailsimg'></span>";
+    $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</span></div>\n";
     return $text;
 }
 function newTooltip($walk, $text) {

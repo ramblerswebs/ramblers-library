@@ -430,7 +430,7 @@ h3.ra_openclose:hover {
 .modal-content {
     /* Add Animation - Zoom in the Modal */
     animation-name: zoom;
-    animation-duration: 0.5s;
+    animation-duration: 2s;
 
 }
 
@@ -439,8 +439,8 @@ h3.ra_openclose:hover {
     max-height:85%;
 }
 @keyframes zoom {
-    from {transform:scale(0)}
-    to {transform:scale(1)}
+    from {opacity:0;}
+    to {opacity:1;}
 }
 /* The Close Button */
 #btnClose, #btnPrint{
@@ -470,6 +470,7 @@ h3.ra_openclose:hover {
 div.odd ,
 div.even {
     padding:2px;
+    clear:both;
 }
 .odd:hover {
     background-color:#DDDDDD !important;
@@ -519,18 +520,21 @@ table tr td.ra-tab:hover {
     cursor: pointer;
 }
 span.ra-details {
-    position: relative;
-    top:-8px;
     width:100%;
+    top:-5px;
 }
-span.ra-details:after {
+span.ra-detailsXXX:after {
     float:right;
     content: url("../../images/close.png");
-    line-height: 1em;
     padding-top:3px;
 }
+span.ra-detailsimg {
+    float:right;
+    content: url("../../images/close.png");
+   overflow: auto;
+}
 
-div.ra-details {
+div.ra-detailsXXXX {
     overflow: auto;
     padding-top:0px;
     padding-bottom:0px;
@@ -599,6 +603,11 @@ span.walksummary  {
     padding-bottom:2px !important;
     width:100%;
 }
+span.walkdetail  {
+    width:100%;
+    height: auto;
+    display:inline-block;
+}
 @media only screen and (min-width: 960px) {
     [data-jplist-control]{
         display: flex;
@@ -623,19 +632,6 @@ divDDD#ra-grade-modal  h1 {color:#782327;font-size:22px;text-align: center;
                            padding-bottom: 15px;
                            margin-bottom: 15px;
 }
-divDDD#ra-grade-modal  h2 {color:#782327;font-size:18px;text-align: center;}
-divDDD#ra-grade-modal  p {font-size:12px;}
-divDDD#ra-grade-modal  img{
-    height:30px;
-    width:30px;
-    padding: 2px;
-    vertical-align:middle;
-}
-divDDD#ra-grade-modal  img:hover{
-    height:40px;
-    width:40px;
-    padding: 5px 5px 5px 0px;
-}
 span.map{
     top:10px;
     height:30px;
@@ -649,7 +645,10 @@ span.maphelp[data-descr]:hover::after {
 }
 
 span.grade{
-    height:30px;
+    padding-right:10px;
+}
+span.grade.details{
+    float:left;
 }
 span.middle.grade {
     height:30px;
@@ -672,22 +671,22 @@ span.right.grade {
 }
 
 
-span.grade.easy-access:before {
+span.grade.easy-access {
     content:url(../../images/grades/grade-ea30.jpg);
 }
-span.grade.easy:before {
+span.grade.easy {
     content:url(../../images/grades/grade-e30.jpg);
 }
-span.grade.leisurely:before {
+span.grade.leisurely {
     content: url(../../images/grades/grade-l30.jpg);
 }
-span.grade.moderate:before {
+span.grade.moderate {
     content: url(../../images/grades/grade-m30.jpg);
 }
-span.grade.strenuous:before {
+span.grade.strenuous {
     content:url(../../images/grades/grade-s30.jpg);
 }
-span.grade.technical:before {
+span.grade.technical {
     content:url(../../images/grades/grade-t30.jpg);
 }
 
@@ -699,7 +698,6 @@ span[data-descr] {
 span[data-descr]:hover::after {
     content: attr(data-descr);
     position: absolute;
-    left: 0px;
     top: -30px;
     border: 2px #ffffff solid;
     border-radius: 10px;
@@ -708,7 +706,7 @@ span[data-descr]:hover::after {
     color: #eeeeee;
     font-size: 14px;
     line-height: 14px;
-    z-index: 1;
+    z-index: 9999;
 }
 span.middle[data-descr]:hover::after{
     left:40px;
