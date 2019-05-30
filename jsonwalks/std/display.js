@@ -600,7 +600,8 @@ function displayWalk_Details($walk, $class) {
         $text = getWalkValue($walk, $item, false);
         $out += $text;
     }
-    $out += "<span class='ra-detailsimg'></span>";
+    //   $out += "<span class='ra-detailsimg'></span>";
+    $out += getCloseImg();
     $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</span></div>\n";
     return $text;
 }
@@ -1412,24 +1413,34 @@ function getGradeImg($walk) {
     }
     switch ($walk.nationalGrade) {
         case "Easy Access":
-            $url = "<img src='" + $url + "grade-es30.jpg' alt='Easy Access' height='30' width='30'>";
+            $url = "<img src='" + $url + "grade-ea.jpg' alt='Easy Access' height='30' width='30'/>";
             break;
         case "Easy":
-            $url = "<img src='" + $url + "grade-e30.jpg' alt='Easy' height='30' width='30'>";
+            $url = "<img src='" + $url + "grade-e.jpg' alt='Easy' height='30' width='30'/>";
             break;
         case "Leisurely":
-            $url = "<img src='" + $url + "grade-l30.jpg' alt='Leisurely' height='30' width='30'>";
+            $url = "<img src='" + $url + "grade-l.jpg' alt='Leisurely' height='30' width='30'/>";
             break;
         case "Moderate":
-            $url = "<img src='" + $url + "grade-m30.jpg' alt='Moderate' height='30' width='30'>";
+            $url = "<img src='" + $url + "grade-m.jpg' alt='Moderate' height='30' width='30'/>";
             break;
         case "Strenuous":
-            $url = "<img src='" + $url + "grade-s30.jpg' alt='Strenuous' height='30' width='30'>";
+            $url = "<img src='" + $url + "grade-s.jpg' alt='Strenuous' height='30' width='30'/>";
             break;
         case "Technical":
-            $url = "<img src='" + $url + "grade-t30.jpg' alt='Technical' height='30' width='30'>";
+            $url = "<img src='" + $url + "grade-t.jpg' alt='Technical' height='30' width='30'/>";
             break;
 
     }
+    return $url;
+}
+function getCloseImg() {
+    var $url;
+    if (localhost()) {
+        $url = "ramblers/images/close.png";
+    } else {
+        $url = "/ramblers/images/close.png";
+    }
+    $url = "<img class='ra-detailsimg' src='" + $url + "' alt='Easy Access' height='30' width='30'/>";
     return $url;
 }

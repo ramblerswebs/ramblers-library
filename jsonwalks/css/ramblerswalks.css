@@ -70,14 +70,10 @@ span.walksummary img{
     text-decoration-line: line-through;
 }
 
-.ra-accordion-item.walkNew {
-    padding-left: 0;
+div.ra-accordion-item.walkNew div span b{
+    padding-left: 30px;
     background: url(../../images/new.gif) no-repeat scroll 0 50% transparent;
-    background-position-x: 0px;
-    background-position-y: 50%;
-    background-position: 60px 0;
-
-}
+  }
 .ra-accordion-container {
     color:black;
 }
@@ -528,10 +524,15 @@ span.ra-detailsXXX:after {
     content: url("../../images/close.png");
     padding-top:3px;
 }
-span.ra-detailsimg {
+img.ra-detailsimg {
+    float:right;
+    
+    overflow:auto;
+}
+span.ra-detailsimgXXXXX {
     float:right;
     content: url("../../images/close.png");
-   overflow: auto;
+    overflow: auto;
 }
 
 div.ra-detailsXXXX {
@@ -579,6 +580,7 @@ span.ra-closed {
     background-image:url("../std/accordian/style/style4/close.png");
     background-size: 35px 26px;
     background-repeat: no-repeat;
+    clear:both;
 }
 span.ra-open {
     margin-top:7px;
@@ -589,6 +591,7 @@ span.ra-open {
     background-image:url("../std/accordian/style/style4/open.png");
     background-size:  35px 26px;
     background-repeat: no-repeat;
+    overflow:auto;
 }
 span.ra-rightopen {
     float: right;
@@ -699,6 +702,7 @@ span[data-descr]:hover::after {
     content: attr(data-descr);
     position: absolute;
     top: -30px;
+    width: 100px;
     border: 2px #ffffff solid;
     border-radius: 10px;
     background-color: #206C49;
@@ -715,7 +719,7 @@ span.middle[data-descr]:hover::after{
 span.left[data-descr]:hover::after{
     top:-15px;
 }
-span.DELwalkNew[data-descr] {
+span.XXXXwalkNew[data-descr] {
     color: #206C49;
 }
 span[data-descr="Technical"]:hover::after {
