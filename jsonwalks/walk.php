@@ -469,7 +469,13 @@ class RJsonwalksWalk extends REvent {
     }
 
     function getGradeImg() {
-        $url = "ramblers/images/grades/";
+        $base = JURI::base();
+        $folder = JURI::base(true);
+        if (strpos($base, 'localhost') !== false) {
+            $url = "ramblers/images/grades/";
+        } else {
+            $url = "/ramblers/images/grades/";
+        }
 
         switch ($this->nationalGrade) {
             case "Easy Access":
