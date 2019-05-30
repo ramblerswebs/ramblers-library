@@ -458,32 +458,62 @@ class RJsonwalksWalk extends REvent {
 //        echo '<span  class = "gradeBar" id = "grade-t">Technical</span>';
 //    }
 
-    public function getGradeSpan($class) {
-      //  echo "<span data-descr='Easy'><span class='grade-easy' onclick='javascript:dGH()'/></span>";
+    function getGradeSpan( $class) {
         $tag = "";
+        $img = $this->getGradeImg();
         switch ($this->nationalGrade) {
             case "Easy Access":
-               $tag = "<span data-descr='Easy Access' class='" . $class . "'><span class='grade easy-access ".$class."' onclick='javascript:dGH()'></span></span>";
+                $tag = "<span data-descr='Easy Access' class='" . $class . "'><span class='grade easy-access " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
                 break;
             case "Easy":
-                $tag = "<span data-descr='Easy' class='" . $class . "'><span class='grade easy ".$class."' onclick='javascript:dGH()'></span></span>";
+                $tag = "<span data-descr='Easy' class='" . $class . "'><span class='grade easy " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
                 break;
             case "Leisurely":
-               $tag = "<span data-descr='Leisurely' class='" . $class . "'><span class='grade leisurely ".$class."' onclick='javascript:dGH()'></span></span>";
+                $tag = "<span data-descr='Leisurely' class='" . $class . "'><span class='grade leisurely " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
                 break;
             case "Moderate":
-               $tag = "<span data-descr='Moderate' class='" . $class . "'><span class='grade moderate ".$class."' onclick='javascript:dGH()'></span></span>";
+                $tag = "<span data-descr='Moderate' class='" . $class . "'><span class='grade " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
                 break;
             case "Strenuous":
-               $tag = "<span data-descr='Strenuous' class='" . $class . "'><span class='grade strenuous ".$class."' onclick='javascript:dGH()'></span></span>";
+                $tag = "<span data-descr='Strenuous' class='" . $class . "'><span class='grade strenuous " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
                 break;
             case "Technical":
-               $tag = "<span data-descr='Technical' class='" . $class . "'><span class='grade technical ".$class."' onclick='javascript:dGH()'></span></span>";
+                $tag = "<span data-descr='Technical' class='" . $class . "'><span class='grade technical " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
                 break;
             default:
                 break;
         }
         return $tag;
+    }
+
+    function getGradeImg() {
+        $url="";
+        if (true) {
+            $url = "ramblers/images/grades/";
+        } else {
+            $url = "/ramblers/images/grades/";
+        }
+        switch ($this->nationalGrade) {
+            case "Easy Access":
+                $url = "<img src='" . $url . "grade-ea30.jpg' alt='Easy Access' height='30' width='30'>";
+                break;
+            case "Easy":
+                $url = "<img src='" . $url . "grade-e30.jpg' alt='Easy' height='30' width='30'>";
+                break;
+            case "Leisurely":
+                $url = "<img src='" . $url . "grade-l30.jpg' alt='Leisurely' height='30' width='30'>";
+                break;
+            case "Moderate":
+                $url = "<img src='" . $url . "grade-m30.jpg' alt='Moderate' height='30' width='30'>";
+                break;
+            case "Strenuous":
+                $url = "<img src='" . $url . "grade-s30.jpg' alt='Strenuous' height='30' width='30'>";
+                break;
+            case "Technical":
+                $url = "<img src='" . $url . "grade-t30.jpg' alt='Technical' height='30' width='30'>";
+                break;
+        }
+        return $url;
     }
 
     public function distanceFrom($easting, $northing, $distanceKm) {

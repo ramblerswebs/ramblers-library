@@ -671,22 +671,22 @@ span.right.grade {
 }
 
 
-span.grade.easy-access {
+span.grade.easy-accessXXX {
     content:url(../../images/grades/grade-ea30.jpg);
 }
-span.grade.easy {
+span.grade.easyXXX {
     content:url(../../images/grades/grade-e30.jpg);
 }
-span.grade.leisurely {
+span.grade.leisurelyXXX {
     content: url(../../images/grades/grade-l30.jpg);
 }
-span.grade.moderate {
+span.grade.moderateXXX {
     content: url(../../images/grades/grade-m30.jpg);
 }
-span.grade.strenuous {
+span.grade.strenuousXXX {
     content:url(../../images/grades/grade-s30.jpg);
 }
-span.grade.technical {
+span.grade.technicalXXX {
     content:url(../../images/grades/grade-t30.jpg);
 }
 
