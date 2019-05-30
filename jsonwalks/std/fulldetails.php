@@ -104,7 +104,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         echo $text . PHP_EOL;
     }
 
-    private function addGradeImage($walk) {
+    private function addGradeImageXXXX($walk) {
         $out = '';
         if ($this->displayGradesIcon) {
             $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" onclick="javascript:dGH()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';

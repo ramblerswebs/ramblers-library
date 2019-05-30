@@ -440,25 +440,7 @@ class RJsonwalksWalk extends REvent {
         return $image;
     }
 
-//    public static function gradeSidebar() {
-//        if (!self::$gradeSidebarDisplayed) {
-//            self::$gradeSidebarDisplayed = true;
-//            echo '<div class = "gradeSidebar" >';
-//            echo '<a href="ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">';
-//            echo 'Walks difficulty</a>';
-//            echo '</div>';
-//        }
-//    }
-//    public static function gradeToolTips() {
-//        echo '<span  class = "gradeBar" id = "grade-ea">Easy Access</span>';
-//        echo '<span  class = "gradeBar" id = "grade-e">Easy</span>';
-//        echo '<span  class = "gradeBar" id = "grade-l">Leisurely</span>';
-//        echo '<span  class = "gradeBar" id = "grade-m">Moderate</span>';
-//        echo '<span  class = "gradeBar" id = "grade-s">Strenuous</span>';
-//        echo '<span  class = "gradeBar" id = "grade-t">Technical</span>';
-//    }
-
-    function getGradeSpan( $class) {
+    function getGradeSpan($class) {
         $tag = "";
         $img = $this->getGradeImg();
         switch ($this->nationalGrade) {
@@ -487,12 +469,8 @@ class RJsonwalksWalk extends REvent {
     }
 
     function getGradeImg() {
-        $url="";
-        if (true) {
-            $url = "ramblers/images/grades/";
-        } else {
-            $url = "/ramblers/images/grades/";
-        }
+        $url = "ramblers/images/grades/";
+
         switch ($this->nationalGrade) {
             case "Easy Access":
                 $url = "<img src='" . $url . "grade-ea30.jpg' alt='Easy Access' height='30' width='30'>";
