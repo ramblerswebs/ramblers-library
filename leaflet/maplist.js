@@ -339,8 +339,8 @@ function addPagination() {
     if (ramblersGpx.displayAsPreviousWalks) {
         $div += addJPlistSortItem('.wDate', 'Date ▲', 'text','asc', true);
         $div += addJPlistSortItem('.wDate', 'Date ▼', 'text','desc', false);
-        $div += addJPlistSortItem('.wAuthor', 'Author ▲', 'text','asc', false);
-        $div += addJPlistSortItem('.wAuthor', 'Author ▼', 'text','desc',false);
+        $div += addJPlistSortItem('.wAuthor', 'Leader ▲', 'text','asc', false);
+        $div += addJPlistSortItem('.wAuthor', 'Leader ▼', 'text','desc',false);
         $div += addJPlistSortItem('.wTitle', 'Title ▲', 'text','asc', false);
         $div += addJPlistSortItem('.wTitle', 'Title ▼', 'text','desc', false);
         $div += addJPlistSortItem('.wDistance', 'Distance ▲', 'number','asc', false);
