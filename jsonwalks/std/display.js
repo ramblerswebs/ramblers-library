@@ -6,6 +6,7 @@
 var ramblerswalksDetails, ramblerswalks, ramblersMap, jplist;
 function RamblersWalksDetails() {
     this.isES6 = isES6();
+    this.folderbase = "";
     this.walkClass = "walk";
     this.displayClass = "pantone1815";
     this.displayDefault = "Details";
@@ -25,7 +26,8 @@ function FullDetailsLoad() {
     if (typeof addFilterFormats === 'function') {
         addFilterFormats();
     }
-
+    var folder = window.location.pathname;
+    ramblerswalksDetails.folderbase = folder.substr(0, folder.lastIndexOf('/'));
     addContent();
     getOptions();
     initFilters();
@@ -1406,11 +1408,8 @@ function getGradeSpan($walk, $class) {
 }
 function getGradeImg($walk) {
     var $url;
-    if (localhost()) {
-        $url = "ramblers/images/grades/";
-    } else {
-        $url = "/ramblers/images/grades/";
-    }
+    $url = ramblerswalksDetails.folderbase + "/ramblers/images/grades/";
+
     switch ($walk.nationalGrade) {
         case "Easy Access":
             $url = "<img src='" + $url + "grade-ea.jpg' alt='Easy Access' height='30' width='30'/>";
@@ -1436,11 +1435,9 @@ function getGradeImg($walk) {
 }
 function getCloseImg() {
     var $url;
-    if (localhost()) {
-        $url = "ramblers/images/close.png";
-    } else {
-        $url = "/ramblers/images/close.png";
-    }
+
+    $url = ramblerswalksDetails.folderbase + "/ramblers/images/close.png";
+
     $url = "<img class='ra-detailsimg' src='" + $url + "' alt='Easy Access' height='30' width='30'/>";
     return $url;
 }
