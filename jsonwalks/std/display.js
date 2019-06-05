@@ -26,8 +26,8 @@ function FullDetailsLoad() {
     if (typeof addFilterFormats === 'function') {
         addFilterFormats();
     }
-    var folder = window.location.pathname;
-    ramblerswalksDetails.folderbase = folder.substr(0, folder.lastIndexOf('/'));
+ //   var folder = window.location.pathname;
+ //   ramblerswalksDetails.folderbase = folder.substr(0, folder.lastIndexOf('/'));
     addContent();
     getOptions();
     initFilters();
