@@ -175,10 +175,14 @@ class RJsonwalksFeed {
         $document->addScript("ramblers/js/ramblerswalks.js", "text/javascript");
         $printOn = JRequest::getVar('print') == 1;
         if ($printOn) {
-
             $style = 'BODY {color: #000000;}';
             $document->addStyleDeclaration($style);
         }
+        $folder = "ramblersBase.folderbase='" . JURI::base(true) . "';";
+        $out = "window.addEventListener('load', function(event) {
+            ramblersBase = new RamblersBase();" . $folder .
+                "  });";
+        $document->addScriptDeclaration($out, "text/javascript");
         if ($this->displayLimit == 0 OR $printOn) {
             $displayclass->DisplayWalks($this->walks);
         } else {

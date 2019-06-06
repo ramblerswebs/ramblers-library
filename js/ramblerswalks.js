@@ -1,7 +1,10 @@
-var ramblerswalks;
+var ramblerswalks, ramblersBase;
 /* 
  * Change visibilty of calandar items for event calendar
  */
+function RamblersBase() {
+    this.folderbase = "";
+}
 
 function ra_toggle_visibility(id) {
     var e = document.getElementById(id);
@@ -94,14 +97,7 @@ function displayModal($html) {
         printTag("modal-data");
     };
 }
-function localhost() {
-    var host = window.location.hostname;
-    if (host === "localhost") {
-        return true;
-    } else {
-        return false;
-    }
-}
+
 function isES6()
 {
     try
@@ -115,21 +111,7 @@ function isES6()
 }
 function dGH() {
     var $url;
-    if (localhost()) {
-        $url = "ramblers/pages/grades.html";
-    } else {
-        $url = "/ramblers/pages/grades.html";
-    }
-    var marker;
-    ajax($url, "", marker, displayGradesModal);
-}
-function dMH() {
-    var $url;
-    if (localhost()) {
-        $url = "ramblers/pages/maphelp.html";
-    } else {
-        $url = "/ramblers/pages/maphelp.html";
-    }
+    $url = ramblersBase.folderbase + "/ramblers/pages/grades.html";
     var marker;
     ajax($url, "", marker, displayGradesModal);
 }
@@ -137,6 +119,7 @@ function dMH() {
 function displayGradesModal(marker, $html) {
     displayModal($html);
 }
+
 function printTag(divId) {
     var content = document.getElementById(divId).innerHTML;
     var mywindow = window.open('', 'Print', 'height=600,width=800');

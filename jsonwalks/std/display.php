@@ -49,9 +49,8 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
         $text = "ramblerswalks='" . addslashes(json_encode($items)) . "'";
         //  echo $text;
-        $folder = "ramblerswalksDetails.folderbase='".JURI::base(true)."';";
         $out = "window.addEventListener('load', function(event) {
-            ramblerswalksDetails = new RamblersWalksDetails();".$folder.
+            ramblerswalksDetails = new RamblersWalksDetails();".
             "ramblerswalksDetails.displayClass='" . $this->displayClass . "';
     FullDetailsLoad();
   });

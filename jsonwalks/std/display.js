@@ -6,7 +6,6 @@
 var ramblerswalksDetails, ramblerswalks, ramblersMap, jplist;
 function RamblersWalksDetails() {
     this.isES6 = isES6();
-    this.folderbase = "";
     this.walkClass = "walk";
     this.displayClass = "pantone1815";
     this.displayDefault = "Details";
@@ -1406,7 +1405,7 @@ function getGradeSpan($walk, $class) {
 }
 function getGradeImg($walk) {
     var $url;
-    $url = ramblerswalksDetails.folderbase + "/ramblers/images/grades/";
+    $url = ramblersBase.folderbase + "/ramblers/images/grades/";
 
     switch ($walk.nationalGrade) {
         case "Easy Access":
@@ -1434,7 +1433,7 @@ function getGradeImg($walk) {
 function getCloseImg() {
     var $url;
 
-    $url = ramblerswalksDetails.folderbase + "/ramblers/images/close.png";
+    $url = ramblersBase.folderbase + "/ramblers/images/close.png";
 
     $url = "<img class='ra-detailsimg' src='" + $url + "' alt='Easy Access' height='30' width='30'/>";
     return $url;
