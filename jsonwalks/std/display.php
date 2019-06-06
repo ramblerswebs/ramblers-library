@@ -46,15 +46,13 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $display->DisplayWalks($walks);  // display cancelled walks information
         $document->addScript("ramblers/jsonwalks/std/display.js", "text/javascript");
         $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
-
-        $text = "ramblerswalks='" . addslashes(json_encode($items)) . "'";
+        $text = "ramblerswalks='" . addslashes(json_encode(array_values($items))) . "'";
         //  echo $text;
         $out = "window.addEventListener('load', function(event) {
             ramblerswalksDetails = new RamblersWalksDetails();".
             "ramblerswalksDetails.displayClass='" . $this->displayClass . "';
-    FullDetailsLoad();
-  });
-                function addContent() {" . $text . "};";
+            FullDetailsLoad(); });
+            function addContent() {" . $text . "};";
         $document->addScriptDeclaration($out, "text/javascript");
         echo "<div id='raouter'>";
         echo "<div id='raoptions' ></div>";

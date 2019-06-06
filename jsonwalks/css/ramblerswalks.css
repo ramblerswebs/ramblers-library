@@ -73,13 +73,13 @@ span.walksummary img{
 div.ra-accordion-item.walkNew div span b{
     padding-left: 30px;
     background: url(../../images/new.gif) no-repeat scroll 0 50% transparent;
-  }
+}
 .ra-accordion-container {
     color:black;
 }
-.nextwalkNew::before {
-    content: url('../../images/new.gif');
-    padding-right:5px;
+.nextwalkNew {
+    background: url('../../images/new.gif') no-repeat scroll 0 0%;
+    padding-top: 7px;
 }
 
 .walkNew.printon {
@@ -90,6 +90,7 @@ div.ra-accordion-item.walkNew div span b{
 .updated.walkNew {
     padding-left: 35px;
     background: url(../../images/new.gif) no-repeat scroll 0 50% rgba(0,0,0,0);
+
 }
 .gradeNew::after {
     content: url('../../images/newsq.gif');
@@ -526,7 +527,7 @@ span.ra-detailsXXX:after {
 }
 img.ra-detailsimg {
     float:right;
-    
+
     overflow:auto;
 }
 span.ra-detailsimgXXXXX {
