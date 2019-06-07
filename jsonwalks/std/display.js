@@ -228,15 +228,15 @@ function displayWalksHeader($walks) {
     var $out = "";
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
         case "Details":
-            $out += "</br><p>Click on item to display full details of walk</p>";
+            $out += "</br><p class='noprint'>Click on item to display full details of walk</p>";
             $out += "<div data-jplist-group=\"group1\">";
             break;
         case "List":
-            $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
+            $out += "</br><p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             $out += "<div data-jplist-group=\"group1\">";
             break;
         case "Table":
-            $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
+            $out += "</br><p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             $out += "<table class='" + ramblerswalksDetails.displayClass + "'>\n";
             $out += displayTableHeader();
             $out += "<tbody data-jplist-group=\"group1\">";
@@ -259,15 +259,15 @@ function displayWalksFooter() {
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
         case "Details":
             $out += "</div>";
-            $out += "</br><p>Click on item to display full details of walk</p>";
+            $out += "</br><p class='noprint'>Click on item to display full details of walk</p>";
             break;
         case "List":
             $out += "</div>";
-            $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
+            $out += "</br><p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             break;
         case "Table":
             $out += "</tbody></table>\n";
-            $out += "</br><p>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
+            $out += "</br><p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
             break;
     }
     return $out;
@@ -561,6 +561,7 @@ function displayWalk($walk) {
     if (!$display) {
         return false;
     }
+ 
     return $display;
 }
 

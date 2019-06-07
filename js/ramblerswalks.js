@@ -129,10 +129,10 @@ function printTag(divId) {
     for (index = 0, len = sheets.length; index < len; ++index) {
         var sheet = sheets[index];
         if (sheet.href !== null) {
-//         if (sheet.href.includes("/ramblers/") || sheet.href.includes("/mod_rafooter/")) {
             var link = '<link rel="stylesheet" href="' + sheet.href + '">\n';
             mywindow.document.write(link);
-            //        }
+            var noprint="<style> .noprint {display: none !important; }</style>";
+             mywindow.document.write(noprint);
         }
     }
     mywindow.document.write('</head><body><div id="document"><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');

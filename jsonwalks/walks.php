@@ -107,7 +107,16 @@ class RJsonwalksWalks {
         return strpos($haystack, $needle) !== false;
     }
 
-    public function filterDayofweek($days) {
+    public function filterCancelled() {
+        foreach ($this->arrayofwalks as $key => $value) {
+            $walk=$this->arrayofwalks[$key];
+            if ($walk->status=="Cancelled") {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+    
+      public function filterDayofweek($days) {
         foreach ($this->arrayofwalks as $key => $value) {
             if ($this->notInDayList($value, $days)) {
                 unset($this->arrayofwalks[$key]);
