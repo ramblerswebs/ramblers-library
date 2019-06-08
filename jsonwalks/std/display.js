@@ -854,10 +854,11 @@ function getWalkValue($walk, $option, addlink) {
             out = $walk.localGrade;
             break;
         case "{contact}":
+            out="";
             if ($walk.isLeader) {
-                out = "Leader";
+                $prefix += "Leader";
             } else {
-                out = "Contact";
+                $prefix += "Contact";
             }
             if ($walk.contactName !== "") {
                 out += " <strong>" + $walk.contactName + "</strong>";
@@ -875,9 +876,9 @@ function getWalkValue($walk, $option, addlink) {
         case "{contactname}":
             var $contact = "";
             if ($walk.isLeader) {
-                $contact = "Leader ";
+                $prefix += "Leader ";
             } else {
-                $contact = "Contact ";
+                $prefix += "Contact ";
             }
             if ($walk.contactName !== "") {
                 $contact += $walk.contactName;

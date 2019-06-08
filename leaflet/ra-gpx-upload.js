@@ -222,7 +222,7 @@ L.Control.GpxUpload = L.Control.extend({
     },
     _ra_get_children_text: function (elem, name1, name2) {
         var child = this._ra_get_child(elem, name1);
-        if (typeof child !== null) {
+        if (typeof child !== 'undefined') {
             return   this._ra_get_child_text(child, name2);
         }
         return "";
@@ -231,7 +231,7 @@ L.Control.GpxUpload = L.Control.extend({
         var children = elem.childNodes;
 
         ra_gpx_upload_this = this;
-        ra_gpx_upload_this.result = null;
+        ra_gpx_upload_this.result = undefined;
         ra_gpx_upload_this.findname = name;
         if (typeof children !== 'undefined') {
 
