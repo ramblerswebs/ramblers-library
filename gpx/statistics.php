@@ -62,7 +62,7 @@ class RGpxStatistics {
         echo "<table>";
         echo RHtml::addTableHeader(['Filename/<b>Title</b>', 'Author','Date',  'Longitude', 'Latitude', 'Distance', 'Elevation Gain', 'min Alt', 'max Alt', 'Tracks,Segments', 'Routes']);
         foreach ($files as $file) {
-            if ($this->endsWith($file, ".gpx")) {
+            if ($this->endsWith($file, ".gpx") || $this->endsWith($file, ".GPX")) {
                 $stat = $this->processGPXFile($file);
                 $this->jsonfile->addItem("id" . $stat->id, $stat);
             }

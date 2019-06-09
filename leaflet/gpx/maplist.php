@@ -15,6 +15,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
     public $descriptions = true; // set false if NO description files are to be supplied
     public $getMetaFromGPX = true;
     public $displayAsPreviousWalks = false;
+    public $displayTitle = true;
 
     public function __construct() {
         parent::__construct();
@@ -43,12 +44,14 @@ class RLeafletGpxMaplist extends RLeafletMap {
         } else {
             $imperial = "false";
         }
-
-        if ($this->displayAsPreviousWalks) {
-            echo "<h2>Previous Walks</h2>";
-        } else {
-            echo "<h2>Walking Routes</h2>";
+        if ($this->displayTitle) {
+            if ($this->displayAsPreviousWalks) {
+                echo "<h2>Previous Walks</h2>";
+            } else {
+                echo "<h2>Walking Routes</h2>";
+            }
         }
+
         echo "<table id='gpxoptions' ><tr><td class='ra-tab active' id='Map' class='active' onclick=\"javascript:ra_format('Map')\">Map</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td></tr></table>";
         echo "<div id='gpxouter' >";
         echo "<div id='gpxmap'>";
