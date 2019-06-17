@@ -36,7 +36,6 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $this->options->mouseposition = true;
         $this->options->postcodes = true;
         $this->options->fitbounds = true;
-        $this->options->displayElevation = true;
         $this->options->print = true;
         //    RLicense::BingMapKey(false);
         if ($this->imperial) {
