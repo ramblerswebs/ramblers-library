@@ -37,6 +37,7 @@
             <folder>jsonwalks/std</folder>
             <folder>jsonwalks/sx05</folder>
             <folder>leaflet</folder>
+            <folder>leaflet/csv</folder>
             <folder>leaflet/gpx</folder>
             <folder>leaflet/images</folder>
             <folder>license</folder>

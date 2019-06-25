@@ -135,16 +135,17 @@ L.Control.GpxUpload = L.Control.extend({
         ra_gpx_upload_this = this;
         var meta = xml.getElementsByTagName('metadata');
         //  var test = this._ra_get_child(meta[0], 'time');
-        if (typeof meta.length > 0) {
-            ra_gpx_upload_this._info.name = this._ra_get_child_text(meta[0], 'name');
+        if (typeof meta !== 'undefined') {
+            if (meta.length > 0) {
+                ra_gpx_upload_this._info.name = this._ra_get_child_text(meta[0], 'name');
 
-            ra_gpx_upload_this._info.desc = this._ra_get_child_text(meta[0], 'desc');
+                ra_gpx_upload_this._info.desc = this._ra_get_child_text(meta[0], 'desc');
 
-            ra_gpx_upload_this._info.author = this._ra_get_children_text(meta[0], 'author', 'name');
+                ra_gpx_upload_this._info.author = this._ra_get_children_text(meta[0], 'author', 'name');
 
-            ra_gpx_upload_this._info.date = this._ra_get_child_text(meta[0], 'time');
+                ra_gpx_upload_this._info.date = this._ra_get_child_text(meta[0], 'time');
+            }
         }
-
 
 
         for (j = 0; j < tags.length; j++) {
