@@ -161,7 +161,7 @@ function addCSVMarker(no) {
 function displayRecord(no) {
     var $details;
     $details = "<div style='font-size:120%'>";
-    var items = ramblersCsvList.list.items
+    var items = ramblersCsvList.list.items;
     for (var index = 0; index < items.length; ++index) {
         if (items[index].values[no] !== "") {
             if (items[index].type === "link") {
