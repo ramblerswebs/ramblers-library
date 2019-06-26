@@ -50,12 +50,14 @@ class RLeafletCsvList extends RLeafletMap {
         parent::display();
         $document = JFactory::getDocument();
         $document->addScript("ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
+        $document->addStyleSheet("ramblers/leaflet/csv/csvlist.css", "text/css");
         //     $document->addStyleSheet('ramblers/jsonwalks/css/ramblerswalks.css');
         $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
         $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js", "text/javascript");
 
         echo "<br/>";
+        echo "<div id='csvRecord'></div>";
         echo "</div>";
         echo "<div id='csvlist' >";
 
@@ -91,7 +93,7 @@ class RLeafletCsvList extends RLeafletMap {
                     } else {
                         $item = $this->list->getItem($col);
                         if ($item == null) {
-                            echo "<p>Column ".$col." has no header title</p>";
+                            echo "<p>Column " . $col . " has no header title</p>";
                         } else {
                             if ($row == 2) {
                                 $item->addOptions($value);

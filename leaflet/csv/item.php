@@ -23,6 +23,7 @@ class RLeafletCsvItem {
     public $longitude = false;
     public $easting = false;
     public $northing = false;
+    public $linkmarker=false;
     public $type = "text";
     public $values = [];
 
@@ -77,6 +78,9 @@ class RLeafletCsvItem {
                     break;
                 case "link":
                     $this->type = "link";
+                    break;
+               case "linkmarker":
+                    $this->linkmarker = true;
                     break;
                 case "":
                     

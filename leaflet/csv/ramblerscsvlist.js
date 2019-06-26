@@ -74,7 +74,7 @@ function displayCSVHeader(items) {
             }
             out += "<th>" + item.name + " " + sort1 + " " + sort2 + "</th>";
             if (item.filter) {
-                filter += jplistFilter('group1', item.name);
+                filter += jplistFilter('group1', item);
             } else {
                 filter += "";
             }
@@ -91,22 +91,24 @@ function displayCSVRow(items, no) {
     out += '<tr data-jplist-item>';
     for (index = 0; index < items.length; ++index) {
         item = items[index];
-        var td = "<td class='" + item.name + "'>";
         if (item.table) {
+            var value = "";
             switch (item.type) {
                 case "link":
-                    if (item.values[no] === "") {
-                        out += td + " </td>";
-                    } else {
-                        out += td + " <a href='" + item.values[no] + "' target='_blank'>Link</a></td>";
+                    if (item.values[no] !== "") {
+                        value = " <a href='" + item.values[no] + "' target='_blank'>Link</a>";
                     }
                     break;
                 case "number":
-                    out += td + item.values[no] + "</td>";
+                    value = item.values[no];
                     break;
                 default:
-                    out += td + item.values[no] + "</td>";
+                    value = item.values[no];
             }
+            if (item.linkmarker) {
+                value = " <a href='javascript:selectMarker(" + no + ")' >" + item.values[no] + "</a>";
+            }
+            out += "<td class='" + item.name + "'>" + value + "</td>";
         }
     }
     out += '</tr>';
@@ -126,12 +128,12 @@ function addCSVMarkers() {
 function addCSVMarker(no) {
     var $popup, $lat, $long;
     $popup = "<div style='font-size:120%'>";
-    var items = ramblersCsvList.list.items
+    var items = ramblersCsvList.list.items;
     for (var index = 0; index < items.length; ++index) {
         if (items[index].popup) {
-            if (items[index].values[no] != "") {
-                if (items[index].type == "link") {
-$popup += '<b>' + items[index].name + '</b> - <a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
+            if (items[index].values[no] !== "") {
+                if (items[index].type === "link") {
+                    $popup += '<b>' + items[index].name + '</b> - <a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
                 } else {
                     $popup += '<b>' + items[index].name + '</b> - ' + items[index].values[no] + '<br/>';
                 }
@@ -143,8 +145,54 @@ $popup += '<b>' + items[index].name + '</b> - <a href="' + items[index].values[n
     $lat = items[ramblersCsvList.list.latitude].values[no];
     $long = items[ramblersCsvList.list.longitude].values[no];
 
-    addMarker($popup, $lat, $long, ramblersMap.markerRoute);
+    var marker = L.marker([$lat, $long], {icon: ramblersMap.markerRoute});
+    var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
+    marker.bindPopup($pop);
+    marker.ramblers_id = no;
+    marker.on('popupopen', function (popup) {
+        var id = popup.sourceTarget.ramblers_id;
+        displayRecord(id);
+    });
+    marker.on('popupclose', function (popup) {
+        removeRecordDisplay();
+    });
+    ramblersMap.markerList.push(marker);
 }
+function displayRecord(no) {
+    var $details;
+    $details = "<div style='font-size:120%'>";
+    var items = ramblersCsvList.list.items
+    for (var index = 0; index < items.length; ++index) {
+        if (items[index].values[no] !== "") {
+            if (items[index].type === "link") {
+                $details += '<b>' + items[index].name + '</b> - <a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
+            } else {
+                $details += '<b>' + items[index].name + '</b> - ' + items[index].values[no] + '<br/>';
+            }
+        }
+    }
+    $details += "</div>";
+    document.getElementById('csvRecord').innerHTML = $details;
+}
+function removeRecordDisplay() {
+    document.getElementById('csvRecord').innerHTML = "";
+}
+function selectMarker(no) {
+    ra_format('Map');
+    for (var index = 0; index < ramblersMap.markerList.length; ++index) {
+        var marker = ramblersMap.markerList[index];
+        if (marker.ramblers_id === no) {
+            ramblersMap.markersCG.zoomToShowLayer(marker, openPopup(marker));
+            ramblersMap.map.panTo(marker.getLatLng());
+        }
+    }
+}
+function openPopup(marker) {
+    setTimeout(function () {
+        marker.openPopup();
+    }, 500);
+}
+
 function ra_format(option) {
     document.getElementById("Map").classList.remove('active');
     document.getElementById("List").classList.remove('active');
@@ -154,6 +202,8 @@ function ra_format(option) {
         case 'List':
             document.getElementById("csvmap").style.display = "none";
             document.getElementById("csvlist").style.display = "inline";
+            var slider = document.getElementById('slider-range-filter');
+            jplist.resetControl(slider);
             break;
         case 'Map':
             document.getElementById("csvlist").style.display = "none";
@@ -168,7 +218,6 @@ function addPagination() {
         return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
     }
 
-    //  var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
     var $div = '<div class="clear"></div>\
             <div data-jplist-control=\"pagination\" \
             data-group=\"group1\" \
@@ -201,21 +250,41 @@ function addPagination() {
     $div += '</div> ';
     return $div;
 }
-function DELETEaddJPlistSortItem(col, title, type, order, selected) {
-    var sel = '';
-    if (selected) {
-        sel = ' data-selected="true"';
-    }
-    var out = '<a class="dropdown-item"href="#" data-path=."' + col +
-            '" data-order="' + order + '" data-type="' + type + '"' + sel + ' >' + title + '</a> ';
-    return out;
-}
-function jplistFilter(group, name) {
-    var out = '<input \
+function jplistFilter(group, item) {
+    var out = "";
+    if (item.type === "text") {
+        out = '<input \
      data-jplist-control="textbox-filter"  data-group="' + group + '" \
-     data-name="my-filter-' + name + '" \
-     data-path=".' + name + '" type="text" \
-     value="" placeholder="Filter by ' + name + '" />';
+     data-name="my-filter-' + item.name + '" \
+     data-path=".' + item.name + '" type="text" \
+     value="" placeholder="Filter by ' + item.name + '" />';
+    }
+    if (item.type === "number") {
+        var min, max;
+        var result = item.values.map(Number);
+        min = result.reduce(function (a, b) {
+            return Math.min(a, b);
+        });
+        max = result.reduce(function (a, b) {
+            return Math.max(a, b);
+        });
+
+        out = '<div class="csv-slider"><div id="slider-range-filter" \
+    data-jplist-control="slider-range-filter" \
+    data-path=".'+item.name+'" \
+    data-group="group1" \
+    data-name="'+item.name+'" \
+    data-min="' + min + '" \
+    data-from="' + min + '" \
+    data-to="' + max + '" \
+    data-max="' + max + '"> \
+ \
+     <b>'+item.name+':</b> <span data-type="value-1"></span> \
+      <div class="jplist-slider" data-type="slider"></div> \
+     <span data-type="value-2"></span>  \
+</div></div>';
+    }
+
     return out;
 }
 function jplistSortButton(group, name, type, order, text) {
