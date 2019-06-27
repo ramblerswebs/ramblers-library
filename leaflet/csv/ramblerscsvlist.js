@@ -133,9 +133,9 @@ function addCSVMarker(no) {
         if (items[index].popup) {
             if (items[index].values[no] !== "") {
                 if (items[index].type === "link") {
-                    $popup += '<b>' + items[index].name + '</b> - <a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
+                    $popup += '<b>' + items[index].name + ': </b><a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
                 } else {
-                    $popup += '<b>' + items[index].name + '</b> - ' + items[index].values[no] + '<br/>';
+                    $popup += '<b>' + items[index].name + ': </b>' + items[index].values[no] + '<br/>';
                 }
             }
         }
@@ -165,9 +165,9 @@ function displayRecord(no) {
     for (var index = 0; index < items.length; ++index) {
         if (items[index].values[no] !== "") {
             if (items[index].type === "link") {
-                $details += '<b>' + items[index].name + '</b> - <a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
+                $details += '<b>' + items[index].name + ': </b><a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
             } else {
-                $details += '<b>' + items[index].name + '</b> - ' + items[index].values[no] + '<br/>';
+                $details += '<b>' + items[index].name + ': </b>' + items[index].values[no] + '<br/>';
             }
         }
     }
