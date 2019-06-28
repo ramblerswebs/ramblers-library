@@ -25,6 +25,7 @@ class RLeafletCsvItem {
     public $northing = false;
     public $linkmarker=false;
     public $type = "text";
+    public $jpclass="";
     public $values = [];
 
     public function __construct($name) {

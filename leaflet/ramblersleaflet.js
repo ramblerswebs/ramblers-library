@@ -200,7 +200,7 @@ function raLoadLeaflet() {
         alert(ev.latlng); // ev is an event object (MouseEvent in this case)
     });
     // help button
-    if (ramblersMap.maphelppage != "") {
+    if (ramblersMap.maphelppage !== "") {
         var helpbutton = new L.Control.DisplayHelp();
         ramblersMap.map.addControl(helpbutton);
     }
@@ -677,7 +677,7 @@ function displayDetails(marker, result) {
     var items = json.records;
     for (i = 0; i < items.length; i++) {
         var item = items[i];
-        if (item.desc == "") {
+        if (item.desc === "") {
             item.desc = "<i>no description</i>";
         }
         out += "<li>" + item.desc + " [" + item.lastread + "/" + item.score + "%]</li>";

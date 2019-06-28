@@ -4,8 +4,7 @@
  * and open the template in the editor.
  */
 
-var L, ramblersMap, ramblersCsvList, jplist;
-
+var L, ramblersMap, ramblersCsvList, jplist, OsGridRef;
 function RamblersCsvList() {
     this.list = null;
     this.isES6 = isES6();
@@ -13,8 +12,9 @@ function RamblersCsvList() {
 
 function displayCsvData() {
     setTagHtml('ra-pagination1', addPagination());
-    displayCSVTable();
     testForMap();
+    displayCSVTable();
+
     if (ramblersCsvList.list.displayMap) {
         ra_format("Map");
         ramblersMap.map.invalidateSize();
@@ -42,7 +42,63 @@ function testForMap() {
     }
     if (ramblersCsvList.list.longitude > -1 && ramblersCsvList.list.latitude > -1) {
         ramblersCsvList.list.displayMap = true;
+        return;
     }
+// search for gridref
+    ramblersCsvList.list.gridref = -1;
+    for (var index = 0; index < ramblersCsvList.list.items.length; ++index) {
+
+        var item = ramblersCsvList.list.items[index];
+        if (item.gridref) {
+            ramblersCsvList.list.gridref = index;
+            calculateLatLng();
+            return;
+        }
+    }
+
+}
+function calculateLatLng() {
+    var items = ramblersCsvList.list.items;
+    var no = ramblersCsvList.list.gridref;
+    var grvalues = items[no].values;
+    var lat = [];
+    var long = [];
+    var newitem;
+    for (var index = 0; index < grvalues.length; ++index) {
+        try {
+            var grid = OsGridRef.parse(grvalues[index]);
+            var latlng = OsGridRef.osGridToLatLon(grid);
+            lat.push(latlng.lat.toFixed(6));
+            long.push(latlng.lon.toFixed(6));
+        } catch (err) {
+            lat.push(0);
+            long.push(0);
+        }
+
+    }
+    newitem = addNewItem("Latitude", lat);
+    newitem.latitude = true;
+    newitem.table = true;
+    newitem = addNewItem("Longitude", long);
+    newitem.longitude = true;
+    newitem.table = true;
+    ramblersCsvList.list.latitude = ramblersCsvList.list.items.length - 2;
+    ramblersCsvList.list.longitude = ramblersCsvList.list.items.length - 1;
+    ramblersCsvList.list.displayMap = true;
+}
+function addNewItem(name, values) {
+    var newitem = {name: "", sort: false, table: false, filter: false, popup: false, gridref: false}
+    newitem.name = name;
+    newitem.values = values;
+    newitem.latitude = false;
+    newitem.longitude = false;
+    newitem.easting = false;
+    newitem.northing = false;
+    newitem.linkmarker = false;
+    newitem.type = "text";
+    ramblersCsvList.list.items.push(newitem);
+    newitem.jpclass="var"+ramblersCsvList.list.items.length;
+    return newitem;
 }
 function displayCSVTable() {
     var out, index;
@@ -69,8 +125,8 @@ function displayCSVHeader(items) {
         item = items[index];
         if (item.table) {
             if (item.sort) {
-                sort1 = jplistSortButton("group1", item.name, item.type, "asc", "▲");
-                sort2 = jplistSortButton("group1", item.name, item.type, "desc", "▼");
+                sort1 = jplistSortButton("group1", item.name,item.jpclass, item.type, "asc", "▲");
+                sort2 = jplistSortButton("group1", item.name,item.jpclass, item.type, "desc", "▼");
             }
             out += "<th>" + item.name + " " + sort1 + " " + sort2 + "</th>";
             if (item.filter) {
@@ -108,7 +164,7 @@ function displayCSVRow(items, no) {
             if (item.linkmarker) {
                 value = " <a href='javascript:selectMarker(" + no + ")' >" + item.values[no] + "</a>";
             }
-            out += "<td class='" + item.name + "'>" + value + "</td>";
+            out += "<td class='" + item.jpclass + "'>" + value + "</td>";
         }
     }
     out += '</tr>';
@@ -141,22 +197,22 @@ function addCSVMarker(no) {
         }
     }
     $popup += "</div>";
-
     $lat = items[ramblersCsvList.list.latitude].values[no];
     $long = items[ramblersCsvList.list.longitude].values[no];
-
-    var marker = L.marker([$lat, $long], {icon: ramblersMap.markerRoute});
-    var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
-    marker.bindPopup($pop);
-    marker.ramblers_id = no;
-    marker.on('popupopen', function (popup) {
-        var id = popup.sourceTarget.ramblers_id;
-        displayRecord(id);
-    });
-    marker.on('popupclose', function (popup) {
-        removeRecordDisplay();
-    });
-    ramblersMap.markerList.push(marker);
+    if ($lat !== 0 && $long !== 0) {
+        var marker = L.marker([$lat, $long], {icon: ramblersMap.markerRoute});
+        var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
+        marker.bindPopup($pop);
+        marker.ramblers_id = no;
+        marker.on('popupopen', function (popup) {
+            var id = popup.sourceTarget.ramblers_id;
+            displayRecord(id);
+        });
+        marker.on('popupclose', function (popup) {
+            removeRecordDisplay();
+        });
+        ramblersMap.markerList.push(marker);
+    }
 }
 function displayRecord(no) {
     var $details;
@@ -196,7 +252,6 @@ function openPopup(marker) {
 function ra_format(option) {
     document.getElementById("Map").classList.remove('active');
     document.getElementById("List").classList.remove('active');
-
     document.getElementById(option).classList.add('active');
     switch (option) {
         case 'List':
@@ -255,8 +310,8 @@ function jplistFilter(group, item) {
     if (item.type === "text") {
         out = '<input \
      data-jplist-control="textbox-filter"  data-group="' + group + '" \
-     data-name="my-filter-' + item.name + '" \
-     data-path=".' + item.name + '" type="text" \
+     data-name="my-filter-' + item.jpclass + '" \
+     data-path=".' + item.jpclass + '" type="text" \
      value="" placeholder="Filter by ' + item.name + '" />';
     }
     if (item.type === "number") {
@@ -268,18 +323,17 @@ function jplistFilter(group, item) {
         max = result.reduce(function (a, b) {
             return Math.max(a, b);
         });
-
         out = '<div class="csv-slider"><div id="slider-range-filter" \
     data-jplist-control="slider-range-filter" \
-    data-path=".'+item.name+'" \
+    data-path=".' + item.jpclass + '" \
     data-group="group1" \
-    data-name="'+item.name+'" \
+    data-name="' + item.jpclass + '" \
     data-min="' + min + '" \
     data-from="' + min + '" \
     data-to="' + max + '" \
     data-max="' + max + '"> \
  \
-     <b>'+item.name+':</b> <span data-type="value-1"></span> \
+     <b>' + item.name + ':</b> <span data-type="value-1"></span> \
       <div class="jplist-slider" data-type="slider"></div> \
      <span data-type="value-2"></span>  \
 </div></div>';
@@ -287,10 +341,10 @@ function jplistFilter(group, item) {
 
     return out;
 }
-function jplistSortButton(group, name, type, order, text) {
+function jplistSortButton(group, name,varclass, type, order, text) {
     var out = '<button class="csvlistsortbutton' + order + '" \
         data-jplist-control="sort-buttons" \
-        data-path=".' + name + '" \
+        data-path=".' + varclass + '" \
         data-group="' + group + '" \
         data-order="' + order + '" \
         data-type="' + type + '" \

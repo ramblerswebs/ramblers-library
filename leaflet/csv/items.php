@@ -24,6 +24,7 @@ class RLeafletCsvItems {
 
     public function addItem($item) {
         $this->items[] = $item;
+        $item->jpclass="var".count($this->items);
     }
 
     public function getItem($no) {
