@@ -15,6 +15,8 @@ class RLeafletCsvList extends RLeafletMap {
 
     private $filename = "";
     private $list;
+    private $diagnostic = false;
+    public $paginationDefault = 10;
 
     public function __construct($filename) {
         parent::__construct();
@@ -22,8 +24,43 @@ class RLeafletCsvList extends RLeafletMap {
     }
 
     public function display() {
-        $this->readCSV();
+        $ok = $this->readCSV();
+        If (!$ok) {
+            $application = JFactory::getApplication();
+            $application->enqueueMessage(JText::_("Unable to open the file: " . $this->filename), 'error');
+            return;
+        }
         $list = json_encode($this->list);
+        if ($list === false) {
+            $err = "CSV FILE ERROR";
+            switch (json_last_error()) {
+                case JSON_ERROR_NONE:
+                    $err.= ' - No errors';
+                    break;
+                case JSON_ERROR_DEPTH:
+                    $err.= ' - Maximum stack depth exceeded';
+                    break;
+                case JSON_ERROR_STATE_MISMATCH:
+                    $err.= ' - Underflow or the modes mismatch';
+                    break;
+                case JSON_ERROR_CTRL_CHAR:
+                    $err.= ' - Unexpected control character found';
+                    break;
+                case JSON_ERROR_SYNTAX:
+                    $err.= ' - Syntax error, malformed JSON';
+                    break;
+                case JSON_ERROR_UTF8:
+                    $err.= ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+                    break;
+                default:
+                    $err.= ' - Unknown error';
+                    break;
+            }
+            $application = JFactory::getApplication();
+            $application->enqueueMessage(JText::_($err), 'error');
+            return;
+        }
+
 
         $this->addMapScript($list);
         $this->help_page = "https://maphelp.ramblers-webs.org.uk/list-of-walking-routes.html";
@@ -45,6 +82,7 @@ class RLeafletCsvList extends RLeafletMap {
         echo "<p> </p>";
         //echo "<div id = \"gpxheader\" ><h4>Click on any walk to display route</h4></div>";
         $text = " ramblersCsvList =new RamblersCsvList; addCsvItems();";
+        $text .= "ramblersCsvList.paginationDefault=" . $this->paginationDefault . ";";
         $text .= "displayCsvData();";
         parent::addContent($text);
         parent::display();
@@ -63,28 +101,26 @@ class RLeafletCsvList extends RLeafletMap {
 
         echo "<div id='ra-pagination1'></div>";
 
-        echo "<div id=\"dataTab\">Program error if this does not vanish!</div>";
+        echo "<div id=\"dataTab\">Program loading: please give this a minute or so. If this does not vanish then please contact the web master!</div>";
         echo "</div>";
         echo "</div>";
-
-
-        $a = 1;
     }
 
     private function readCSV() {
         $row = 1;
         $item = null;
         $this->list = new RLeafletCsvItems();
-        echo "<table>";
         if (($handle = fopen($this->filename, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 $num = count($data);
-                if ($row == 1) {
-                    //            echo RHtml::addTableHeader($data);
-                } else {
-                    //            echo RHtml::addTableRow($data);
+                if ($this->diagnostic) {
+                    if ($row == 1) {
+                        echo "<table>";
+                        echo RHtml::addTableHeader($data);
+                    } else {
+                        echo RHtml::addTableRow($data);
+                    }
                 }
-
                 for ($col = 0; $col < $num; $col++) {
                     $value = $data[$col];
                     if ($row == 1) {
@@ -109,10 +145,14 @@ class RLeafletCsvList extends RLeafletMap {
             if ($item != null) {
                 $this->list->rows = count($item->values);
             }
-
-            //      echo "</table>";
+            if ($this->diagnostic) {
+                echo "</table>";
+            }
+        } else {
+            return false;
         }
         fclose($handle);
+        return true;
     }
 
     private function addMapScript($list) {

@@ -7,6 +7,7 @@
 var L, ramblersMap, ramblersCsvList, jplist, OsGridRef;
 function RamblersCsvList() {
     this.list = null;
+    this.paginationDefault=10;
     this.isES6 = isES6();
 }
 
@@ -276,7 +277,7 @@ function addPagination() {
     var $div = '<div class="clear"></div>\
             <div data-jplist-control=\"pagination\" \
             data-group=\"group1\" \
-            data-items-per-page=\"10\" \
+            data-items-per-page=\"'+ramblersCsvList.paginationDefault+'\" \
             data-current-page=\"0\" \
             data-name=\"pagination1\"> \
             <span data-type=\"info\"> \

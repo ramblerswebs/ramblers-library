@@ -271,3 +271,20 @@ table tr td.active {
 table tr td.ra-tab:hover {
     background-color: #BBBBBB;
 } 
+.group-icon {
+    background: rgba(120, 35, 39, 0.7);
+    padding:5px;
+    border-radius: 5px;
+    font-weight: bold;
+    color:white;
+}
+
+.group-icon.a {
+    background: rgba(120, 35, 39, 0.7);
+}
+.group-icon.g {
+    background: rgba(0, 122, 135, 0.7);
+}
+.group-icon.s {
+    background: rgba(139, 165, 156, 0.7);
+}

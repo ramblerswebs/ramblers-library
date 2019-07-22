@@ -40,26 +40,27 @@ L.control.mouse = function (options) {
 
 L.Control.PostcodeStatus = L.Control.extend({
     options: {
-        position: 'bottomleft',
-        zoominString: 'Zoom in and right click/tap hold to see nearby postcodes',
-        displayString: 'Right click/tap hold to see nearby postcodes'
+        position: 'bottomleft'
     },
     displaymap: null,
     onAdd: function (map) {
         this.map = map;
+        this._first = true;
         this._placeslayer = null;
         _mouse_this = this;
-        this.map.postcodelayer = L.featureGroup([]);
-        this.map.postcodelayer.addTo(this.map);
-        this.map.placePointLayer = L.featureGroup([]);
-        this.map.placePointLayer.addTo(this.map);
+        this.map.mouseLayer = L.featureGroup([]);
+        this.map.mouseLayer.addTo(this.map);
+
         this.enabled = true;
         //  L.control.layers( overlayMaps).addTo(this.map);
         this._container = L.DomUtil.create('div', 'leaflet-control-postcodeposition');
         L.DomEvent.disableClickPropagation(this._container);
         this.map.on('zoomend', this._onZoomEnd, this);
         this.map.on('contextmenu', this._onRightClick, this);
-        this._container.innerHTML = this.options.zoominString;
+        var text = 'Right click/tap hold to see <select id="ra-mouse-options"><option value="details">Location Details</option><option value="postcode">nearby Postcodes</option><option value="starting">nearby Starting Places</option><option value="groups">nearby Groups</option></select>';
+
+        //  this._container.innerHTML = this.options.zoominString;
+        this._container.innerHTML = text;
         return this._container;
     },
     onRemove: function () {
@@ -70,37 +71,45 @@ L.Control.PostcodeStatus = L.Control.extend({
         this.enabled = status === true;
     },
     _onRightClick: function (e) {
+        if (this._first) {
+            this._first = false;
+            document.getElementById("ra-mouse-options").addEventListener("focus", this._clearBoth);
+
+        }
+        this._clearBoth();
+        var ele = document.getElementById("ra-mouse-options");
+        var option = ele.options[ele.selectedIndex].value;
+
         if (this.enabled) {
-            if (e.originalEvent.altKey === false) {
-                this._displayPostcodes(e);
-            } else {
-                if (this._placeslayer === null) {
-                    this._addPlacesLayers();
-                }
-                this._displayPlaces(e);
+            switch (option) {
+                case "details":
+                    this._displayDetails(e);
+                    break;
+                case "postcode":
+                    this._displayPostcodes(e);
+                    break;
+                case "starting":
+                    if (this._placeslayer === null) {
+                        this._addPlacesLayers();
+                    }
+                    this._displayPlaces(e);
+                    break;
+                case "groups":
+                    this._displayGroups(e);
+                    break;
             }
         }
     },
     _onZoomEnd: function (e) {
-        var zoom = this.map.getZoom();
-        if (zoom <= 12) {
-            this._container.innerHTML = this.options.zoominString;
-            if (zoom <= 9) {
-                this.map.postcodelayer.clearLayers();
-                this._clearPlacesLayers();
-            }
-        } else {
-            this._container.innerHTML = this.options.displayString;
-        }
+//        var zoom = this.map.getZoom();
     },
-    _displayPostcodes: function (e) {
+    _displayDetails: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
         var gr10 = grid.toString(8);
         var i;
         var marker;
-        var zoom = this.map.getZoom();
         var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
         if (gr !== "") {
             desc += "<br/><b>Grid Reference: </b>" + gr +
@@ -109,66 +118,90 @@ L.Control.PostcodeStatus = L.Control.extend({
 // desc += getBrowserStatus();
         var results = encodeShortest(e.latlng.lat, e.latlng.lng);
         if (results.length > 0) {
-            desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode + "<br/>";
+            desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode;
         }
+        var pluscode = OpenLocationCode.encode(e.latlng.lat, e.latlng.lng);
+        desc += '<br/><b><a href="https://plus.codes" target="_blank">Plus Code:</a> </b>' + pluscode + "<br/>";
         if (gr !== "") {
             desc += '<a href="javascript:photos(\'' + gr10 + '\')">[Photos]</a>';
             desc += '<a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
         }
         desc += '<a href="javascript:googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
         desc += '<a href="javascript:directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
-        this.map.postcodelayer.clearLayers();
+        this.map.mouseLayer.clearLayers();
         var msg = "   ";
         var point = L.marker(p).bindPopup(msg);
-        this.map.postcodelayer.addLayer(point);
+        this.map.mouseLayer.addLayer(point);
         point.getPopup().setContent(desc);
         if (gr !== "") {
             point.openPopup();
-            if (zoom > 12) {
-                point.getPopup().setContent(desc + "<br/><b>Searching for postcodes ...</b>");
-// get postcodes around this point       
-                var east = Math.round(grid.easting);
-                var north = Math.round(grid.northing);
-                var url = "https://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=30";
-                getJSON(url, function (err, items) {
-                    if (err !== null) {
-                        var msg = "Error: Something went wrong: " + err;
-                        point.getPopup().setContent(msg);
+        } else {
+            desc += "<br/>Outside OS Grid";
+            point.getPopup().setContent(desc);
+            point.openPopup();
+        }
+    },
+    _displayPostcodes: function (e) {
+        var p = new LatLon(e.latlng.lat, e.latlng.lng);
+        var grid = OsGridRef.latLonToOsGrid(p);
+        var gr = grid.toString(6);
+        var i;
+        var marker;
+        var desc = " ";
+
+        this.map.mouseLayer.clearLayers();
+        var msg = "   ";
+        var point = L.marker(p).bindPopup(msg);
+        this.map.mouseLayer.addLayer(point);
+
+        if (gr !== "") {
+            point.getPopup().setContent("<b>Searching for postcodes ...</b>");
+            point.openPopup();
+            // get postcodes around this point       
+            var east = Math.round(grid.easting);
+            var north = Math.round(grid.northing);
+            var url = "https://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=30";
+            getJSON(url, function (err, items) {
+                if (err !== null) {
+                    var msg = "Error: Something went wrong: " + err;
+                    point.getPopup().setContent(msg);
+                } else {
+                    if (items.length === 0) {
+                        var closest = "No postcodes found within 10km";
+                        point.getPopup().setContent(closest);
                     } else {
-                        if (items.length === 0) {
-                            var closest = "No postcodes found within 10km";
-                            point.getPopup().setContent(closest);
-                        } else {
-                            for (i = 0; i < items.length; i++) {
+                        for (i = 0; i < items.length; i++) {
 
-                                var item = items[i];
+                            var item = items[i];
 
-                                var popup = item.Postcode + "<br />     Distance: " + kFormatter(Math.round(item.Distance)) + "m";
-                                var easting = item.Easting;
-                                var northing = item.Northing;
-                                var gr = new OsGridRef(easting, northing);
-                                var latlong = OsGridRef.osGridToLatLon(gr);
-                                var pt = new L.latLng(latlong.lat, latlong.lon);
-                                var style;
-                                if (i === 0) {
-                                    marker = L.marker(pt, {icon: ramblersMap.postcodeIconClosest}).bindPopup(popup);
-                                    style = {color: 'green', weight: 3, opacity: 0.2};
-                                } else {
-                                    marker = L.marker(pt, {icon: ramblersMap.postcodeIcon}).bindPopup(popup);
-                                    style = {color: 'blue', weight: 3, opacity: 0.2};
-                                }
-                                _mouse_this.map.postcodelayer.addLayer(marker);
-                                _mouse_this.map.postcodelayer.addLayer(L.polyline([pt, p], style));
+                            var popup = item.Postcode + "<br />     Distance: " + kFormatter(Math.round(item.Distance)) + "m";
+                            var easting = item.Easting;
+                            var northing = item.Northing;
+                            var gr = new OsGridRef(easting, northing);
+                            var latlong = OsGridRef.osGridToLatLon(gr);
+                            var pt = new L.latLng(latlong.lat, latlong.lon);
+                            var style;
+                            if (i === 0) {
+                                marker = L.marker(pt, {icon: ramblersMap.postcodeIconClosest}).bindPopup(popup);
+                                style = {color: 'green', weight: 3, opacity: 0.2};
+                            } else {
+                                marker = L.marker(pt, {icon: ramblersMap.postcodeIcon}).bindPopup(popup);
+                                style = {color: 'blue', weight: 3, opacity: 0.2};
                             }
+                            _mouse_this.map.mouseLayer.addLayer(marker);
+                            _mouse_this.map.mouseLayer.addLayer(L.polyline([pt, p], style));
                         }
-                        point.getPopup().setContent(desc);
-                        point.openPopup();
                     }
+                    point.getPopup().setContent("<b>" + items.length + " Postcodes found</b>");
+                    point.openPopup();
+                    var bounds = _mouse_this.map.mouseLayer.getBounds();
+                    _mouse_this.map.fitBounds(bounds, {padding: [150, 150]});
+                }
+                setTimeout(function (point) {
+                    _mouse_this.map.removeLayer(point);
+                }, 3000, point);
+            });
 
-                });
-            } else {
-                point.getPopup().setContent(desc + "<br/><b>Zoom in and right click/tap hold to see nearby postcodes</b>");
-            }
         } else {
             desc += "<br/>Outside OS Grid";
             point.getPopup().setContent(desc);
@@ -176,32 +209,121 @@ L.Control.PostcodeStatus = L.Control.extend({
         }
 
     },
+    _displayGroups: function (e) {
+        var p = new LatLon(e.latlng.lat, e.latlng.lng);
+        var i;
+        var marker;
+        var msg = "<b>Searching for Ramblers Groups ...</b>";
+        this.map.mouseLayer.clearLayers();
+        var point = L.marker(p).bindPopup(msg);
+        this.map.mouseLayer.addLayer(point);
+        //  point.getPopup().setContent(msg);
+        point.openPopup();
+
+        var $latitude = e.latlng.lat;
+        var $longitude = e.latlng.lng;
+        var url = "https://groups.theramblers.org.uk/index.php?latitude=" + $latitude + "&longitude=" + $longitude + "&dist=50&maxpoints=60";
+        getJSON(url, function (err, items) {
+            if (err !== null) {
+                var msg = "Error: Something went wrong: " + err;
+                point.getPopup().setContent(msg);
+            } else {
+                if (items.length === 0) {
+                    var closest = "No Ramblers Groups found within 50km";
+                    point.getPopup().setContent(closest);
+                } else {
+                    msg = items.length + " Ramblers Groups found within 50km";
+                    point.getPopup().setContent(msg);
+                    point.openPopup();
+                    for (i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        var popup = "<b>";
+                        switch (item.scope) {
+                            case "A":
+                                popup += "Area: ";
+                                break;
+                            case "G":
+                                popup += "Group: ";
+                                break;
+                            case "S":
+                                popup += "Special Group: ";
+                                break;
+                        }
+                        popup += item.name + "</b><br/>" + item.description;
+                        popup += "<br/><a href='" + item.url + "' target='_blank'>More Info</a>";
+                        popup += "<br/><a href='https://www.ramblers.org.uk/find-a-walk.aspx?layer=walks&tab=walks&group=" + item.groupCode + "' target='_blank' >Group walks</a>";
+                        if ("status" in item) {
+                            if (item.status === "Hosted") {
+                                popup += "<br/>Web site: <a href='http://" + item.website + "' target='_blank' >" + item.website + "</a>";
+                            }
+                            if (item.scope !== "A") {
+                                popup += "<br/>Belongs to " + item.areaname + " area";
+                            }
+                        }
+                        var $iclass = "group-icon " + item.scope.toLowerCase();
+                        //   var style;
+                        var pt = new L.latLng(item.latitude, item.longitude);
+                        var title = item.name;
+                        var icon = L.divIcon({className: $iclass, iconSize: null, html: title});
+
+                        marker = L.marker(pt, {icon: icon}).bindPopup(popup);
+                        //   style = {color: 'blue', weight: 3, opacity: 0.2};
+
+                        _mouse_this.map.mouseLayer.addLayer(marker);
+
+                    }
+                    var bounds = _mouse_this.map.mouseLayer.getBounds();
+                    _mouse_this.map.fitBounds(bounds, {padding: [150, 150]});
+                }
+            }
+            setTimeout(function (point) {
+                _mouse_this.map.removeLayer(point);
+            }, 3000, point);
+        });
+
+
+
+    },
+    _clearBoth: function () {
+        _mouse_this.map.mouseLayer.clearLayers();
+        _mouse_this._clearPlacesLayers();
+    },
     _addPlacesLayers: function () {
         this._placeslayer = [];
         for (var i = 1; i < 6; i++) {
-            this._placeslayer[i] = L.layerGroup([]);
+            this._placeslayer[i] = L.featureGroup([]);
             this._placeslayer[i].addTo(ramblersMap.map);
             ramblersMap.mapControl.addOverlay(this._placeslayer[i], "<span class='ramblers-places-icon'><img src='ramblers/leaflet/images/" + i + "star.png' alt='" + i + " Star'> places</span>");
         }
     },
     _clearPlacesLayers: function () {
-        if (this._placeslayer !== null) {
+        if (_mouse_this._placeslayer !== null) {
             for (i = 1; i < 6; i++) {
-                this._placeslayer[i].clearLayers();
+                _mouse_this._placeslayer[i].clearLayers();
             }
         }
+    },
+    _getPlacesBounds: function () {
+        var bounds;
+        var bnds;
+        bounds = this._placeslayer[1].getBounds();
+        for (var i = 2; i < 6; i++) {
+            bnds = this._placeslayer[i].getBounds();
+            bounds = bounds.extend(bnds);
+        }
+        return bounds;
     },
     _displayPlaces: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
         var i;
-        var desc = "<b>Meeting/Starting Places<b><br/><b>Grid Ref " + gr + "</b><br/><b>Latitude: </b>" + p.lat.toFixed(5) + " ,  <b>Longitude: </b>" + p.lon.toFixed(5);
+        var desc = "<b><a href='https://maphelp.ramblers-webs.org.uk/startingplaces.html' target='_blanks'>Meeting/Starting Places</a><b>";
         this._clearPlacesLayers();
-        this.map.placePointLayer.clearLayers();
+        this.map.mouseLayer.clearLayers();
         var msg = "   ";
         var point = L.marker(p).bindPopup(msg);
-        this.map.placePointLayer.addLayer(point);
+        this.map.mouseLayer.addLayer(point);
         point.getPopup().setContent(desc);
         if (gr !== "") {
             point.getPopup().setContent(desc + "<br/><b>Searching for Ramblers meeting/starting places ...</b>");
@@ -233,6 +355,8 @@ L.Control.PostcodeStatus = L.Control.extend({
                         } else {
                             desc += "<br/>" + no + " locations found within 10Km";
                         }
+                        var bounds = _mouse_this._getPlacesBounds();
+                        _mouse_this.map.fitBounds(bounds, {padding: [150, 150]});
                     }
                     point.getPopup().setContent(desc);
                     // point.openPopup();
@@ -240,7 +364,7 @@ L.Control.PostcodeStatus = L.Control.extend({
                 }
                 setTimeout(function (point) {
                     _mouse_this.map.removeLayer(point);
-                }, 3000, point);
+                }, 10000, point);
             });
 
         } else {

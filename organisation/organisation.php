@@ -27,7 +27,7 @@ class ROrganisation {
     }
 
     public function load() {
-        $url = "http://www.ramblers.org.uk/api/lbs/groups/";
+        $url = "https://www.ramblers.org.uk/api/lbs/groups/";
         $CacheTime = 3 * 4 * 7 * 60 * 24; // three months in minutes
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
@@ -94,40 +94,6 @@ class ROrganisation {
         }
     }
 
-    private function readFeedDELETE($rafeedurl) {
-
-        $contents = $srfr->getFeed($rafeedurl);
-        switch ($contents) {
-            case NULL:
-                echo '<b>Groups feed: Unable to read feed: ' . $rafeedurl . '</b>';
-                break;
-            case "":
-                echo '<b>Groups feed: No Groups found</b>';
-                break;
-            case "[]":
-                echo '<b>Groups feed empty: No Groups found</b>';
-                break;
-            default:
-                $json = json_decode($contents);
-                unset($contents);
-                $error = 0;
-                if (json_last_error() == JSON_ERROR_NONE) {
-                    foreach ($json as $value) {
-                        $ok = $this->checkJsonProperties($value);
-                        $error+=$ok;
-                    }
-                    if ($error > 0) {
-                        echo '<br/><b>Groups feed: Json file format not supported</b>';
-                    } else {
-                        $this->convert($json);
-                    }
-                    unset($json);
-                    break;
-                } else {
-                    echo '<br/><b>Groups feed: feed is not in Json format</b>';
-                }
-        }
-    }
 
     private function convert($json) {
         $this->areas = array();

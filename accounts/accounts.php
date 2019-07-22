@@ -113,26 +113,35 @@ class RAccounts {
         switch (strlen($item->code) == 2) {
             case true:
                 $title = str_replace("'", "", $item->areaname);
-                $icon = "ramblersMap.walkingarea";
+               // $icon = "ramblersMap.walkingarea";
+                $iclass="group-icon a";
+                $class = "groupA" ;
                 $text = "Area: " . $title . " [" . $item->code . "]";
                 break;
             case false:
                 $title = str_replace("'", "", $item->groupname);
-                $icon = "ramblersMap.walkinggroup";
+              //  $icon = "ramblersMap.walkinggroup";
+                 $iclass="group-icon g";
+                 $class = "groupG" ;
                 $text = str_replace("'", "", "Area: " . $item->areaname) . "<br/>";
                 if (strlen($item->code) == 4) {
                     $text .= "Group: " . $title . " [" . $item->code . "]";
                 }
                 break;
         }
-        $class = "website";
-        $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" . $url . "</a></div>";
-        $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
+      //  $class = "website";
+     //   $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" . $url . "</a></div>";
+     //   $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
+        
+       // $class = "group" . $this->scope;
+        $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" . $title . "</a></div>";
+        $icon = "myicon=L.divIcon({className: '" . $iclass . "', iconSize: null, html: '" . $title . "'});  ";
+        $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", myicon);";
 
-        return $marker;
+        return $icon.$marker;
     }
 
-    private function readAccounts() {
+    public function readAccounts() {
 
         if (RSqlUtils::tableExists(ACCOUNTTABLE)) {
             $db = JFactory::getDbo();
@@ -147,6 +156,9 @@ class RAccounts {
             // Load the results as a list of stdClass objects
             $this->dbresults = $db->loadObjectList();
         }
+    }
+    public function getResults(){
+        return $this->dbresults;
     }
 
     private function getAccounts($sortbystatus) {

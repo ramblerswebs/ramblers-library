@@ -54,6 +54,8 @@ class RLeafletMap {
         $document->addScript("ramblers/vendors/leaflet1.3.4/leaflet.js", "text/javascript");
         $document->addScript("ramblers/leaflet/ramblersleaflet.js", "text/javascript");
         $document->addStyleSheet("ramblers/leaflet/ramblersleaflet.css", "text/css");
+      // add script for Google Plus codes https://plus.codes
+        $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/openlocationcode/1.0.3/openlocationcode.js", "text/javascript");
         if ($options->search) {
             $path = "ramblers/vendors/leaflet-control-geocoder-1.5.8/dist/";
             $document->addStyleSheet($path . "Control.Geocoder.css", "text/css");

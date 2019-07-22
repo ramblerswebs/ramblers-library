@@ -268,7 +268,7 @@ function createMouseMarkers() {
         iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
         shadowAnchor: [0, 0], // the same for the shadow
         popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
-      });
+    });
     ramblersMap.postcodeIconClosest = L.icon({
         iconUrl: ramblersMap.base + 'ramblers/leaflet/images/postcode-icon-closest.png',
         iconSize: [24, 18], // size of the icon
@@ -502,6 +502,9 @@ function getMouseMoveAction(e) {
     var lng = e.latlng.lng.toFixed(5);
     var lat = e.latlng.lat.toFixed(5);
     var value = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
+    var pluscode = OpenLocationCode.encode(e.latlng.lat, e.latlng.lng);
+    value += '<br/><b><a href="https://plus.codes" target="_blank">Plus Code:</a> </b>' + pluscode + "<br/>";
+
     return  gridref + value;
 }
 

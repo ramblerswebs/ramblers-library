@@ -561,7 +561,7 @@ function displayWalk($walk) {
     if (!$display) {
         return false;
     }
- 
+
     return $display;
 }
 
@@ -854,7 +854,7 @@ function getWalkValue($walk, $option, addlink) {
             out = $walk.localGrade;
             break;
         case "{contact}":
-            out="";
+            out = "";
             if ($walk.isLeader) {
                 $prefix += "Leader";
             } else {
@@ -1138,16 +1138,24 @@ function addLocationInfo($title, $location, $detailsPageUrl) {
 
 function addItemInfo($class, $title, $value) {
     var $html = "";
+    var $any = false;
+    var $name;
     if ($value !== null) {
         $html += "<div class='" + $class + "'><b>" + $title + "</b>";
         $html += "<ul>";
         var $items = $value.items;
-        var index, len, $item;
+        var index, len;
         for (index = 0, len = $items.length; index < len; ++index) {
-            $item = $items[index];
-            $html += "<li class='item'>" + $item.name + "</li>";
+            $name = $items[index].name;
+            if ($name !== "") {
+                $html += "<li class='item'>" + $name + "</li>";
+                $any = true;
+            }
         }
         $html += "</ul></div>";
+    }
+    if (!$any) {
+        $html = "";
     }
     return $html;
 }

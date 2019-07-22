@@ -88,7 +88,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         }
         echo "<div id='ra-pagination1'></div>";
 
-        echo "<div id=\"dataTab\">Program error if this does not vanish!</div>";
+        echo "<div id=\"dataTab\">Program loading: please give this a minute or so. If this does not vanish then please contact the web master!</div>";
         echo "</div>";
         echo "</div>";
     }

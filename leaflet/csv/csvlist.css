@@ -2,6 +2,11 @@
     Created on : 26-Jun-2019, 14:22:33
     Author     : Chris Vaughan
 */
+[data-jplist-control] {
+    display: flex;
+    justify-content: space-between;
+}
+
 button.csvlistsortbuttonasc,
 button.csvlistsortbuttondesc {
     font-size:15px;
