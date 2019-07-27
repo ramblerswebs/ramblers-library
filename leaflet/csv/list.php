@@ -63,7 +63,7 @@ class RLeafletCsvList extends RLeafletMap {
 
 
         $this->addMapScript($list);
-        $this->help_page = "https://maphelp.ramblers-webs.org.uk/list-of-walking-routes.html";
+        $this->help_page = "https://maphelp.ramblers-webs.org.uk/csvlist.html";
         $this->options->cluster = true;
         $this->options->displayElevation = false;
         $this->options->fullscreen = true;
