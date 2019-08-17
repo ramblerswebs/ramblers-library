@@ -7,6 +7,7 @@ L.Control.ReverseRoute = L.Control.extend({
     onAdd: function (map) {
         this._map = map;
         this.enabled = false;
+        _ra_gpx_reverse_this = this;
         var containerAll = L.DomUtil.create('div', 'leaflet-control-reverse-route ra-reverse-toolbar-button-disabled');
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control', containerAll);
         this._createIcon(container);
@@ -16,26 +17,25 @@ L.Control.ReverseRoute = L.Control.extend({
         L.DomEvent.on(this.link, 'click', this._reverse_routes, this);
         this._appendButtons(containerAll);
         this.holder.style.display = "none";
-        ra_gpx_reverse_this = this;
         return containerAll;
     },
     setRouteItems: function (itemsCollection) {
         this._itemsCollection = itemsCollection;
     },
     setStatus: function (status) {
-        ra_gpx_reverse_this.enabled = true;
+        _ra_gpx_reverse_this.enabled = true;
         if (status == "off") {
-            ra_gpx_reverse_this.enabled = false;
+            _ra_gpx_reverse_this.enabled = false;
         }
         if (status == "auto") {
-            ra_gpx_reverse_this.enabled = false;
+            _ra_gpx_reverse_this.enabled = false;
             this._itemsCollection.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
-                    ra_gpx_reverse_this.enabled = true;
+                    _ra_gpx_reverse_this.enabled = true;
                 }
             });
         }
-        if (ra_gpx_reverse_this.enabled) {
+        if (_ra_gpx_reverse_this.enabled) {
             L.DomUtil.removeClass(this._container, 'ra-reverse-toolbar-button-disabled');
             this.link.title = this.options.title;
         } else {
@@ -52,11 +52,12 @@ L.Control.ReverseRoute = L.Control.extend({
     },
     _appendButtons: function (container) {
         this.holder = L.DomUtil.create('div', 'leaflet-gpx-options', container);
+
         this.status = L.DomUtil.create('div', 'status', this.holder);
         this.status.innerHTML = "Route reversed";
     },
     _reverse_routes: function (evt) {
-        if (ra_gpx_reverse_this.enabled) {
+        if (_ra_gpx_reverse_this.enabled) {
             this._itemsCollection.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
                     var points = layer.getLatLngs();
@@ -69,8 +70,9 @@ L.Control.ReverseRoute = L.Control.extend({
             this._itemsCollection.fire('reverse:reversed');
             this.holder.style.display = "inline-block";
             setTimeout(function () {
-                ra_gpx_reverse_this.holder.style.display = "none";
-            }, 2000);
+                _ra_gpx_reverse_this.holder.style.display = "none";
+            }, 3000);
+            //blurt('Route(s) reversed')
         }
     }
 });

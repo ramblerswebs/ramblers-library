@@ -370,7 +370,7 @@ function addPagination() {
 </span></div><div class="clear"></div>\
 <div data-jplist-control=\"pagination\" \
             data-group=\"group1\" \
-            data-items-per-page=\"10\" \
+            data-items-per-page=\"20\" \
             data-current-page=\"0\" \
             data-name=\"pagination1\"> \
             <span data-type=\"info\"> \

@@ -6,6 +6,7 @@ L.Control.GpxUpload = L.Control.extend({
     onAdd: function (map) {
         this._map = map;
         this.enabled = true;
+        this.filename = "";
         ra_gpx_upload_this = this;
         this._info = {
             name: "",
@@ -132,7 +133,7 @@ L.Control.GpxUpload = L.Control.extend({
         this._info.desc = '';
         this._info.author = '';
         this._info.date = '';
-        ra_gpx_upload_this = this;
+      //  ra_gpx_upload_this = this;
         var meta = xml.getElementsByTagName('metadata');
         //  var test = this._ra_get_child(meta[0], 'time');
         if (typeof meta !== 'undefined') {
@@ -145,6 +146,9 @@ L.Control.GpxUpload = L.Control.extend({
 
                 ra_gpx_upload_this._info.date = this._ra_get_child_text(meta[0], 'time');
             }
+        }
+        if (ra_gpx_upload_this._info.name === "") {
+            ra_gpx_upload_this._info.name = ra_gpx_upload_this.filename;
         }
 
 
@@ -211,7 +215,7 @@ L.Control.GpxUpload = L.Control.extend({
             children.forEach(
                     function (node, currentIndex, listObj) {
                         var find = ra_gpx_upload_this.findname;
-                        console.log(node + ', ' + currentIndex + ', ' + this);
+                        //console.log(node + ', ' + currentIndex + ', ' + this);
                         if (node.nodeName == find) {
                             ra_gpx_upload_this.result = node.textContent;
                         }
@@ -285,6 +289,8 @@ L.Control.GpxUpload = L.Control.extend({
         })(file);
         // Read in the image file as a data URL.
         reader.readAsText(file);
+        ra_gpx_upload_this.filename = file.name;
+        ra_gpx_upload_this.filename= ra_gpx_upload_this.filename.replace(/.gpx$/i,'');
         return false;
     },
     BuildXMLFromString: function (text) {

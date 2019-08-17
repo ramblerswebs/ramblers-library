@@ -61,7 +61,7 @@ class RLeafletGpxMap extends RLeafletMap {
                     If ($this->loggedon()) {
                         $link = true;
                     } else {
-                        echo "<br/>Please log on to our site to be able to download GPX file of this walk";
+                        echo "<br/>Please log on to this site to be able to download GPX file of this walk";
                     }
                     break;
                 case "Public" :

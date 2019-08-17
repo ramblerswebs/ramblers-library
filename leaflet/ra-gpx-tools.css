@@ -169,3 +169,7 @@ div.ra-upload-toolbar-button-disabled #upload-icon{
     background-size:27px 27px;
     background-position: center; 
 }
+div.leaflet-gpx-options div.status {
+    background-color: #a7ffa7;
+    color: #000000;
+}

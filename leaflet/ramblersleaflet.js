@@ -88,7 +88,7 @@ function raLoadLeaflet() {
     if (ramblersMap.options.cluster) {
 // progress bar for cluster
         ramblersMap.progressBar = document.getElementById("ra-cluster-progress-bar");
-        ramblersMap.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: updateClusterProgressBar});
+        ramblersMap.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: updateClusterProgressBar,disableClusteringAtZoom: 12,maxClusterRadius:50 });
         ramblersMap.markerList = [];
     }
 

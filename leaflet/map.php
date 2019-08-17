@@ -54,7 +54,7 @@ class RLeafletMap {
         $document->addScript("ramblers/vendors/leaflet1.3.4/leaflet.js", "text/javascript");
         $document->addScript("ramblers/leaflet/ramblersleaflet.js", "text/javascript");
         $document->addStyleSheet("ramblers/leaflet/ramblersleaflet.css", "text/css");
-      // add script for Google Plus codes https://plus.codes
+        // add script for Google Plus codes https://plus.codes
         $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/openlocationcode/1.0.3/openlocationcode.js", "text/javascript");
         if ($options->search) {
             $path = "ramblers/vendors/leaflet-control-geocoder-1.5.8/dist/";
@@ -143,7 +143,7 @@ class RLeafletMap {
         //     if ($options->ramblersPlaces){
         //        $this->addScript( "ramblers/leaflet/ra-ramblers-places.js", "text/javascript");
         //    }
-   //     $this->addScriptandStyleSheets();
+        //     $this->addScriptandStyleSheets();
         $mapStyle = " #leafletmap { height: " . $this->mapHeight . "; width:" . $this->mapWidth . ";}";
         $document->addStyleDeclaration($mapStyle);
 
