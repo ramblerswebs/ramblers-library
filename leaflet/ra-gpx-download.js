@@ -196,16 +196,24 @@ L.Control.GpxDownload = L.Control.extend({
         gpxData += '</gpx>';
         return gpxData;
     },
+    _escapeChars: function (text) {
+        text = text.replace(/"/g, "&quot;");
+        text = text.replace(/'/g, "&apos;");
+        text = text.replace(/</g, "&lt;");
+        text = text.replace(/>/g, "&gt;");
+        text = text.replace(/&/g, "&amp;");
+        return text;
+    },
     _addMetaData: function () {
         out = "<metadata>";
         if (ra_gpx_download_this._info.name !== "") {
-            out += "<name>" + ra_gpx_download_this._info.name + "</name>";
+            out += "<name>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.name) + "</name>";
         }
         if (ra_gpx_download_this._info.desc !== "") {
-            out += "<desc>" + ra_gpx_download_this._info.desc + "</desc>";
+            out += "<desc>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.desc) + "</desc>";
         }
         if (ra_gpx_download_this._info.author !== "") {
-            out += "<author><name>" + ra_gpx_download_this._info.author + "</name></author>";
+            out += "<author><name>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.author) + "</name></author>";
         }
         if (ra_gpx_download_this._info.date !== "") {
             out += "<time>" + ra_gpx_download_this._info.date + "</time>";
@@ -248,7 +256,6 @@ L.Control.GpxDownload = L.Control.extend({
         var i, len;
         i = 0;
         var text = "";
-        var elev = '';
         for (i = 0, len = latlngs.length; i < len; i++) {
             text += '<trkpt lat="' + latlngs[i].lat + '" lon="' + latlngs[i].lng + '">\n';
             if (latlngs[i].alt !== -999) {
@@ -262,7 +269,6 @@ L.Control.GpxDownload = L.Control.extend({
         var i, len;
         i = 0;
         var text = "";
-        //var elev = '';
         for (i = 0, len = latlngs.length; i < len; i++) {
             text += '<rtept lat="' + latlngs[i].lat + '" lon="' + latlngs[i].lng + '">\n';
             if (latlngs[i].alt !== -999) {
