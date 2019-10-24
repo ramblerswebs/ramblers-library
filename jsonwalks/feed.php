@@ -37,24 +37,20 @@ class RJsonwalksFeed {
             case RFeedhelper::OK:
                 break;
             case RFeedhelper::READFAILED:
-                $application = JFactory::getApplication();
-                $application->enqueueMessage(JText::_('Unable to fetch walks, data may be out of date: ' . $rafeedurl), 'warning');
+                $this->notifyError('Unable to fetch walks, data may be out of date', $rafeedurl, 'warning');
                 break;
             case RFeedhelper::FEEDERROR;
-                $application = JFactory::getApplication();
-                $application->enqueueMessage(JText::_('Feed must use HTTP protocol: ' . $rafeedurl), 'error');
+                $this->notifyError('Feed must use HTTP protocol', $rafeedurl, 'error');
                 break;
             case RFeedhelper::FEEDFOPEN:
-                $application = JFactory::getApplication();
-                $application->enqueueMessage(JText::_('Not able to read feed using fopen: ' . $rafeedurl), 'error');
+                $this->notifyError('Not able to read feed using fopen', $rafeedurl, 'error');
                 break;
             default:
                 break;
         }
         switch ($contents) {
             case NULL:
-                $application = JFactory::getApplication();
-                $application->enqueueMessage(JText::_('Walks feed: Unable to read feed: ' . $rafeedurl), 'error');
+                $this->notifyError('Walks feed: Unable to read feed', $rafeedurl, 'error');
                 break;
             case "":
                 echo '<b>Walks feed: No walks found</b>';
@@ -72,18 +68,39 @@ class RJsonwalksFeed {
                         $error+=$ok;
                     }
                     if ($error > 0) {
-                        $application = JFactory::getApplication();
-                        $application->enqueueMessage(JText::_('Walks feed: Json file format not supported: ' . $rafeedurl), 'error');
+                        $this->notifyError('Walks feed: Json file format not supported', $rafeedurl, 'error');
                     } else {
                         $this->walks = new RJsonwalksWalks($json);
                     }
                     unset($json);
                     break;
                 } else {
-                    $application = JFactory::getApplication();
-                    $application->enqueueMessage(JText::_('Walks feed: feed is not in Json format: ' . $rafeedurl), 'error');
+                    $this->notifyError('Walks feed: feed is not in Json format: ', $rafeedurl, 'error');
                 }
         }
+    }
+
+    private function notifyError($errorText, $feed, $level) {
+        $app = JApplicationCms::getInstance('site');
+        $app->enqueueMessage(JText::_($errorText . ": " . $feed), $level);
+        $mailer = JFactory::getMailer();
+        $config = JFactory::getConfig();
+        $sender = array(
+            $config->get('mailfrom'),
+            $config->get('fromname')
+        );
+
+        $mailer->setSender($sender);
+        $recipient = array('feeds@ramblers-webs.org.uk');
+        $mailer->addRecipient($recipient);
+
+        $mailer->setSubject('Walks feed error');
+        $body = '<h2>' . $feed . '</h2>'
+                . '<p>ERROR: ' . $errorText . '</p>'
+                . '<p>See from field to see web site affected</p>';
+        $mailer->isHtml(true);
+        $mailer->setBody($body);
+        $send = $mailer->Send();
     }
 
     public function setNewWalks($days) {
@@ -165,9 +182,11 @@ class RJsonwalksFeed {
 
     public function display($displayclass) {
         if ($this->walks == null) {
+            echo "No walks found";
             return;
         }
         if ($this->walks->totalWalks() == 0) {
+            echo "No walks found";
             return;
         }
         $document = JFactory::getDocument();

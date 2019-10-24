@@ -18,7 +18,8 @@ class RGpxStatistics {
         $this->getMetaFromGPX = $getMetaFromGPX;
         if (!file_exists($folder)) {
             $text = "Folder does not exist: " . $folder . ". Unable to list contents";
-            JFactory::getApplication()->enqueueMessage($text);
+            $app = JApplicationCms::getInstance('site');
+            $app->enqueueMessage($text, "error");
             echo "<b>Not able to list contents of folder: " . $folder . "<b>";
             return;
         }
@@ -49,7 +50,7 @@ class RGpxStatistics {
             $contents = file_get_contents($file);
             return $contents;
         }
-        return null;
+        return "[]";
     }
 
     private function processFolder() {
@@ -60,7 +61,7 @@ class RGpxStatistics {
         echo "<p>Diagnostics while generating file: " . self::JSONFILE . "</p>";
         echo "<p>The diagnostics only appear when the file is generated. They will be displayed until the Joomla Cache expires (usually 15 mins), clearing the cache manually will also remove them.</p>";
         echo "<table>";
-        echo RHtml::addTableHeader(['Filename/<b>Title</b>', 'Author','Date',  'Longitude', 'Latitude', 'Distance', 'Elevation Gain', 'min Alt', 'max Alt', 'Tracks,Segments', 'Routes']);
+        echo RHtml::addTableHeader(['Filename/<b>Title</b>', 'Author', 'Date', 'Longitude', 'Latitude', 'Distance', 'Elevation Gain', 'min Alt', 'max Alt', 'Tracks,Segments', 'Routes']);
         foreach ($files as $file) {
             if ($this->endsWith($file, ".gpx") || $this->endsWith($file, ".GPX")) {
                 $stat = $this->processGPXFile($file);

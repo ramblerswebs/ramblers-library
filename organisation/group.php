@@ -20,6 +20,8 @@ class ROrganisationGroup {
     public $description;
     public $latitude;
     public $longitude;
+    public $website = "";
+    public $status = "";
 
     public function __construct($item) {
         $this->scope = $item->scope;
@@ -29,6 +31,12 @@ class ROrganisationGroup {
         $this->description = $item->description;
         $this->latitude = $item->latitude;
         $this->longitude = $item->longitude;
+        if (property_exists($item, "website")) {
+            $this->website = $item->website;
+        }
+        if (property_exists($item, "status")) {
+            $this->status = $item->status;
+        }
     }
 
     public function getLink($showLink) {

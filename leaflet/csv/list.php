@@ -26,8 +26,8 @@ class RLeafletCsvList extends RLeafletMap {
     public function display() {
         $ok = $this->readCSV();
         If (!$ok) {
-            $application = JFactory::getApplication();
-            $application->enqueueMessage(JText::_("Unable to open the file: " . $this->filename), 'error');
+            $app = JApplicationCms::getInstance('site');
+            $app->enqueueMessage(JText::_("Unable to open the file: " . $this->filename), 'error');
             return;
         }
         $list = json_encode($this->list);
@@ -56,8 +56,8 @@ class RLeafletCsvList extends RLeafletMap {
                     $err.= ' - Unknown error';
                     break;
             }
-            $application = JFactory::getApplication();
-            $application->enqueueMessage(JText::_($err), 'error');
+            $app = JApplicationCms::getInstance('site');
+            $app->enqueueMessage(JText::_($err), 'error');
             return;
         }
 

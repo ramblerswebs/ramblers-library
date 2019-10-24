@@ -22,7 +22,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
     }
 
     public function display() {
-// get all names from folder
+        // get all names from folder
         $stats = new RGpxStatistics($this->folder, $this->getMetaFromGPX);
         $items = $stats->getJson();
         $this->addMapScript($items);

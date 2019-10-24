@@ -41,3 +41,6 @@ https://github.com/shramov/leaflet-plugins
 
 JPList pagination 
 https://www.jplist.org/
+
+Routing
+https://www.liedman.net/leaflet-routing-machine/

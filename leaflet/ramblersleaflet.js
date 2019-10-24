@@ -5,7 +5,6 @@ function RamblersLeafletMap(base) {
     this.mapLayers = null;
     this.currentLayer = null;
     this.bingkey = null;
-    this.googlekey = null;
     this.gridsquare10 = null;
     this.gridsquare100 = null;
     this.postcodes = null;
@@ -23,6 +22,7 @@ function RamblersLeafletMap(base) {
     this.options = {cluster: false,
         fullscreen: false,
         google: false,
+        bing: false,
         search: false,
         locationsearch: false,
         osgrid: false,
@@ -44,8 +44,8 @@ function raLoadLeaflet() {
             zoom: 5,
             zoomSnap: 0.25,
             maxZoom: 18,
-            fullscreenControl: true}
-        );
+            fullscreenControl: true
+        });
     } else {
         ramblersMap.map = new L.Map("leafletmap", {
             center: new L.LatLng(54.221592, -3.355007),
@@ -68,27 +68,27 @@ function raLoadLeaflet() {
         ramblersMap.mapLayers["Ordnance Survey"] = new L.BingLayer(ramblersMap.bingkey, {type: 'ordnanceSurvey',
             attribution: 'Bing/OS Crown Copyright'});
     }
-    if (ramblersMap.options.google) {
-        ramblersMap.mapLayers["Google"] = L.gridLayer.googleMutant({
-            type: "roadmap" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-        });
-        ramblersMap.mapLayers["Google Satellite"] = L.gridLayer.googleMutant({
-            type: "satellite" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-        });
-        ramblersMap.mapLayers["Google Hybrid"] = L.gridLayer.googleMutant({
-            type: "hybrid" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-        });
-        ramblersMap.mapLayers["Google Terrain"] = L.gridLayer.googleMutant({
-            type: "terrain" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-        });
-    }
+//    if (ramblersMap.options.google) {
+//        ramblersMap.mapLayers["Google"] = L.gridLayer.googleMutant({
+//            type: "roadmap" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+//        });
+//        ramblersMap.mapLayers["Google Satellite"] = L.gridLayer.googleMutant({
+//            type: "satellite" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+//        });
+//        ramblersMap.mapLayers["Google Hybrid"] = L.gridLayer.googleMutant({
+//            type: "hybrid" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+//        });
+//        ramblersMap.mapLayers["Google Terrain"] = L.gridLayer.googleMutant({
+//            type: "terrain" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
+//        });
+//    }
     createMouseMarkers();
     createPlaceMarkers();
     createWalkMarkers();
     if (ramblersMap.options.cluster) {
 // progress bar for cluster
         ramblersMap.progressBar = document.getElementById("ra-cluster-progress-bar");
-        ramblersMap.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: updateClusterProgressBar,disableClusteringAtZoom: 12,maxClusterRadius:50 });
+        ramblersMap.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: updateClusterProgressBar, disableClusteringAtZoom: 12, maxClusterRadius: 50});
         ramblersMap.markerList = [];
     }
 
@@ -121,6 +121,9 @@ function raLoadLeaflet() {
     ramblersMap.mapControl = L.control.layers(ramblersMap.mapLayers, overlayGraphics, {collapsed: true}).addTo(ramblersMap.map);
     if (ramblersMap.options.topoMapDefault) {
         ramblersMap.map.addLayer(ramblersMap.mapLayers["Open Topo Map"]);
+    } else {
+        ramblersMap.map.addLayer(ramblersMap.mapLayers["Open Street Map"]);
+        //ramblersMap.mapLayers["Open Street Map"].addTo(ramblersMap.map.addLayer);
     }
     if (ramblersMap.options.search) {
         try {
