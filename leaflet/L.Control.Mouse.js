@@ -275,7 +275,7 @@ L.Control.PostcodeStatus = L.Control.extend({
                                 popup += "<br/>Web site: <a href='http://" + item.website + "' target='_blank' >" + item.website + "</a>";
                             }
                             if (item.scope !== "A") {
-                                popup += "<br/>Belongs to " + item.areaname + " area";
+                                popup += "<br/>Part of " + item.areaname + " area";
                             }
                         }
                         var $iclass = "group-icon " + item.scope.toLowerCase();
