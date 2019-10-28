@@ -21,6 +21,7 @@
             <folder>conf/userini</folder>
             <folder>directory</folder>
             <folder>event</folder>
+            <folder>errors</folder>
             <folder>feedhelper</folder>
             <folder>geometry</folder>
             <folder>gpx</folder>

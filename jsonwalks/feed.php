@@ -28,79 +28,19 @@ class RJsonwalksFeed {
     }
 
     private function readFeed($rafeedurl) {
+        $properties = array("id", "status", "difficulty", "strands", "linkedEvent", "festivals",
+            "walkContact", "linkedWalks", "linkedRoute", "title", "description", "groupCode", "groupName",
+            "additionalNotes", "date", "distanceKM", "distanceMiles", "finishTime", "suitability",
+            "surroundings", "theme", "specialStatus", "facilities", "pace", "ascentMetres", "ascentFeet",
+            "gradeLocal", "attendanceMembers", "attendanceNonMembers", "attendanceChildren", "cancellationReason",
+            "dateUpdated", "dateCreated", "media", "points", "groupInvite", "isLinear", "url");
 
         $result = $this->srfr->getFeed($rafeedurl);
-        $status = $result["status"];
-        $contents = $result["contents"];
-
-        switch ($status) {
-            case RFeedhelper::OK:
-                break;
-            case RFeedhelper::READFAILED:
-                $this->notifyError('Unable to fetch walks, data may be out of date', $rafeedurl, 'warning');
-                break;
-            case RFeedhelper::FEEDERROR;
-                $this->notifyError('Feed must use HTTP protocol', $rafeedurl, 'error');
-                break;
-            case RFeedhelper::FEEDFOPEN:
-                $this->notifyError('Not able to read feed using fopen', $rafeedurl, 'error');
-                break;
-            default:
-                break;
+        $json = RErrors::checkJsonFeed($rafeedurl, "Walks", $result, $properties);
+        If ($json !== null) {
+            $this->walks = new RJsonwalksWalks($json);
+            unset($json);
         }
-        switch ($contents) {
-            case NULL:
-                $this->notifyError('Walks feed: Unable to read feed', $rafeedurl, 'error');
-                break;
-            case "":
-                echo '<b>Walks feed: No walks found</b>';
-                break;
-            case "[]":
-                echo '<b>Walks feed empty: No walks found</b>';
-                break;
-            default:
-                $json = json_decode($contents);
-                unset($contents);
-                $error = 0;
-                if (json_last_error() == JSON_ERROR_NONE) {
-                    foreach ($json as $value) {
-                        $ok = $this->checkJsonProperties($value);
-                        $error+=$ok;
-                    }
-                    if ($error > 0) {
-                        $this->notifyError('Walks feed: Json file format not supported', $rafeedurl, 'error');
-                    } else {
-                        $this->walks = new RJsonwalksWalks($json);
-                    }
-                    unset($json);
-                    break;
-                } else {
-                    $this->notifyError('Walks feed: feed is not in Json format: ', $rafeedurl, 'error');
-                }
-        }
-    }
-
-    private function notifyError($errorText, $feed, $level) {
-        $app = JApplicationCms::getInstance('site');
-        $app->enqueueMessage(JText::_($errorText . ": " . $feed), $level);
-        $mailer = JFactory::getMailer();
-        $config = JFactory::getConfig();
-        $sender = array(
-            $config->get('mailfrom'),
-            $config->get('fromname')
-        );
-
-        $mailer->setSender($sender);
-        $recipient = array('feeds@ramblers-webs.org.uk');
-        $mailer->addRecipient($recipient);
-
-        $mailer->setSubject('Walks feed error');
-        $body = '<h2>' . $feed . '</h2>'
-                . '<p>ERROR: ' . $errorText . '</p>'
-                . '<p>See from field to see web site affected</p>';
-        $mailer->isHtml(true);
-        $mailer->setBody($body);
-        $send = $mailer->Send();
     }
 
     public function setNewWalks($days) {
@@ -239,7 +179,7 @@ class RJsonwalksFeed {
         $display->setLinkText($linktext);
         $display->setPostText($posttext);
         $display->Display("de02walks", $events); // display walks information
-        // is this line correct and is function used
+// is this line correct and is function used
     }
 
     private function getTogglePair($one, $two) {
@@ -252,32 +192,8 @@ class RJsonwalksFeed {
 
     public function clearCache() {
         $this->srfr->clearCache();
-        // reread feed
+// reread feed
         $this->readFeed($this->rafeedurl);
-    }
-
-    private function checkJsonProperties($item) {
-        $properties = array("id", "status", "difficulty", "strands", "linkedEvent", "festivals",
-            "walkContact", "linkedWalks", "linkedRoute", "title", "description", "groupCode", "groupName",
-            "additionalNotes", "date", "distanceKM", "distanceMiles", "finishTime", "suitability",
-            "surroundings", "theme", "specialStatus", "facilities", "pace", "ascentMetres", "ascentFeet",
-            "gradeLocal", "attendanceMembers", "attendanceNonMembers", "attendanceChildren", "cancellationReason",
-            "dateUpdated", "dateCreated", "media", "points", "groupInvite", "isLinear", "url");
-
-        foreach ($properties as $value) {
-            if (!$this->checkJsonProperty($item, $value)) {
-                return 1;
-            }
-        }
-
-        return 0;
-    }
-
-    private function checkJsonProperty($item, $property) {
-        if (property_exists($item, $property)) {
-            return true;
-        }
-        return false;
     }
 
     private function CacheLocation() {
