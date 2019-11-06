@@ -18,7 +18,7 @@ class RDirectoryList {
         if (!file_exists($folder)) {
             $text = "Folder does not exist: " . $folder . ". Unable to list contents";
             $app = JApplicationCms::getInstance('site');
-            $app->->enqueueMessage($text);
+            $app->enqueueMessage($text);
             echo "<b>Not able to list contents of folder<b>";
             return;
         }
