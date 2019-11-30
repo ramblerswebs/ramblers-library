@@ -21,6 +21,10 @@ class RJsonwalksFeed {
         $this->rafeedurl = trim($rafeedurl);
         $this->walks = new RJsonwalksWalks(NULL);
         $CacheTime = 15; // minutes
+        $time=getdate();
+        if ($time["hours"]<6) {
+             $CacheTime = 7200; // 12 hours, rely on cache between midnight and 6am
+        }
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(30);
