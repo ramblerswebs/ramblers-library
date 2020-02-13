@@ -1,4 +1,4 @@
-var L, ramblersMap, OsGridRef, Element;
+var L, ramblersMap, OsGridRef, Element, OpenLocationCode;
 function RamblersLeafletMap(base) {
     this.base = base;
     this.map = null;
@@ -505,12 +505,57 @@ function getMouseMoveAction(e) {
     var lng = e.latlng.lng.toFixed(5);
     var lat = e.latlng.lat.toFixed(5);
     var value = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
-    var pluscode = OpenLocationCode.encode(e.latlng.lat, e.latlng.lng);
-    value += '<br/><b><a href="https://plus.codes" target="_blank">Plus Code:</a> </b>' + pluscode + "<br/>";
-
+  //  value += '<br/>' + getMapCode(e.latlng.lat, e.latlng.lng, true);
+  //  value += '<br/>' + getPlusCode(e.latlng.lat, e.latlng.lng, true);
     return  gridref + value;
 }
 
+function getPlusCode(lat, lng, link) {
+    var pluscode = OpenLocationCode.encode(lat, lng);
+    if (link) {
+        return '<b><a href="https://plus.codes" target="_blank">Open Location Code:</a></b>' + pluscodeFormat(pluscode);
+    } else {
+        return  pluscodeFormat(pluscode);
+    }
+}
+function getMapCode(lat, lng, link) {
+    var results = encodeShortest(lat, lng);
+    var out = "";
+    if (results.length > 0) {
+        if (link) {
+            out = '<b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a>' + results[0].mapcode + "</b> (" + results[0].territoryAlphaCode + "}";
+        } else {
+            out = results[0].mapcode + " " + results[0].territoryAlphaCode;
+        }
+    }
+    return out;
+}
+function getWhat3Words(lat, lng, id, place) {
+    var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
+    var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
+    getJSON(url, function (err, items) {
+        var tag = document.getElementById(id);
+        if (err !== null || tag === null) {
+            tag.innerHTML = "Error accessing What3Words: " + err + "<br/>";
+        } else {
+            var out = '<span class="w3w" onclick="javascript:w3wAboutUs()">///</span>' + items.words + '<br/>';
+            if (place) {
+                out += '<b>Nearest Place: </b>' + items.nearestPlace + '<br/>';
+            }
+            tag.innerHTML = out;
+        }
+    });
+}
+
+function w3wAboutUs() {
+    var page = "https://what3words.com/about-us/";
+    window.open(page, "_blank", "scrollbars=yes,width=990,height=480,menubar=yes,resizable=yes,status=yes");
+}
+
+function pluscodeFormat(code) {
+    var out = code.substr(0, 4) + "<b>" + code.substr(4) + "</b>";
+    return out;
+}
 
 function osGridToLatLongSquare(gridref, size) {
 //  if (!(gridref instanceof OsGridRef))
@@ -593,7 +638,6 @@ function setMarkerIcon(marker, name) {
             iconAnchor: [12, 41],
             popupAnchor: [0, -41]
         });
-
         marker.setIcon(icon);
         return;
     }
@@ -635,7 +679,6 @@ function ajaxGet($url, $params, target, displayFunc) {
         if (xmlhttp.readyState === 4 && xmlhttp.status === 200)
         {
             displayFunc(target, xmlhttp.responseText);
-
             // document.getElementById($div).innerHTML = xmlhttp.responseText;
         }
     };

@@ -40,7 +40,7 @@ L.Control.PostcodeStatus = L.Control.extend({
     },
     displaymap: null,
     apiUrl2: "http://overpass-api.de/api/interpreter?data=",
-    apiUrl:"https://overpass.kumi.systems/api/interpreter?data=",
+    apiUrl: "https://overpass.kumi.systems/api/interpreter?data=",
     onAdd: function (map) {
         this._map = map;
         this._first = true;
@@ -111,13 +111,13 @@ L.Control.PostcodeStatus = L.Control.extend({
                 case "parking":
                     this._displayOSM(e, "parking");
                     break;
-               case "pubs":
+                case "pubs":
                     this._displayOSM(e, "pubs");
                     break;
-               case "toilets":
+                case "toilets":
                     this._displayOSM(e, "toilets");
                     break;
-               case "bus_stops":
+                case "bus_stops":
                     this._displayOSM(e, "bus_stops");
                     break;
             }
@@ -132,19 +132,19 @@ L.Control.PostcodeStatus = L.Control.extend({
         var gr = grid.toString(6);
         var gr10 = grid.toString(8);
         var i;
-        var marker;
         var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
         if (gr !== "") {
             desc += "<br/><b>Grid Reference: </b>" + gr +
                     "<br/><b>Grid Reference: </b>" + gr10 + " (8 Figure)";
         }
 // desc += getBrowserStatus();
-        var results = encodeShortest(e.latlng.lat, e.latlng.lng);
-        if (results.length > 0) {
-            desc += '<br/><b><a href="http://www.mapcode.com" target="_blank">Mapcode:</a> </b>' + results[0].fullmapcode;
+      //  desc += '<br/>' + getMapCode(e.latlng.lat, e.latlng.lng, true);
+      //  desc += '<br/>' + getPlusCode(e.latlng.lat, e.latlng.lng, true) + "<br/>";
+        var tag = document.getElementById("ra-w3w");
+        if (tag !== null) {
+            tag.remove();
         }
-        var pluscode = OpenLocationCode.encode(e.latlng.lat, e.latlng.lng);
-        desc += '<br/><b><a href="https://plus.codes" target="_blank">Plus Code:</a> </b>' + pluscode + "<br/>";
+        desc += '<br/><span id="ra-w3w"></span>';
         if (gr !== "") {
             desc += '<a href="javascript:photos(\'' + gr10 + '\')">[Photos]</a>';
             desc += '<a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
@@ -163,6 +163,7 @@ L.Control.PostcodeStatus = L.Control.extend({
             point.getPopup().setContent(desc);
             point.openPopup();
         }
+        getWhat3Words(e.latlng.lat, e.latlng.lng, "ra-w3w",true);
     },
     _displayPostcodes: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
@@ -313,7 +314,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         point.openPopup();
         this._latlng = e.latlng;
         var queryTemplate = '[out:json]; (node["{tag}"="{type}"](around:{radius},{lat},{lng});way["{tag}"="{type}"](around:{radius},{lat},{lng});relation["{tag}"="{type}"](around:{radius},{lat},{lng}););out center;';
-        var query = this.getQuery(queryTemplate, tag,type);
+        var query = this.getQuery(queryTemplate, tag, type);
         console.log("Query: " + query);
         var url = this.getUrl(query);
         console.log("Query: " + url);
@@ -365,7 +366,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         this.deleteTags(node.tags, ['name', 'amenity', 'fhrs:id', 'source']);
         popup += this.listTags(tags, null);
         var pt = new L.latLng(node.lat, node.lon);
-       var marker = L.marker(pt).bindPopup(popup);
+        var marker = L.marker(pt).bindPopup(popup);
         this._map.mouseLayer.addLayer(marker);
     },
     displayWay: function (node, title) {
@@ -377,7 +378,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         this.deleteTags(node.tags, ['name', 'amenity', 'fhrs:id', 'source']);
         popup += this.listTags(tags);
         var pt = new L.latLng(node.center.lat, node.center.lon);
-      var  marker = L.marker(pt).bindPopup(popup);
+        var marker = L.marker(pt).bindPopup(popup);
         this._map.mouseLayer.addLayer(marker);
     },
     deleteTags: function (tags, excludeProperties) {
@@ -456,10 +457,10 @@ L.Control.PostcodeStatus = L.Control.extend({
     getUrl: function (query) {
         return this.apiUrl + encodeURIComponent(query);
     },
-    getQuery: function (queryTemplate, tag,type) {
+    getQuery: function (queryTemplate, tag, type) {
         var lat = this._latlng.lat;
         var lng = this._latlng.lng;
-        var kwargs = {tag:tag,type: type, lat: lat, lng: lng, radius: this.getRadius(), bbox: this.getBox()};
+        var kwargs = {tag: tag, type: type, lat: lat, lng: lng, radius: this.getRadius(), bbox: this.getBox()};
         return L.Util.template(queryTemplate, kwargs);
     },
     getBox: function () {

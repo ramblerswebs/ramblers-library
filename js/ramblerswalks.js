@@ -88,11 +88,6 @@ function displayModal($html) {
         setTagHtml("modal-data", "");
     };
     var span = document.getElementById("modal-data");
-// When the user clicks on <span> (x), close the modal
-    span.onclick = function () {
-        modal.style.display = "none";
-        setTagHtml("modal-data", "");
-    };
     document.getElementById("btnPrint").onclick = function () {
         printTag("modal-data");
     };

@@ -14,9 +14,9 @@
 class RErrors {
 
     private static $ERROR_STORE_URL = "https://cache.ramblers-webs.org.uk/store_errors.php";
-  
+
     public static function notifyError($errorText, $action, $level) {
-       
+
         $url = self::$ERROR_STORE_URL;
 
         $data = [];
@@ -49,8 +49,9 @@ class RErrors {
         $app = JFactory::getApplication();
         $app->enqueueMessage(JText::_($errorText . ": " . $action . $reported), $level);
     }
-     public static function emailError($errorText, $action, $level) {
-         $domain = JURI::base();
+
+    public static function emailError($errorText, $action, $level) {
+        $domain = JURI::base();
         $mailer = JFactory::getMailer();
         $config = JFactory::getConfig();
         $sender = array(
@@ -64,14 +65,13 @@ class RErrors {
 
         $mailer->setSubject('Walks feed error');
         $body = '<h2>' . $domain . '</h2>'
-                .'<h3>' . $action . '</h3>'
+                . '<h3>' . $action . '</h3>'
                 . '<p>ERROR: ' . $errorText . '</p>'
                 . '<p>Severity: ' . $level . '</p>';
         $mailer->isHtml(true);
         $mailer->setBody($body);
         $send = $mailer->Send();
     }
-
 
     public static function checkJsonFeed($feed, $feedTitle, $result, $properties) {
         $status = $result["status"];
@@ -106,7 +106,8 @@ class RErrors {
                 $json = json_decode($contents);
                 unset($contents);
                 $errors = 0;
-                if (json_last_error() == JSON_ERROR_NONE) {
+                $error = json_last_error();
+                if ($error == JSON_ERROR_NONE) {
                     foreach ($json as $value) {
                         $ok = RErrors::checkJsonProperties($value, $properties);
                         $errors+=$ok;
@@ -118,7 +119,8 @@ class RErrors {
                     return $json;
                     break;
                 } else {
-                    RErrors::notifyError('Feed is not in Json format: ', $feed, 'error');
+                    $type =json_last_error_msg();
+                    RErrors::notifyError('Feed is not in Json format: ' . $type, $feed, 'error');
                 }
                 return null;
         }
@@ -140,5 +142,4 @@ class RErrors {
         }
         return false;
     }
-
 }

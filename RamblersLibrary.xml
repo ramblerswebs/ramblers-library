@@ -48,6 +48,7 @@
             <folder>sql</folder>
             <folder>users</folder>
             <folder>vendors</folder>
+            <folder>watchful</folder>
         </files>
     </fileset>
     <updateservers>

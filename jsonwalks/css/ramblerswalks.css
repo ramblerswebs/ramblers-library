@@ -363,7 +363,8 @@ table.gradeTable  div.Technical  {
 }
 
 
-div.nextWalksWithGrade{
+div.nextWalksWithGrade,
+span.nextWalksWithGrade{
     display:inline-block;
     min-height: 30px;
     line-height: 1.2em;

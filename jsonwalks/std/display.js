@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var ramblerswalksDetails, ramblerswalks, ramblersMap, jplist;
+var ramblerswalksDetails, ramblerswalks, ramblersMap, jplist, OpenLocationCode;
 function RamblersWalksDetails() {
     this.isES6 = isES6();
     this.walkClass = "walk";
@@ -16,7 +16,7 @@ function RamblersWalksDetails() {
     this.detailsFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
     this.options;
     this.filter = {};
-    this.defaultOptions = "<table><tr><td class='ra-tab' id='Details' class='active' onclick=\"javascript:ra_format('Details')\">Details</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
+    this.defaultOptions = "<table><tr><td class='ra-tab active' id='Details' onclick=\"javascript:ra_format('Details')\">Details</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
 }
 
 
@@ -795,6 +795,20 @@ function getWalkValue($walk, $option, addlink) {
                 out = $walk.meetLocation.postcode;
             }
             break;
+        case "{meetOLC}":
+            if ($walk.hasMeetPlace) {
+                if ($walk.meetLocation.exact) {
+                    out = OpenLocationCode.encode($walk.meetLocation.latitude, $walk.meetLocation.longitude);
+                }
+            }
+            break;
+        case "{meetMapCode}":
+            if ($walk.hasMeetPlace) {
+                if ($walk.meetLocation.exact) {
+                    out = getMapCode($walk.meetLocation.latitude, $walk.meetLocation.longitude, false);
+                }
+            }
+            break;
         case "{start}":
             if ($walk.startLocation.exact) {
                 out = $walk.startLocation.timeHHMMshort;
@@ -823,6 +837,16 @@ function getWalkValue($walk, $option, addlink) {
         case "{startPC}":
             if ($walk.startLocation.exact) {
                 out = $walk.startLocation.postcode;
+            }
+            break;
+        case "{startOLC}":
+            if ($walk.startLocation.exact) {
+                out = OpenLocationCode.encode($walk.startLocation.latitude, $walk.startLocation.longitude);
+            }
+            break;
+        case "{startMapCode}":
+            if ($walk.startLocation.exact) {
+                out = getMapCode($walk.startLocation.latitude, $walk.startLocation.longitude, false);
             }
             break;
         case "{title}":
@@ -1118,6 +1142,18 @@ function addLocationInfo($title, $location, $detailsPageUrl) {
         if ($location.postcode !== "") {
             $out += displayPostcode($location, $detailsPageUrl);
         }
+        //   $out += RHtmlwithDiv('mapcode', getMapCode($location.latitude, $location.longitude, true));
+        //   $out += RHtmlwithDiv('olc', getPlusCode($location.latitude, $location.longitude, true));
+        var tagname = "ra-loc=" + $location.type;
+        var tag = document.getElementById(tagname);
+        if (tag !== null) {
+            tag.remove();
+        }
+        $out += '<span id="' + tagname + '"></span>';
+        // getWhat3Words($location.latitude, $location.longitude, tagname,true);
+        setTimeout(function () {
+            getWhat3Words($location.latitude, $location.longitude, tagname, true);
+        }, 500);
     } else {
         $out = "<div class='place'>";
         $out += "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
@@ -1171,7 +1207,8 @@ function getShortTime($text) {
     return d.toLocaleTimeString();
 }
 function getDate($text) {
-    var d = new Date($text);
+    // note Mac does not handle yyyy-mm-dd, change to yyyy/mm/dd    
+    var d = new Date($text.substr(0, 19).replace(/-/g, "/"));
     return d.toDateString();
 }
 function gradeCSS($walk) {
@@ -1352,7 +1389,7 @@ function displayPostcode($location, $detailsPageUrl) {
     var $direction = $this.postcodeDirection;
     if ($dist <= 100) {
         $note = "Postcode is within 100m of location";
-        $link = "";
+        $link = $this.postcode;
         $distclass = " distclose";
     } else {
         if ($dist < 500) {
@@ -1360,12 +1397,12 @@ function displayPostcode($location, $detailsPageUrl) {
         } else {
             $distclass = " distfar";
         }
-        $note = $this.type + " place is " + $dist + " metres " + $direction + " of postcode. ";
-        $note += "Click to display the locations of the Postcode(P) and " + $this.type + " locations";
-        $note2 = $dist + " metres " + $this.postcodeDirectionAbbr;
+        $note2 = $dist + " metres " + $direction + " of " + $this.postcode;
+        $note = "Click to display the locations of the Postcode(P) and " + $this.type + " locations";
+        // $note2 = $dist + " metres " + $this.postcodeDirectionAbbr;
         $link = getPostcodeMap($location, $note2, $detailsPageUrl);
     }
-    $pc = "<abbr title='" + $note + "'><b>Postcode</b>: " + $this.postcode + " ";
+    $pc = "<b>Postcode</b>:<abbr title='" + $note + "'> ";
     $pc += $link;
     $pc += "</abbr>";
     $out = RHtmlwithDiv("postcode " + $distclass, $pc);
@@ -1375,7 +1412,7 @@ function getPostcodeMap($location, $text, $detailsPageUrl) {
     var $this = $location;
     var $out;
     if ($this.exact) {
-        $out = "<span class='mappopup' onClick=\"javascript:window.open('" + $detailsPageUrl + "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=900,height=600');\">[" + $text + "]</span>";
+        $out = "<span class='mappopup' onClick=\"javascript:window.open('" + $detailsPageUrl + "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=900,height=600');\">" + $text + "</span>";
         return $out;
     } else {
         return "";
@@ -1400,7 +1437,7 @@ function getGradeSpan($walk, $class) {
             $tag = "<span data-descr='Leisurely' class='" + $class + "'><span class='grade leisurely " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";
             break;
         case "Moderate":
-            $tag = "<span data-descr='Moderate' class='" + $class + "'><span class='grade " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";
+            $tag = "<span data-descr='Moderate' class='" + $class + "'><span class='grade moderate " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";
             break;
         case "Strenuous":
             $tag = "<span data-descr='Strenuous' class='" + $class + "'><span class='grade strenuous " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";

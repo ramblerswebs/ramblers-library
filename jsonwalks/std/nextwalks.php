@@ -37,10 +37,9 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
             $out .= "</span>";
 
             if ($this->displayGradesIcon) {
-                echo "<div class='nextWalksWithGrade'>".$walk->getGradeSpan("left"). $out."</div>";
-             
+                echo "<span class='nextWalksWithGrade'>" . $walk->getGradeSpan("left") . $out . "</span>\r\n";
             } else {
-                echo "<li> " . $out . "</li>" . PHP_EOL;
+                echo "<li>" . $out . "</li>" . PHP_EOL;
             }
             if ($walk->isCancelled()) {
                 echo "CANCELLED: " . $walk->cancellationReason;
@@ -64,9 +63,8 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
         }
 
         if (!$this->displayGradesIcon) {
-            echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;
+            echo "</ul>" . PHP_EOL;
         }
-        echo "</ul>" . PHP_EOL;
         $script = json_encode($schemawalks);
         $script = str_replace('"context":', '"@context":', $script);
         $script = str_replace('"type":', '"@type":', $script);
@@ -78,5 +76,4 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
     public function noWalks($no) {
         $this->nowalks = $no;
     }
-
 }
