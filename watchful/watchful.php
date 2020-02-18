@@ -84,13 +84,20 @@ class RWatchfulWatchful {
         return $items;
     }
 
-    public function getSitesList($domainname) {
+    public function getSitesList($domainname, $noJoomla) {
         $out = '';
+        $no = 0;
         foreach ($this->domains as $domain) {
             if ($domainname === $domain->getName()) {
                 foreach ($domain->getSites() as $site) {
                     $out .= '<div>' . $site->access_url . ' v' . $site->j_version . $this->displayTags($site) . '<div>';
+                    $no +=1;
                 }
+            }
+        }
+        if ($no > 0) {
+            if ($no !== $noJoomla) {
+                $out .= "<div style='color:red'>Mismatch in number of Joomla sites</div>";
             }
         }
         return $out;

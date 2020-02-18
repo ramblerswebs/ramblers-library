@@ -10,16 +10,14 @@ defined("_JEXEC") or die("Restricted access");
 
 class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
-    public $nationalGradeHelp = "";
-    public $localGradeHelp = "";
-    public $nationalGradeTarget = "_parent";
-    public $localGradeTarget = "_parent";
-    private $legendposition = "top";
-    public $addContacttoHeader = false;
+    public $nationalGradeHelp = ""; // not used
+    public $localGradeHelp = ""; // not used
+    public $nationalGradeTarget = "_parent"; // not used
+    public $localGradeTarget = "_parent"; // not used
+    public $legendposition = "top";
+    public $addContacttoHeader = false;  // not used
     public $displayGroup = null;  // should the Group name be displayed
     public $displayClass = "pantone7474white";
-    private $walksClass = "walks";
-    private $walkClass = "walk";
     private $map = null;
 
     public function DisplayWalks($walks) {

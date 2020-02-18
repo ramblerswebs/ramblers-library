@@ -183,6 +183,22 @@ class RAccountsLogfile {
         return $out;
     }
 
+    public function getNoJoomlaInstalls() {
+        $no = 0;
+        if ($this->jsonobject <> NULL) {
+            $remove = strlen($this->jsonobject["path"]);
+
+
+            if (isset($this->jsonobject["joomlaversions"])) {
+                $array = $this->jsonobject["joomlaversions"];
+                foreach ($array as $key => $item) {
+                    $no+=1;
+                }
+            }
+        }
+        return $no;
+    }
+
     public function getJoomlaVersion() {
         $out = "";
         if ($this->jsonobject <> NULL) {
