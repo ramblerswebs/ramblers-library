@@ -95,7 +95,7 @@ class RWatchfulWatchful {
                 }
             }
         }
-        if ($no > 0) {
+        if ($noJoomla > 0) {
             if ($no !== $noJoomla) {
                 $out .= "<div style='color:red'>Mismatch in number of Joomla sites</div>";
             }
