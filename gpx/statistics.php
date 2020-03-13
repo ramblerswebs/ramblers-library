@@ -105,6 +105,7 @@ class RGpxStatistics {
         }
         $stat->tracks = $gpx->tracks;
         $stat->routes = $gpx->routes;
+        $stat->duration = $gpx->duration;
         $cols = [];
         $cols[] = $stat->filename . "<br/><b>" . $stat->title . "</b>";
         $cols[] = $stat->author;
@@ -115,6 +116,7 @@ class RGpxStatistics {
         $cols[] = round($stat->cumulativeElevationGain, 1);
         $cols[] = round($stat->minAltitude, 0);
         $cols[] = round($stat->maxAltitude, 0);
+
         $cols[] = $stat->tracks . "(" . $gpx->segments . ")";
         $cols[] = $stat->routes;
         echo RHtml::addTableRow($cols);

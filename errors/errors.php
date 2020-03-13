@@ -94,7 +94,7 @@ class RErrors {
         }
         switch ($contents) {
             case NULL:
-                RErrors::notifyError($feedTitle . ' feed: Unable to read feed', $feed, 'error');
+                RErrors::notifyError($feedTitle . ' feed: Unable to read feed (Null response)', $feed, 'error');
                 break;
             case "":
                 echo '<b>' . $feedTitle . ' feed: No ' . $feedTitle . ' found</b>';
@@ -119,8 +119,7 @@ class RErrors {
                     return $json;
                     break;
                 } else {
-                    $type =json_last_error_msg();
-                    RErrors::notifyError('Feed is not in Json format: ' . $type, $feed, 'error');
+                   RErrors::notifyError('Feed is not in Json format: code ' . $error, $feed, 'error');
                 }
                 return null;
         }

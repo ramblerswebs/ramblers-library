@@ -215,7 +215,11 @@ function updateGPXid(id) {
         header += '<b>Description:</b> ' + route.description + '<br/>';
     }
     header += formatAltitude(route);
-    header += "<b>Est time:</b> " + naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
+
+    header += "<b>Est time <a href=\"https://maphelp.ramblers-webs.org.uk/naismith.html\" target='_blank'>(Naismith)</a>:</b> " + naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
+    if (route.duration !== 0) {
+        header += "<b>Actual Time:</b> " + timeconv(route.duration) + '<br/>';
+    }
     header += "<b>Download route:</b> " + getGPXdownloadLink(route) + '<br/>';
     if (route.tracks > 0) {
         header += "<b>Tracks:</b> " + route.tracks.toFixed(0);
@@ -313,10 +317,10 @@ function addPagination() {
         return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
     }
 
-  //  var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
+    //  var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
     var $div = '<div class="ra-route-filter">';
-   
-   $div += ' <span class="dropdown mr-3" \
+
+    $div += ' <span class="dropdown mr-3" \
        data-jplist-control="dropdown-sort" \
        data-opened-class="show" \
        data-group="group1" \
@@ -337,23 +341,23 @@ function addPagination() {
            href="#" \
            data-path="default">Sort By</a>';
     if (ramblersGpx.displayAsPreviousWalks) {
-        $div += addJPlistSortItem('.wDate', 'Date ▲', 'text','asc', true);
-        $div += addJPlistSortItem('.wDate', 'Date ▼', 'text','desc', false);
-        $div += addJPlistSortItem('.wAuthor', 'Leader ▲', 'text','asc', false);
-        $div += addJPlistSortItem('.wAuthor', 'Leader ▼', 'text','desc',false);
-        $div += addJPlistSortItem('.wTitle', 'Title ▲', 'text','asc', false);
-        $div += addJPlistSortItem('.wTitle', 'Title ▼', 'text','desc', false);
-        $div += addJPlistSortItem('.wDistance', 'Distance ▲', 'number','asc', false);
-        $div += addJPlistSortItem('.wDistance', 'Distance ▼', 'number','desc', false);
-        $div += addJPlistSortItem('.wElevation', 'Elevation ▲', 'number','asc', false);
-        $div += addJPlistSortItem('.wElevation', 'Elevation ▼', 'number','desc', false);
+        $div += addJPlistSortItem('.wDate', 'Date ▲', 'text', 'asc', true);
+        $div += addJPlistSortItem('.wDate', 'Date ▼', 'text', 'desc', false);
+        $div += addJPlistSortItem('.wAuthor', 'Leader ▲', 'text', 'asc', false);
+        $div += addJPlistSortItem('.wAuthor', 'Leader ▼', 'text', 'desc', false);
+        $div += addJPlistSortItem('.wTitle', 'Title ▲', 'text', 'asc', false);
+        $div += addJPlistSortItem('.wTitle', 'Title ▼', 'text', 'desc', false);
+        $div += addJPlistSortItem('.wDistance', 'Distance ▲', 'number', 'asc', false);
+        $div += addJPlistSortItem('.wDistance', 'Distance ▼', 'number', 'desc', false);
+        $div += addJPlistSortItem('.wElevation', 'Elevation ▲', 'number', 'asc', false);
+        $div += addJPlistSortItem('.wElevation', 'Elevation ▼', 'number', 'desc', false);
     } else {
-         $div += addJPlistSortItem('.wTitle', 'Title ▲', 'text','asc', true);
-        $div += addJPlistSortItem('.wTitle', 'Title ▼', 'text','desc', false);
-        $div += addJPlistSortItem('.wDistance', 'Distance ▲', 'number','asc', false);
-        $div += addJPlistSortItem('.wDistance', 'Distance ▼', 'number','desc', false);
-        $div += addJPlistSortItem('.wElevation', 'Elevation ▲', 'number','asc', false);
-        $div += addJPlistSortItem('.wElevation', 'Elevation ▼', 'number','desc', false);
+        $div += addJPlistSortItem('.wTitle', 'Title ▲', 'text', 'asc', true);
+        $div += addJPlistSortItem('.wTitle', 'Title ▼', 'text', 'desc', false);
+        $div += addJPlistSortItem('.wDistance', 'Distance ▲', 'number', 'asc', false);
+        $div += addJPlistSortItem('.wDistance', 'Distance ▼', 'number', 'desc', false);
+        $div += addJPlistSortItem('.wElevation', 'Elevation ▲', 'number', 'asc', false);
+        $div += addJPlistSortItem('.wElevation', 'Elevation ▼', 'number', 'desc', false);
     }
     $div += '</span> \
 <input class="ra-route-search" \
@@ -432,4 +436,14 @@ function ra_format(option) {
             ramblersMap.map.invalidateSize();
             break;
     }
+}
+function timeconv(seconds)
+{
+    var strtime, hrs, mins;
+    hrs = Math.floor(seconds / 3600);
+    seconds -= hrs * 3600;
+    mins = Math.floor(seconds / 60);
+    seconds -= mins * 60;
+    strtime = hrs.toFixed() + 'hrs ' + mins.toFixed() + 'mins';
+    return strtime;
 }

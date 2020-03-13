@@ -11,7 +11,7 @@
  *
  * @author Chris
  */
-define("ACCOUNTTABLE", "j8eh1_web_sites");
+define("ACCOUNTTABLE", "j8eh1_rw_accounts_domains");
 
 class RAccounts {
 

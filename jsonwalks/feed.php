@@ -21,9 +21,9 @@ class RJsonwalksFeed {
         $this->rafeedurl = trim($rafeedurl);
         $this->walks = new RJsonwalksWalks(NULL);
         $CacheTime = 15; // minutes
-        $time=getdate();
-        if ($time["hours"]<6) {
-             $CacheTime = 7200; // 12 hours, rely on cache between midnight and 6am
+        $time = getdate();
+        if ($time["hours"] < 6) {
+            $CacheTime = 7200; // 12 hours, rely on cache between midnight and 6am
         }
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
@@ -57,6 +57,10 @@ class RJsonwalksFeed {
 
     public function filterDistanceFrom($easting, $northing, $distanceKm) {
         $this->walks->filterDistanceFrom($easting, $northing, $distanceKm);
+    }
+
+    public function filterDistanceFromLatLong($lat, $lon, $distanceKm) {
+        $this->walks->filterDistanceFromLatLong($lat, $lon, $distanceKm);
     }
 
     public function filterGroups($filter) {
@@ -223,6 +227,39 @@ class RJsonwalksFeed {
             }
         }
         return $groups;
+    }
+
+    
+    public function filterFeed($filter) { // filter by component filter subform
+        if ($filter->titlecontains !== '') {
+            $this->filterTitleContains($filter->titlecontains, "keep");
+        }
+        if ($filter->titledoesntcontains !== '') {
+            $this->filterTitleContains($filter->titledoesntcontains, "remove");
+        }
+        if ($filter->titleequals !== '') {
+            $this->filterTitle($filter->titleequals, "keep");
+        }
+        if ($filter->titledoesntequal !== '') {
+            $this->filterTitle($filter->titledoesntequal, "remove");
+        }
+        $limit = intval($filter->limit);
+        if ($limit > 0) {
+            $this->noWalks($limit);
+        }
+        $dist = floatval($filter->filterdistance);
+        if ($dist > 0) {
+            $this->filterDistanceFromLatLong(floatval($filter->filtercentrelatitude), floatval($filter->filtercentrelongitude), $dist);
+        }
+        if (count($filter->filternationalgrades) > 0) {
+            $this->filterNationalGrade($filter->filternationalgrades);
+        }
+        if (count($filter->filterdaysofweek) > 0) {
+            $this->filterDayofweek($filter->filterdaysofweek);
+        }
+        if ($filter->filterstrand !== '') {
+            $this->filterStrands($filter->filterstrand);
+        }
     }
 
 }

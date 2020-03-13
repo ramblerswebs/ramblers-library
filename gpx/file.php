@@ -20,6 +20,7 @@ class RGpxFile {
     public $description = "";
     public $date = '';
     public $author = '';
+    public $duration = 0;
     //   public $copyright = '';
     private $file = null;
     private $registered = false;
@@ -73,6 +74,7 @@ class RGpxFile {
                 $this->cumulativeElevationGain += $s->cumulativeElevationGain;
                 $this->minAltitude = $s->minAltitude;
                 $this->maxAltitude = $s->maxAltitude;
+                $this->duration = $s->duration;
                 $this->segments += 1;
                 foreach ($segment->points as $pt) {
                     if ($firstpointset === false) {
