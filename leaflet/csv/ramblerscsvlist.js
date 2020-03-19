@@ -7,7 +7,7 @@
 var L, ramblersMap, ramblersCsvList, jplist, OsGridRef;
 function RamblersCsvList() {
     this.list = null;
-    this.paginationDefault=10;
+    this.paginationDefault = 10;
     this.isES6 = isES6();
 }
 
@@ -80,9 +80,11 @@ function calculateLatLng() {
     newitem = addNewItem("Latitude", lat);
     newitem.latitude = true;
     newitem.table = true;
+    newitem.align = 'right';
     newitem = addNewItem("Longitude", long);
     newitem.longitude = true;
     newitem.table = true;
+    newitem.align = 'right';
     ramblersCsvList.list.latitude = ramblersCsvList.list.items.length - 2;
     ramblersCsvList.list.longitude = ramblersCsvList.list.items.length - 1;
     ramblersCsvList.list.displayMap = true;
@@ -98,7 +100,7 @@ function addNewItem(name, values) {
     newitem.linkmarker = false;
     newitem.type = "text";
     ramblersCsvList.list.items.push(newitem);
-    newitem.jpclass="var"+ramblersCsvList.list.items.length;
+    newitem.jpclass = "var" + ramblersCsvList.list.items.length;
     return newitem;
 }
 function displayCSVTable() {
@@ -126,10 +128,10 @@ function displayCSVHeader(items) {
         item = items[index];
         if (item.table) {
             if (item.sort) {
-                sort1 = jplistSortButton("group1", item.name,item.jpclass, item.type, "asc", "▲");
-                sort2 = jplistSortButton("group1", item.name,item.jpclass, item.type, "desc", "▼");
+                sort1 = jplistSortButton("group1", item.name, item.jpclass, item.type, "asc", "▲");
+                sort2 = jplistSortButton("group1", item.name, item.jpclass, item.type, "desc", "▼");
             }
-            out += "<th>" + item.name + " " + sort1 + " " + sort2 + "</th>";
+            out += "<th class='" + item.align + "'>" + item.name + " " + sort1 + " " + sort2 + "</th>";
             if (item.filter) {
                 filter += jplistFilter('group1', item);
             } else {
@@ -142,6 +144,7 @@ function displayCSVHeader(items) {
     out += "</tr></thead>";
     return  filter + out;
 }
+
 function displayCSVRow(items, no) {
     var out = "";
     var item;
@@ -165,7 +168,7 @@ function displayCSVRow(items, no) {
             if (item.linkmarker) {
                 value = " <a href='javascript:selectMarker(" + no + ")' >" + item.values[no] + "</a>";
             }
-            out += "<td class='" + item.jpclass + "'>" + value + "</td>";
+            out += "<td class='" + item.jpclass + " " + item.align + "'>" + value + "</td>";
         }
     }
     out += '</tr>';
@@ -277,7 +280,7 @@ function addPagination() {
     var $div = '<div class="clear"></div>\
             <div data-jplist-control=\"pagination\" \
             data-group=\"group1\" \
-            data-items-per-page=\"'+ramblersCsvList.paginationDefault+'\" \
+            data-items-per-page=\"' + ramblersCsvList.paginationDefault + '\" \
             data-current-page=\"0\" \
             data-name=\"pagination1\"> \
             <span data-type=\"info\"> \
@@ -342,7 +345,7 @@ function jplistFilter(group, item) {
 
     return out;
 }
-function jplistSortButton(group, name,varclass, type, order, text) {
+function jplistSortButton(group, name, varclass, type, order, text) {
     var out = '<button class="csvlistsortbutton' + order + '" \
         data-jplist-control="sort-buttons" \
         data-path=".' + varclass + '" \

@@ -25,9 +25,17 @@ button.csvlistsortbuttondesc {
     width: 100%;
 
 }
-#csvdetails th,
-#csvdetails td{
+#csvdetails th.right,
+#csvdetails td.right{
     text-align: right;
+}
+#csvdetails th.left,
+#csvdetails td.left{
+    text-align: left;
+}
+#csvdetails th.center,
+#csvdetails td.center{
+    text-align: center;
 }
 #csvdetails th{
     line-height:30px;

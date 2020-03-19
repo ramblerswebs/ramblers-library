@@ -24,6 +24,7 @@ class RLeafletCsvItem {
     public $easting = false;
     public $northing = false;
     public $linkmarker=false;
+    public $align='right';
     public $type = "text";
     public $jpclass="";
     public $values = [];
@@ -82,6 +83,18 @@ class RLeafletCsvItem {
                     break;
                case "linkmarker":
                     $this->linkmarker = true;
+                    break;
+                case "left":
+                    $this->align = 'left';
+                    break;
+                case "right":
+                    $this->align = 'right';
+                    break;
+                case "centre":
+                    $this->align = 'center';
+                    break;
+                case "center":
+                    $this->align = 'center';
                     break;
                 case "":
                     
