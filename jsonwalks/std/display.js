@@ -877,6 +877,9 @@ function getWalkValue($walk, $option, addlink) {
         case "{localGrade}":
             out = $walk.localGrade;
             break;
+        case "{additionalNotes}":
+            out = $walk.additionalNotes;
+            break;
         case "{contact}":
             out = "";
             if ($walk.isLeader) {
