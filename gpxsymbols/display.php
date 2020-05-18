@@ -15,7 +15,7 @@ class RGpxsymbolsDisplay {
 
     public function __construct() {
         $document = JFactory::getDocument();
-        $document->addStyleSheet('ramblers/gpxsymbols/display.css');
+        $document->addStyleSheet('libraries/ramblers/gpxsymbols/display.css');
     }
 
     public function listFolder($folder) {

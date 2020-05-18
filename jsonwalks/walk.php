@@ -409,30 +409,30 @@ class RJsonwalksWalk extends REvent {
     }
 
     public static function nationalGradesLink() {
-        $out = '<p></p><p>Description of <a href="ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">National Grades</a></p>';
+        $out = '<p></p><p>Description of <a href="libraries/ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">National Grades</a></p>';
         echo $out;
     }
 
     public function getGradeImage() {
-        $image = "ramblers/images/grades/base.jpg";
+        $image = "libraries/ramblers/images/grades/base.jpg";
         switch ($this->nationalGrade) {
             case "Easy Access":
-                $image = "ramblers/images/grades/grade-ea.jpg";
+                $image = "libraries/ramblers/images/grades/grade-ea.jpg";
                 break;
             case "Easy":
-                $image = "ramblers/images/grades/grade-e.jpg";
+                $image = "libraries/ramblers/images/grades/grade-e.jpg";
                 break;
             case "Leisurely":
-                $image = "ramblers/images/grades/grade-l.jpg";
+                $image = "libraries/ramblers/images/grades/grade-l.jpg";
                 break;
             case "Moderate":
-                $image = "ramblers/images/grades/grade-m.jpg";
+                $image = "libraries/ramblers/images/grades/grade-m.jpg";
                 break;
             case "Strenuous":
-                $image = "ramblers/images/grades/grade-s.jpg";
+                $image = "libraries/ramblers/images/grades/grade-s.jpg";
                 break;
             case "Technical":
-                $image = "ramblers/images/grades/grade-t.jpg";
+                $image = "libraries/ramblers/images/grades/grade-t.jpg";
                 break;
             default:
                 break;
@@ -471,7 +471,7 @@ class RJsonwalksWalk extends REvent {
     function getGradeImg() {
         $base = JURI::base();
         $folder = JURI::base(true);
-        $url = $folder . "/ramblers/images/grades/";
+        $url = $folder . "/libraries/ramblers/images/grades/";
      //   if (strpos($base, 'localhost') !== false) {
      //   }
 

@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="file"  version="3.0" client="site" method="upgrade">
+<extension type="library"  version="3.0" client="site" method="upgrade">
     <name>RamblersLibrary</name>
-    <author>Chris Vaughan Derby and South Derbyshire</author>
-    <creationDate>8 April 2020</creationDate>
+   <libraryname>ramblers</libraryname>
+   <author>Chris Vaughan Derby and South Derbyshire</author>
+    <creationDate>15 May 2020</creationDate>
     <copyright>Copyright (C) 2016/2020</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>https://github.com/ramblerswebs/ramblers-library/wiki</authorUrl>
-    <version>2.7.0</version>
+    <version>3.0.0</version>
     <description>Ramblers classes to process, JSON Walks feeds, Retrieve CB membership information</description>
-    <fileset>
-        <files target="ramblers">
-            <filename>RamblersLibrary.xml</filename>
+    
+        <files>
+            <filename>ramblers.xml</filename>
             <filename>readme.md</filename>
             <folder>accounts</folder>
             <folder>calendar</folder>
@@ -50,7 +51,7 @@
             <folder>vendors</folder>
             <folder>watchful</folder>
         </files>
-    </fileset>
+    
     <updateservers>
         <server type="extension" priority="1" name="Ramblers-webs Update Site">https://raw.githubusercontent.com/ramblerswebs/updates/master/updates/ramblerslibrary.xml</server>
     </updateservers>

@@ -73,9 +73,9 @@ class RLeafletGpxMaplist extends RLeafletMap {
         parent::addContent($text);
         parent::display();
         $document = JFactory::getDocument();
-        $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
-        $document->addStyleSheet('ramblers/jsonwalks/css/ramblerswalks.css');
-        $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        $document->addScript("libraries/ramblers/leaflet/maplist.js", "text/javascript");
+        $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
         $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js", "text/javascript");
         echo "<br/>";

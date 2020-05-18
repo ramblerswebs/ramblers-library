@@ -47,8 +47,8 @@ class RLeafletMapdraw2 extends RLeafletMap {
         parent::display();
             $document = JFactory::getDocument();
         // Leaflet
-        $document->addStyleSheet("ramblers/vendors/leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.css", "text/css");
-        $document->addScript("ramblers/vendors/leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.js", "text/javascript");
+        $document->addStyleSheet("libraries/ramblers/vendors/leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.css", "text/css");
+        $document->addScript("libraries/ramblers/vendors/leaflet-routing-machine-3.2.12/dist/leaflet-routing-machine.js", "text/javascript");
    
         echo "<br/>";
     }

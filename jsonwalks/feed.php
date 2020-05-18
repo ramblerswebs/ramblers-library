@@ -138,8 +138,8 @@ class RJsonwalksFeed {
             return;
         }
         $document = JFactory::getDocument();
-        $document->addStyleSheet('ramblers/jsonwalks/css/ramblerswalks.css');
-        $document->addScript("ramblers/js/ramblerswalks.js", "text/javascript");
+        $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
         $printOn = JRequest::getVar('print') == 1;
         if ($printOn) {
             $style = 'BODY {color: #000000;}';

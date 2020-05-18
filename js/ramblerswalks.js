@@ -106,7 +106,7 @@ function isES6()
 }
 function dGH() {
     var $url;
-    $url = ramblersBase.folderbase + "/ramblers/pages/grades.html";
+    $url = ramblersBase.folderbase + "/libraries/ramblers/pages/grades.html";
     var marker;
     ajax($url, "", marker, displayGradesModal);
 }

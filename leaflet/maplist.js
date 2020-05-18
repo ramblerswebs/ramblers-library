@@ -70,9 +70,9 @@ function displayGPX(file, linecolour, imperial) {
     var g = new L.GPX(ramblersMap.base + file, {async: true,
         polyline_options: {color: linecolour},
         marker_options: {
-            startIconUrl: ramblersMap.base + 'ramblers/leaflet/images/pin-icon-start.png',
-            endIconUrl: ramblersMap.base + 'ramblers/leaflet/images/pin-icon-end.png',
-            shadowUrl: ramblersMap.base + 'ramblers/leaflet/images/pin-shadow.png'
+            startIconUrl: ramblersMap.base + 'libraries/ramblers/leaflet/images/pin-icon-start.png',
+            endIconUrl: ramblersMap.base + 'libraries/ramblers/leaflet/images/pin-icon-end.png',
+            shadowUrl: ramblersMap.base + 'libraries/ramblers/leaflet/images/pin-shadow.png'
         }});
     g.on('addline', function (e) {
         el.addData(e.line);
@@ -81,7 +81,7 @@ function displayGPX(file, linecolour, imperial) {
         if (e.point_type === "waypoint") {
             var marker = e.point;
             var icon = L.icon({
-                iconUrl: ramblersMap.base + 'ramblers/leaflet/images/redmarker.png',
+                iconUrl: ramblersMap.base + 'libraries/ramblers/leaflet/images/redmarker.png',
                 iconSize: [36, 41], // size of the icon
                 iconAnchor: [18, 41],
                 popupAnchor: [0, -41]
@@ -282,7 +282,7 @@ function getGPXdownloadLink(route) {
     }
     if (ramblersGpx.download === 2) {
         path = ramblersMap.base + ramblersGpx.folder + "/" + route.filename;
-        link = "<a href='" + path + "'><img  alt='gpx' src='" + ramblersMap.base + "ramblers/images/orange-gpx-32.png' width='20' height='20'></a>";
+        link = "<a href='" + path + "'><img  alt='gpx' src='" + ramblersMap.base + "libraries/ramblers/images/orange-gpx-32.png' width='20' height='20'></a>";
     }
     return link;
 }

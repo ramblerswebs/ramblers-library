@@ -17,7 +17,7 @@ class RLeafletGpxMap extends RLeafletMap {
 
     public function displayPath($gpx) {
         $document = JFactory::getDocument();
-        $document->addScript("ramblers/leaflet/maplist.js", "text/javascript");
+        $document->addScript("libraries/ramblers/leaflet/maplist.js", "text/javascript");
         $this->help_page = "https://maphelp.ramblers-webs.org.uk/walking-route.html";
         $this->options->fullscreen = true;
         $this->options->cluster = false;
@@ -71,7 +71,7 @@ class RLeafletGpxMap extends RLeafletMap {
                     break;
             }
             if ($link) {
-                echo '<b>Download route:</b> <a href="' . $gpx . '"><img alt="gpx" src="ramblers/images/orange-gpx-32.png" width="20" height="20"></a><br/><br/>';
+                echo '<b>Download route:</b> <a href="' . $gpx . '"><img alt="gpx" src="libraries/ramblers/images/orange-gpx-32.png" width="20" height="20"></a><br/><br/>';
             }
 
             $text = "  ramblersGpx=new RamblersLeafletGpx();"

@@ -1455,7 +1455,7 @@ function getGradeSpan($walk, $class) {
 }
 function getGradeImg($walk) {
     var $url;
-    $url = ramblersBase.folderbase + "/ramblers/images/grades/";
+    $url = ramblersBase.folderbase + "/libraries/ramblers/images/grades/";
 
     switch ($walk.nationalGrade) {
         case "Easy Access":
@@ -1483,7 +1483,7 @@ function getGradeImg($walk) {
 function getCloseImg() {
     var $url;
 
-    $url = ramblersBase.folderbase + "/ramblers/images/close.png";
+    $url = ramblersBase.folderbase + "/libraries/ramblers/images/close.png";
 
     $url = "<img class='ra-detailsimg' src='" + $url + "' alt='Easy Access' height='30' width='30'/>";
     return $url;

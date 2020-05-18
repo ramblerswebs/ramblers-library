@@ -479,7 +479,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         for (var i = 1; i < 6; i++) {
             this._placeslayer[i] = L.featureGroup([]);
             this._placeslayer[i].addTo(this._map);
-            ramblersMap.mapControl.addOverlay(this._placeslayer[i], "<span class='ramblers-places-icon'><img src='ramblers/leaflet/images/" + i + "star.png' alt='" + i + " Star'> places</span>");
+            ramblersMap.mapControl.addOverlay(this._placeslayer[i], "<span class='ramblers-places-icon'><img src='libraries/ramblers/leaflet/images/" + i + "star.png' alt='" + i + " Star'> places</span>");
         }
     },
     _clearPlacesLayers: function () {

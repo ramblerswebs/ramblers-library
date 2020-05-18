@@ -59,7 +59,7 @@ L.Control.GpxUpload = L.Control.extend({
         var _MAX_POINT_INTERVAL_MS = 15000;
         var _DEFAULT_MARKER_OPTS = {
             wptIconUrls: {
-                '': 'ramblers/leaflet/gpx/images/pin-icon-wpt.png'
+                '': 'libraries/ramblers/leaflet/gpx/images/pin-icon-wpt.png'
             },
             iconSize: [25, 41],
             shadowSize: [41, 41],

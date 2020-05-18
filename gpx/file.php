@@ -32,7 +32,7 @@ class RGpxFile {
 
     private function parse() {
         if (!$this->registered) {
-            JLoader::registerNamespace('phpGPX', "ramblers/vendors/phpGPX-master2081220/src");
+            JLoader::registerNamespace('phpGPX', "libraries/ramblers/vendors/phpGPX-master2081220/src");
             $this->registered = true;
         }
         $gpxfile = new phpGPX\phpGPX();

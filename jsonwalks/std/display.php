@@ -42,8 +42,8 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
             echo '</div><p></p>';
         }
         $display->DisplayWalks($walks);  // display cancelled walks information
-        $document->addScript("ramblers/jsonwalks/std/display.js", "text/javascript");
-        $document->addScript("ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        $document->addScript("libraries/ramblers/jsonwalks/std/display.js", "text/javascript");
+        $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         // remove cancelled walks
         $walks->filterCancelled();
         $items = $walks->allWalks();
@@ -85,7 +85,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
     private function displayMap() {
         $legend = '<p><strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.</p>
-<p><img src="ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.</p>';
+<p><img src="libraries/ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="libraries/ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="libraries/ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.</p>';
         if (isset($this->map)) {
             if (strpos($this->legendposition, "top") !== false) {
                 echo $legend;

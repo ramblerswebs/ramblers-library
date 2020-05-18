@@ -27,8 +27,8 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
 
         $document = JFactory::getDocument();
         JHtml::_('jquery.framework');
-        $document->addStyleSheet(JURI::base() . 'ramblers/jsonwalks/std/accordian/style/style4.css');
-        $document->addScript(JURI::base() . 'ramblers/jsonwalks/std/accordian/js/ra-accordion.js', "text/javascript");
+        $document->addStyleSheet(JURI::base() . 'libraries/ramblers/jsonwalks/std/accordian/style/style4.css');
+        $document->addScript(JURI::base() . 'libraries/ramblers/jsonwalks/std/accordian/js/ra-accordion.js', "text/javascript");
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         $id = "accordion_ra1_id" . self::$accordianId;
@@ -109,7 +109,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksDisplaybase {
         if ($this->displayGradesIcon) {
             $out .= ' <img src="' . $walk->getGradeImage() . '" alt="' . $walk->nationalGrade . '" onclick="javascript:dGH()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
         } else {
-            $out .= ' <img src="ramblers/images/grades/base.jpg" alt="' . $walk->nationalGrade . '" onclick="javascript:dGH()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
+            $out .= ' <img src="libraries/ramblers/images/grades/base.jpg" alt="' . $walk->nationalGrade . '" onclick="javascript:dGH()" onmouseover="dispGrade(this)" onmouseout="noGrade(this)">';
         }
         return $out;
     }
