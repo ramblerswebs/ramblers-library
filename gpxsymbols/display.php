@@ -42,7 +42,7 @@ class RGpxsymbolsDisplay {
         $names = explode(".", $entry);
         $name = $names[0];
         echo "<div class='gpximage' >";
-        echo "<span class='gpximagedisplay' ><img src='" . $folder . "/" . $entry . "' alt='image'></span>";
+        echo "<span class='gpximagedisplay' ><img src='/" . $folder . "/" . $entry . "' alt='image'></span>";
         echo "<span class='gpximagetitle' >" . $name . "</span>";
         echo "</div>";
     }

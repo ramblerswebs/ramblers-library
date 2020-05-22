@@ -78,7 +78,7 @@ function displayModal($html) {
     createModalTag();
     setTagHtml("modal-data", $html);
     // Get the modal
-    var modal = document.getElementById('raModal');
+    var modal = document.getElementById('js-raModal');
     modal.style.display = "block";
 // Get the <span> element that closes the modal
     var span = document.getElementById("btnClose");
@@ -157,7 +157,7 @@ function createModalTag() {
         var body = document.getElementsByTagName("BODY")[0];
         var div = document.createElement("div");
         body.appendChild(div);
-        $tag = '<div id="raModal" class="modal" style="display:none">';
+        $tag = '<div id="js-raModal" class="ramodal" style="display:none">';
         $tag += '<!-- Modal Content (The Image) -->';
         $tag += '<div class="modal-content" >';
         $tag += '<div class="modal-header">';

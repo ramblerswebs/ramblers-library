@@ -36,6 +36,10 @@
             <folder>jsonwalks/css</folder>
             <folder>jsonwalks/de02</folder>
             <folder>jsonwalks/leaflet</folder>
+            <folder>jsonwalks/sr02</folder>
+            <folder>jsonwalks/sr02/accordian</folder>
+            <folder>jsonwalks/sr02/accordian/js</folder>
+            <folder>jsonwalks/sr02/accordian/style</folder>
             <folder>jsonwalks/std</folder>
             <folder>jsonwalks/sx05</folder>
             <folder>leaflet</folder>

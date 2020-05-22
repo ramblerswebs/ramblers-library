@@ -1,0 +1,59 @@
+/*------------------------------------------------------------------------
+# JoomShaper Accordion Module by JoomShaper.com
+# ------------------------------------------------------------------------
+# author    JoomShaper http://www.joomshaper.com
+# Copyright (C) 2010 - 2014 JoomShaper.com. All Rights Reserved.
+# @license - http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL
+# Websites: http://www.joomshaper.com
+-------------------------------------------------------------------------*/
+.ra-accordion.ra-accordion-style4 .toggler,.ra-accordion.ra-accordion-style4 .toggler span,.ra-accordion.ra-accordion-style4 .toggler span span{
+    display:inline-block;
+    line-height:30px;
+    cursor:pointer}
+.ra-accordion.ra-accordion-style4 .toggler span,.ra-accordion.ra-accordion-style4 .toggler span span{
+    font-size:13px;
+    font-weight:700;
+}
+
+.ra-accordion.ra-accordion-style4 .toggler span.walksummary {
+    background:url(style4/close.png) no-repeat 100% 50%;
+    padding:0 24px;
+    background-position: right center;
+    width:95%;}
+.ra-accordion .toggler  {
+    width:100%; 
+}
+.ra-accordion.ra-accordion-style4 div.toggler.active span.walksummary {
+    background:url(style4/open.png) no-repeat 100% 50%;
+    background-position: right center; 
+    width:95%;}
+.ra-accordion.ra-accordion-style4 .ra-accordion-inner{
+    background:url(style4/note.png) no-repeat 0 10px;
+    padding:0 16px 0 24px}
+
+
+.ra-accordion.ra-accordion-style4 .printfulldetails,.ra-accordion.ra-accordion-style4 .printfulldetails span,.ra-accordion.ra-accordion-style4 .printfulldetails span span{
+    display:block;line-height:30px;cursor:pointer}
+.ra-accordion.ra-accordion-style4 .printfulldetails span,.ra-accordion.ra-accordion-style4 .printfulldetails span span{
+    font-size:13px;font-weight:700}
+
+.ra-accordion.ra-accordion-style4 .printfulldetails span span{
+    padding:0 24px}
+.ra-accordion.ra-accordion-style4 .ra-accordion-inner{
+    background:url(style4/note.png) no-repeat 0 10px;padding:0 16px 0 24px}
+.ra-fulldetails-container {
+    border-radius: 10px 10px 10px 10px;
+
+    background-color: #ffffff;
+    min-width: 500px;
+    padding-right:10px;
+    padding-left: 40px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+div.groupfootnote.printon {
+    font-size: x-small;
+}
+div.updated.printon {
+    font-size: x-small;
+}

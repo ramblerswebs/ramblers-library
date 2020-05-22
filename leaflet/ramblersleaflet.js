@@ -102,8 +102,10 @@ function raLoadLeaflet() {
 // [FitBounds]   
         if (ramblersMap.options.cluster) {
 // calc bounds from marker as cluster still loading
-            var bounds = getBounds(ramblersMap.markerList);
-            ramblersMap.map.fitBounds(bounds, {padding: [150, 150]});
+            if (ramblersMap.markerList.length !== 0) {
+                var bounds = getBounds(ramblersMap.markerList);
+                ramblersMap.map.fitBounds(bounds, {padding: [150, 150]});
+            }
         } else {
 
         }
@@ -505,8 +507,8 @@ function getMouseMoveAction(e) {
     var lng = e.latlng.lng.toFixed(5);
     var lat = e.latlng.lat.toFixed(5);
     var value = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
-  //  value += '<br/>' + getMapCode(e.latlng.lat, e.latlng.lng, true);
-  //  value += '<br/>' + getPlusCode(e.latlng.lat, e.latlng.lng, true);
+    //  value += '<br/>' + getMapCode(e.latlng.lat, e.latlng.lng, true);
+    //  value += '<br/>' + getPlusCode(e.latlng.lat, e.latlng.lng, true);
     return  gridref + value;
 }
 

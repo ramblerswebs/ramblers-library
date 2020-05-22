@@ -134,8 +134,8 @@ class RJsonwalksFeed {
             return;
         }
         if ($this->walks->totalWalks() == 0) {
-            echo "No walks found";
-            return;
+           // echo "No walks found";
+          //  return;
         }
         $document = JFactory::getDocument();
         $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');

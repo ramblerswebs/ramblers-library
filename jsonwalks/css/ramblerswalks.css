@@ -394,7 +394,7 @@ h3.ra_openclose:hover {
 }
 
 /* The Modal (background) */
-.modal {
+#js-raModal.ramodal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 999999; /* Sit on top */
