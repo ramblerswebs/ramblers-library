@@ -18,8 +18,8 @@ class RLeafletMap {
     public $help_page = "";
     public $leafletLoad = true;
 
-    const COMBINED_JS = "cache/ra_leaflet/ra-leafet";
-    const FOLDER = "cache/ra_leaflet";
+  //  const COMBINED_JS = "cache/ra_leaflet/ra-leafet";
+  //  const FOLDER = "cache/ra_leaflet";
 
     function __construct() {
         $template = "libraries/ramblers/leaflet/mapTemplate.js";
@@ -50,8 +50,8 @@ class RLeafletMap {
 
         $document = JFactory::getDocument();
         // Leaflet
-        $document->addStyleSheet("libraries/ramblers/vendors/leaflet1.3.4/leaflet.css", "text/css");
-        $document->addScript("libraries/ramblers/vendors/leaflet1.3.4/leaflet.js", "text/javascript");
+        $document->addStyleSheet("libraries/ramblers/vendors/leaflet1.6/leaflet.css", "text/css");
+        $document->addScript("libraries/ramblers/vendors/leaflet1.6/leaflet.js", "text/javascript");
         $document->addScript("libraries/ramblers/leaflet/ramblersleaflet.js", "text/javascript");
         $document->addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
         // add script for Google Plus codes https://plus.codes
