@@ -18,6 +18,9 @@ p.mapcopyright {
 div#rt-header {
     z-index: 1000;
 }
+div.leaflet-container{
+    z-index:0;
+}
 
 /* leaflet/joomla fix so that overlay pane is displayed */
 .leaflet-overlay-pane svg{
