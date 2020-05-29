@@ -14,6 +14,7 @@ class RJsonwalksAv01Programmeww extends RJsonwalksDisplaybase {
     private $walksClass = "de02walks";
     private $walkClass = "de02walk";
     public $addDescription = true;
+    private $names = [];
 
     const BR = "<br />";
 
@@ -61,7 +62,7 @@ class RJsonwalksAv01Programmeww extends RJsonwalksDisplaybase {
 //        echo $nn." ".$linex[$nn]."<br />";
 //#        $nn=$nn+1;
 //#      }
-        $linex[$nn] = "2050-01-01";
+        $linex[$nn] = "2037-01-01";
         $ind = "1";
         foreach ($items as $walk) {
             if ($ind == "1") {
@@ -119,6 +120,17 @@ class RJsonwalksAv01Programmeww extends RJsonwalksDisplaybase {
 
     function setWalkClass($class) {
         $this->walkClass = $class;
+    }
+
+    function setNames($names) {
+        $this->names = $names;
+    }
+
+    function getFullname($name) {
+        if (array_key_exists($name, $this->names)) {
+            return $this->names[$name];
+        }
+        return $name;
     }
 
 //    private function &displayWalk($walk,$thismonth3,$bst):string {
@@ -396,223 +408,8 @@ class RJsonwalksAv01Programmeww extends RJsonwalksDisplaybase {
                 $nx = substr($fullname, 0, -2);
                 $fullname = $nx . $clast;
             }
-            if ($fullname == "Keith B") {
-                $fullname = "Keith B<i>udd</i>";
-            }
-            if ($fullname == "Keith  B") {
-                $fullname = "Keith B<i>udd</i>";
-            }
-            if ($fullname == "Clive R") {
-                $fullname = "Clive R<i>ichardson</i>";
-            }
-//if($fullname=="Gwyneth L")
-//{$fullname="Gwyneth L<i>ittlejohn</i>";}
-            if ($fullname == "Julian B") {
-                $fullname = "Julian B<i>utter</i>";
-            }
-            if ($fullname == "Meryl T") {
-                $fullname = "Meryl T<i> ill</i>";
-            }
-            if ($fullname == "David P") {
-                $fullname = "David P<i>ingstone</i>";
-            }
-            if ($fullname == "Wendy B") {
-                $fullname = "Wendy B<i>ritton</i>";
-            }
-//if($fullname=="Tony C")
-//{$fullname="Tony C<i>arter</i>";}
-            if ($fullname == "Margaret P") {
-                $fullname = "Margaret P<i>ostlethwaite</i>";
-            }
-            if ($fullname == "Gordon S") {
-                $fullname = "Gordon S<i>tillman</i>";
-            }
-            if ($fullname == "Andy Se") {
-                $fullname = "Andy Se<i>ars</i>";
-            }
-            if ($fullname == "Martin S") {
-                $fullname = "Martin S<i>ummerell</i>";
-            }
-            if ($fullname == "Tony P") {
-                $fullname = "Tony P<i>arsons</i>";
-            }
-            if ($fullname == "Paula C") {
-                $fullname = "Paula C<i>annings</i>";
-            }
-            if ($fullname == "Rosemary D") {
-                $fullname = "Rosemary D<i>an</i>";
-            }
-            if ($fullname == "Sue Y") {
-                $fullname = "Sue Y<i>oung</i>";
-            }
-            if ($fullname == "Nigel  A") {
-                $fullname = "Nigel A<i>ndrews</i>";
-            }
-            if ($fullname == "Nigel A") {
-                $fullname = "Nigel A<i>ndrews</i>";
-            }
-            if ($fullname == "Julie B") {
-                $fullname = "Julie B<i>oston</i>";
-            }
-            if ($fullname == "Maureen J") {
-                $fullname = "Maureen J<i>ohnson</i>";
-            }
-            if ($fullname == "Bob M") {
-                $fullname = "Bob M<i>ills</i>";
-            }
-            if ($fullname == "Stephen D") {
-                $fullname = "Stephen D<i>raper</i>";
-            }
-            if ($fullname == "Patsy H") {
-                $fullname = "Patsy H<i>udson</i>";
-            }
-//if($fullname=="Mary M")
-//{$fullname="Mary M<i>agro</i>";}
-//if($fullname=="Geoff H")
-//{$fullname="Geoff H<i>arris</i>";}
-            if ($fullname == "Susan C") {
-                $fullname = "Susan C<i>arter</i>";
-            }
-            if ($fullname == "Neil B") {
-                $fullname = "Neil B<i>urlton</i>";
-            }
-            if ($fullname == "John W") {
-                $fullname = "John W<i>rigley</i>";
-            }
-            if ($fullname == "Carew R") {
-                $fullname = "Carew R<i>eynell</i>";
-            }
-//if($fullname=="Mike F")
-//{$fullname="Mike F<i>ox</i>";}
-            if ($fullname == "Dave O") {
-                $fullname = "Dave O<i>sborne</i>";
-            }
-//if($fullname=="Margaret R")
-//{$fullname="Margaret R<i>use</i>";}
-            if ($fullname == "Peter G") {
-                $fullname = "Peter G<i>ould</i>";
-            }
-            if ($fullname == "Gill D") {
-                $fullname = "Gill D<i>avies</i>";
-            }
-            if ($fullname == "Ann L") {
-                $fullname = "Ann L<i>ight</i>";
-            }
-            if ($fullname == "Heather T") {
-                $fullname = "Heather T<i>oyne</i>";
-            }
-            if ($fullname == "Roger G") {
-                $fullname = "Roger G<i>riffiths</i>";
-            }
-            if ($fullname == "Sarah M") {
-                $fullname = "Sarah M<i>arshall</i>";
-            }
-            if ($fullname == "Derek B") {
-                $fullname = "Derek B<i>ones</i>";
-            }
-            if ($fullname == "Ben M") {
-                $fullname = "Ben M<i>acKay</i>";
-            }
-            if ($fullname == "Richard R") {
-                $fullname = "Richard R<i>edding</i>";
-            }
-            if ($fullname == "Chris S") {
-                $fullname = "Chris S<i>anders</i>";
-            }
-            if ($fullname == "Chris H") {
-                $fullname = "Chris H<i>olloway</i>";
-            }
-            if ($fullname == "Julie P") {
-                $fullname = "Julie P<i>arry</i>";
-            }
-            if ($fullname == "Sarah S") {
-                $fullname = "Sarah S<i>horter</i>";
-            }
-//if($fullname=="Sarah  S")
-//{$fullname="Sarah S<i>horter</i>";}
-            if ($fullname == "Andy St") {
-                $fullname = "Andy St<i>eward</i>";
-            }
-            if ($fullname == "Susan J") {
-                $fullname = "Susan J<i>arvis</i>";
-            }
-            if ($fullname == "Bill M") {
-                $fullname = "Bill M<i>oore</i>";
-            }
-            if ($fullname == "Tony K") {
-                $fullname = "Tony K<i>err</i>";
-            }
-//if($fullname=="Magrid S")
-//{$fullname="Magrid S<i>chindler</i>";}
-            if ($fullname == "Keith B") {
-                $fullname = "Keith B<i>udd</i>";
-            }
-            if ($fullname == "Margaret M") {
-                $fullname = "Margaret M<i>arsh</i>";
-            }
-//if($fullname=="Lesley I")
-//{$fullname="Lesley I<i>nsall</i>";}
-            if ($fullname == "Beverley B") {
-                $fullname = "Beverley B<i>leasdale</i>";
-            }
-            if ($fullname == "Jean W") {
-                $fullname = "Jean W<i>aller</i>";
-            }
-            if ($fullname == "Chris D") {
-                $fullname = "Chris D<i>ring</i>";
-            }
-            if ($fullname == "Hugh B") {
-                $fullname = "Hugh B<i>ond</i>";
-            }
-            if ($fullname == "Anna K") {
-                $fullname = "Anna K<i>ulisa</i>";
-            }
-            if ($fullname == "Janet W") {
-                $fullname = "Janet W<i>ood</i>";
-            }
-// if($fullname=="Margaret R")
-//{$fullname="Margaret R<i>use</i>";}
-// if($fullname=="Reg L")
-//{$fullname="Reg L<i>onergan</i>";}
-//if($fullname=="Mikiko T")
-//{$fullname="Mikiko T<i>anda</i>";}
-            if ($fullname == "Brian D") {
-                $fullname = "Brian D<i>rummond</i>";
-            }
-            if ($fullname == "Geoff D") {
-                $fullname = "Geoff D<i>aniels</i>";
-            }
-            if ($fullname == "Phil S") {
-                $fullname = "Phil S<i>elby</i>";
-            }
-            if ($fullname == "Jill Bi") {
-                $fullname = "Jill Bi<i>rd</i>";
-            }
-//if($fullname=="Jill Ba")
-//{$fullname="Jill Ba<i>rrand</i>";}
-            if ($fullname == "Bridget G") {
-                $fullname = "Bridget G<i>regory</i>";
-            }
-// if($fullname=="Kay B")
-//{$fullname="Kay B<i>orman</i>";}
-            if ($fullname == "Julian B & Julie W") {
-                $fullname = "Julian B<i>utter</i> & Julie W<i>estgarth</i>";
-            }
-            if ($fullname == "Maggie W") {
-                $fullname = "Maggie W<i>ilcox</i>";
-            }
-            if ($fullname == "David O") {
-                $fullname = "David O<i>sborne</i>";
-            }
-            if ($fullname == "Alison P") {
-                $fullname = "Alison P<i>arry</i>";
-            }
-            if ($fullname == "Mandy M") {
-                $fullname = "Mandy M<i>acDonald</i>";
-            }
-//  if($fullname=="Andrew R")
-//{$fullname="Andrew R<i>anshaw</i>";}
-            $col2 = $fullname;
+
+            $col2 = $this->getFullname($fullname);
             if ($walk->telephone1 != "") {
                 $t1 = preg_replace('/\s/', '~', $walk->telephone1);
                 $t1 = preg_replace('/\s/', '&nbsp', $walk->telephone1);
