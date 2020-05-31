@@ -235,44 +235,8 @@ div.leaflet-control-display-help a {
     background-position: center; 
     cursor: pointer;
 }
-div#gpxouter {
-    background-color:#D8D8D8;;
-    border-radius: 0px 10px 10px 10px;
-    padding:25px;
-}
 
-table#gpxoptions{
-    background-color:transparent;
-    margin-bottom:0px;;
-    border-width: 0px;
-}
-/*table#gpxoptions td{
-    padding-left:25px;
-    padding-right:25px;
-}
-table#gpxoptions td.active{
-    background-color:#DDDDDD;
-}
-table#gpxoptions td::hover{
-    background-color:#CCCCCC;
-}*/
-table tr td.ra-tab { 
-    cursor: pointer;
-    font-weight: bold;
-    font-size:115%;
-    background-color: #E1E1E1;
-    border-width: 0px !important;
-    padding-left:30px !important;
-    padding-right:30px !important;
-    border-radius: 10px 10px 0px 0px;
-}
 
-table tr td.active {
-    background-color: #D8D8D8;
-} 
-table tr td.ra-tab:hover {
-    background-color: #BBBBBB;
-} 
 .group-icon {
     background: rgba(120, 35, 39, 0.7);
     padding:5px;

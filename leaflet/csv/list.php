@@ -76,7 +76,7 @@ class RLeafletCsvList extends RLeafletMap {
         $this->options->print = true;
         //    RLicense::BingMapKey(false);
 
-        echo "<table id='gpxoptions' ><tr><td class='ra-tab' id='Map' style='display:none;' onclick=\"javascript:ra_format('Map')\">Map</td><td class='ra-tab active' id='List' onclick=\"javascript:ra_format('List')\">List</td></tr></table>";
+        echo "<table id='gpxoptions' ><tr><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td><td class='ra-tab active' id='List' onclick=\"javascript:ra_format('List')\">List</td></tr></table>";
         echo "<div id='gpxouter' >";
         echo "<div id='csvmap' style='display:none;'>";
         echo "<p> </p>";
@@ -89,7 +89,7 @@ class RLeafletCsvList extends RLeafletMap {
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
         $document->addStyleSheet("libraries/ramblers/leaflet/csv/csvlist.css", "text/css");
-        //     $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
         $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js", "text/javascript");

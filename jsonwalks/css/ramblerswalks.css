@@ -388,6 +388,8 @@ h3.ra_openclose {
     font-size:115%;
     cursor: pointer;
     padding-left:10px;
+    height:40px;
+    overflow:hidden;
 }
 h3.ra_openclose:hover {
     background-color:#CCCCCC;
@@ -476,10 +478,7 @@ div.even {
 .even:hover {
     background-color:#DDDDDD !important;
 }
-#rapotions {
 
-    background-color:green;
-}
 div#rainner {
     padding-top:25px;
     padding-left:10px;
@@ -490,30 +489,47 @@ div#rainner {
     border: 0px;
     border-color:#C0C0C0;
     border-style: solid;
+    min-width:410px;
 }
-div#raoptions table {
+div#gpxouter {
+    background-color:#D8D8D8;;
+    border-radius: 0px 10px 10px 10px;
+    padding:25px;
+}
+div#raoptions table, table#gpxoptions{
     table-layout: auto;
     border-width: 0px;
     margin-bottom:0px; 
     background-color:rgba(0, 0, 0, 0);
 }
+table#gpxoptions{
+    background-color:transparent;
+    margin-bottom:0px;;
+    border-width: 0px;
+}
 table tr td.ra-tab { 
     cursor: pointer;
-    font-weight: bold;
+    font-weight: normal;
+    background-color: #bbb;
     font-size:115%;
-    background-color: #E1E1E1;
     border-width: 0px !important;
-    padding-left:30px !important;
-    padding-right:30px !important;
+    padding-left:20px !important;
+    padding-right:20px !important;
     border-radius: 10px 10px 0px 0px;
-}
 
+}
 table tr td.active {
     background-color: #D8D8D8;
+    font-size:135%;
+    font-weight: bold;
 } 
+
 table tr td.ra-tab:hover {
-    background-color: #BBBBBB;
+    background-color: #D8D8D8;
+    font-size:135%;
+    font-weight: bold;
 } 
+
 .pointer {
     cursor: pointer;
 }

@@ -267,7 +267,6 @@ function ra_format(option) {
         case 'Map':
             document.getElementById("csvlist").style.display = "none";
             document.getElementById("csvmap").style.display = "inline";
-            document.getElementById("Map").style.display = "inline-block";
             ramblersMap.map.invalidateSize();
             break;
     }
