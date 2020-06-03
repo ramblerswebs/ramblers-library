@@ -138,6 +138,7 @@ div.walkstdfulldetails div.nostartplace,
 div.walkstdfulldetails div.finishplace,
 div.walkstdfulldetails div.difficulty,
 div.walkstdfulldetails div.walkcontact,
+div.walkstdfulldetails div.walkmedia,
 div.walkstdfulldetails div.festivals,
 div.walkstdfulldetails div.strands,
 div.walkstdfulldetails div.suitability,
@@ -192,7 +193,6 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.nostartplace,
 div.walkstdfulldetails.walkCancelled.stdfulldetails div.finishplace,
 div.walkstdfulldetails.walkCancelled.stdfulldetails div.difficulty {
     text-decoration-line: line-through;
-
 }
 
 /* Popups */
@@ -577,6 +577,7 @@ img.ra-grade.pointer {
 }
 #rawalks table{
     width:100%;
+    word-break: break-word;
 }
 #rawalks table.contacts{
     width:auto;
@@ -762,4 +763,42 @@ span.ra_select span{
     cursor:pointer;
     color: #782327;
     font-weight: bold;
+}
+img.mediathumbl{
+    float:left;
+    max-height: 70px;
+    max-width:110px;
+    -webkit-border-radius: 6px 6px 6px 6px;
+    -moz-border-radius: 6px 6px 6px 6px;
+    border-radius: 6px 6px 6px 6px;
+    margin-right:5px;
+}
+img.mediathumbr{
+    float:right;
+    max-height: 70px;
+    max-width:110px;
+    -webkit-border-radius: 6px 6px 6px 6px;
+    -moz-border-radius: 6px 6px 6px 6px;
+    border-radius: 6px 6px 6px 6px;
+    margin-left:5px;
+}
+div.walk-image{
+    display: inline-block;
+}
+img.walkmedia {
+    -webkit-border-radius: 6px 6px 6px 6px;
+    -moz-border-radius: 6px 6px 6px 6px;
+    border-radius: 6px 6px 6px 6px;
+    max-height: 100px;
+    max-width: 150px;
+    margin-right:8px;
+    cursor: pointer;
+}
+img.walkmedia[data-size="2"]{
+    max-height: 250px;
+    max-width: 400px;
+}
+img.walkmedia[data-size="3"]{
+    max-height: 400px;
+    max-width: 600px;
 }

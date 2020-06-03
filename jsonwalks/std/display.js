@@ -11,7 +11,7 @@ function RamblersWalksDetails() {
     this.displayDefault = "Details";
     this.displayStartTime = true;
     this.displayStartDescription = true;
-    this.tableFormat = '[{ "title": "Date", "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}","{,meetPC}"]},{    "title": "Start",    "items": ["{start}","{,startGR}","{,startPC}"]},{    "title": "Title",    "items": ["{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
+    this.tableFormat = '[{ "title": "Date", "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}","{,meetPC}"]},{    "title": "Start",    "items": ["{start}","{,startGR}","{,startPC}"]},{    "title": "Title",    "items": ["{mediathumbr}","{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
     this.listFormat = '[ "{dowddmm}", "{,meet}", "{,start}","{,title}","{,distance}","{,contactname}","{,telephone}" ] ';
     this.detailsFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
     this.options;
@@ -944,6 +944,20 @@ function getWalkValue($walk, $option, addlink) {
         case "{emaillink}":
             out = getEmailLink($walk);
             break;
+        case "{mediathumbr}":
+            out = '';
+            if ($walk.media.length > 0) {
+                out = "<img class='mediathumbr' src='" + $walk.media[0].url + "' >";
+                out = addWalkLink($walk, out, addlink, "");
+            }
+            break;
+        case "{mediathumbl}":
+            out = '';
+            if ($walk.media.length > 0) {
+                out = "<img class='mediathumbl' src='" + $walk.media[0].url + "' >";
+                out = addWalkLink($walk, out, addlink, "");
+            }
+            break;
         default:
             $option = $option.replace("{", "");
             out = $option.replace("}", "");
@@ -1127,12 +1141,40 @@ function displayWalkDetails($walk) {
     $html += addItemInfo("theme", "Theme", $walk.theme);
     $html += addItemInfo("specialStatus", "Special Status", $walk.specialStatus);
     $html += addItemInfo("facilities", "Facilities", $walk.facilities);
+    if ($walk.media.length > 0) {
+        if ($walk.media.length > 0) {
+            $html += "<div class='walkmedia'> ";
+            var index, len;
+            for (index = 0, len = $walk.media.length; index < len; ++index) {
+                var item = $walk.media[index];
+                var caption = '';
+                if (item.caption != '') {
+                    caption = "<div>" + item.caption + "</div>";
+                }
+
+                if (item.copyright != '') {
+                    caption += "<div><i>&copy; " + item.copyright + "</i></div>";
+                }
+
+                $html += "<div class='walk-image' ><img data-size='1' class='walkmedia' src='" + item.url + "' onclick='mediasize(this)' >" + caption + "</div>";
+            }
+            $html += "</div>" + PHP_EOL;
+        }
+    }
     $html += "<div class='walkdates'>" + PHP_EOL;
     $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on Walks Finder</a></div>" + PHP_EOL;
     $html += "<div class='updated walk" + $walk.status + "'>Last update: " + getDate($walk.dateUpdated.date) + "</div>" + PHP_EOL;
     $html += "</div>" + PHP_EOL;
     $html += "</div>" + PHP_EOL;
     return $html;
+}
+function mediasize(e) {
+    var size = parseInt(e.getAttribute("data-size"));
+    size += 1;
+    if (size == 4) {
+        size = 1;
+    }
+    e.setAttribute("data-size", size);
 }
 
 function addLocationInfo($title, $location, $detailsPageUrl) {
@@ -1155,8 +1197,8 @@ function addLocationInfo($title, $location, $detailsPageUrl) {
         if ($location.postcode !== "") {
             $out += displayPostcode($location, $detailsPageUrl);
         }
-        //   $out += RHtmlwithDiv('mapcode', getMapCode($location.latitude, $location.longitude, true));
-        //   $out += RHtmlwithDiv('olc', getPlusCode($location.latitude, $location.longitude, true));
+//   $out += RHtmlwithDiv('mapcode', getMapCode($location.latitude, $location.longitude, true));
+//   $out += RHtmlwithDiv('olc', getPlusCode($location.latitude, $location.longitude, true));
         var tagname = "ra-loc=" + $location.type;
         var tag = document.getElementById(tagname);
         if (tag !== null) {
@@ -1220,7 +1262,7 @@ function getShortTime($text) {
     return d.toLocaleTimeString();
 }
 function getDate($text) {
-    // note Mac does not handle yyyy-mm-dd, change to yyyy/mm/dd    
+// note Mac does not handle yyyy-mm-dd, change to yyyy/mm/dd    
     var d = new Date($text.substr(0, 19).replace(/-/g, "/"));
     return d.toDateString();
 }
@@ -1469,7 +1511,6 @@ function getGradeSpan($walk, $class) {
 function getGradeImg($walk) {
     var $url;
     $url = ramblersBase.folderbase + "/libraries/ramblers/images/grades/";
-
     switch ($walk.nationalGrade) {
         case "Easy Access":
             $url = "<img src='" + $url + "grade-ea.jpg' alt='Easy Access' height='30' width='30'/>";
@@ -1489,15 +1530,12 @@ function getGradeImg($walk) {
         case "Technical":
             $url = "<img src='" + $url + "grade-t.jpg' alt='Technical' height='30' width='30'/>";
             break;
-
     }
     return $url;
 }
 function getCloseImg() {
     var $url;
-
     $url = ramblersBase.folderbase + "/libraries/ramblers/images/close.png";
-
     $url = "<img class='ra-detailsimg' src='" + $url + "' alt='Easy Access' height='30' width='30'/>";
     return $url;
 }

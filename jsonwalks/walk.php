@@ -56,6 +56,7 @@ class RJsonwalksWalk extends REvent {
     public $theme;          // RJsonwalksItems object or null
     public $specialStatus;          // RJsonwalksItems object or null
     public $facilities;          // RJsonwalksItems object or null
+    public $media;               //array of image infomation
 // extra derived values
     private $sortTime;
     private $icsDayEvents = false;
@@ -153,6 +154,7 @@ class RJsonwalksWalk extends REvent {
 // pocess meeting and starting locations
             $this->processPoints($item->points);
             $this->createExtraData();
+            $this->media=$this->getMedia($item);
         } catch (Exception $ex) {
             $this->errorFound = 2;
         }
@@ -505,6 +507,15 @@ class RJsonwalksWalk extends REvent {
     function endsWith($haystack, $needle) {
         // search forward starting from end minus needle length characters
         return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
+    }
+    private function getMedia($item){
+        $out=[];
+        if (count($item->media)>0){
+           foreach ($item->media as $value) {
+               $out[]=$value;
+           }
+        } 
+        return $out;
     }
 
     function __destruct() {

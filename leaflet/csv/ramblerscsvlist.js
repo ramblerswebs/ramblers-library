@@ -204,7 +204,12 @@ function addCSVMarker(no) {
     $lat = items[ramblersCsvList.list.latitude].values[no];
     $long = items[ramblersCsvList.list.longitude].values[no];
     if ($lat !== 0 && $long !== 0) {
-        var marker = L.marker([$lat, $long], {icon: ramblersMap.markerRoute});
+        var icon = L.icon({
+            iconUrl: ramblersMap.base + "libraries/ramblers/images/marker-route.png",
+            iconSize: [33, 50],
+            iconAnchor: [16, 5]
+        });
+        var marker = L.marker([$lat, $long], {icon: icon});
         var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
         marker.bindPopup($pop);
         marker.ramblers_id = no;
