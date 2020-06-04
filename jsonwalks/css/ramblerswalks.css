@@ -388,6 +388,7 @@ h3.ra_openclose {
     font-size:115%;
     cursor: pointer;
     padding-left:10px;
+    margin-top:0px;
     height:40px;
     overflow:hidden;
 }
@@ -801,4 +802,11 @@ img.walkmedia[data-size="2"]{
 img.walkmedia[data-size="3"]{
     max-height: 400px;
     max-width: 600px;
+}
+
+div.ra-filteritem{
+    -webkit-column-break-inside: avoid; /* Chrome, Safari */
+    page-break-inside: avoid;           /* Theoretically FF 20+ */
+    break-inside: avoid-column;         /* IE 11 */
+    /*  display:table;                      /* Actually FF 20+ */
 }

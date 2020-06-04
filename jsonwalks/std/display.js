@@ -59,6 +59,10 @@ function setLimits() {
     var maxDate = "";
     len = $walks.length;
     if (len === 0) {
+        var filters = document.getElementsByClassName('ra-walksfilter');
+        for (var i = 0; i < filters.length; i++) {
+            filters[i].style.display = 'none'; // do not display filters
+        }
         return;
     }
     minDate = $walks[0].walkDate.date.substring(0, 10);
@@ -164,7 +168,7 @@ function displayWalks($walks) {
 function displayMap(which) {
     var tag = document.getElementById("ra-map");
     if (tag) {
-        //  tag.style.visibility = which;
+//  tag.style.visibility = which;
         if (which === "hidden") {
             tag.style.display = "none";
             setPaginationMargin("on");
@@ -324,6 +328,20 @@ function   initFilters() {
     setChecked("RA_Dist_6");
 }
 function addFilterEvents() {
+    var bodies = document.getElementsByTagName('body');
+    for (var i = 0; i < bodies.length; i++) {
+        var body = bodies[i];
+        var filters = document.getElementsByClassName('ra-walksfilter');
+        for (var i = 0; i < filters.length; i++) {
+            setFilterColumns(filters[i])
+        }
+        body.onresize = function (event) {
+            var filters = document.getElementsByClassName('ra-walksfilter');
+            for (var i = 0; i < filters.length; i++) {
+                setFilterColumns(filters[i])
+            }
+        };
+    }
     var anchors = document.getElementsByTagName('h3');
     for (var i = 0; i < anchors.length; i++) {
         var anchor = anchors[i];
@@ -345,6 +363,16 @@ function addFilterEvents() {
                     child.classList.remove('ra-closed');
                 }
             };
+        }
+    }
+}
+function setFilterColumns(filter) {
+    var width = filter.offsetWidth;
+    filter.style.columnCount = 1;
+    if (width > 480) {
+        filter.style.columnCount = 2;
+        if (width > 780) {
+            filter.style.columnCount = 3;
         }
     }
 }
@@ -373,11 +401,9 @@ function setGroups($walks) {
     var keysSorted = Object.keys(groups).sort(function (a, b) {
         return groups[a] > groups[b];
     });
-
     var $out = "<h3 class='ra_openclose'>Groups<span class='ra-closed'></span></h3><div class='ra_filter' style='display:none;'>";
     $out += "<span class='ra_select'>[<span onclick=\"javascript:ra_select(event)\">All</span>] [<span onclick=\"javascript:ra_select(event)\">None</span>]</span>";
     $out += "<ul>";
-
     for (i = 0, len = keysSorted.length; i < len; i++) {
         var key = keysSorted[i];
         var group = groups[key];
@@ -610,7 +636,7 @@ function displayWalk_Details($walk, $class) {
         $text = getWalkValue($walk, $item, false);
         $out += $text;
     }
-    //   $out += "<span class='ra-detailsimg'></span>";
+//   $out += "<span class='ra-detailsimg'></span>";
     $out += getCloseImg();
     $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</span></div>\n";
     return $text;
@@ -697,7 +723,7 @@ function contains(items, item) {
     return false;
 }
 function isEquivalent(a, b) {
-    // Create arrays of property names
+// Create arrays of property names
     var aProps = Object.getOwnPropertyNames(a);
     var bProps = Object.getOwnPropertyNames(b);
     // If number of properties is different,
