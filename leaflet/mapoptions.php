@@ -22,6 +22,7 @@ class RLeafletMapoptions {
     public $bing = false;
     public $ramblersPlaces = false;
     public $topoMapDefault = false;
+    public $controlcontainer=false;
 
     public function __construct() {
         
@@ -80,10 +81,14 @@ class RLeafletMapoptions {
         if ($this->topoMapDefault) {
             $options .= "ramblersMap.options.topoMapDefault = true;" . PHP_EOL;
         }
+           if ($this->controlcontainer) {
+            $options .= "ramblersMap.options.controlcontainer = true;" . PHP_EOL;
+        }
+       
         return $options;
     }
 
-    public function getFileName() {
+    public function getFileNameREMOVE() {
         $name = "-";
         $name .= ($this->cluster) ? 'c' : '';
         $name .= ($this->fullscreen) ? 'f' : '';

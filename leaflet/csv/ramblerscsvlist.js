@@ -207,7 +207,8 @@ function addCSVMarker(no) {
         var icon = L.icon({
             iconUrl: ramblersMap.base + "libraries/ramblers/images/marker-route.png",
             iconSize: [33, 50],
-            iconAnchor: [16, 5]
+            iconAnchor: [16, 47],
+            popupAnchor:  [0, -44]
         });
         var marker = L.marker([$lat, $long], {icon: icon});
         var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text

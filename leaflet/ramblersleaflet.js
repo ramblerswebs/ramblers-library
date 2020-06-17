@@ -33,7 +33,8 @@ function RamblersLeafletMap(base) {
         print: false,
         displayElevation: false,
         ramblersPlaces: false,
-        topoMapDefault: false
+        topoMapDefault: false,
+        controlcontainer:false
     };
 }
 
@@ -149,6 +150,10 @@ function raLoadLeaflet() {
             collapsed: true
         }).addTo(ramblersMap.map);
     }
+    if (ramblersMap.options.controlcontainer) {
+         L.control.racontainer({id: 'js-gewmapButtons'}).addTo(ramblersMap.map);
+    }
+   
 
     if (ramblersMap.options.startingplaces) {
         L.control.usageAgreement().addTo(ramblersMap.map);

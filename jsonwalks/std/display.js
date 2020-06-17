@@ -653,7 +653,7 @@ function displayContacts($walks) {
     for (index = 0, len = $walks.length; index < len; ++index) {
         $walk = $walks[index];
         if ($walk.display) {
-            var $contact = {name: $walk.contactName, email: $walk.email, telephone1: $walk.telephone1, telephone2: $walk.telephone2};
+            var $contact = {name: $walk.contactName, telephone1: $walk.telephone1, telephone2: $walk.telephone2};
             if (!contains($contacts, $contact)) {
                 $contacts.push($contact);
             }
@@ -662,22 +662,17 @@ function displayContacts($walks) {
     $contacts.sort(function (a, b) {
         return a.name.toLowerCase() > b.name.toLowerCase();
     });
-    var dispEmail, dispTel1, dispTel2;
+    var dispTel1, dispTel2;
     if (ramblerswalksDetails.isES6) {
         typeof x === "undefined"
-        dispEmail = typeof $contacts.find(checkContactEmail) !== "undefined";
         dispTel1 = typeof $contacts.find(checkContactTelephone1) !== "undefined";
         dispTel2 = typeof $contacts.find(checkContactTelephone2) !== "undefined";
     } else {
-        dispEmail = true;
         dispTel1 = true;
         dispTel2 = false;
     }
     out = "<table class='" + ramblerswalksDetails.displayClass + " contacts'>\n";
     out += "<tr><th>Name";
-    if (dispEmail) {
-        out += "</th><th>Email";
-    }
     if (dispTel1) {
         out += "</th><th>Telephone1";
     }
@@ -688,9 +683,6 @@ function displayContacts($walks) {
     for (index = 0, len = $contacts.length; index < len; ++index) {
         $contact = $contacts[index];
         out += "<tr data-jplist-item><td>" + $contact.name;
-        if (dispEmail) {
-            out += "</td><td>" + $contact.email;
-        }
         if (dispTel1) {
             out += "</td><td>" + $contact.telephone1;
         }
@@ -703,9 +695,9 @@ function displayContacts($walks) {
     return out;
 }
 
-function checkContactEmail(contact) {
-    return contact.email !== "";
-}
+//function checkContactEmail(contact) {
+//    return contact.email !== "";
+//}
 function checkContactTelephone1(contact) {
     return contact.telephone1 !== "";
 }
@@ -1021,7 +1013,7 @@ function shortDoW($day) {
 }
 function getPrefix($option) {
     var $prefix = "";
-    var loop = true;
+    var $loop = true;
     do {
         switch ($option.substr(0, 2)) {
             case "{;":
@@ -1033,19 +1025,19 @@ function getPrefix($option) {
                 $option = $option.replace("{,", "{");
                 break;
             case "{[":
-                var close = $option.indexOf("]");
-                if (close > 0) {
+                var $close = $option.indexOf("]");
+                if ($close > 0) {
                     $prefix += $option.substr(2, close - 2);
                     $option = "{" + $option.substr(close + 1);
                 } else {
-                    $prefix += $option
+                    $prefix += $option;
                     $option = "{}";
                 }
                 break;
             default:
-                loop = false;
+                $loop = false;
         }
-    } while (loop);
+    } while ($loop);
     return [$prefix, $option];
 }
 

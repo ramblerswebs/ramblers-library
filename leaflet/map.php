@@ -18,8 +18,8 @@ class RLeafletMap {
     public $help_page = "";
     public $leafletLoad = true;
 
-  //  const COMBINED_JS = "cache/ra_leaflet/ra-leafet";
-  //  const FOLDER = "cache/ra_leaflet";
+    //  const COMBINED_JS = "cache/ra_leaflet/ra-leafet";
+    //  const FOLDER = "cache/ra_leaflet";
 
     function __construct() {
         $template = "libraries/ramblers/leaflet/mapTemplate.js";
@@ -46,6 +46,52 @@ class RLeafletMap {
         if ($this->defaultMap == "Topo") {
             $options->topoMapDefault = true;
         }
+        $this->addScriptsandStyles($options);
+        $document = JFactory::getDocument();
+        $mapStyle = " #leafletmap { height: " . $this->mapHeight . "; width:" . $this->mapWidth . ";}";
+        $document->addStyleDeclaration($mapStyle);
+
+        $base = JURI::base();
+        $folder = JURI::base(true);
+        if (strpos($base, 'localhost') !== false) {
+            $this->map->replaceString("[base]", "");
+        } else {
+            $this->map->replaceString("[base]", $folder . "/");
+        }
+
+        $optionstext = $options->text();
+        if ($this->help_page != "") {
+            $optionstext .= "ramblersMap.maphelppage='" . $this->help_page . "';";
+        }
+
+        $this->map->replaceString("// [set MapOptions]", $optionstext);
+        if ($this->debugoptions) {
+            echo $optionstext;
+        }
+        if ($options->cluster) {
+            echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
+        }
+        echo "<div id='ra-error-text'></div> " . PHP_EOL;
+        if ($options->draw) {
+            echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
+        }
+        echo "<div class='map-container'>" . PHP_EOL;
+
+
+        echo "<div id='leafletmap'></div>" . PHP_EOL;
+        echo "<script type='text/javascript'>";
+        echo $this->map->getContents();
+        if ($this->leafletLoad) {
+            echo "window.onload = function () {raLoadLeaflet();};";
+        }
+        echo "</script>" . PHP_EOL;
+        echo "</div>" . PHP_EOL;
+        echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";
+        echo "<p class='mapcopyright'>Maps Icons Collection https://mapicons.mapsmarker.com</p>";
+        //   echo "</div>";
+    }
+
+    public function addScriptsandStyles($options) {
         JHtml::_('jquery.framework');
 
         $document = JFactory::getDocument();
@@ -140,50 +186,9 @@ class RLeafletMap {
         if ($this->help_page != "") {
             $document->addScript("libraries/ramblers/leaflet/ra-map-help.js", "text/javascript");
         }
-        //     if ($options->ramblersPlaces){
-        //        $this->addScript( "libraries/ramblers/leaflet/ra-ramblers-places.js", "text/javascript");
-        //    }
-        //     $this->addScriptandStyleSheets();
-        $mapStyle = " #leafletmap { height: " . $this->mapHeight . "; width:" . $this->mapWidth . ";}";
-        $document->addStyleDeclaration($mapStyle);
-
-        $base = JURI::base();
-        $folder = JURI::base(true);
-        if (strpos($base, 'localhost') !== false) {
-            $this->map->replaceString("[base]", "");
-        } else {
-            $this->map->replaceString("[base]", $folder . "/");
+        if ($options->controlcontainer) {
+            $document->addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
         }
-
-        $optionstext = $options->text();
-        if ($this->help_page != "") {
-            $optionstext.="ramblersMap.maphelppage='" . $this->help_page . "';";
-        }
-
-        $this->map->replaceString("// [set MapOptions]", $optionstext);
-        if ($this->debugoptions) {
-            echo $optionstext;
-        }
-        if ($options->cluster) {
-            echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
-        }
-        echo "<div id='ra-error-text'></div> " . PHP_EOL;
-        if ($options->draw) {
-            echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
-        }
-        echo "<div class='map-container'>" . PHP_EOL;
-
-
-        echo "<div id='leafletmap'></div>" . PHP_EOL;
-        echo "<script type='text/javascript'>";
-        echo $this->map->getContents();
-        if ($this->leafletLoad) {
-            echo "window.onload = function () {raLoadLeaflet();};";
-        }
-        echo "</script>" . PHP_EOL;
-        echo "</div>" . PHP_EOL;
-        echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";
-        echo "<p class='mapcopyright'>Maps Icons Collection https://mapicons.mapsmarker.com</p>";
-        //   echo "</div>";
     }
+
 }
