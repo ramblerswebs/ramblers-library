@@ -578,7 +578,14 @@ img.ra-grade.pointer {
 }
 #rawalks table{
     width:100%;
-    word-break: break-word;
+}
+@media only screen and (max-width: 960px){
+    #rawalks table{
+        font-size: .8em;
+    }
+    #rawalks table img{
+        display:none;
+    }
 }
 #rawalks table.contacts{
     width:auto;
