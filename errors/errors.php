@@ -15,7 +15,7 @@ class RErrors {
 
     private static $ERROR_STORE_URL = "https://cache.ramblers-webs.org.uk/store_errors.php";
 
-    public static function notifyError($errorText, $action, $level) {
+    public static function notifyError($errorText, $action, $level, $returncodes = null) {
 
         $url = self::$ERROR_STORE_URL;
 
@@ -23,7 +23,9 @@ class RErrors {
         $data['domain'] = JURI::base();
         $data['action'] = $action;
         $data['error'] = $errorText;
-
+        if ($returncodes !== null) {
+            $data['action'] = $action . " [" . $returncode[0] . "]";
+        }
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -38,16 +40,13 @@ class RErrors {
         // var_dump(curl_getinfo($curl));
 
         $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        if ($status != 200) {
-            $reported = " [SYSTEM was unable to report error.]";
-        } else {
-            $reported = " ...";
-        }
-
         curl_close($curl);
+
         $app = JFactory::getApplication();
-        $app->enqueueMessage(JText::_($errorText . ": " . $action . $reported), $level);
+        $app->enqueueMessage(JText::_($errorText . ": " . $action), $level);
+        if ($status != 200) {
+            $app->enqueueMessage(JText::_('SYSTEM was unable to report error.'), 'warning');
+        }
     }
 
     public static function emailError($errorText, $action, $level) {
@@ -77,30 +76,15 @@ class RErrors {
         $status = $result["status"];
         $contents = $result["contents"];
 
-        switch ($status) {
-            case RFeedhelper::OK:
-                break;
-            case RFeedhelper::READFAILED:
-                RErrors::notifyError('Unable to fetch ' . $feedTitle . ', data may be out of date', $feed, 'warning');
-                break;
-            case RFeedhelper::FEEDERROR;
-                RErrors::notifyError('Feed must use HTTP protocol', $feed, 'error');
-                break;
-            case RFeedhelper::FEEDFOPEN:
-                RErrors::notifyError('Not able to read feed using fopen', $feed, 'error');
-                break;
-            default:
-                break;
-        }
         switch ($contents) {
             case NULL:
-                RErrors::notifyError($feedTitle . ' feed: Unable to read feed (Null response)', $feed, 'error');
+                RErrors::notifyError($feedTitle . ' feed: Unable to read feed [Null response, Error 1]', $feed, 'error');
                 break;
             case "":
-                echo '<b>' . $feedTitle . ' feed: No ' . $feedTitle . ' found</b>';
+                echo '<b>No ' . $feedTitle . ' found.</b> [Error 2]';
                 break;
             case "[]":
-                echo '<b>' . $feedTitle . ' feed empty: No ' . $feedTitle . ' found</b>';
+                echo '<b>Sorry no ' . $feedTitle . ' found</b>';
                 break;
             default:
                 $json = json_decode($contents);
@@ -110,16 +94,17 @@ class RErrors {
                 if ($error == JSON_ERROR_NONE) {
                     foreach ($json as $value) {
                         $ok = RErrors::checkJsonProperties($value, $properties);
-                        $errors+=$ok;
+                        $errors += $ok;
                     }
                     if ($errors > 0) {
-                        RErrors::notifyError('Feed: Json file contents not as expected - not supported', $feed, 'error');
-                        RErrors::emailError('Feed: Json file contents not as expected - not supported', $feed, 'error');
+                        RErrors::notifyError('Feed: Json file contents not as expected [Error 3]', $feed, 'error');
+                        RErrors::emailError('Feed: Json file contents not as expected [Error 3]', $feed, 'error');
                     }
                     return $json;
                     break;
                 } else {
-                   RErrors::notifyError('Feed is not in Json format: code ' . $error, $feed, 'error');
+                    $errormsg = json_last_error_msg();
+                    RErrors::notifyError('Feed is not in Json format: ' . $errormsg . ' [Error 4]', $feed, 'error');
                 }
                 return null;
         }
@@ -141,4 +126,5 @@ class RErrors {
         }
         return false;
     }
+
 }

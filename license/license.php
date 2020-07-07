@@ -8,7 +8,7 @@
 class RLicense {
 
     private static $googlelicensekey = "undefined";
-    private static $binglicensekey = false;
+    private static $binglicensekey = true;
 
     public static function GoogleMapKey($value) {
         // self::$googlelicensekey = $value;

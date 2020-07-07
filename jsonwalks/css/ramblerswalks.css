@@ -428,21 +428,12 @@ h3.ra_openclose:hover {
     display: table;
     clear: both;
 }
-.modal-content {
-    /* Add Animation - Zoom in the Modal */
-    animation-name: zoom;
-    animation-duration: 2s;
-
-}
-
+ 
 #modal-data {
     overflow-y: auto;
     max-height:85%;
 }
-@keyframes zoom {
-    from {opacity:0;}
-    to {opacity:1;}
-}
+ 
 /* The Close Button */
 #btnClose, #btnPrint{
     margin-right:15px;

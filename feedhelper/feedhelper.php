@@ -16,6 +16,7 @@ class RFeedhelper {
     private $cacheFolderPath;
     private $cacheTime;
     private $status = self::OK;
+    private $timeout = 15; // seconds
 
     const OK = 0;
     const READFAILED = 1;
@@ -33,7 +34,7 @@ class RFeedhelper {
     }
 
     public function setReadTimeout($value) {
-        ini_set('default_socket_timeout', $value);
+        $this->timeout = $value;
     }
 
     public function getFeed($feedurl) {
@@ -45,9 +46,11 @@ class RFeedhelper {
         $contents = '';
         $this->status = self::OK;
         if (ini_get('allow_url_fopen') == false) {
+            RErrors::notifyError('FETCH: Not able to read feed using fopen', $feed, 'error');
             $this->status = self::FEEDFOPEN;
         }
         if (substr($url, 0, 4) != "http") {
+            RErrors::notifyError('FETCH: Feed must use HTTP protocol', $feed, 'error');
             $this->status = self::FEEDERROR;
         }
 
@@ -71,52 +74,40 @@ class RFeedhelper {
         jimport('joomla.filesystem.file');
         $result = '';
         $tmpFile = $this->getCacheName($url);
-        // Check if a cached copy exists otherwise create it
+        // Check if a cached copy exists 
         if (file_exists($tmpFile) && is_readable($tmpFile) && (filemtime($tmpFile) + $this->cacheTime) > time()) {
             $this->status = self::OK;
-            // echo "<br/>" . $url . "<br/>Existing cache used<br/>";
-            return $tmpFile;
+            return $tmpFile; // Use existing cached version
         }
-        // create cached file
-        // check url exists
-        //     if ($this->urlExists($url)) {
-        $options = [
-            "http" => [
-                "header" => "Accept-language: en\r\n" .
-                "Referer: " . JURI::base() . "\r\n",]
-        ];
-        $context = stream_context_create($options);
-        $fgcOutput = file_get_contents($url, false, $context);
-        if ($fgcOutput === false) {
+
+        // cached version does not exist or needs refreshing
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, false); // do not include header in output
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // do not follow redirects
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // do not output result
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);  // allow xx seconds for timeout
+        curl_setopt($ch, CURLOPT_REFERER, JURI::base()); // say who wants the feed
+  
+        $fgcOutput = curl_exec($ch);
+        $error = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+ 
+        if ($httpCode !== 200) {
             $this->status = self::READFAILED;
+            $response = "Return code " . $httpCode . " Error " . $error;
+            RErrors::notifyError('FETCH: Unable to fetch ' . $feedTitle . ', data may be out of date', $feed, 'warning', $response);
         } else {
             JFile::write($tmpFile, $fgcOutput);
         }
-        //    } else {
-        //        $this->status = self::READFAILED;
-        //    }
+
         // if cached file exists (new or old) then return it.
         if (file_exists($tmpFile) && is_readable($tmpFile)) {
             $result = $tmpFile;
         }
         return $result;
     }
-
-//    private function urlExists($url) {
-//        $exists = true;
-//        $file_headers = @get_headers($url);
-//        if ($file_headers == false) {
-//            return false;
-//        }
-//        $InvalidHeaders = array('404', '403', '500');
-//        foreach ($InvalidHeaders as $HeaderVal) {
-//            if (strstr($file_headers[0], $HeaderVal)) {
-//                $exists = false;
-//                break;
-//            }
-//        }
-//        return $exists;
-//    }
 
     public function clearCache() {
 
@@ -170,5 +161,4 @@ class RFeedhelper {
         $len = strlen($startString);
         return (substr($string, 0, $len) === $startString);
     }
-
 }

@@ -960,7 +960,9 @@ function getWalkValue($walk, $option, addlink) {
             out = $contact;
             break;
         case "{emaillink}":
-            out = getEmailLink($walk);
+            if ($walk.email !== "") {
+                out = getEmailLink($walk);
+            }
             break;
         case "{mediathumbr}":
             out = '';
@@ -1133,6 +1135,9 @@ function displayWalkDetails($walk) {
         $html += "<div class='walkcontact'><b>Contact Leader</b>: ";
     }
     $html += RHtmlwithDiv("contactname", "<b>Name</b>: " + $walk.contactName);
+    if ($walk.email !== "") {
+        $html += getEmailLink($walk);
+    }
     if ($walk.telephone1 + $walk.telephone2 !== "") {
         $text = "<b>Telephone</b>: ";
         if ($walk.telephone1 !== "") {
