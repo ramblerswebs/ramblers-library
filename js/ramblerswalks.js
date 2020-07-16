@@ -8,7 +8,7 @@ function RamblersBase() {
 
 function ra_toggle_visibility(id) {
     var e = document.getElementById(id);
-    if (e.style.display != 'none')
+    if (e.style.display !== 'none')
         e.style.display = 'none';
     else
         e.style.display = '';
@@ -30,7 +30,7 @@ function gotoURL(dispArticle, dispMenu, walkid) {
 }
 function gotoWalk(walkid) {
     var tag = document.getElementById("w" + walkid);
-    if (tag != null) {
+    if (tag !== null) {
         tag.click();
         setTimeout(function () {
             window.location.hash = "#w" + walkid;
@@ -157,7 +157,7 @@ function createModalTag() {
         var body = document.getElementsByTagName("BODY")[0];
         var div = document.createElement("div");
         body.appendChild(div);
-        $tag = '<div id="js-raModal" class="ramodal" style="display:none">';
+        var $tag = '<div id="js-raModal" class="ramodal" style="display:none">';
         $tag += '<!-- Modal Content (The Image) -->';
         $tag += '<div class="modal-content" >';
         $tag += '<div class="modal-header">';

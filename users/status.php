@@ -85,9 +85,12 @@ class RUsersStatus {
 
     function displayMembershipNumberStatus() {
         if ($this->loggedon()) {
+            $app = JApplicationCms::getInstance('site');
+            $app->enqueueMessage(JText::_('RUsersStatus->displayMembershipNumberStatus is deprecated - please notify web master'), 'error');
+
             if ($this->membershipnoValidFormat == false) {
                 $text = 'The format of your Membership number is not correct. It should be of the form <b><i>DE-02-0123456</b></i>';
-                $text .=" - value given in Profile: " . strtoupper($this->cbInfo->cb_membershipno);
+                $text .= " - value given in Profile: " . strtoupper($this->cbInfo->cb_membershipno);
                 $app = JApplicationCms::getInstance('site');
                 $app->enqueueMessage($text, 'Warning');
             }
@@ -159,6 +162,9 @@ class RUsersStatus {
     }
 
     function getMembershipInfo($id) {
+        $app = JApplicationCms::getInstance('site');
+        $app->enqueueMessage(JText::_('RUsersStatus->getMembershipInfo is deprecated - please notify web master'), 'error');
+
         $this->decodeMembershipNumber($id);
         $ClearCache = NULL;
         $feedTimeout = 5;
@@ -293,9 +299,9 @@ class RUsersStatus {
         if ($this->loggedon()) {
             if ($this->postcodeOK() == false) {
                 $text = $this->postcodeText;
-                $text .=" - Postcodes: " . strtoupper($this->cbInfo->cb_postcode) . " and " . strtoupper($this->membership->postcode);
-                $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->localRecordsText;
-                $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
+                $text .= " - Postcodes: " . strtoupper($this->cbInfo->cb_postcode) . " and " . strtoupper($this->membership->postcode);
+                $text .= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->localRecordsText;
+                $text .= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
                 JFactory::getApplication()->enqueueMessage($text);
             }
         }
@@ -305,7 +311,7 @@ class RUsersStatus {
         if ($this->loggedon()) {
             if ($this->emailOK() == false) {
                 $text = "INFORMATION: You are logged on to this site with a different email address than held by Ramblers Central Office";
-                $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
+                $text .= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
                 JFactory::getApplication()->enqueueMessage($text);
             }
         }
@@ -401,7 +407,7 @@ class RUsersStatus {
         if ($this->loggedon()) {
             if ($this->lastnameOK() == false) {
                 $text = "INFORMATION: You are logged on to this site with a different LASTNAME than held by Ramblers Central Office";
-                $text.= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
+                $text .= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $this->ramblersmembership;
                 JFactory::getApplication()->enqueueMessage($text);
             }
         }

@@ -34,7 +34,7 @@ function RamblersLeafletMap(base) {
         displayElevation: false,
         ramblersPlaces: false,
         topoMapDefault: false,
-        controlcontainer:false
+        controlcontainer: false
     };
 }
 
@@ -69,20 +69,6 @@ function raLoadLeaflet() {
         ramblersMap.mapLayers["Ordnance Survey"] = new L.BingLayer(ramblersMap.bingkey, {type: 'ordnanceSurvey',
             attribution: 'Bing/OS Crown Copyright'});
     }
-//    if (ramblersMap.options.google) {
-//        ramblersMap.mapLayers["Google"] = L.gridLayer.googleMutant({
-//            type: "roadmap" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-//        });
-//        ramblersMap.mapLayers["Google Satellite"] = L.gridLayer.googleMutant({
-//            type: "satellite" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-//        });
-//        ramblersMap.mapLayers["Google Hybrid"] = L.gridLayer.googleMutant({
-//            type: "hybrid" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-//        });
-//        ramblersMap.mapLayers["Google Terrain"] = L.gridLayer.googleMutant({
-//            type: "terrain" // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'
-//        });
-//    }
     createMouseMarkers();
     createPlaceMarkers();
     createWalkMarkers();
@@ -100,9 +86,9 @@ function raLoadLeaflet() {
     }
 
     if (ramblersMap.options.fitbounds) {
-// [FitBounds]   
+        // [FitBounds]   
         if (ramblersMap.options.cluster) {
-// calc bounds from marker as cluster still loading
+            // calc bounds from marker as cluster still loading
             if (ramblersMap.markerList.length !== 0) {
                 var bounds = getBounds(ramblersMap.markerList);
                 ramblersMap.map.fitBounds(bounds, {padding: [150, 150]});
@@ -140,7 +126,7 @@ function raLoadLeaflet() {
         } catch (err) {
             document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
         }
-// must be after layers so is second control in top right
+        // must be after layers so is second control in top right
 
     }
 
@@ -151,9 +137,9 @@ function raLoadLeaflet() {
         }).addTo(ramblersMap.map);
     }
     if (ramblersMap.options.controlcontainer) {
-         L.control.racontainer({id: 'js-gewmapButtons'}).addTo(ramblersMap.map);
+        L.control.racontainer({id: 'js-gewmapButtons'}).addTo(ramblersMap.map);
     }
-   
+
 
     if (ramblersMap.options.startingplaces) {
         L.control.usageAgreement().addTo(ramblersMap.map);
@@ -551,6 +537,21 @@ function getWhat3Words(lat, lng, id, place) {
             }
             tag.innerHTML = out;
         }
+    });
+}
+function fetchWhat3Words(tag,dataObject, lat, lng) {
+    var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
+    var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
+    getJSON(url, function (err, item) {
+        let event = new Event("what3wordsfound", {bubbles: true}); // (2)
+        event.ra = {};
+        event.ra.err = err;
+        event.ra.dataObject=dataObject;
+        if (err === null) {
+            event.ra.words = item.words;
+            event.ra.nearestPlace = item.nearestPlace;
+        }
+        tag.dispatchEvent(event);
     });
 }
 

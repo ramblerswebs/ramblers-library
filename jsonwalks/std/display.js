@@ -1392,7 +1392,7 @@ function addPagination(no) {
         return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
     }
     var $class = "";
-    if (no < 14) {
+    if (no < 11) {
         $class = " hidden";
     }
 
