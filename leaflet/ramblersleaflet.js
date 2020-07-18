@@ -228,7 +228,7 @@ function createWalkMarkers() {
     ramblersMap.markerRoute = L.icon({
         iconUrl: ramblersMap.base + "libraries/ramblers/images/marker-route.png",
         iconSize: [33, 50],
-        iconAnchor: [16, 45]
+        iconAnchor: [16, 10]
     });
     ramblersMap.markerStart = L.icon({
         iconUrl: ramblersMap.base + "libraries/ramblers/images/marker-start.png",

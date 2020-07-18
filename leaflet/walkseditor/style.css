@@ -175,7 +175,7 @@ button.tablinks{
 
 #leafletmap { 
     height: 750px; 
-    width:90%;
+    width:100%;
     margin: auto;
 }
 

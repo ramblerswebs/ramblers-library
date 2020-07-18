@@ -24,6 +24,7 @@ class RLeafletMap {
     function __construct() {
         $template = "libraries/ramblers/leaflet/mapTemplate.js";
         $this->map = new RHtmlTemplate($template);
+
         $this->mapStyle = " #leafletmap { height: 500px; width:100%;}";
         $this->mapHeight = "500px";
         $this->mapWidth = "100%";
@@ -41,16 +42,7 @@ class RLeafletMap {
         $this->map->replaceString("// [FitBounds]", "ramblersMap.map.fitBounds(ramblersMap.markersCG.getBounds());");
     }
 
-    public function display() {
-        $options = $this->options;
-        if ($this->defaultMap == "Topo") {
-            $options->topoMapDefault = true;
-        }
-        $this->addScriptsandStyles($options);
-        $document = JFactory::getDocument();
-        $mapStyle = " #leafletmap { height: " . $this->mapHeight . "; width:" . $this->mapWidth . ";}";
-        $document->addStyleDeclaration($mapStyle);
-
+    public function getMapInfo() {
         $base = JURI::base();
         $folder = JURI::base(true);
         if (strpos($base, 'localhost') !== false) {
@@ -58,16 +50,28 @@ class RLeafletMap {
         } else {
             $this->map->replaceString("[base]", $folder . "/");
         }
-
-        $optionstext = $options->text();
         if ($this->help_page != "") {
-            $optionstext .= "ramblersMap.maphelppage='" . $this->help_page . "';";
+            $optionstext = "ramblersMap.maphelppage='" . $this->help_page . "';";
+            $this->map->replaceString("// [set MapOptions]", $optionstext);
         }
+        //$optionstext = $options->text();
+        return $this->map->getContents();
+    }
 
-        $this->map->replaceString("// [set MapOptions]", $optionstext);
-        if ($this->debugoptions) {
-            echo $optionstext;
+    public function getOptionsScript() {
+        $options = $this->options;
+        if ($this->defaultMap == "Topo") {
+            $options->topoMapDefault = true;
         }
+        return $this->options->text();
+    }
+
+    public function display() {
+        $options = $this->options;
+        $document = JFactory::getDocument();
+        $mapStyle = " #leafletmap { height: " . $this->mapHeight . "; width:" . $this->mapWidth . ";}";
+        $document->addStyleDeclaration($mapStyle);
+
         if ($options->cluster) {
             echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
         }
@@ -75,20 +79,20 @@ class RLeafletMap {
         if ($options->draw) {
             echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
         }
+        $this->addScriptsandStyles($options);
         echo "<div class='map-container'>" . PHP_EOL;
-
-
         echo "<div id='leafletmap'></div>" . PHP_EOL;
-        echo "<script type='text/javascript'>";
-        echo $this->map->getContents();
+        echo "<script type='text/javascript'>" . PHP_EOL;
+         echo $this->getMapInfo() . PHP_EOL;   
+         echo $this->getOptionsScript();
+ 
         if ($this->leafletLoad) {
-            echo "window.onload = function () {raLoadLeaflet();};";
+            echo "window.onload = function () {raLoadLeaflet();};" . PHP_EOL;
         }
         echo "</script>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
         echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";
         echo "<p class='mapcopyright'>Maps Icons Collection https://mapicons.mapsmarker.com</p>";
-        //   echo "</div>";
     }
 
     public function addScriptsandStyles($options) {

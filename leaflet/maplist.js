@@ -84,7 +84,7 @@ function displayGPX(file, linecolour, imperial) {
                 iconUrl: ramblersMap.base + 'libraries/ramblers/leaflet/images/redmarker.png',
                 iconSize: [36, 41], // size of the icon
                 iconAnchor: [18, 41],
-                popupAnchor: [0, -41]
+                popupAnchor: [0, -20]
             });
             marker.setIcon(icon);
             var sSymbol = marker.options.iconkey;
@@ -263,16 +263,16 @@ function addGPXMarker(route) {
     addMarker($popup, $lat, $long, ramblersMap.markerRoute);
 }
 function formatAltitude(route) {
-    var popup;
-    popup = "";
+    var text;
+    text = "";
     if (route.cumulativeElevationGain === 0) {
         return "No elevation data<br/>";
     } else {
-        popup += '<b>Min Altitude:</b> ' + route.minAltitude.toFixed(0) + ' m<br/>';
-        popup += '<b>Max Altitude:</b> ' + route.maxAltitude.toFixed(0) + ' m<br/>';
-        popup += '<b>Elevation Gain:</b> ' + route.cumulativeElevationGain.toFixed(0) + ' m<br/>';
+        text += '<b>Min Altitude:</b> ' + route.minAltitude.toFixed(0) + ' m<br/>';
+        text += '<b>Max Altitude:</b> ' + route.maxAltitude.toFixed(0) + ' m<br/>';
+        text += '<b>Elevation Gain:</b> ' + route.cumulativeElevationGain.toFixed(0) + ' m<br/>';
     }
-    return popup;
+    return text;
 }
 function getGPXdownloadLink(route) {
     var path, link;

@@ -7,9 +7,6 @@
  */
 class RLeafletWalkseditor extends RLeafletMap {
 
-    //   public $submit = "";
-    //   public $content = "";
-    //   public $date = "";
     public $fields = [];
 
     public function __construct() {
@@ -47,19 +44,19 @@ class RLeafletWalkseditor extends RLeafletMap {
         $document->addScript($path . "feedhandler.js", "text/javascript");
         $document->addScript($path . "walkpreview.js", "text/javascript");
         $document->addStyleSheet($path . "style.css", "text/css");
-        parent::addScriptsandStyles($this->options);
-        $optionstext = $this->options->text();
-        if ($this->help_page != "") {
-            $optionstext .= "ramblersMap.maphelppage='" . $this->help_page . "';";
-        }
-        $optionstext = " ramblersMap = new RamblersLeafletMap('');" . $optionstext;
-        $fields = json_encode($this->fields);
-        $base = "ramblersBase.base='" . JURI::base(false) . "';";
 
+        parent::addScriptsandStyles($this->options);
+        parent::getOptionsScript();
+        $optionstext = $this->options->text();
+
+        $fields = json_encode($this->fields);
         $args = "'" . $fields . "'";
-        $script = $optionstext . "window.onload = function () {ramblersBase = new RamblersBase();"
-                . $base . "loadEditWalk(" . $args . ");};";
-        $document->addScriptDeclaration($script, "text/javascript");
+        echo "<script type='text/javascript'>" . PHP_EOL;
+        echo parent::getMapInfo() . PHP_EOL;
+        echo parent::getOptionsScript();
+        echo "window.onload = function () {loadEditWalk(" . $args . ");};" . PHP_EOL;
+
+        echo "</script>" . PHP_EOL;
 
         echo '<div id="js-outer-content"></div>';
         echo "<br/>";
@@ -91,19 +88,20 @@ class RLeafletWalkseditor extends RLeafletMap {
         $document->addScript($path . "raGeneral.js", "text/javascript");
         $document->addScript($path . "walkpreview.js", "text/javascript");
         $document->addStyleSheet($path . "style.css", "text/css");
+        //        if ($this->help_page != "") {
+//            $optionstext .= "ramblersMap.maphelppage='" . $this->help_page . "';";
+//        }
+        //     $optionstext = " ramblersMap = new RamblersLeafletMap('');" . $optionstext;
         parent::addScriptsandStyles($this->options);
-        $optionstext = $this->options->text();
-        if ($this->help_page != "") {
-            $optionstext .= "ramblersMap.maphelppage='" . $this->help_page . "';";
-        }
-     $optionstext = " ramblersMap = new RamblersLeafletMap('');" . $optionstext;
-        $fields = json_encode($this->fields);
-        $base = "ramblersBase.base='" . JURI::base(false) . "';";
 
+        $fields = json_encode($this->fields);
         $args = "'" . $fields . "'";
-        $script = $optionstext . "window.onload = function () {ramblersBase = new RamblersBase();"
-                . $base . "loadViewWalk(" . $args . ");};";
-        $document->addScriptDeclaration($script, "text/javascript");
+        echo "<script type='text/javascript'>" . PHP_EOL;
+        echo parent::getMapInfo() . PHP_EOL;
+        echo parent::getOptionsScript();
+        echo "window.onload = function () {loadViewWalk(" . $args . ");};" . PHP_EOL;
+
+        echo "</script>" . PHP_EOL;
 
         echo '<div id="js-outer-content"></div>';
         echo "<br/>";
@@ -129,26 +127,31 @@ class RLeafletWalkseditor extends RLeafletMap {
         $path = "libraries/ramblers/leaflet/walkseditor/";
         $document->addScript($path . "loader.js", "text/javascript");
         $document->addScript($path . "placeEditor.js", "text/javascript");
-         $document->addScript($path . "feedhandler.js", "text/javascript");
+        $document->addScript($path . "feedhandler.js", "text/javascript");
         $document->addScript($path . "mapdisplay.js", "text/javascript");
         $document->addScript($path . "inputfields.js", "text/javascript");
         $document->addScript($path . "raGeneral.js", "text/javascript");
         $document->addScript($path . "maplocation.js", "text/javascript");
-       
+
         $document->addStyleSheet($path . "style.css", "text/css");
         parent::addScriptsandStyles($this->options);
+        parent::getOptionsScript();
         $optionstext = $this->options->text();
-        if ($this->help_page != "") {
-            $optionstext .= "ramblersMap.maphelppage='" . $this->help_page . "';";
-        }
-        $optionstext = " ramblersMap = new RamblersLeafletMap('');" . $optionstext;
-        $fields = json_encode($this->fields);
-        $base = "ramblersBase.base='" . JURI::base(false) . "';";
 
+        $fields = json_encode($this->fields);
         $args = "'" . $fields . "'";
-        $script = $optionstext . "window.onload = function () {ramblersBase = new RamblersBase();"
-                . $base . "loadEditPlace(" . $args . ");};";
-        $document->addScriptDeclaration($script, "text/javascript");
+        echo "<script type='text/javascript'>" . PHP_EOL;
+        echo parent::getMapInfo() . PHP_EOL;
+        echo parent::getOptionsScript();
+        echo "window.onload = function () {loadEditPlace(" . $args . ");};" . PHP_EOL;
+
+        echo "</script>" . PHP_EOL;
+
+
+
+
+        // $script = $optionstext . "window.onload = function () {loadEditPlace(" . $args . ");};";
+        //   $document->addScriptDeclaration($script, "text/javascript");
 
         echo '<div id="js-outer-content"></div>';
         echo "<br/>";
