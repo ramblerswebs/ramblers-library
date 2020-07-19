@@ -88,10 +88,6 @@ class RLeafletWalkseditor extends RLeafletMap {
         $document->addScript($path . "raGeneral.js", "text/javascript");
         $document->addScript($path . "walkpreview.js", "text/javascript");
         $document->addStyleSheet($path . "style.css", "text/css");
-        //        if ($this->help_page != "") {
-//            $optionstext .= "ramblersMap.maphelppage='" . $this->help_page . "';";
-//        }
-        //     $optionstext = " ramblersMap = new RamblersLeafletMap('');" . $optionstext;
         parent::addScriptsandStyles($this->options);
 
         $fields = json_encode($this->fields);
@@ -146,12 +142,6 @@ class RLeafletWalkseditor extends RLeafletMap {
         echo "window.onload = function () {loadEditPlace(" . $args . ");};" . PHP_EOL;
 
         echo "</script>" . PHP_EOL;
-
-
-
-
-        // $script = $optionstext . "window.onload = function () {loadEditPlace(" . $args . ");};";
-        //   $document->addScriptDeclaration($script, "text/javascript");
 
         echo '<div id="js-outer-content"></div>';
         echo "<br/>";

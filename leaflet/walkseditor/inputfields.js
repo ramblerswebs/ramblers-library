@@ -1,4 +1,4 @@
-var ramblers, ramblersBase, OsGridRef, document;
+var ramblers, ramblersMap, OsGridRef, document;
 function raInputFields() {
 
     this.addText = function (tag, divClass, label, raobject, property) {
@@ -339,7 +339,7 @@ function raInputFields() {
             var target = e.target;
             var title = 'Predefined Location Search';
             var context = 'Search for predefined location';
-            var url = ramblersBase.base + "/index.php?option=com_ra_draftgwem2&task=places.controller&format=json&search=";
+            var url = ramblersMap.base + "index.php?option=com_ra_draftgwem2&task=places.controller&format=json&search=";
             var record = function (item) {
                 return item.name + "   (" + item.gridreference + ")";
             };
@@ -366,7 +366,7 @@ function raInputFields() {
             var target = e.target;
             var title = 'Contact Search';
             var context = 'Search for predefined contact details';
-            var url = ramblersBase.base + "/index.php?option=com_ra_draftgwem2&task=contacts.controller&format=json&search=";
+            var url = ramblersMap.base + "index.php?option=com_ra_draftgwem2&task=contacts.controller&format=json&search=";
             var record = function (item) {
                 return item.displayname + "   (" + item.firstname + " " + item.lastname + ", " + item.email + ", " + item.telephone1 + ", " + item.telephone2 + ")";
             };
