@@ -8,14 +8,7 @@ function loadEditWalk(fields) {
     ramblers = new Ramblers();
     ramblers.fields = JSON.parse(fields);
     ramblers.editMode = true;
-    var tag = document.getElementById(ramblers.fields.content);
-    if (tag !== null) {
-        var json = tag.value;
-        if (json === "") {
-            json = "{}";
-        }
-    }
-    ramblers.walk = JSON.parse(json);
+    setupWalksRecord();
     var tag = document.getElementById('js-outer-content');
     ramblers.controller = new walkcontroller(tag);
     ramblers.controller.editor();
@@ -25,6 +18,12 @@ function loadViewWalk(fields) {
     ramblers = new Ramblers();
     ramblers.fields = JSON.parse(fields);
     ramblers.editMode = false;
+    setupWalksRecord();
+    var tag = document.getElementById('js-outer-content');
+    ramblers.controller = new walkcontroller(tag);
+    ramblers.controller.viewer();
+}
+function setupWalksRecord() {
     var tag = document.getElementById(ramblers.fields.content);
     if (tag !== null) {
         var json = tag.value;
@@ -33,10 +32,32 @@ function loadViewWalk(fields) {
         }
     }
     ramblers.walk = JSON.parse(json);
-    var tag = document.getElementById('js-outer-content');
-    ramblers.controller = new walkcontroller(tag);
-    ramblers.controller.viewer();
+    if (!ramblers.walk.hasOwnProperty("basics")) {
+        ramblers.walk.basics = {};
+    }
+    if (!ramblers.walk.hasOwnProperty("meeting")) {
+        ramblers.walk.meeting = {};
+    }
+    if (!ramblers.walk.meeting.hasOwnProperty("locations")) {
+        ramblers.walk.meeting.locations = [];
+    }
+    if (!ramblers.walk.meeting.hasOwnProperty("type")) {
+        ramblers.walk.meeting.type = "undefined";
+    }
+    if (!ramblers.walk.hasOwnProperty("start")) {
+        ramblers.walk.start = {};
+    }
+    if (!ramblers.walk.start.hasOwnProperty("type")) {
+        ramblers.walk.start.type = "undefined";
+    }
+    if (!ramblers.walk.hasOwnProperty("walks")) {
+        ramblers.walk.walks = [{}];
+    }
+    if (!ramblers.walk.hasOwnProperty("contact")) {
+        ramblers.walk.contact = {};
+    }
 }
+;
 addContent = function () {
 // no content to add!
 };
@@ -55,15 +76,15 @@ function loadEditPlace(fieldIDs) {
     }
     if (ramblers.record.latitude === "") {
         ramblers.record.latitude = 0;
-    }else{
-         ramblers.record.latitude = parseFloat(ramblers.record.latitude);
+    } else {
+        ramblers.record.latitude = parseFloat(ramblers.record.latitude);
     }
     if (ramblers.record.longitude === "") {
         ramblers.record.longitude = 0;
-    }else{
-         ramblers.record.longitude = parseFloat(ramblers.record.longitude);
+    } else {
+        ramblers.record.longitude = parseFloat(ramblers.record.longitude);
     }
-    
+
 
     if (ramblers.record.latitude === 0 && ramblers.record.longitude === 0) {
         ramblers.record.isLatLongSet = false;

@@ -34,6 +34,8 @@ placecontroller = function (tagContainer) {
         var display = new mapdisplay();
         display.redisplay();
         display.displayLocationOnMap();
+        var elmnt = document.getElementById("leafletmap");
+        elmnt.scrollIntoView();
     };
     this.displayMarkersOnMap = function () {
         var display = new mapdisplay();
@@ -48,7 +50,7 @@ placecontroller = function (tagContainer) {
             ramblers.controller.setInputValue('longitude', 'longitude');
             ramblers.controller.setInputValue('gridref10', 'gridref10');
             ramblers.controller.setInputValue('postcode', 'satnavpostcode');
-           ramblers.controller.setInputValue('what3words', 'what3words_words');
+            ramblers.controller.setInputValue('what3words', 'what3words_words');
         });
     };
     this.setInputValue = function (field, name) {

@@ -5,7 +5,7 @@
  *
  * @author Chris Vaughan
  */
-class RLeafletWalkseditor extends RLeafletMap {
+class RWalkseditor extends RLeafletMap {
 
     public $fields = [];
 
@@ -30,7 +30,7 @@ class RLeafletWalkseditor extends RLeafletMap {
         $this->options->controlcontainer = true;
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
-        $path = "libraries/ramblers/leaflet/walkseditor/";
+        $path = "libraries/ramblers/walkseditor/js/";
         $document->addScript($path . "loader.js", "text/javascript");
         $document->addScript($path . "clocklet.min.js", "text/javascript");
         $document->addStyleSheet($path . "clocklet.min.css", "text/css");
@@ -79,7 +79,7 @@ class RLeafletWalkseditor extends RLeafletMap {
         $this->options->controlcontainer = true;
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
-        $path = "libraries/ramblers/leaflet/walkseditor/";
+        $path = "libraries/ramblers/walkseditor/js/";
         $document->addScript($path . "loader.js", "text/javascript");
         $document->addScript($path . "tabs.js", "text/javascript");
         $document->addScript($path . "walkcontroller.js", "text/javascript");
@@ -120,7 +120,7 @@ class RLeafletWalkseditor extends RLeafletMap {
         $this->options->controlcontainer = true;
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
-        $path = "libraries/ramblers/leaflet/walkseditor/";
+        $path = "libraries/ramblers/walkseditor/js/";
         $document->addScript($path . "loader.js", "text/javascript");
         $document->addScript($path . "placeEditor.js", "text/javascript");
         $document->addScript($path . "feedhandler.js", "text/javascript");
