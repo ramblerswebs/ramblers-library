@@ -339,7 +339,7 @@ function raInputFields() {
             var target = e.target;
             var title = 'Predefined Location Search';
             var context = 'Search for predefined location';
-            var url = ramblersMap.base + "index.php?option=com_ra_draftgwem2&task=places.controller&format=json&search=";
+            var url = ramblersMap.base + "index.php?option=com_ra_walkseditor&task=places.controller&format=json&search=";
             var record = function (item) {
                 return item.name + "   (" + item.gridreference + ")";
             };
@@ -366,9 +366,9 @@ function raInputFields() {
             var target = e.target;
             var title = 'Contact Search';
             var context = 'Search for predefined contact details';
-            var url = ramblersMap.base + "index.php?option=com_ra_draftgwem2&task=contacts.controller&format=json&search=";
+            var url = ramblersMap.base + "index.php?option=com_ra_walkseditor&task=contacts.controller&format=json&search=";
             var record = function (item) {
-                return item.displayname + "   (" + item.firstname + " " + item.lastname + ", " + item.email + ", " + item.telephone1 + ", " + item.telephone2 + ")";
+                return item.displayname + "   (" + item.contactname + ", " + item.email + ", " + item.telephone1 + ", " + item.telephone2 + ")";
             };
             target.feedhelper.getPredefinedSearchModal(e, title, context, record, url);
         });
