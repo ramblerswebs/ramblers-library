@@ -47,7 +47,6 @@
             <folder>leaflet/csv</folder>
             <folder>leaflet/gpx</folder>
             <folder>leaflet/images</folder>
-            <folder>leaflet/walkseditor</folder>
             <folder>license</folder>
             <folder>organisation</folder>
             <folder>osmap</folder>
@@ -56,6 +55,7 @@
             <folder>users</folder>
             <folder>vendors</folder>
             <folder>watchful</folder>
+            <folder>walkseditor</folder>
         </files>
     
     <updateservers>
