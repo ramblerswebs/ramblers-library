@@ -69,7 +69,7 @@ feeds = function () {
             event.ra = {};
             event.ra.item = item;
             findButton.dispatchEvent(event);
-     //       ramblers.controller.displayMarkersOnMap();
+            //       ramblers.controller.displayMarkersOnMap();
             var closeBtn = document.getElementById("btnClose");
             closeBtn.dispatchEvent(new Event("click"));
         });
@@ -131,38 +131,42 @@ feeds = function () {
         var err = e.error;
         selectTag.innerHTML = '';
         selectTitle.textContent = '';
-        if (items.length === 0) {
-            selectTitle.innerHTML = "<p>No items found</p>";
-            selectTag.style.display = "none";
-        }
+
         if (err !== null) {
             selectTitle.innerHTML = "<p>Error: Sorry something went wrong: " + err + "</p>";
             return;
-        }
-        if (items.length > 0) {
-            selectTag.style.display = "block";
-        }
-        selectTitle.textContent = 'Select item';
-        if (items.length > 21) {
-            selectTag.setAttribute('size', 21);
         } else {
-            selectTag.setAttribute('size', items.length + 1);
+            if (items.length === 0) {
+                selectTitle.innerHTML = "<p>No items found</p>";
+                selectTag.style.display = "none";
+            }
+            if (items.length > 0) {
+                selectTag.style.display = "block";
+
+                selectTitle.textContent = 'Select item';
+                if (items.length > 21) {
+                    selectTag.setAttribute('size', 21);
+                } else {
+                    selectTag.setAttribute('size', items.length + 1);
+                }
+                selectTag.ra = {};
+                selectTag.ra.items = items; // save items for accept button
+                selectTag.setAttribute('class', 'gwem');
+                var option = document.createElement("option");
+                option.value = -1;
+                option.text = "Please select an item below";
+                selectTag.appendChild(option);
+                var i;
+                for (i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    option = document.createElement("option");
+                    option.value = i;
+                    option.text = itemFormatFunction(item);
+                    selectTag.appendChild(option);
+                }
+            }
         }
-        selectTag.ra = {};
-        selectTag.ra.items = items; // save items for accept button
-        selectTag.setAttribute('class', 'gwem');
-        var option = document.createElement("option");
-        option.value = -1;
-        option.text = "Please select an item below";
-        selectTag.appendChild(option);
-        var i;
-        for (i = 0; i < items.length; i++) {
-            var item = items[i];
-            option = document.createElement("option");
-            option.value = i;
-            option.text = itemFormatFunction(item);
-            selectTag.appendChild(option);
-        }
+
 
     };
     displaySelectListResults = function (ramblersInfo) {
@@ -313,7 +317,11 @@ feeds = function () {
         getJSON(url, function (err, result) {
             let event = new Event("records", {});
             event.error = err;
-            event.data = result.data;
+            if (typeof (result) !== "undefined" && result !== null) {
+                event.data = result.data;
+            } else {
+                event.data = [];
+            }
             inputField.dispatchEvent(event);
         });
     };
