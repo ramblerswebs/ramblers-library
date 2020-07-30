@@ -239,9 +239,9 @@ function addDrawControl(lat, long, zoom) {
         findMarker(marker);
         if (marker.found) {
             var popup = marker.getPopup();
-            var sName = getElementValue('markerName');
-            var sDesc = getElementValue('markerDesc');
-            var sSymbol = getElementValue('markerSymbol');
+            var sName = _escapeChars(getElementValue('markerName'));
+            var sDesc = _escapeChars(getElementValue('markerDesc'));
+            var sSymbol = _escapeChars(getElementValue('markerSymbol'));
             popup.setContent(sDesc);
             marker.name = sName;
             marker.desc = sDesc;
@@ -278,6 +278,15 @@ function addDrawControl(lat, long, zoom) {
 //Move the map around when we're editing or drawing
     enableMapMoveDrawing = function () {
         ramblersMap.map.on('mousemove', mapMoveDrawingMouseMove, this);
+    };
+    _escapeChars= function (text) {
+        text = text.replace(/&/g, "&amp;"); // do this first so others are not changed
+        text = text.replace(/"/g, "&quot;");
+        text = text.replace(/'/g, "&apos;");
+        text = text.replace(/</g, "&lt;");
+        text = text.replace(/>/g, "&gt;");
+
+        return text;
     };
     mapMoveDrawingMouseMove = function (e) {
         var mousePos = e.containerPoint;

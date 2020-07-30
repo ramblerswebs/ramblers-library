@@ -11,6 +11,8 @@
  *
  * @author Chris Vaughan
  */
+use Joomla\CMS\Uri\Uri;
+
 class RErrors {
 
     private static $ERROR_STORE_URL = "https://cache.ramblers-webs.org.uk/store_errors.php";
@@ -20,7 +22,8 @@ class RErrors {
         $url = self::$ERROR_STORE_URL;
 
         $data = [];
-        $data['domain'] = JURI::base();
+        $uri = Uri::getInstance();
+        $data['domain'] = $uri->toString();
         $data['action'] = $action;
         $data['error'] = $errorText;
         if ($returncodes !== null) {

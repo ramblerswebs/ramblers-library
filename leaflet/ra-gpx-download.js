@@ -111,7 +111,7 @@ L.Control.GpxDownload = L.Control.extend({
         var gpxAuthor = this._info.author;
         var gpxDate = this._info.date;
         if (gpxDate.length > 10) {
-            gpxDate = gpxDate.substring(0, 10)
+            gpxDate = gpxDate.substring(0, 10);
         }
         var gpxTrack = this._info.gpxTrack;
         var content = '<form><span><b>File Name/Title</b></span><br/><input id="gpxName" type="text"/ value="' + gpxName + '" /><br/>';
@@ -123,7 +123,7 @@ L.Control.GpxDownload = L.Control.extend({
 
         this.popup.setLatLng([lat, lng]);
         this.popup.setContent(content);
-        this.popup.openOn(this._map)
+        this.popup.openOn(this._map);
         var ele = document.getElementById('gpxTrack');
         ele.checked = gpxTrack;
 
@@ -131,15 +131,15 @@ L.Control.GpxDownload = L.Control.extend({
     _popupclose: function (e) {
         var popup = e.popup;
         if (popup === this.popup) {
-            this._info.name = this.getElementValue('gpxName');
-            this._info.desc = this.getElementValue('gpxDesc');
-            this._info.author = this.getElementValue('gpxAuthor');
+            this._info.name = this._escapeChars(this.getElementValue('gpxName'));
+            this._info.desc = this._escapeChars(this.getElementValue('gpxDesc'));
+            this._info.author = this._escapeChars(this.getElementValue('gpxAuthor'));
             //        this._info.copyright = this.getElementValue('gpxCopyright');
             //this._info.gpxTrack = this.getElementValue('gpxTrack').checked;
             var ele = document.getElementById('gpxTrack');
             this._info.gpxTrack = ele.checked;
             this._info.date = this.getElementValue('gpxDate');
-            if (this._info.date != "") {
+            if (this._info.date !== "") {
                 this._info.date += "T12:00:00Z";
             }
 
@@ -163,9 +163,18 @@ L.Control.GpxDownload = L.Control.extend({
                 var data = this._createGPXdata();
                 try {
                     var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
-                    var name = this._info.name + ".gpx";
-                    if (name === ".gpx") {
+                    var name = this._info.name;
+                    name = name.replace(/&amp;/g, " "); // remove special chars
+                    name = name.replace(/&quot;/g, " ");
+                    name = name.replace(/&apos;/g, " ");
+                    name = name.replace(/&lt;/g, " ");
+                    name = name.replace(/&gt;/g, " ");
+                    name = name.replace(/\s+/g, '_');
+                    name = name.replace(/[^a-zA-Z0-9_]/g, "");
+                    if (name === "") {
                         name = "route.gpx";
+                    } else {
+                        name = name + ".gpx";
                     }
                     saveAs(blob, name);
                 } catch (e) {
@@ -197,23 +206,27 @@ L.Control.GpxDownload = L.Control.extend({
         return gpxData;
     },
     _escapeChars: function (text) {
+        text = text.replace(/&/g, "&amp;"); // do this first so others are not changed
         text = text.replace(/"/g, "&quot;");
         text = text.replace(/'/g, "&apos;");
         text = text.replace(/</g, "&lt;");
         text = text.replace(/>/g, "&gt;");
-        text = text.replace(/&/g, "&amp;");
+
         return text;
     },
     _addMetaData: function () {
         out = "<metadata>";
         if (ra_gpx_download_this._info.name !== "") {
-            out += "<name>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.name) + "</name>";
+            //        out += "<name>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.name) + "</name>";
+            out += "<name>" + ra_gpx_download_this._info.name + "</name>";
         }
         if (ra_gpx_download_this._info.desc !== "") {
-            out += "<desc>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.desc) + "</desc>";
+            //         out += "<desc>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.desc) + "</desc>";
+            out += "<desc>" + ra_gpx_download_this._info.desc + "</desc>";
         }
         if (ra_gpx_download_this._info.author !== "") {
-            out += "<author><name>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.author) + "</name></author>";
+            //         out += "<author><name>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.author) + "</name></author>";
+            out += "<author><name>" + ra_gpx_download_this._info.author + "</name></author>";
         }
         if (ra_gpx_download_this._info.date !== "") {
             out += "<time>" + ra_gpx_download_this._info.date + "</time>";
@@ -227,7 +240,7 @@ L.Control.GpxDownload = L.Control.extend({
             data += '<name>' + marker.name + '</name>' + "\n";
         }
         if (marker.hasOwnProperty('desc')) {
-            data += '<desc><![CDATA[' + marker.desc + ']]></desc>' + "\n";
+            data += '<desc>' + marker.desc + '</desc>' + "\n";
         }
         if (marker.hasOwnProperty('symbol')) {
             data += '<sym>' + marker.symbol + '</sym>' + "\n";
@@ -236,6 +249,7 @@ L.Control.GpxDownload = L.Control.extend({
         return data;
     },
     _addPolyline: function (polyline) {
+        var latlngs;
         if (this._info.gpxTrack === true) {
             var data = '<trk>' + "\n";
             data += '<trkseg>' + "\n";

@@ -1,3 +1,4 @@
+var L;
 L.Control.GpxUpload = L.Control.extend({
     options: {
         title: 'Up load a walking route from a GPX file',
@@ -216,21 +217,30 @@ L.Control.GpxUpload = L.Control.extend({
                     function (node, currentIndex, listObj) {
                         var find = ra_gpx_upload_this.findname;
                         //console.log(node + ', ' + currentIndex + ', ' + this);
-                        if (node.nodeName == find) {
+                        if (node.nodeName === find) {
                             ra_gpx_upload_this.result = node.textContent;
                         }
                     },
                     "name"
                     );
         }
-        return ra_gpx_upload_this.result;
+        return  this._escapeChars(ra_gpx_upload_this.result);
     },
     _ra_get_children_text: function (elem, name1, name2) {
         var child = this._ra_get_child(elem, name1);
         if (typeof child !== 'undefined') {
-            return   this._ra_get_child_text(child, name2);
+            return  this._ra_get_child_text(child, name2);
         }
         return "";
+    },
+    _escapeChars: function (text) {
+        text = text.replace(/&/g, "&amp;"); // do this first so others are not changed
+        text = text.replace(/"/g, "&quot;");
+        text = text.replace(/'/g, "&apos;");
+        text = text.replace(/</g, "&lt;");
+        text = text.replace(/>/g, "&gt;");
+
+        return text;
     },
     _ra_get_child: function (elem, name) {
         var children = elem.childNodes;
@@ -244,7 +254,7 @@ L.Control.GpxUpload = L.Control.extend({
                     function (node, currentIndex, listObj) {
                         var find = ra_gpx_upload_this.findname;
                         console.log(node + ', ' + currentIndex + ', ' + this);
-                        if (node.nodeName == find) {
+                        if (node.nodeName === find) {
                             ra_gpx_upload_this.result = node;
                         }
                     },
@@ -259,7 +269,7 @@ L.Control.GpxUpload = L.Control.extend({
         if (textEl.length > 0) {
             text = textEl[0].textContent;
         }
-        return text;
+        return this._escapeChars(text);
     }
     ,
     _ra_gpx_parse_trkseg: function (line, tag) {
@@ -304,13 +314,13 @@ L.Control.GpxUpload = L.Control.extend({
             return null;
         }
         var errorMsg = null;
-        if (xmlDoc.parseError && xmlDoc.parseError.errorCode != 0) {
+        if (xmlDoc.parseError && xmlDoc.parseError.errorCode !== 0) {
             errorMsg = "XML Parsing Error: " + xmlDoc.parseError.reason
                     + " at line " + xmlDoc.parseError.line
                     + " at position " + xmlDoc.parseError.linepos;
         } else {
             if (xmlDoc.documentElement) {
-                if (xmlDoc.documentElement.nodeName == "parsererror") {
+                if (xmlDoc.documentElement.nodeName === "parsererror") {
                     errorMsg = xmlDoc.documentElement.childNodes[0].nodeValue;
                 }
             } else {
