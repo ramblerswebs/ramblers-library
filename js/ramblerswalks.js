@@ -74,8 +74,8 @@ function ajax($url, $params, target, displayFunc) {
     //   xmlhttp.setRequestHeader("Connection", "close");
     xmlhttp.send($params);
 }
-function displayModal($html) {
-    createModalTag();
+function displayModal($html, print = true) {
+    createModalTag(print);
     setTagHtml("modal-data", $html);
     // Get the modal
     var modal = document.getElementById('js-raModal');
@@ -87,11 +87,16 @@ function displayModal($html) {
         modal.style.display = "none";
         setTagHtml("modal-data", "");
     };
-    var span = document.getElementById("modal-data");
-    document.getElementById("btnPrint").onclick = function () {
-        printTag("modal-data");
-    };
+  //  var span = document.getElementById("modal-data");
+    var print = document.getElementById("btnPrint");
+    if (print !== null) {
+        print.onclick = function () {
+            printTag("modal-data");
+        };
+
 }
+}
+;
 
 function isES6()
 {
@@ -126,8 +131,8 @@ function printTag(divId) {
         if (sheet.href !== null) {
             var link = '<link rel="stylesheet" href="' + sheet.href + '">\n';
             mywindow.document.write(link);
-            var noprint="<style> .noprint {display: none !important; }</style>";
-             mywindow.document.write(noprint);
+            var noprint = "<style> .noprint {display: none !important; }</style>";
+            mywindow.document.write(noprint);
         }
     }
     mywindow.document.write('</head><body><div id="document"><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');
@@ -149,7 +154,7 @@ function setTagHtml(id, html) {
         tag.innerHTML = html;
     }
 }
-function createModalTag() {
+function createModalTag(print = true) {
     // Get the modal
     var modaltag = document.getElementById('modal-data');
     if (modaltag === null) {
@@ -161,12 +166,14 @@ function createModalTag() {
         $tag += '<!-- Modal Content (The Image) -->';
         $tag += '<div class="modal-content" >';
         $tag += '<div class="modal-header">';
-        $tag += '<button id="btnPrint" class="btn" type="button" >Print</button>';
+        if (print) {
+            $tag += '<button id="btnPrint" class="btn" type="button" >Print</button>';
+        }
         $tag += '<button id="btnClose" class="btn" data-dismiss="modal" >Close</button>';
         $tag += '</div>';
         $tag += '<p style="clear:right;"> </p>';
         $tag += '<div id="modal-data"></div>';
         $tag += '</div></div>';
         div.innerHTML = $tag;
-    }
+}
 }

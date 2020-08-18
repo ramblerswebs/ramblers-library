@@ -1,0 +1,21 @@
+
+/* Map Tools */
+
+.leaflet-control-display-tools{
+    width:30px;
+    height:30px;
+    border-radius:5px;
+     background:#fff url(images/maptools.png) no-repeat 0 0;
+    background-size:25px 25px;
+    background-position: center; 
+    cursor: pointer;
+    padding:2.5px;
+}
+div.tab-content{
+     background-color: #DDDDDD;
+    padding: 5px;
+    margin:10px;
+    border-radius:10px;
+}
+
+

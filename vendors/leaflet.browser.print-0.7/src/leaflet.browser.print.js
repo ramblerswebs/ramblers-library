@@ -2,7 +2,7 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Igor Vladyka <igor.vladyka@gmail.com> (https://github.com/Igor-Vladyka/leaflet.browser.print)
 **/
-
+var L;
 L.Control.BrowserPrint = L.Control.extend({
 	options: {
 		title: 'Print map',
@@ -73,7 +73,7 @@ L.Control.BrowserPrint = L.Control.extend({
 			} else if (mode instanceof L.Control.BrowserPrint.Mode) {
 				// Looks like everythin is fine.
 			} else {
-				throw "Invalid Print Mode. Can't construct logic to print current map."
+				throw "Invalid Print Mode. Can't construct logic to print current map.";
 			}
 
 			mode.Element = L.DomUtil.create('li', 'browser-print-mode', L.DomUtil.create('ul', 'browser-print-holder', container));
@@ -121,7 +121,7 @@ L.Control.BrowserPrint = L.Control.extend({
 
 	_getMode: function(name, invalidateBounds) {
 		var mode = this.options.printModes.filter(function(f){
-			return f.Mode == name;
+			return f.Mode === name;
 		})[0];
 
 		return new L.control.browserPrint.mode(mode.Mode, mode.Title, mode.PageSize, mode.Action, invalidateBounds || mode.InvalidateBounds);
@@ -241,7 +241,7 @@ L.Control.BrowserPrint = L.Control.extend({
 	},
 
 	print: function(pageOrientation, autoBounds) {
-		if (pageOrientation == "Landscape" || pageOrientation == "Portrait") {
+		if (pageOrientation === "Landscape" || pageOrientation === "Portrait") {
 			this._print(this._getMode(pageOrientation, !!autoBounds), pageOrientation, autoBounds);
 		}
 	},

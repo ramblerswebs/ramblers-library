@@ -7,6 +7,7 @@ function RamblersLeafletMap(base) {
     this.bingkey = null;
     this.gridsquare10 = null;
     this.gridsquare100 = null;
+    this.displayOSGrid = true;
     this.postcodes = null;
     this.markerList = null;
     this.markersCG = null;
@@ -97,45 +98,25 @@ function raLoadLeaflet() {
 
         }
     }
+// error message container
 
-    if (ramblersMap.options.osgrid) {
-        var osgrid = L.layerGroup([]);
-        osMapGrid(osgrid);
-        var overlayGraphics = {
-            "OS 100km Grid": osgrid
-        };
-        osgrid.addTo(ramblersMap.map);
-    }
+    L.control.racontainer({id: 'ra-error-text', position: 'topright'}).addTo(ramblersMap.map);
 
-    ramblersMap.mapControl = L.control.layers(ramblersMap.mapLayers, overlayGraphics, {collapsed: true}).addTo(ramblersMap.map);
+    //    ramblersMap.mapControl = L.control.layers(ramblersMap.mapLayers, overlayGraphics, {collapsed: true}).addTo(ramblersMap.map);
+    ramblersMap.mapControl = L.control.layers(ramblersMap.mapLayers).addTo(ramblersMap.map);
     if (ramblersMap.options.topoMapDefault) {
         ramblersMap.map.addLayer(ramblersMap.mapLayers["Open Topo Map"]);
     } else {
         ramblersMap.map.addLayer(ramblersMap.mapLayers["Open Street Map"]);
-        //ramblersMap.mapLayers["Open Street Map"].addTo(ramblersMap.map.addLayer);
-    }
-    if (ramblersMap.options.search) {
-        try {
-            L.Control.geocoder({
-                defaultMarkGeocode: true,
-                collapsed: true,
-                geocoder: L.Control.Geocoder.nominatim({
-                    geocodingQueryParams: {countrycodes: 'gb'}
-                })
-            }).addTo(ramblersMap.map);
-        } catch (err) {
-            document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
-        }
-        // must be after layers so is second control in top right
-
     }
 
-    if (ramblersMap.options.locationsearch) {
-        L.control.locationsearch({
-            defaultMarkLocationsearch: true,
-            collapsed: true
-        }).addTo(ramblersMap.map);
+    try {
+        L.control.ra_map_tools({}).addTo(ramblersMap.map);
+    } catch (err) {
+        document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
     }
+
+    //  ramblersMap.mapLayers["Open Street Map"].addTo(ramblersMap.map);
     if (ramblersMap.options.controlcontainer) {
         L.control.racontainer({id: 'js-gewmapButtons'}).addTo(ramblersMap.map);
     }
@@ -146,7 +127,7 @@ function raLoadLeaflet() {
     }
     if (ramblersMap.options.print) {
         L.control.browserPrint({
-            title: 'The Ramblers - working for walkers',
+            title: 'Print',
             documentTitle: 'The Ramblers - working for walkers',
             printModes: ["Portrait", "Landscape"],
             closePopupsOnPrint: false
@@ -164,6 +145,7 @@ function raLoadLeaflet() {
             );
         }
     }
+    ramblersMap.mylocation = L.control.mylocation().addTo(ramblersMap.map);
     ramblersMap.map.on('baselayerchange', function (e) {
         ramblersMap.currentLayer = e.layer;
         //alert('Changed to ' + e.name);
@@ -174,8 +156,6 @@ function raLoadLeaflet() {
 
     if (ramblersMap.options.postcodes) {
         try {
-//   ramblersMap.postcodelayer = L.featureGroup([]);
-//   ramblersMap.postcodelayer.addTo(ramblersMap.map);
             ramblersMap.postcodes = L.control.postcodeStatus().addTo(ramblersMap.map);
         } catch (err) {
             document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
@@ -195,11 +175,6 @@ function raLoadLeaflet() {
     ramblersMap.map.on('LayersControlEvent', function (ev) {
         alert(ev.latlng); // ev is an event object (MouseEvent in this case)
     });
-    // help button
-    if (ramblersMap.maphelppage !== "") {
-        var helpbutton = new L.Control.DisplayHelp();
-        ramblersMap.map.addControl(helpbutton);
-    }
 }
 
 function updateClusterProgressBar(processed, total, elapsed) {
@@ -539,14 +514,29 @@ function getWhat3Words(lat, lng, id, place) {
         }
     });
 }
-function fetchWhat3Words(tag,dataObject, lat, lng) {
+function What3WordsToLocation(tag, words) {
+    var url = "https://api.what3words.com/v3/convert-to-coordinates?words=" + words + "&key=6AZYMY7P";
+    getJSON(url, function (err, item) {
+        let event = new Event("what3wordsfound", {bubbles: true}); // (2)
+        event.ra = {};
+        event.ra.err = err;
+        if (err === null) {
+            event.ra.coordinates = item.coordinates;
+            event.ra.nearestPlace = item.nearestPlace;
+            event.ra.country = item.country;
+            event.ra.words = item.words;
+        }
+        tag.dispatchEvent(event);
+    });
+}
+function fetchWhat3Words(tag, dataObject, lat, lng) {
     var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
     var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
     getJSON(url, function (err, item) {
         let event = new Event("what3wordsfound", {bubbles: true}); // (2)
         event.ra = {};
         event.ra.err = err;
-        event.ra.dataObject=dataObject;
+        event.ra.dataObject = dataObject;
         if (err === null) {
             event.ra.words = item.words;
             event.ra.nearestPlace = item.nearestPlace;
@@ -588,34 +578,34 @@ function osGridToLatLongSquare(gridref, size) {
         [ll1.lat, ll1.lon]];
     return bounds;
 }
-function osMapGrid(layer) {
-    var style = {color: '#333366', weight: 1, opacity: 0.2};
-    var lines;
-    for (east = 0; east < 700500; east += 100000) {
-        lines = new Array();
-        i = 0;
-        for (north = 0; north < 1300500; north += 10000) {
-            var gr = new OsGridRef(east, north);
-            var latlong = OsGridRef.osGridToLatLon(gr);
-            lines[i] = new L.latLng(latlong.lat, latlong.lon);
-            i++;
-        }
-// L.polyline(lines, style).addTo(map);
-        layer.addLayer(L.polyline(lines, style));
-    }
-    for (var north = 0; north < 1300500; north += 100000) {
-        lines = new Array();
-        i = 0;
-        for (var east = 0; east < 700500; east += 10000) {
-            gr = new OsGridRef(east, north);
-            latlong = OsGridRef.osGridToLatLon(gr);
-            lines[i] = new L.latLng(latlong.lat, latlong.lon);
-            i++;
-        }
-// L.polyline(lines, style).addTo(map);
-        layer.addLayer(L.polyline(lines, style));
-    }
-}
+//function osMapGrid(layer) {
+//    var style = {color: '#333366', weight: 1, opacity: 0.2};
+//    var lines;
+//    for (east = 0; east < 700500; east += 100000) {
+//        lines = new Array();
+//        i = 0;
+//        for (north = 0; north < 1300500; north += 10000) {
+//            var gr = new OsGridRef(east, north);
+//            var latlong = OsGridRef.osGridToLatLon(gr);
+//            lines[i] = new L.latLng(latlong.lat, latlong.lon);
+//            i++;
+//        }
+//// L.polyline(lines, style).addTo(map);
+//        layer.addLayer(L.polyline(lines, style));
+//    }
+//    for (var north = 0; north < 1300500; north += 100000) {
+//        lines = new Array();
+//        i = 0;
+//        for (var east = 0; east < 700500; east += 10000) {
+//            gr = new OsGridRef(east, north);
+//            latlong = OsGridRef.osGridToLatLon(gr);
+//            lines[i] = new L.latLng(latlong.lat, latlong.lon);
+//            i++;
+//        }
+//// L.polyline(lines, style).addTo(map);
+//        layer.addLayer(L.polyline(lines, style));
+//    }
+//}
 
 function m_to_km(v) {
     return v / 1000;

@@ -35,6 +35,7 @@ class RLeafletMap {
         $document = JFactory::getDocument();
         $out = "function addContent(ramblersMap) {" . $text . "}";
         $document->addScriptDeclaration($out, "text/javascript");
+        $document->addStyleSheet("libraries/ramblers/jsonwalks/css/ramblerswalks.css", "text/css");
         $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
     }
 
@@ -75,17 +76,17 @@ class RLeafletMap {
         if ($options->cluster) {
             echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
         }
-        echo "<div id='ra-error-text'></div> " . PHP_EOL;
-        if ($options->draw) {
+         if ($options->draw) {
             echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
         }
         $this->addScriptsandStyles($options);
         echo "<div class='map-container'>" . PHP_EOL;
+  //      echo "<div id='ra-error-text'></div> " . PHP_EOL;
         echo "<div id='leafletmap'></div>" . PHP_EOL;
         echo "<script type='text/javascript'>" . PHP_EOL;
-         echo $this->getMapInfo() . PHP_EOL;   
-         echo $this->getOptionsScript();
- 
+        echo $this->getMapInfo() . PHP_EOL;
+        echo $this->getOptionsScript();
+
         if ($this->leafletLoad) {
             echo "window.onload = function () {raLoadLeaflet();};" . PHP_EOL;
         }
@@ -106,15 +107,15 @@ class RLeafletMap {
         $document->addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
         // add script for Google Plus codes https://plus.codes
         $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/openlocationcode/1.0.3/openlocationcode.js", "text/javascript");
-        if ($options->search) {
-            $path = "libraries/ramblers/vendors/leaflet-control-geocoder-1.5.8/dist/";
-            $document->addStyleSheet($path . "Control.Geocoder.css", "text/css");
-            $document->addScript($path . "Control.Geocoder.js", "text/javascript");
-        }
-        if ($options->locationsearch) {
-            $document->addStyleSheet("libraries/ramblers/leaflet/Control.Locationsearch.css", "text/css");
-            $document->addScript("libraries/ramblers/leaflet/Control.Locationsearch.js", "text/javascript");
-        }
+//        if ($options->search) {
+//            $path = "libraries/ramblers/vendors/leaflet-control-geocoder-1.5.8/dist/";
+//            $document->addStyleSheet($path . "Control.Geocoder.css", "text/css");
+//            $document->addScript($path . "Control.Geocoder.js", "text/javascript");
+//        }
+//        if ($options->locationsearch) {
+//            $document->addStyleSheet("libraries/ramblers/leaflet/Control.Locationsearch.css", "text/css");
+//            $document->addScript("libraries/ramblers/leaflet/Control.Locationsearch.js", "text/javascript");
+//        }
         if ($options->fullscreen) {
             $path = "libraries/ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
             $document->addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
@@ -187,12 +188,15 @@ class RLeafletMap {
             $document->addScript($path . "leaflet.browser.print.sizes.js", "text/javascript");
             $document->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
         }
-        if ($this->help_page != "") {
-            $document->addScript("libraries/ramblers/leaflet/ra-map-help.js", "text/javascript");
-        }
-        if ($options->controlcontainer) {
-            $document->addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
-        }
+
+            $document->addScript("libraries/ramblers/leaflet/ra-map-mylocation.js", "text/javascript");
+
+        $document->addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
+        
+        // tools
+        $document->addStyleSheet("libraries/ramblers/leaflet/ra-map-tools.css", "text/css");
+        $document->addScript("libraries/ramblers/leaflet/ra-map-tools.js", "text/javascript");
+        $document->addScript("libraries/ramblers/js/feedhandler.js", "text/javascript");
     }
 
 }
