@@ -3,7 +3,7 @@ var L, ramblersMap;
 function addDrawControl(lat, long, zoom) {
     // zoom to correct area
     ramblersMap.map.setZoom(zoom);
-    latlong = new L.LatLng(lat, long);
+    var latlong = new L.LatLng(lat, long);
     ramblersMap.map.panTo(latlong);
     // add elevation display
     var imperial = false;
@@ -83,13 +83,14 @@ function addDrawControl(lat, long, zoom) {
             polyline: {
                 metric: true,
                 shapeOptions: {
-                    color: '#007A87',
+                    color: '#AAAAAA',
                     opacity: 1
                 }
             }
         }
+        //  color: '#007A87',
     });
-
+    ramblersMap.DrawControl = drawControl;
     ramblersMap.map.addControl(drawControl);
 
     ramblersMap.map.on(L.Draw.Event.CREATED, function (e) {
@@ -279,7 +280,7 @@ function addDrawControl(lat, long, zoom) {
     enableMapMoveDrawing = function () {
         ramblersMap.map.on('mousemove', mapMoveDrawingMouseMove, this);
     };
-    _escapeChars= function (text) {
+    _escapeChars = function (text) {
         text = text.replace(/&/g, "&amp;"); // do this first so others are not changed
         text = text.replace(/"/g, "&quot;");
         text = text.replace(/'/g, "&apos;");
@@ -348,7 +349,7 @@ function polylineDistance(latlngs) {
     var tempLatLng = null;
     var totalDistance = 0.00000;
     for (i = 0, len = latlngs.length; i < len; i++) {
-        latlng = latlngs[i];
+       var latlng = latlngs[i];
         if (tempLatLng === null) {
             tempLatLng = latlng;
         } else {
@@ -365,7 +366,7 @@ function polylineElevationGain(latlngs) {
     var tempLatLng = null;
     var elevationGain = 0.00000;
     for (i = 0, len = latlngs.length; i < len; i++) {
-        latlng = latlngs[i];
+       var latlng = latlngs[i];
         if (tempLatLng === null) {
             tempLatLng = latlng;
         } else {
@@ -418,7 +419,7 @@ function getElevations(force) {
         if (nullItems.length > 500) {
             blurt("Tracks contains more than 500 points, response may be slow, please wait...");
         }
-        points = "data=" + JSON.stringify(nullItems);
+       var points = "data=" + JSON.stringify(nullItems);
         var url = "https://elevation.theramblers.org.uk/";
         postJSON(url, points, function (err, items) {
             if (err !== null) {

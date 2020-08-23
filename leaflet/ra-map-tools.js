@@ -5,7 +5,13 @@ L.Control.RA_Map_Tools = L.Control.extend({
         position: 'topright',
         osgrid: {
             color: '#0080C0',
-            weight: 2}
+            weight: 2,
+            opacity: 0.5}
+    },
+    drawoptions: {
+        color: '#782327',
+        weight: 3,
+        opacity: 1
     },
     onAdd: function (map) {
         this._map = map;
@@ -52,6 +58,9 @@ L.Control.RA_Map_Tools = L.Control.extend({
         self.addTabItem(container, list, 'Search', 'search');
         self.addTabItem(container, list, 'OS Grid', 'grid');
         self.addTabItem(container, list, 'Mouse Right Click', 'mouse');
+        if (ramblersMap.options.draw) {
+            self.addTabItem(container, list, 'Plot Route', 'route');
+        }
         self.addTabItem(container, list, 'Help', 'help');
         // tab content 
         var content = document.createElement('div');
@@ -60,11 +69,17 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var searchDiv = self.addTabContentItem(content, "search", true);
         var osgridDiv = self.addTabContentItem(content, "grid", false);
         var mouseDiv = self.addTabContentItem(content, "mouse", false);
+        if (ramblersMap.options.draw) {
+            var drawDiv = self.addTabContentItem(content, "route", false);
+        }
         var helpDiv = self.addTabContentItem(content, "help", false);
-
         self.addSearch(searchDiv);
         self.addOSGrid(osgridDiv);
         self.addMouse(mouseDiv);
+        if (ramblersMap.options.draw) {
+            self.addDrawOptions(drawDiv);
+        }
+
         self.addHelp(helpDiv);
         var padding = document.createElement('p');
         container.appendChild(padding);
@@ -81,12 +96,12 @@ L.Control.RA_Map_Tools = L.Control.extend({
             var result = ra.item;
             ramblersMap.RA_Map_Tools.searchLayer.clearLayers();
             result.center = new L.LatLng(result.lat, result.lon);
+            ramblersMap.map.setZoom(16);
             var _LocationsearchMarker = new L.Marker(result.center, {icon: ramblersMap.redmarkericon})
                     .bindPopup("<b>" + result.class + ": " + result.type + "</b><br/>" + result.display_name)
                     .addTo(ramblersMap.RA_Map_Tools.searchLayer)
                     .openPopup();
-            ramblersMap.map.setZoom(16);
-            ramblersMap.map.panTo(result.center);
+            ramblersMap.map.setView(result.center);
         });
     },
     addHelp: function (tag) {
@@ -112,6 +127,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
     },
     addOSGrid: function (tag) {
+        var self = this;
         var title = document.createElement('h4');
         title.textContent = 'Ordnance Survey Grid';
         tag.appendChild(title);
@@ -133,33 +149,73 @@ L.Control.RA_Map_Tools = L.Control.extend({
         osGridColor.setAttribute('type', 'color');
         osGridColor.setAttribute('value', color);
         tag.appendChild(osGridColor);
-        var weight = ramblersMap.RA_Map_Tools.options.osgrid.weight;
+        // var weight = ramblersMap.RA_Map_Tools.options.osgrid.weight;
         label = document.createElement('label');
         label.textContent = "OS Grid line thickness";
         tag.appendChild(label);
-        var osGridWeight = document.createElement('input');
-        osGridWeight.setAttribute('type', 'number');
-        osGridWeight.setAttribute('min', 1);
-        osGridWeight.setAttribute('max', 5);
-        osGridWeight.setAttribute('value', weight);
-        tag.appendChild(osGridWeight);
-
+        this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.RA_Map_Tools.options.osgrid, 'weight', 1, 10, 0.5);
+        this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.RA_Map_Tools.options.osgrid, 'opacity', .1, 1, .01);
+        var sample = this.addSampleLine(tag, "300px", "Sample: ");
+        this.addSampleLineStyle(sample, ramblersMap.RA_Map_Tools.options.osgrid);
+        tag.addEventListener("change", function (e) {
+            self.addSampleLineStyle(sample, ramblersMap.RA_Map_Tools.options.osgrid);
+            ramblersMap.OSGrid.basicgrid = false;
+            ramblersMap.RA_Map_Tools.displayOSGrid();
+        });
         osGrid.addEventListener("change", function (e) {
             ramblersMap.OSGrid.display = !ramblersMap.OSGrid.display;
             ramblersMap.OSGrid.basicgrid = false;
             ramblersMap.RA_Map_Tools.displayOSGrid();
-
         });
         osGridColor.addEventListener("change", function (e) {
             ramblersMap.RA_Map_Tools.options.osgrid.color = osGridColor.value;
             ramblersMap.OSGrid.basicgrid = false;
             ramblersMap.RA_Map_Tools.displayOSGrid();
         });
-        osGridWeight.addEventListener("change", function (e) {
-            ramblersMap.RA_Map_Tools.options.osgrid.weight = osGridWeight.value;
-            ramblersMap.OSGrid.basicgrid = false;
-            ramblersMap.RA_Map_Tools.displayOSGrid();
+    },
+    addDrawOptions: function (tag) {
+        var self = this;
+        var title = document.createElement('h4');
+        title.textContent = 'Plot Route';
+        tag.appendChild(title);
+        var color = ramblersMap.RA_Map_Tools.drawoptions.color;
+        var label = document.createElement('label');
+        label.textContent = "Route line colour";
+        tag.appendChild(label);
+        var drawColor = document.createElement('input');
+        drawColor.setAttribute('type', 'color');
+        drawColor.setAttribute('value', color);
+        tag.appendChild(drawColor);
+        this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.RA_Map_Tools.drawoptions, 'weight', 1, 10, 0.5);
+        this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.RA_Map_Tools.drawoptions, 'opacity', .1, 1, .01);
+        var sample = this.addSampleLine(tag, "300px", "Sample: ");
+        this.addSampleLineStyle(sample, ramblersMap.RA_Map_Tools.drawoptions);
+        tag.addEventListener("change", function (e) {
+            self.addSampleLineStyle(sample, ramblersMap.RA_Map_Tools.drawoptions);
+            var drawnItems = ramblersMap.drawnItems;
+            drawnItems.eachLayer(function (layer) {
+                if (layer instanceof L.Polyline) {
+                    ramblersMap.RA_Map_Tools._changePolyline(layer);
+                }
+            });
+            //  var color = ramblersMap.RA_Map_Tools.drawoptions.color;
+            ramblersMap.DrawControl.setDrawingOptions({
+                polyline: {
+                    shapeOptions: ramblersMap.RA_Map_Tools.drawoptions
+                }
+            });
         });
+        drawColor.addEventListener("change", function (e) {
+            var color = drawColor.value;
+            ramblersMap.RA_Map_Tools.drawoptions.color = color;
+            let event = new Event("change", {bubbles: true}); // (2)
+            tag.dispatchEvent(event);
+        });
+
+    },
+    _changePolyline: function (polyline) {
+        polyline.setStyle(ramblersMap.RA_Map_Tools.drawoptions);
+
     },
     addTabItem: function (container, list, name, id) {
         var listItem;
@@ -206,16 +262,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
         comments.innerHTML += "You can display postcodes, Ramblers' Areas and Groups, meeting/starting places and information from <a href='https://www.openstreetmap.org/about' target='_blank'>Open Street Map</a>, see below ";
         comments.innerHTML += "<br/>Please remember that the more information you ask for the more time it will take.";
         tag.appendChild(comments);
-        var hdg1 = document.createElement('h5');
-        hdg1.textContent = 'Postcode Options';
-        tag.appendChild(hdg1);
-        comment = document.createElement('p');
-        comment.setAttribute('class', 'smaller');
-        comment.textContent = 'Useful for finding correct postcode for your satnav';
-        tag.appendChild(comment);
-        this.addNumber(tag, 'divClass', 'Display postcodes within %n km', mouse.displayOptions.postcodes, 'distance', 0.5, 20, 0.5);
-        this.addNumber(tag, 'divClass', 'Display nearest %n postcodes', mouse.displayOptions.postcodes, 'number', 1, 50, 1);
-
         var hdg2 = document.createElement('h5');
         hdg2.textContent = 'Ramblers Area / Group Options';
         tag.appendChild(hdg2);
@@ -225,7 +271,15 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.appendChild(comment);
         this.addNumber(tag, 'divClass', 'Display groups/area within %n km', mouse.displayOptions.groups, 'distance', 0.5, 500, 0.5);
         this.addNumber(tag, 'divClass', 'Display nearest %n groups/area.', mouse.displayOptions.groups, 'number', 1, 500, 1);
-
+        var hdg1 = document.createElement('h5');
+        hdg1.textContent = 'Postcode Options';
+        tag.appendChild(hdg1);
+        comment = document.createElement('p');
+        comment.setAttribute('class', 'smaller');
+        comment.textContent = 'Useful for finding correct postcode for your satnav';
+        tag.appendChild(comment);
+        this.addNumber(tag, 'divClass', 'Display postcodes within %n km', mouse.displayOptions.postcodes, 'distance', 0.5, 20, 0.5);
+        this.addNumber(tag, 'divClass', 'Display nearest %n postcodes', mouse.displayOptions.postcodes, 'number', 1, 50, 1);
         var hdg3 = document.createElement('h5');
         hdg3.textContent = 'Meeting/Starting Locations Options';
         tag.appendChild(hdg3);
@@ -235,7 +289,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.appendChild(comment);
         this.addNumber(tag, 'divClass', 'Display locations within %n km', mouse.displayOptions.starting, 'distance', 0.5, 20, 0.5);
         this.addNumber(tag, 'divClass', 'Display nearest %n locations', mouse.displayOptions.starting, 'number', 5, 500, 5);
-
         var hdg4 = document.createElement('h5');
         hdg4.textContent = 'Open Street Map Options';
         tag.appendChild(hdg4);
@@ -293,7 +346,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
                 ramblersMap.OSGrid.basicgrid = true;
             }
         } else {
-            ramblersMap.OSGrid.basicgrid = false
+            ramblersMap.OSGrid.basicgrid = false;
         }
         ramblersMap.OSGrid.layer.clearLayers();
         this.drawOSMapGrid(ne, sw, gs, ramblersMap.OSGrid.layer);
@@ -302,15 +355,16 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var style;
         var color = ramblersMap.RA_Map_Tools.options.osgrid.color;
         var weight = ramblersMap.RA_Map_Tools.options.osgrid.weight;
+        var opacity = ramblersMap.RA_Map_Tools.options.osgrid.opacity;
         switch (gs) {
             case 1000:
-                style = {color: color, weight: weight, opacity: 0.15};
+                style = {color: color, weight: weight, opacity: opacity};
                 break;
             case 10000:
-                style = {color: color, weight: weight, opacity: 0.25};
+                style = {color: color, weight: weight, opacity: opacity};
                 break;
             default:
-                style = {color: color, weight: weight, opacity: 0.5};
+                style = {color: color, weight: weight, opacity: opacity};
         }
         var lines;
         for (east = sw.easting; east < ne.easting + 1000; east += gs) {
@@ -336,6 +390,31 @@ L.Control.RA_Map_Tools = L.Control.extend({
             layer.addLayer(L.polyline(lines, style));
         }
     },
+    addSampleLine: function (tag, length, comment) {
+        var com = document.createElement('div');
+        com.style.display = 'inline-block';
+        com.textContent = comment;
+        com.style.marginRight = '20px';
+        com.style.marginTop = '20px';
+        tag.appendChild(com);
+        var itemDiv = document.createElement('div');
+        itemDiv.style.display = 'inline-block';
+        itemDiv.style.width = length;
+        itemDiv.style.height = "1px";
+        tag.appendChild(itemDiv);
+        return itemDiv;
+    },
+    addSampleLineStyle: function (line, style) {
+        if (style.hasOwnProperty("color")) {
+            line.style.backgroundColor = style.color;
+        }
+        if (style.hasOwnProperty("weight")) {
+            line.style.height = style.weight + "px";
+        }
+        if (style.hasOwnProperty("opacity")) {
+            line.style.opacity = style.opacity;
+        }
+    },
     addNumber: function (tag, divClass, label, raobject, property, minval, maxval, step) {
         var itemDiv = document.createElement('div');
         itemDiv.setAttribute('class', divClass);
@@ -351,15 +430,15 @@ L.Control.RA_Map_Tools = L.Control.extend({
         inputTag.setAttribute('step', step);
         inputTag.raobject = raobject;
         inputTag.raproperty = property;
-
         if (raobject.hasOwnProperty(property)) {  // Initialise value
             inputTag.setAttribute('value', raobject[property]);
             _label.textContent = label.replace("%n", inputTag.value);
-            ;
         }
         inputTag.addEventListener("input", function (e) {
             e.target.raobject[e.target.raproperty] = e.target.value;
             _label.textContent = label.replace("%n", e.target.value);
+            let event = new Event("change", {bubbles: true}); // (2)
+            tag.dispatchEvent(event);
         });
         itemDiv.appendChild(inputTag);
         itemDiv.appendChild(_label);

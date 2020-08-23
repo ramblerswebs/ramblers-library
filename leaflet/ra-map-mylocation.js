@@ -6,6 +6,8 @@ L.Control.MyLocation = L.Control.extend({
     },
     onAdd: function (map) {
         this._map = map;
+        this.active = false;
+        ramblersMap.MyLocation = this;
         this._map.myLocationLayer = L.featureGroup([]);
         this._map.myLocationLayer.addTo(this._map);
         var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-my-location');
@@ -13,51 +15,60 @@ L.Control.MyLocation = L.Control.extend({
         this._container = container;
 
         L.DomEvent.disableClickPropagation(container);
-        L.DomEvent.on(this.link, 'click', this._displaymylocation, this);
-        // this._appendButtons(container);
-        // this.holder.style.display = "none";
+        L.DomEvent.on(this.link, 'click', this._displaymylocationEvent, this);
+
         return container;
     },
     _createIcon: function (container) {
-        var icon = L.DomUtil.create('a', '', container);
-        this.link = icon;
+        this.link = L.DomUtil.create('a', '', container);
         this.link.id = "leaflet-mylocation";
         this.link.title = this.options.title;
         return this.link;
     },
-    _displaymylocation: function (evt) {
+    _displaymylocationEvent: function (evt) {
+        var self = ramblersMap.MyLocation;
+        if (self.active) {
+            self.link.classList.remove("active");
+        } else {
+            self.link.classList.add("active");
+            ramblersMap.map.setZoom(16);
+            self._displaymylocation;
+        }
+        self.active = !self.active;
+        self._displaymylocation(evt);
+    },
+    _closeMyLocation: function () {
+        var self = ramblersMap.MyLocation;
+        self.link.classList.remove("active");
+        self.active = false;
+    },
+    _displaymylocation: function (e) {
+
         function displayLocation(e) {
             ramblersMap.map.panTo(e.latlng);
-            var popup = "Current location<br/>Accuracy is " + e.accuracy + " metres";
+            var popup = "Current location<br/>Accuracy is " + Math.ceil(e.accuracy) + " metres";
             var options = {color: '#0044DD'};
             var circleMarker = new L.CircleMarker(e.latlng, options);
             ramblersMap.map.myLocationLayer.addLayer(circleMarker);
             circleMarker.bindPopup(popup);
         }
 
-        function onAccuratePositionProgress(e) {
-            console.log(e.accuracy);
-            console.log(e.latlng);
-            ramblersMap.map.setZoom(16);
+        ramblersMap.map.on('accuratepositionprogress', function (e) {
+            ramblersMap.map.myLocationLayer.clearLayers();
             displayLocation(e);
-        }
-
-        function onAccuratePositionFound(e) {
-            console.log(e.accuracy);
-            console.log(e.latlng);
+        });
+        ramblersMap.map.on('accuratepositionfound', function (e) {
+            ramblersMap.map.myLocationLayer.clearLayers();
             displayLocation(e);
-        }
-
-        function onAccuratePositionError(e) {
-            console.log(e.message)
-        }
-
-        ramblersMap.map.on('accuratepositionprogress', onAccuratePositionProgress);
-        ramblersMap.map.on('accuratepositionfound', onAccuratePositionFound);
-        ramblersMap.map.on('accuratepositionerror', onAccuratePositionError);
+            ramblersMap.MyLocation._closeMyLocation();
+        });
+        ramblersMap.map.on('accuratepositionerror', function (e) {
+            console.log(e.message);
+             ramblersMap.MyLocation._closeMyLocation();
+        });
 
         ramblersMap.map.findAccuratePosition({
-            maxWait: 15000, // defaults to 10000
+            maxWait: 5000, // defaults to 10000
             desiredAccuracy: 30 // defaults to 20
         });
     }
