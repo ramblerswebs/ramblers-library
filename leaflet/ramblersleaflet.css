@@ -245,11 +245,9 @@ span.placelocation{
 .group-icon.s {
     background: rgba(139, 165, 156, 0.7);
 }
-span.w3w{
-    color:#E11F26;
+a.w3w{
     font-weight: bold;
-    cursor: pointer;
-}
+    }
 select.map-search {
     border: 0;
     color: #EEE;

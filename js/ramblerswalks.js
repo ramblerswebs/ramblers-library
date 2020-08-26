@@ -83,11 +83,11 @@ function displayModal($html, print = true) {
 // Get the <span> element that closes the modal
     var span = document.getElementById("btnClose");
     // When the user clicks on <span> (x), close the modal
-    span.onclick = function () {
+    span.addEventListener("click", function () {
         modal.style.display = "none";
         setTagHtml("modal-data", "");
-    };
-  //  var span = document.getElementById("modal-data");
+    });
+    //  var span = document.getElementById("modal-data");
     var print = document.getElementById("btnPrint");
     if (print !== null) {
         print.onclick = function () {
@@ -156,24 +156,27 @@ function setTagHtml(id, html) {
 }
 function createModalTag(print = true) {
     // Get the modal
-    var modaltag = document.getElementById('modal-data');
+    var modaltag = document.getElementById('js-raModal');
     if (modaltag === null) {
         // create modal tag
         var body = document.getElementsByTagName("BODY")[0];
-        var div = document.createElement("div");
-        body.appendChild(div);
-        var $tag = '<div id="js-raModal" class="ramodal" style="display:none">';
-        $tag += '<!-- Modal Content (The Image) -->';
-        $tag += '<div class="modal-content" >';
-        $tag += '<div class="modal-header">';
-        if (print) {
-            $tag += '<button id="btnPrint" class="btn" type="button" >Print</button>';
-        }
-        $tag += '<button id="btnClose" class="btn" data-dismiss="modal" >Close</button>';
-        $tag += '</div>';
-        $tag += '<p style="clear:right;"> </p>';
-        $tag += '<div id="modal-data"></div>';
-        $tag += '</div></div>';
-        div.innerHTML = $tag;
-}
+        var modaltag = document.createElement("div");
+        modaltag.setAttribute('id', 'js-raModal');
+        modaltag.setAttribute('class', 'ramodal');
+        modaltag.style.display = 'none';
+        body.appendChild(modaltag);
+    }
+    var $tag = '';
+    $tag += '<!-- Modal Content (The Image) -->';
+    $tag += '<div class="modal-content" >';
+    $tag += '<div class="modal-header">';
+    if (print) {
+        $tag += '<button id="btnPrint" class="btn" type="button" >Print</button>';
+    }
+    $tag += '<button id="btnClose" class="btn" data-dismiss="modal" >Close</button>';
+    $tag += '</div>';
+    $tag += '<p style="clear:right;"> </p>';
+    $tag += '<div id="modal-data"></div>';
+    $tag += '</div></div>';
+    modaltag.innerHTML = $tag;
 }

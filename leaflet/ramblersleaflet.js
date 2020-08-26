@@ -506,7 +506,7 @@ function getWhat3Words(lat, lng, id, place) {
         if (err !== null || tag === null) {
             tag.innerHTML = "Error accessing What3Words: " + err + "<br/>";
         } else {
-            var out = '<span class="w3w" onclick="javascript:w3wAboutUs()">///</span><abbr title=\'What3words - click /// to learn more\'>  ' + items.words + '</abbr><br/>';
+           var out = '<a class="w3w" href="https://what3words.com/about-us/" target="_blank">What3Words: </a>' + items.words + '<br/>';
             if (place) {
                 out += '<b>Nearest Place: </b>' + items.nearestPlace + '<br/>';
             }

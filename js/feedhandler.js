@@ -67,7 +67,7 @@ feeds = function () {
         searchBtn.ra.selectDiv = selectDiv;
         searchBtn.ra.acceptBtn = acceptBtn;
         searchBtn.ra.selectTag = selectTag;
-        //  searchBtn.ra.eventTag = eventTag;
+        
         searchBtn.ra.ukField = ukField;
         searchBtn.addEventListener("click", function (e) {
             var target = e.currentTarget;
@@ -207,7 +207,7 @@ feeds = function () {
             }
             if (items.length > 0) {
                 selectTag.style.display = "block";
-                selectTitle.textContent = 'Select item';
+                selectTitle.textContent = 'Select item from list, you may need to tap to see list, then use the Accept button that will appear.';
                 if (items.length > 21) {
                     selectTag.setAttribute('size', 21);
                 } else {

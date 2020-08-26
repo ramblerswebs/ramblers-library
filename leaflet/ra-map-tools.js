@@ -83,6 +83,19 @@ L.Control.RA_Map_Tools = L.Control.extend({
         self.addHelp(helpDiv);
         var padding = document.createElement('p');
         container.appendChild(padding);
+        if (ramblersMap.map.isFullscreen()) {
+            ramblersMap.map.toggleFullscreen();
+            //       var modal = document.getElementById('js-raModal');
+            //       modal.addEventListener("close", self._returnToFullScreen());
+            var closeBtn = document.getElementById("btnClose");
+            // When the user clicks on <span> (x), close the modal
+            closeBtn.addEventListener("click", function () {
+                ramblersMap.RA_Map_Tools._returnToFullScreen();
+            });
+        }
+    },
+    _returnToFullScreen: function () {
+        ramblersMap.map.toggleFullscreen();
     },
     _display_help: function (evt) {
         var page = ramblersMap.maphelppage;
@@ -97,7 +110,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
             ramblersMap.RA_Map_Tools.searchLayer.clearLayers();
             result.center = new L.LatLng(result.lat, result.lon);
             ramblersMap.map.setZoom(16);
-            var _LocationsearchMarker = new L.Marker(result.center, {icon: ramblersMap.redmarkericon})
+            new L.Marker(result.center, {icon: ramblersMap.redmarkericon})
                     .bindPopup("<b>" + result.class + ": " + result.type + "</b><br/>" + result.display_name)
                     .addTo(ramblersMap.RA_Map_Tools.searchLayer)
                     .openPopup();
@@ -155,10 +168,10 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.appendChild(label);
         this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.RA_Map_Tools.options.osgrid, 'weight', 1, 10, 0.5);
         this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.RA_Map_Tools.options.osgrid, 'opacity', .1, 1, .01);
-        var sample = this.addSampleLine(tag, "300px", "Sample: ");
-        this.addSampleLineStyle(sample, ramblersMap.RA_Map_Tools.options.osgrid);
+        var example = this.addExampleLine(tag, "300px", "Example: ");
+        this.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.options.osgrid);
         tag.addEventListener("change", function (e) {
-            self.addSampleLineStyle(sample, ramblersMap.RA_Map_Tools.options.osgrid);
+            self.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.options.osgrid);
             ramblersMap.OSGrid.basicgrid = false;
             ramblersMap.RA_Map_Tools.displayOSGrid();
         });
@@ -188,10 +201,10 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.appendChild(drawColor);
         this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.RA_Map_Tools.drawoptions, 'weight', 1, 10, 0.5);
         this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.RA_Map_Tools.drawoptions, 'opacity', .1, 1, .01);
-        var sample = this.addSampleLine(tag, "300px", "Sample: ");
-        this.addSampleLineStyle(sample, ramblersMap.RA_Map_Tools.drawoptions);
+        var example = this.addExampleLine(tag, "300px", "Example: ");
+        this.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.drawoptions);
         tag.addEventListener("change", function (e) {
-            self.addSampleLineStyle(sample, ramblersMap.RA_Map_Tools.drawoptions);
+            self.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.drawoptions);
             var drawnItems = ramblersMap.drawnItems;
             drawnItems.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
@@ -390,7 +403,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
             layer.addLayer(L.polyline(lines, style));
         }
     },
-    addSampleLine: function (tag, length, comment) {
+    addExampleLine: function (tag, length, comment) {
         var com = document.createElement('div');
         com.style.display = 'inline-block';
         com.textContent = comment;
@@ -404,7 +417,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.appendChild(itemDiv);
         return itemDiv;
     },
-    addSampleLineStyle: function (line, style) {
+    addExampleLineStyle: function (line, style) {
         if (style.hasOwnProperty("color")) {
             line.style.backgroundColor = style.color;
         }
