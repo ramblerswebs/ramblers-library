@@ -183,7 +183,7 @@ class RLeafletMap {
         }
 
         if ($options->print) {
-            $path = "libraries/ramblers/vendors/leaflet.browser.print-0.7/src/";
+            $path = "libraries/ramblers/vendors/leaflet.browser.print-1/src/";
             $document->addScript($path . "leaflet.browser.print.js", "text/javascript");
             $document->addScript($path . "leaflet.browser.print.sizes.js", "text/javascript");
             $document->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");

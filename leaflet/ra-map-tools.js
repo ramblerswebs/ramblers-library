@@ -2,6 +2,7 @@ var L, ramblersMap, OsGridRef;
 L.Control.RA_Map_Tools = L.Control.extend({
     options: {
         id: null,
+        title: 'Mapping Tools',
         position: 'topright',
         osgrid: {
             color: '#0080C0',
@@ -40,6 +41,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         if (this.options.id !== null) {
             container.setAttribute('id', this.options.id);
         }
+        container.title = this.options.title;
         container.addEventListener("click", this._displayOptions);
         return container;
     },
