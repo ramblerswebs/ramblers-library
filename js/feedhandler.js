@@ -67,7 +67,7 @@ feeds = function () {
         searchBtn.ra.selectDiv = selectDiv;
         searchBtn.ra.acceptBtn = acceptBtn;
         searchBtn.ra.selectTag = selectTag;
-        
+
         searchBtn.ra.ukField = ukField;
         searchBtn.addEventListener("click", function (e) {
             var target = e.currentTarget;
@@ -77,11 +77,11 @@ feeds = function () {
         searchBtn.addEventListener("mapLocations", function (e) {
             var feed = e.target.ra.feedhelper;
             //   alert("mapLocations " + e.target.tagName); // Hello from H1
-            feed.setUpSelectTag(selectTitle, selectTag, e.error, e.data, function (item) {
+            feed.setUpSelectTagForMapSearch(selectTitle, selectTag, e.error, e.data, function (item) {
                 item.class = capitalizeFirstLetter(item.class);
                 item.type = capitalizeFirstLetter(item.type);
                 item.display_name = item.display_name.replace(", United Kingdom", "");
-                return item.class + ": " + item.type + ":   " + item.display_name;
+                return "-  " + item.display_name;
             });
         });
         acceptBtn.addEventListener("click", function (e) {
@@ -179,7 +179,7 @@ feeds = function () {
 
         if (!found) {
             // try place look up
-            var url = "https://nominatim.openstreetmap.org/search?q=" + input + "&format=json";
+            var url = "https://nominatim.openstreetmap.org/search?q=" + input + "&format=json&limit=20";
             if (ukonly) {
                 url = url + "&countrycodes=gb";
             }
@@ -192,6 +192,71 @@ feeds = function () {
             }
             );
         }
+
+    };
+    this.setUpSelectTagForMapSearch = function (selectTitle, selectTag, error, items, itemFormatFunction) {
+        // sort items into class order
+        function compare(a, b) {
+            // Use toUpperCase() to ignore character casing
+            const classa = a.class.toUpperCase() + "/" + a.type.toUpperCase();
+            const classb = b.class.toUpperCase() + "/" + b.type.toUpperCase();
+
+            let comparison = 0;
+            if (classa > classb) {
+                comparison = 1;
+            } else if (classa < classb) {
+                comparison = -1;
+            }
+            return comparison;
+        }
+
+        items = items.sort(compare);
+        var category = "";
+        selectTag.innerHTML = '';
+        selectTitle.textContent = '';
+        if (error !== null) {
+            selectTitle.innerHTML = "<p>Error: Sorry something went wrong: " + error + "</p>";
+            return;
+        } else {
+            if (items.length === 0) {
+                selectTitle.innerHTML = "<p class='error'>No items found</p>";
+                selectTag.style.display = "none";
+            }
+            if (items.length > 0) {
+                selectTag.style.display = "block";
+                selectTitle.textContent = 'Select item from list, you may need to tap to see list, then use the Accept button that will appear.';
+                if (items.length > 10) {
+                    selectTag.setAttribute('size', 10);
+                } else {
+                    selectTag.setAttribute('size', items.length + 1);
+                }
+                selectTag.ra = {};
+                selectTag.ra.items = items; // save items for accept button
+                selectTag.setAttribute('class', 'map-search');
+                var option = document.createElement("option");
+                option.value = -1;
+                option.text = "Please select an item below";
+                option.setAttribute('selected', true);
+                selectTag.appendChild(option);
+                var i;
+                for (i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    var nextcategory = "[" + capitalizeFirstLetter(item.class) + ": " + capitalizeFirstLetter(item.type) + "]";
+                    if (category !== nextcategory) {
+                        category = nextcategory;
+                        var cat = document.createElement("optgroup");
+                        cat.setAttribute('label', category);
+                        selectTag.appendChild(cat);
+                    }
+
+                    option = document.createElement("option");
+                    option.value = i;
+                    option.text = itemFormatFunction(item);
+                    selectTag.appendChild(option);
+                }
+            }
+        }
+
 
     };
     this.setUpSelectTag = function (selectTitle, selectTag, error, items, itemFormatFunction) {
@@ -224,6 +289,9 @@ feeds = function () {
                 for (i = 0; i < items.length; i++) {
                     var item = items[i];
                     option = document.createElement("option");
+                    if (i == 0) {
+                        option.setAttribute('selected', true);
+                    }
                     option.value = i;
                     option.text = itemFormatFunction(item);
                     selectTag.appendChild(option);
