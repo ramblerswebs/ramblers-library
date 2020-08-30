@@ -12,7 +12,7 @@ feeds = function () {
 
         var inputField = document.createElement('input');
         inputField.setAttribute('type', 'text');
-        inputField.setAttribute('class', 'map-search');
+        inputField.setAttribute('class', 'map-select');
         inputField.setAttribute('placeholder', 'Enter place name or grid reference');
         inputField.textContent = 'Location Search  ';
         formDiv.appendChild(inputField);
@@ -25,7 +25,7 @@ feeds = function () {
 
         var ukLabel = document.createElement('label');
         ukLabel.setAttribute('for', 'ukonly');
-        ukLabel.setAttribute('class', 'map-search');
+        ukLabel.setAttribute('class', 'map-select');
         ukLabel.textContent = "Uk Only";
         formDiv.appendChild(ukLabel);
 
@@ -232,7 +232,7 @@ feeds = function () {
                 }
                 selectTag.ra = {};
                 selectTag.ra.items = items; // save items for accept button
-                selectTag.setAttribute('class', 'map-search');
+                selectTag.setAttribute('class', 'map-select');
                 var option = document.createElement("option");
                 option.value = -1;
                 option.text = "Please select an item below";
@@ -280,26 +280,22 @@ feeds = function () {
                 }
                 selectTag.ra = {};
                 selectTag.ra.items = items; // save items for accept button
-                selectTag.setAttribute('class', 'map-search');
+                selectTag.setAttribute('class', 'map-select');
                 var option = document.createElement("option");
                 option.value = -1;
                 option.text = "Please select an item below";
+                option.setAttribute('selected', true);
                 selectTag.appendChild(option);
                 var i;
                 for (i = 0; i < items.length; i++) {
                     var item = items[i];
                     option = document.createElement("option");
-                    if (i == 0) {
-                        option.setAttribute('selected', true);
-                    }
                     option.value = i;
                     option.text = itemFormatFunction(item);
                     selectTag.appendChild(option);
                 }
             }
         }
-
-
     };
 
     this.getPredefinedSearchModal = function (e, title, context, record, url) {
@@ -314,7 +310,7 @@ feeds = function () {
         formDiv.appendChild(label);
         var inputField = document.createElement('input');
         inputField.setAttribute('type', 'text');
-        inputField.setAttribute('class', 'map-search');
+        inputField.setAttribute('class', 'map-select');
         inputField.setAttribute('placeholder', 'Enter name');
         formDiv.appendChild(inputField);
 
@@ -344,22 +340,29 @@ feeds = function () {
         searchBtn.ra.selectDiv = selectDiv;
         searchBtn.ra.acceptBtn = acceptBtn;
         searchBtn.ra.selectTag = selectTag;
-        //    selectTag.ra=searchBtn.ra;
+        inputField.addEventListener("keyup", function (event) {
+            if (event.key === "Enter") {
+                // click search button
+                searchBtn.dispatchEvent(new Event("click"));
+            }
+        });
         searchBtn.addEventListener("click", function (e) {
-            var target = e.target;
+            var target = e.currentTarget;
+             selectTitle.textContent = 'Searching ...';
             target.ra.feedhelper.getPossibleRecords(e, url);
         });
         searchBtn.addEventListener("records", function (e) {
             var feed = e.target.ra.feedhelper;
-            //   alert("mapLocations " + e.target.tagName); // Hello from H1
             feed.setUpSelectTag(selectTitle, selectTag, e.error, e.data, record);
         });
-        selectTag.addEventListener("click", function (e) {
+        acceptBtn.addEventListener("click", function (e) {
             var items = selectTag.ra.items;
             var item = items[selectTag.value];
             //  alert("accept" + item.display_name);
             let event = new Event("recordfound", {bubbles: true}); // (2)
             event.ra = {};
+            item.latitude=parseFloat(item.latitude); // in case it is char
+            item.longitude=parseFloat(item.longitude);
             event.ra.item = item;
             findButton.dispatchEvent(event);
             var closeBtn = document.getElementById("btnClose");
