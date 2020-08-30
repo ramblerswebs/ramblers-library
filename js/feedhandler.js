@@ -228,7 +228,7 @@ feeds = function () {
                 if (items.length > 10) {
                     selectTag.setAttribute('size', 10);
                 } else {
-                    selectTag.setAttribute('size', items.length + 1);
+                    selectTag.setAttribute('size', items.length + 2);
                 }
                 selectTag.ra = {};
                 selectTag.ra.items = items; // save items for accept button
@@ -276,7 +276,7 @@ feeds = function () {
                 if (items.length > 21) {
                     selectTag.setAttribute('size', 21);
                 } else {
-                    selectTag.setAttribute('size', items.length + 1);
+                    selectTag.setAttribute('size', items.length + 2);
                 }
                 selectTag.ra = {};
                 selectTag.ra.items = items; // save items for accept button
@@ -348,8 +348,8 @@ feeds = function () {
         });
         searchBtn.addEventListener("click", function (e) {
             var target = e.currentTarget;
-             selectTitle.textContent = 'Searching ...';
-            target.ra.feedhelper.getPossibleRecords(e, url);
+            selectTitle.textContent = 'Searching ...';
+            target.ra.feedhelper.getPossibleRecords(target, url);
         });
         searchBtn.addEventListener("records", function (e) {
             var feed = e.target.ra.feedhelper;
@@ -361,8 +361,8 @@ feeds = function () {
             //  alert("accept" + item.display_name);
             let event = new Event("recordfound", {bubbles: true}); // (2)
             event.ra = {};
-            item.latitude=parseFloat(item.latitude); // in case it is char
-            item.longitude=parseFloat(item.longitude);
+            item.latitude = parseFloat(item.latitude); // in case it is char
+            item.longitude = parseFloat(item.longitude);
             event.ra.item = item;
             findButton.dispatchEvent(event);
             var closeBtn = document.getElementById("btnClose");
@@ -384,10 +384,9 @@ feeds = function () {
             }
         });
     };
-    this.getPossibleRecords = function (e, urlbase) { // called via an event on input field
-        var inputField = e.target;
-        var input = inputField.value;
-        var url = urlbase + input;
+    this.getPossibleRecords = function (searchBtn, urlbase) {
+        var inputField = searchBtn.ra.inputField;
+        var url = urlbase + inputField.value;
         getJSON(url, function (err, result) {
             let event = new Event("records", {});
             event.error = err;
@@ -396,7 +395,7 @@ feeds = function () {
             } else {
                 event.data = [];
             }
-            inputField.dispatchEvent(event);
+            searchBtn.dispatchEvent(event);
         });
     };
     this.searchButton = function (tag) {
