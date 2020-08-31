@@ -235,7 +235,7 @@ feeds = function () {
                 selectTag.setAttribute('class', 'map-select');
                 var option = document.createElement("option");
                 option.value = -1;
-                option.text = "Please select an item below";
+                option.text = "Please select an item from the list";
                 option.setAttribute('selected', true);
                 selectTag.appendChild(option);
                 var i;
@@ -283,7 +283,7 @@ feeds = function () {
                 selectTag.setAttribute('class', 'map-select');
                 var option = document.createElement("option");
                 option.value = -1;
-                option.text = "Please select an item below";
+                option.text = "Please select an item from the list";
                 option.setAttribute('selected', true);
                 selectTag.appendChild(option);
                 var i;
