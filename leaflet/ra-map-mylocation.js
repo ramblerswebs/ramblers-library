@@ -16,7 +16,7 @@ L.Control.MyLocation = L.Control.extend({
 
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(this.link, 'click', this._displaymylocationEvent, this);
-
+        this.storeCurrentLocation();
         return container;
     },
     _createIcon: function (container) {
@@ -24,6 +24,26 @@ L.Control.MyLocation = L.Control.extend({
         this.link.id = "leaflet-mylocation";
         this.link.title = this.options.title;
         return this.link;
+    },
+    storeCurrentLocation: function () {
+        var self = ramblersMap.MyLocation;
+        self.currentLocation = {
+            lat: 51.48795,
+            lng: -0.12370};
+        ramblersMap.map.on('accuratepositionprogress', function (e) {
+            self.currentLocation = e.latlng;
+        });
+        ramblersMap.map.on('accuratepositionfound', function (e) {
+            self.currentLocation = e.latlng;
+        });
+        ramblersMap.map.on('accuratepositionerror', function (e) {
+            console.log(e.message);
+        });
+
+        ramblersMap.map.findAccuratePosition({
+            maxWait: 5000, // defaults to 10000
+            desiredAccuracy: 30 // defaults to 20
+        });
     },
     _displaymylocationEvent: function (evt) {
         var self = ramblersMap.MyLocation;
@@ -45,9 +65,12 @@ L.Control.MyLocation = L.Control.extend({
     _displaymylocation: function (e) {
 
         function displayLocation(e) {
+
             ramblersMap.map.panTo(e.latlng);
             var popup = "Current location<br/>Accuracy is " + Math.ceil(e.accuracy) + " metres";
             var options = {color: '#0044DD'};
+            var self = ramblersMap.MyLocation;
+            self.currentLocation = e.latlng;
             var circleMarker = new L.CircleMarker(e.latlng, options);
             ramblersMap.map.myLocationLayer.addLayer(circleMarker);
             circleMarker.bindPopup(popup);
@@ -64,7 +87,7 @@ L.Control.MyLocation = L.Control.extend({
         });
         ramblersMap.map.on('accuratepositionerror', function (e) {
             console.log(e.message);
-             ramblersMap.MyLocation._closeMyLocation();
+            ramblersMap.MyLocation._closeMyLocation();
         });
 
         ramblersMap.map.findAccuratePosition({

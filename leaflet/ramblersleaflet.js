@@ -373,8 +373,8 @@ function streetmap($gr) {
     window.open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 function directions($lat, $long) {
-//  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
-    var page = "https://maps.google.com?saddr=Current+Location&daddr=" + $lat.toString() + "," + $long.toString();
+    var myloc = ramblersMap.MyLocation.currentLocation;
+    var page = "https://maps.google.com?saddr=" + myloc.lat.toString() + "," + myloc.lng.toString() + "&daddr=" + $lat.toString() + "," + $long.toString();
     window.open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 function googlemap($lat, $long) {
@@ -506,7 +506,7 @@ function getWhat3Words(lat, lng, id, place) {
         if (err !== null || tag === null) {
             tag.innerHTML = "Error accessing What3Words: " + err + "<br/>";
         } else {
-           var out = '<a class="w3w" href="https://what3words.com/about-us/" target="_blank">What3Words: </a>' + items.words + '<br/>';
+            var out = '<a class="w3w" href="https://what3words.com/about-us/" target="_blank">What3Words: </a>' + items.words + '<br/>';
             if (place) {
                 out += '<b>Nearest Place: </b>' + items.nearestPlace + '<br/>';
             }

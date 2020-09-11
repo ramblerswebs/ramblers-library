@@ -121,6 +121,21 @@ L.Control.RA_Map_Tools = L.Control.extend({
     },
     addHelp: function (tag) {
         if (ramblersMap.maphelppage !== '') {
+            var helpcomment = document.createElement('div');
+            helpcomment.setAttribute('class', 'help map-tools');
+            helpcomment.textContent = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via ";
+            tag.appendChild(helpcomment);
+
+            var helplink = document.createElement('a');
+            helplink.setAttribute('href', 'https://maphelp.ramblers-webs.org.uk/map-help-contact.html');
+            helplink.setAttribute('target', '_blank');
+            helplink.textContent = "Ramblers-webs mapping help contact";
+            helpcomment.appendChild(helplink);
+
+            var helphdg = document.createElement('h4');
+            helphdg.textContent = "Link to Mapping Help";
+            tag.appendChild(helphdg);
+
             var help = document.createElement('button');
             help.setAttribute('class', 'help map-tools');
             help.textContent = "Mapping Help";
