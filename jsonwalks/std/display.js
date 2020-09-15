@@ -1206,7 +1206,7 @@ function addLocationInfo($title, $location, $detailsPageUrl) {
     if ($location.exact) {
         $note = "Click Google Directions to see map and directions from your current location";
         $out = "<div class='place'><b>" + $title + " Place</b>:<abbr title='" + $note + "'> " + $location.description + " ";
-        $out += getDirectionsMap($location, "Google directions");
+        $out += addDirectionsMap($location, "Google directions");
         $out += "</abbr></div>";
         if ($location.time !== "") {
             $out += RHtmlwithDiv("time", "<b>Time</b>: " + $location.timeHHMMshort);
@@ -1358,8 +1358,7 @@ function addWalkMarker($walk) {
     $details = "<div class='" + $class + "'>" + $grade + $url + "</div>";
     $map = "<a href=&quot;javascript:streetmap('" + $gr + "')&quot; >[OS Map]</a>";
     $directions = "<a href=&quot;javascript:directions(" + $lat + "," + $long + ")&quot; >[Directions]</a>";
-    //  var $directions = "<a href='https://maps.google.com?saddr=Current+Location&daddr=" + $lat + "," + $long + "' target='_blank'>[Directions]</a>";
-    $popup = $details + $map + $directions;
+     $popup = $details + $map + $directions;
     // $popup = str_replace('"', "&quot;", $popup);
     addMarker($popup, $lat, $long, $icon);
     return;
@@ -1424,18 +1423,19 @@ function addPagination(no) {
     $div += " </div>";
     return $div;
 }
-function getDirectionsMap($location, $text) {
+function addDirectionsMap($location, $text) {
     var $this = $location;
-    var $code, $out;
+    var $loc, $out;
     if ($this.exact) {
-        $code = "https://www.google.com/maps/dir/Current+Location/[lat],[long]";
-        $code = $code.replace("[lat]", $this.latitude);
-        $code = $code.replace("[long]", $this.longitude);
-        $out = "<span class='mappopup' onClick=\"javascript:window.open('" + $code + "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" + $text + "]</span>";
+        $loc = "[lat],[long]";
+        $loc = $loc.replace("[lat]", $this.latitude);
+        $loc = $loc.replace("[long]", $this.longitude);
+        $out = "<span class='mappopup' onClick=\"javascript:directions(" + $loc + ")\" >[" + $text + "]</span>";
         return $out;
     } else {
         return "";
     }
+
 }
 function getOSMap($location, $text) {
     var $this = $location;

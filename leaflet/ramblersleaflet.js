@@ -375,6 +375,7 @@ function streetmap($gr) {
 function directions($lat, $long) {
     var myloc = ramblersMap.MyLocation.currentLocation;
     var page = "https://maps.google.com?saddr=" + myloc.lat.toString() + "," + myloc.lng.toString() + "&daddr=" + $lat.toString() + "," + $long.toString();
+    console.log(page);
     window.open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 function googlemap($lat, $long) {

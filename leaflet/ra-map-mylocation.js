@@ -47,6 +47,7 @@ L.Control.MyLocation = L.Control.extend({
     },
     _displaymylocationEvent: function (evt) {
         var self = ramblersMap.MyLocation;
+        ramblersMap.map.myLocationLayer.clearLayers();
         if (self.active) {
             self.link.classList.remove("active");
         } else {
