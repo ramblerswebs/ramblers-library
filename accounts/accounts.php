@@ -91,7 +91,6 @@ class RAccounts {
         $map->options->mouseposition = true;
         $map->options->postcodes = true;
         $map->options->fitbounds = true;
-        $map->options->displayElevation = false;
         $map->options->cluster = true;
         $map->options->draw = false;
         $map->options->print = true;

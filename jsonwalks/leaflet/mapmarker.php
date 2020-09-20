@@ -17,7 +17,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $this->map->help_page = "https://maphelp.ramblers-webs.org.uk/";
         $options = $this->map->options;
         $options->cluster = true;
-        $options->displayElevation = true;
+       // $options->displayElevation = true;
         $options->fullscreen = true;
         $options->search = true;
         $options->locationsearch = true;

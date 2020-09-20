@@ -62,6 +62,9 @@ L.Control.MyLocation = L.Control.extend({
         var self = ramblersMap.MyLocation;
         self.link.classList.remove("active");
         self.active = false;
+        ramblersMap.map.off('accuratepositionprogress');
+        ramblersMap.map.off('accuratepositionfound');
+        ramblersMap.map.off('accuratepositionerror');
     },
     _displaymylocation: function (e) {
 

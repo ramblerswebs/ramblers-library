@@ -83,7 +83,7 @@ function addDrawControl(lat, long, zoom) {
             polyline: {
                 metric: true,
                 shapeOptions: {
-                    color: '#AAAAAA',
+                    color: '#007A87',
                     opacity: 1
                 }
             }

@@ -76,7 +76,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $this->map->leafletLoad = false;
         $options = $this->map->options;
         $options->cluster = true;
-        $options->displayElevation = true;
+        $options->displayElevation = false;
         $options->fullscreen = true;
         $options->search = true;
         $options->locationsearch = true;
