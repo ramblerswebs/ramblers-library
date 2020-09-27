@@ -1281,8 +1281,13 @@ function RHtmlwithDiv($class, $text) {
     return $out;
 }
 function getShortTime($text) {
-    var d = new Date($text.date);
-    return d.toLocaleTimeString();
+      var d = $text.date;
+      if (d.length>17){
+          return d.substr(11, 5);
+      }
+    return "???";
+  //  var d = new Date($text.date);
+  //  return d.toLocaleTimeString();
 }
 function getDate($text) {
 // note Mac does not handle yyyy-mm-dd, change to yyyy/mm/dd    
