@@ -1281,13 +1281,13 @@ function RHtmlwithDiv($class, $text) {
     return $out;
 }
 function getShortTime($text) {
-      var d = $text.date;
-      if (d.length>17){
-          return d.substr(11, 5);
-      }
+    var d = $text.date;
+    if (d.length > 17) {
+        return d.substr(11, 5);
+    }
     return "???";
-  //  var d = new Date($text.date);
-  //  return d.toLocaleTimeString();
+    //  var d = new Date($text.date);
+    //  return d.toLocaleTimeString();
 }
 function getDate($text) {
 // note Mac does not handle yyyy-mm-dd, change to yyyy/mm/dd    
@@ -1363,7 +1363,7 @@ function addWalkMarker($walk) {
     $details = "<div class='" + $class + "'>" + $grade + $url + "</div>";
     $map = "<a href=&quot;javascript:streetmap('" + $gr + "')&quot; >[OS Map]</a>";
     $directions = "<a href=&quot;javascript:directions(" + $lat + "," + $long + ")&quot; >[Directions]</a>";
-     $popup = $details + $map + $directions;
+    $popup = $details + $map + $directions;
     // $popup = str_replace('"', "&quot;", $popup);
     addMarker($popup, $lat, $long, $icon);
     return;
