@@ -76,9 +76,9 @@ class RLeafletMap {
         if ($options->cluster) {
             echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
         }
-         if ($options->draw) {
-            echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
-        }
+//         if ($options->draw) {
+//            echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
+//        }
         $this->addScriptsandStyles($options);
         echo "<div class='map-container'>" . PHP_EOL;
   //      echo "<div id='ra-error-text'></div> " . PHP_EOL;

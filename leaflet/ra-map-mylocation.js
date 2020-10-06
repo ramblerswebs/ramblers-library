@@ -27,6 +27,7 @@ L.Control.MyLocation = L.Control.extend({
     },
     storeCurrentLocation: function () {
         var self = ramblersMap.MyLocation;
+        self.locationfound=false;
         self.currentLocation = {
             lat: 51.48795,
             lng: -0.12370};
@@ -35,8 +36,10 @@ L.Control.MyLocation = L.Control.extend({
         });
         ramblersMap.map.on('accuratepositionfound', function (e) {
             self.currentLocation = e.latlng;
+            self.locationfound=true;
         });
         ramblersMap.map.on('accuratepositionerror', function (e) {
+            ramblersMap.MyLocation.locationfound=false;
             console.log(e.message);
         });
 
@@ -86,11 +89,13 @@ L.Control.MyLocation = L.Control.extend({
         });
         ramblersMap.map.on('accuratepositionfound', function (e) {
             ramblersMap.map.myLocationLayer.clearLayers();
+            ramblersMap.MyLocation.locationfound=true;
             displayLocation(e);
             ramblersMap.MyLocation._closeMyLocation();
         });
         ramblersMap.map.on('accuratepositionerror', function (e) {
             console.log(e.message);
+            ramblersMap.MyLocation.locationfound=false;
             ramblersMap.MyLocation._closeMyLocation();
         });
 

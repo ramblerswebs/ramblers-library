@@ -70,16 +70,22 @@ L.Control.PostcodeStatus = L.Control.extend({
         L.DomEvent.disableClickPropagation(this._container);
         this._map.on('zoomend', this._onZoomEnd, this);
         this._map.on('contextmenu', this._onRightClick, this);
-        var options = ['<option value="details">Location Details</option>',
-            '<option value="groups">nearby Groups</option>',
-            '<option value="postcode">nearby Postcodes</option>',
-            '<option value="starting">nearby Starting Places</option>',
-            '<option value="parking">nearby Parking</option>',
-            '<option value="bus_stops">nearby Bus Stops</option>',
-            '<option value="cafes">nearby Cafes</option>',
-            '<option value="pubs">nearby Public Houses</option>',
-            '<option value="toilets">nearby Toilets</option>'];
-        var text = 'Right click/tap hold to see <select id="ra-mouse-options">';
+        var options = ['<optgroup label="General Information">',
+            '<option value="details">Right click/tap hold to see Location Details</option>',
+            '<option value="postcode">Right click/tap hold to see nearby Postcodes</option>',
+           '</optgroup>',
+           '<optgroup label="Ramblers Information">',
+            '<option value="groups">Right click/tap hold to see nearby Ramblers Groups</option>',
+            '<option value="starting">Right click/tap hold to see nearby Starting Places</option>',
+            '</optgroup>',
+            '<optgroup label="Open Street Map information">',
+            '<option value="parking">Right click/tap hold to see nearby Parking</option>',
+            '<option value="bus_stops">Right click/tap hold to see nearby Bus Stops</option>',
+            '<option value="cafes">Right click/tap hold to see nearby Cafes</option>',
+            '<option value="pubs">Right click/tap hold to see nearby Public Houses</option>',
+            '<option value="toilets">Right click/tap hold to see nearby Toilets</option>',
+            '</optgroup>'];
+        var text = '<select id="ra-mouse-options">';
         var osmOptions = [];
         osmOptions["cafes"] = {};
         osmOptions["cafes"] = {tag: "amenity", type: "cafe", title: "Cafes", single: "Cafe"};
@@ -269,10 +275,10 @@ L.Control.PostcodeStatus = L.Control.extend({
             } else {
                 var self = ramblersMap.PostcodeStatus;
                 if (items.length === 0) {
-                    var closest = "No Ramblers Groups found within "+self.displayOptions.groups.distance+"km";
+                    var closest = "No Ramblers Groups found within " + self.displayOptions.groups.distance + "km";
                     point.getPopup().setContent(closest);
                 } else {
-                    msg = items.length + " Ramblers Groups found within "+self.displayOptions.groups.distance+"km";
+                    msg = items.length + " Ramblers Groups found within " + self.displayOptions.groups.distance + "km";
                     point.getPopup().setContent(msg);
                     point.openPopup();
                     for (i = 0; i < items.length; i++) {
@@ -490,7 +496,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         return bounds.getSouth() + "," + bounds.getWest() + "," + bounds.getNorth() + "," + bounds.getEast();
     },
     getRadius: function () {
-        return this.displayOptions.postcodes.distance * 1000;
+        return this.displayOptions.osm.distance * 1000;
     },
     _clearBoth: function () {
         ramblersMap.PostcodeStatus._map.mouseLayer.clearLayers();

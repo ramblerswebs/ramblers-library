@@ -10,25 +10,16 @@ feeds = function () {
         label.textContent = 'Location Search  ';
         formDiv.appendChild(label);
 
+        var ukField = {checked: true};
+        this.addYesNo(formDiv, 'divClass', "UK Only", ukField, 'checked');
+        
         var inputField = document.createElement('input');
         inputField.setAttribute('type', 'text');
         inputField.setAttribute('class', 'map-select');
         inputField.setAttribute('placeholder', 'Enter place name or grid reference');
         inputField.textContent = 'Location Search  ';
         formDiv.appendChild(inputField);
-
-        var ukField = document.createElement('input');
-        ukField.setAttribute('type', 'checkbox');
-        ukField.setAttribute('id', 'ukonly');
-        ukField.setAttribute('checked', true);
-        formDiv.appendChild(ukField);
-
-        var ukLabel = document.createElement('label');
-        ukLabel.setAttribute('for', 'ukonly');
-        ukLabel.setAttribute('class', 'map-select');
-        ukLabel.textContent = "Uk Only";
-        formDiv.appendChild(ukLabel);
-
+     
         var searchBtn = this.searchButton(formDiv);
 
         var comment1 = document.createElement('p');
@@ -111,6 +102,7 @@ feeds = function () {
                 acceptBtn.dispatchEvent(new Event("click"));
             }
         });
+
     };
     this.getSearchMapModal = function (e) {
         var eventTag = e.target;
@@ -409,7 +401,51 @@ feeds = function () {
         btn.appendChild(icon);
         return btn;
     };
+    this.addYesNo = function (tag, divClass, label, raobject, property) {
+        var itemDiv = document.createElement('div');
+        itemDiv.setAttribute('class', divClass);
+        tag.appendChild(itemDiv);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        _label.style.display = "inline";
+        var inputTag = document.createElement('button');
+        inputTag.setAttribute('class', 'small link-button white');
+        inputTag.style.display = "inline";
+        inputTag.style.marginLeft = "10px";
+        if (raobject[property]) {
+            inputTag.textContent = "Yes";
+            inputTag.classList.add("button-p0555");
+            inputTag.classList.remove("button-p0186");
+        } else {
+            inputTag.textContent = "No";
+            inputTag.classList.add("button-p0186");
+            inputTag.classList.remove("button-p0555");
+        }
+        inputTag.raobject = raobject;
+        inputTag.property = property;
+
+        inputTag.addEventListener("click", function (e) {
+            inputTag.raobject[inputTag.property] = !inputTag.raobject[inputTag.property];
+
+            if (inputTag.raobject[property]) {
+                inputTag.textContent = "Yes";
+                inputTag.classList.add("button-p0555");
+                inputTag.classList.remove("button-p0186");
+            } else {
+                inputTag.textContent = "No";
+                inputTag.classList.add("button-p0186");
+                inputTag.classList.remove("button-p0555");
+            }
+            let event = new Event("yesnochange", {bubbles: true}); // (2)
+            inputTag.dispatchEvent(event);
+        });
+        itemDiv.appendChild(_label);
+        itemDiv.appendChild(inputTag);
+
+        return inputTag;
+    };
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
+
 };

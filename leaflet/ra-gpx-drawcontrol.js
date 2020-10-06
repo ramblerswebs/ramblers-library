@@ -308,13 +308,15 @@ function addDrawControl(lat, long, zoom) {
     disableMapMoveDrawing = function () {
         ramblersMap.map.off('mousemove', mapMoveDrawingMouseMove, this);
     };
+    listDrawnItems();
 }
 function listDrawnItems() {
     var hasItems = ramblersMap.drawnItems.getLayers().length !== 0;
     ramblersMap.elevationcontrol.clear();
     var text = "";
     if (!hasItems) {
-        text = '<p>No routes or markers defined</p>';
+       text = '<p><b>Plot a walking Route:</b> No routes or markers defined ';
+       text += '<br/>If you need help to get started please visit our <b><a href="'+ramblersMap.maphelppage+'" target="_blank">help site</a></b></p>';
     } else {
         text += "<table>";
         text += "<tr><th>Segment</th><th>Length</th><th>Elevation Gain</th><th>Est Time</th><th>Number of points</th></tr>";

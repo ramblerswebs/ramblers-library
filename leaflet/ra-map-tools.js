@@ -161,16 +161,9 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var title = document.createElement('h4');
         title.textContent = 'Ordnance Survey Grid';
         tag.appendChild(title);
-        var label = document.createElement('label');
-        label.textContent = "Display OS Grid at 100km, 10km or 1km dependant on zoom level";
-        tag.appendChild(label);
-        var osGrid = document.createElement('input');
-        osGrid.setAttribute('type', 'checkbox');
-        osGrid.setAttribute('value', 'osgrid');
-        tag.appendChild(osGrid);
-        if (ramblersMap.OSGrid.display) {
-            osGrid.setAttribute('checked', true);
-        }
+
+        var osGrid = this.addYesNo(tag, 'divClass', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", ramblersMap.OSGrid, 'display');
+
         var color = ramblersMap.RA_Map_Tools.options.osgrid.color;
         label = document.createElement('label');
         label.textContent = "OS Grid line colour";
@@ -187,15 +180,30 @@ L.Control.RA_Map_Tools = L.Control.extend({
         this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.RA_Map_Tools.options.osgrid, 'opacity', .1, 1, .01);
         var example = this.addExampleLine(tag, "300px", "Example: ");
         this.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.options.osgrid);
+        title = document.createElement('hr');
+        tag.appendChild(title);
+        title = document.createElement('h4');
+        title.textContent = 'Mouse Operation';
+        tag.appendChild(title);
+        title = document.createElement('p');
+        title.textContent = 'As you zoom in, the mouse can display a 100m or a 10m square showing the area covered by a 6 or 8 figure grid reference.';
+        tag.appendChild(title);
+        var mouseGrid = this.addYesNo(tag, 'divClass', "Display 10m/100m grid reference squares", ramblersMap, 'displayMouseGridSquare');
+
         tag.addEventListener("change", function (e) {
             self.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.options.osgrid);
             ramblersMap.OSGrid.basicgrid = false;
             ramblersMap.RA_Map_Tools.displayOSGrid();
         });
-        osGrid.addEventListener("change", function (e) {
-            ramblersMap.OSGrid.display = !ramblersMap.OSGrid.display;
+        osGrid.addEventListener("yesnochange", function (e) {
+            //  ramblersMap.OSGrid.display = !ramblersMap.OSGrid.display;
             ramblersMap.OSGrid.basicgrid = false;
             ramblersMap.RA_Map_Tools.displayOSGrid();
+        });
+        mouseGrid.addEventListener("yesnochange", function (e) {
+            //  ramblersMap.OSGrid.display = !ramblersMap.OSGrid.display;
+            //  ramblersMap.OSGrid.basicgrid = false;
+            //  ramblersMap.RA_Map_Tools.displayOSGrid();
         });
         osGridColor.addEventListener("change", function (e) {
             ramblersMap.RA_Map_Tools.options.osgrid.color = osGridColor.value;
@@ -327,7 +335,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
         comment.textContent = 'This option affects the display of parking, bus stops, cafes, public housea and toilets.';
         tag.appendChild(comment);
         this.addNumber(tag, 'divClass', 'Display items within %n km', mouse.displayOptions.osm, 'distance', 0.5, 5, 0.5);
-        //    this.addNumber(tag, 'divClass', 'Number', mouse.displayOptions.postcodes, 'distance', 1, 50, 1);
     },
     displayOSGrid: function () {
         if (!ramblersMap.OSGrid.display) {
@@ -472,6 +479,49 @@ L.Control.RA_Map_Tools = L.Control.extend({
         });
         itemDiv.appendChild(inputTag);
         itemDiv.appendChild(_label);
+        return inputTag;
+    },
+    addYesNo: function (tag, divClass, label, raobject, property) {
+        var itemDiv = document.createElement('div');
+        itemDiv.setAttribute('class', divClass);
+        tag.appendChild(itemDiv);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        _label.style.display = "inline";
+        var inputTag = document.createElement('button');
+        inputTag.setAttribute('class', 'small link-button white');
+        inputTag.style.display = "inline";
+        inputTag.style.marginLeft = "10px";
+        if (raobject[property]) {
+            inputTag.textContent = "Yes";
+            inputTag.classList.add("button-p0555");
+            inputTag.classList.remove("button-p0186");
+        } else {
+            inputTag.textContent = "No";
+            inputTag.classList.add("button-p0186");
+            inputTag.classList.remove("button-p0555");
+        }
+        inputTag.raobject = raobject;
+        inputTag.property = property;
+
+        inputTag.addEventListener("click", function (e) {
+            inputTag.raobject[inputTag.property] = !inputTag.raobject[inputTag.property];
+
+            if (inputTag.raobject[property]) {
+                inputTag.textContent = "Yes";
+                inputTag.classList.add("button-p0555");
+                inputTag.classList.remove("button-p0186");
+            } else {
+                inputTag.textContent = "No";
+                inputTag.classList.add("button-p0186");
+                inputTag.classList.remove("button-p0555");
+            }
+            let event = new Event("yesnochange", {bubbles: true}); // (2)
+            inputTag.dispatchEvent(event);
+        });
+        itemDiv.appendChild(_label);
+        itemDiv.appendChild(inputTag);
+
         return inputTag;
     }
 

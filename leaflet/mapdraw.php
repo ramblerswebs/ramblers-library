@@ -22,6 +22,9 @@ class RLeafletMapdraw extends RLeafletMap {
     }
 
     public function display() {
+        echo "<div id='ra-map-container'>";
+        echo "<div id='ra-map-details'><p></div>";
+ //       echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
         $this->help_page = "https://maphelp.ramblers-webs.org.uk/draw-walking-route.html";
         $this->options->fullscreen = true;
         $this->options->search = true;
@@ -37,7 +40,10 @@ class RLeafletMapdraw extends RLeafletMap {
         $this->options->ramblersPlaces = true;
         $text = "addDrawControl($this->lat,$this->long,$this->zoom)";
         parent::addContent($text);
+
+
         parent::display();
+        echo "</div>";
         echo "<br/>";
     }
 
