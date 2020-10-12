@@ -13,7 +13,7 @@
  */
 class RWatchfulWatchful {
 
-    private $watchful_url = "https://app.watchful.li/api/v1/";
+    private $watchful_url = "https://app.watchful.net/api/v1/";
     Private $currentDate;
     private $domains;
 
