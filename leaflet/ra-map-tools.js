@@ -9,6 +9,9 @@ L.Control.RA_Map_Tools = L.Control.extend({
             weight: 2,
             opacity: 0.5}
     },
+    osMapOptions: {
+        display: 'none'
+    },
     drawoptions: {
         color: '#782327',
         weight: 3,
@@ -17,8 +20,9 @@ L.Control.RA_Map_Tools = L.Control.extend({
     onAdd: function (map) {
         this._map = map;
         ramblersMap.RA_Map_Tools = this;
+        ramblersMap.map.osMapLayer = L.featureGroup([]).addTo(ramblersMap.map);
         ramblersMap.OSGrid = {};
-        ramblersMap.OSGrid.display = true;
+        ramblersMap.OSGrid.display = false;
         ramblersMap.OSGrid.basicgrid = false;
         ramblersMap.OSGrid.layer = L.layerGroup().addTo(ramblersMap.map);
         // OS Grid Display
@@ -58,6 +62,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         list.setAttribute('class', 'nav nav-tabs tabs-stacked ');
         container.appendChild(list);
         self.addTabItem(container, list, 'Search', 'search');
+        self.addTabItem(container, list, 'Ordnance Survey Maps', 'osmaps');
         self.addTabItem(container, list, 'OS Grid', 'grid');
         self.addTabItem(container, list, 'Mouse Right Click', 'mouse');
         if (ramblersMap.options.draw) {
@@ -69,6 +74,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         content.setAttribute('class', 'tab-content');
         container.appendChild(content);
         var searchDiv = self.addTabContentItem(content, "search", true);
+        var osmapsDiv = self.addTabContentItem(content, "osmaps", false);
         var osgridDiv = self.addTabContentItem(content, "grid", false);
         var mouseDiv = self.addTabContentItem(content, "mouse", false);
         if (ramblersMap.options.draw) {
@@ -76,6 +82,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         var helpDiv = self.addTabContentItem(content, "help", false);
         self.addSearch(searchDiv);
+        self.addOSMaps(osmapsDiv);
         self.addOSGrid(osgridDiv);
         self.addMouse(mouseDiv);
         if (ramblersMap.options.draw) {
@@ -155,6 +162,58 @@ L.Control.RA_Map_Tools = L.Control.extend({
                 document.getElementById("ra-error-text").innerHTML = "Info: Zoom out to see Ordnance Survey Maps";
             }
         }
+    },
+    addOSMaps: function (tag) {
+        ramblersMap.map.osMapLayer.clearLayers();
+        var title = document.createElement('h4');
+        title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
+        tag.appendChild(title);
+
+        var select = document.createElement('select');
+        select.style.width = '350px';
+        tag.appendChild(select);
+        var option0 = document.createElement('option');
+        option0.textContent = "Do not display Ordnance Survey map outlines";
+        option0.setAttribute('value', 'none');
+        select.appendChild(option0);
+
+        var option1 = document.createElement('option');
+        option1.textContent = "Display outline of all Explorer 25K to 1 Maps";
+        option1.setAttribute('value', '25K');
+        select.appendChild(option1);
+
+        var option2 = document.createElement('option');
+        option2.textContent = "Display outline of all Landranger 50K to 1 Maps";
+        option2.setAttribute('value', '50K');
+        select.appendChild(option2);
+        var comment = document.createElement('div');
+        comment.innerHTML = '<br/><p>Display the areas covered by Ordnance Survey Landranger or Explorer Maps.</p>';
+        comment.innerHTML += '<p> Please note that this information is unofficial and may be incorrect. Please check before buying a map.</p>';
+        comment.innerHTML += '<p>If you notice any errors then do contact us via the help option on the left.</p>';
+        tag.appendChild(comment);
+        select.addEventListener("change", function (e) {
+            var option = e.target.value;
+            if (option == 'none') {
+                ramblersMap.map.osMapLayer.clearLayers();
+                return;
+            }
+            var url = "https://osmaps.theramblers.org.uk/index.php?mapscale=" + option;
+            getJSON(url, function (err, items) {
+                if (err !== null) {
+                    var msg = "Error: Something went wrong: " + err;
+
+                } else {
+                    if (items.length !== 0) {
+                        for (i = 0; i < items.length; i++) {
+                            var item = items[i];
+                            ramblersMap.PostcodeStatus.displayOSMap(item, ramblersMap.map.osMapLayer);
+                        }
+                    }
+                    //   var bounds = ramblersMap.map.osMapLayer.getBounds();
+                    //   ramblersMap.map.osMapLayer.fitBounds(bounds, {padding: [150, 150]});
+                }
+            });
+        });
     },
     addOSGrid: function (tag) {
         var self = this;

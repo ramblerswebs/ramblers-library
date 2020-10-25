@@ -73,8 +73,9 @@ L.Control.PostcodeStatus = L.Control.extend({
         var options = ['<optgroup label="General Information">',
             '<option value="details">Right click/tap hold to see Location Details</option>',
             '<option value="postcode">Right click/tap hold to see nearby Postcodes</option>',
-           '</optgroup>',
-           '<optgroup label="Ramblers Information">',
+            '<option value="osmaps">Right click/tap hold to see relevant OS Maps</option>',
+            '</optgroup>',
+            '<optgroup label="Ramblers Information">',
             '<option value="groups">Right click/tap hold to see nearby Ramblers Groups</option>',
             '<option value="starting">Right click/tap hold to see nearby Starting Places</option>',
             '</optgroup>',
@@ -119,6 +120,9 @@ L.Control.PostcodeStatus = L.Control.extend({
                     break;
                 case "postcode":
                     this._displayPostcodes(e);
+                    break;
+                case "osmaps":
+                    this._displayOsMaps(e);
                     break;
                 case "starting":
                     if (this._placeslayer === null) {
@@ -246,6 +250,61 @@ L.Control.PostcodeStatus = L.Control.extend({
                 setTimeout(function (point) {
                     ramblersMap.PostcodeStatus._map.removeLayer(point);
                 }, 3000, point);
+            });
+        } else {
+            desc += "<br/>Outside OS Grid";
+            point.getPopup().setContent(desc);
+            point.openPopup();
+        }
+
+    },
+    _getPoint: function (east, north) {
+        var os = new OsGridRef(east, north);
+        var pt = OsGridRef.osGridToLatLon(os);
+        var latlng = L.latLng(pt.lat, pt.lon);
+        return latlng;
+    },
+    _displayOsMaps: function (e) {
+        var p = new LatLon(e.latlng.lat, e.latlng.lng);
+        var grid = OsGridRef.latLonToOsGrid(p);
+        var gr = grid.toString(6);
+        var i;
+        var desc = " ";
+        this._map.mouseLayer.clearLayers();
+        var msg = "   ";
+        var point = L.marker(p).bindPopup(msg);
+        this._map.mouseLayer.addLayer(point);
+        if (gr !== "") {
+            point.getPopup().setContent("<b>Searching for Ordnance Survey maps ...</b>");
+            point.openPopup();
+            // get postcodes around this point       
+            var east = Math.round(grid.easting);
+            var north = Math.round(grid.northing);
+            var url = "https://osmaps.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north;
+            getJSON(url, function (err, items) {
+                if (err !== null) {
+                    var msg = "Error: Something went wrong: " + err;
+                    point.getPopup().setContent(msg);
+                } else {
+                    var content = "No Ordnance Survey Maps found for this location";
+                    if (items.length !== 0) {
+                        content = "<b>" + items.length + " Ordnance Survey maps found</b>";
+                        for (i = 0; i < items.length; i++) {
+                            var item = items[i];
+                            content += "<h4>" + item.type + " " + item.number + "</h4>";
+                            content += "<p>" + item.title + "</p>";
+                            ramblersMap.PostcodeStatus.displayOSMap(item, ramblersMap.map.mouseLayer);
+                        }
+                    }
+
+                    point.getPopup().setContent(content);
+                    point.openPopup();
+                    var bounds = ramblersMap.PostcodeStatus._map.mouseLayer.getBounds();
+                    ramblersMap.PostcodeStatus._map.fitBounds(bounds, {padding: [150, 150]});
+                }
+                // setTimeout(function (point) {
+                //      ramblersMap.PostcodeStatus._map.removeLayer(point);
+                //  }, 5000, point);
             });
         } else {
             desc += "<br/>Outside OS Grid";
@@ -585,6 +644,27 @@ L.Control.PostcodeStatus = L.Control.extend({
             point.getPopup().setContent(desc);
             point.openPopup();
         }
+    },
+        displayOSMap: function (map, layer) {
+
+        for (j = 0; j < map.bounds.length; j++) {
+            var rect;
+            var bounds = map.bounds[j];
+            var pt1 = ramblersMap.PostcodeStatus._getPoint(bounds.eastingmin, bounds.northingmin);
+            var pt2 = ramblersMap.PostcodeStatus._getPoint(bounds.eastingmax, bounds.northingmax);
+            var area = [pt1, pt2];
+            if (map.scale==="50000"){
+                 rect = L.rectangle(area, {color: "#ff0000", weight: 1});
+            }else{
+                rect = L.rectangle(area, {color: "#ff7800", weight: 1});
+            }
+            
+            var msg = "<h4>" + map.type + " " + map.number + "</h4>";
+            msg += "<p>" + map.title + "</p>";
+            msg += "<p>Scale: " + map.scale.substr(0,2) + "K to 1</p>";
+            rect.bindPopup(msg);
+            layer.addLayer(rect);
+        }
     }
 });
 L.control.postcodeStatus = function (options) {
@@ -604,7 +684,8 @@ L.Control.UsageAgreement = L.Control.extend({
     onRemove: function (map) {
         map.off('zoomend', this._onZoomEnd);
         map.off('contextmenu', this._onClick);
-    }
+    },
+
 });
 L.control.usageAgreement = function (options) {
     return new L.Control.UsageAgreement(options);
