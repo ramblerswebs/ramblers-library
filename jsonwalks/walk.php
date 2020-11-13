@@ -28,7 +28,7 @@ class RJsonwalksWalk extends REvent {
     public $walkLeader = "";        // walk leader if isLeader is false
     public $contactName = "";       // contact name
     public $email = "";             // email address for contact
-    private $emailAddr = "";             // email address for contact
+   // private $emailAddr = "";             // email address for contact
     public $telephone1 = "";        // first telephone number of contact
     public $telephone2 = "";        // second telephone number of contact
 // meeting place
@@ -117,8 +117,11 @@ class RJsonwalksWalk extends REvent {
             if ($item->walkContact != null) {
                 $this->isLeader = $item->walkContact->isWalkLeader == "true";
                 $this->contactName = trim($item->walkContact->contact->displayName);
-                $this->emailAddr = $item->walkContact->contact->email;
-                $this->email = str_replace("@", " (at) ", $this->emailAddr);
+               // $this->emailAddr = $item->walkContact->contact->email;
+                if (strlen($item->walkContact->contact->email)>0){
+                    $this->email = "email available";
+                }
+               // $this->email = str_replace("@", " (at) ", $this->emailAddr);
                 $this->telephone1 = $item->walkContact->contact->telephone1;
                 $this->telephone2 = $item->walkContact->contact->telephone2;
             }
@@ -154,51 +157,36 @@ class RJsonwalksWalk extends REvent {
 // pocess meeting and starting locations
             $this->processPoints($item->points);
             $this->createExtraData();
-            $this->media=$this->getMedia($item);
+            $this->media = $this->getMedia($item);
         } catch (Exception $ex) {
             $this->errorFound = 2;
         }
     }
 
-    public function getEmail($option = 1, $withtitle = false) {
-        if ($withtitle) {
-            switch ($option) {
-                case 1:
-                    return "<b>Email: </b>" . $this->emailAddr;
-                    break;
-                case 2:
-                    $printOn = JRequest::getVar('print') == 1;
-                    $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
-                    return RHtml::withDiv("email", "<b>Email: </b><a href='" . $link . $this->id . "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
-                case 3:
+    public function getEmail($option = 0, $withtitle = false) {
+        switch ($option) {
+            case 0:
+                if (strlen($this->email) > 0) {
+                    return "...";
+                } else {
                     return "";
-                    break;
-                case 4:
-                    return "<b>Email: </b>" . str_replace("@", " (at) ", $this->emailAddr);
-                    break;
-                default:
-                    return "Invalid option specified for \$display->emailDisplayFormat";
-                    break;
-            }
-        } else {
-            switch ($option) {
-                case 1:
-                    return $this->emailAddr;
-                    break;
-                case 2:
-                    $printOn = JRequest::getVar('print') == 1;
-                    $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
-                    return "<a href='" . $link . $this->id . "' target='_blank'>Email contact via ramblers.org.uk</a>";
-                    break;
-                case 3:
-                    return "";
-                    break;
-                case 4:
-                    return str_replace("@", " (at) ", $this->emailAddr);
-                    break;
-                default:
-                    return "Invalid option specified for \$display->emailDisplayFormat";
-            }
+                }
+            case 1:
+            case 2:
+            case 4:
+                $printOn = JRequest::getVar('print') == 1;
+                $link = "https://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
+                if ($withtitle) {
+                     return RHtml::withDiv("email", "<b>Email: </b><a href='" . $link . $this->id . "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
+                 } else {
+                     return RHtml::withDiv("email", "<a href='" . $link . $this->id . "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
+                }
+            case 3:
+                return "";
+                break;
+            default:
+                return "Invalid option specified for \$display->emailDisplayFormat";
+                break;
         }
     }
 
@@ -275,17 +263,17 @@ class RJsonwalksWalk extends REvent {
     public function EventText() {
         $text = "";
         if ($this->hasMeetPlace) {
-            $text.=$this->meetLocation->timeHHMMshort;
+            $text .= $this->meetLocation->timeHHMMshort;
         }
         if ($this->startLocation->time != "") {
             if ($text != "") {
-                $text.="/";
+                $text .= "/";
             }
-            $text.=$this->startLocation->timeHHMMshort;
+            $text .= $this->startLocation->timeHHMMshort;
         }
         $text = $text . ", " . $this->title;
         if ($this->distanceMiles > 0) {
-            $text .=", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
+            $text .= ", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
         }
         return $text;
     }
@@ -298,12 +286,12 @@ class RJsonwalksWalk extends REvent {
     public function EventLinks() {
         $out = "";
         If ($this->hasMeetPlace) {
-            $out.="Meet:" . $this->meetLocation->getOSMap("OS Map");
-            $out.=" " . $this->meetLocation->getDirectionsMap("Directions");
+            $out .= "Meet:" . $this->meetLocation->getOSMap("OS Map");
+            $out .= " " . $this->meetLocation->getDirectionsMap("Directions");
         }
 
-        $out.=" Start:" . $this->startLocation->getOSMap("OS Map");
-        $out.=" " . $this->startLocation->getMap("Directions", "Area Map");
+        $out .= " Start:" . $this->startLocation->getOSMap("OS Map");
+        $out .= " " . $this->startLocation->getMap("Directions", "Area Map");
         return $out;
     }
 
@@ -314,7 +302,7 @@ class RJsonwalksWalk extends REvent {
     public function Event_ics($icsfile) {
         if ($this->hasMeetPlace) {
             $meetLocation = $this->meetLocation->getTextDescription();
-            $meetLocation .="; \\n";
+            $meetLocation .= "; \\n";
         } else {
             $meetLocation = "";
         }
@@ -327,13 +315,13 @@ class RJsonwalksWalk extends REvent {
             $after .= "Grade: " . $this->nationalGrade . "; \\n ";
         }
         $after .= $this->detailsPageUrl;
-        $after .="\\nNote: Finish times are very approximate!";
+        $after .= "\\nNote: Finish times are very approximate!";
         if ($this->additionalNotes != '') {
             $after .= "\\nNotes: " . strip_tags($this->additionalNotes);
         }
         $summary = $this->title;
         if ($this->distanceMiles > 0) {
-            $summary .=", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
+            $summary .= ", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
         }
         $now = new datetime();
         $icsfile->addRecord("BEGIN:VEVENT");
@@ -474,8 +462,8 @@ class RJsonwalksWalk extends REvent {
         $base = JURI::base();
         $folder = JURI::base(true);
         $url = $folder . "/libraries/ramblers/images/grades/";
-     //   if (strpos($base, 'localhost') !== false) {
-     //   }
+        //   if (strpos($base, 'localhost') !== false) {
+        //   }
 
         switch ($this->nationalGrade) {
             case "Easy Access":
@@ -508,13 +496,14 @@ class RJsonwalksWalk extends REvent {
         // search forward starting from end minus needle length characters
         return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
     }
-    private function getMedia($item){
-        $out=[];
-        if (count($item->media)>0){
-           foreach ($item->media as $value) {
-               $out[]=$value;
-           }
-        } 
+
+    private function getMedia($item) {
+        $out = [];
+        if (count($item->media) > 0) {
+            foreach ($item->media as $value) {
+                $out[] = $value;
+            }
+        }
         return $out;
     }
 

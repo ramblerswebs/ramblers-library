@@ -76,9 +76,7 @@ class RLeafletMap {
         if ($options->cluster) {
             echo "<div id='ra-cluster-progress'><div id='ra-cluster-progress-bar'></div></div> " . PHP_EOL;
         }
-//         if ($options->draw) {
-//            echo "<div id='ra-map-details'><p>No routes or markers currently defined</p></div>";
-//        }
+
         $this->addScriptsandStyles($options);
         echo "<div class='map-container'>" . PHP_EOL;
   //      echo "<div id='ra-error-text'></div> " . PHP_EOL;
@@ -161,22 +159,22 @@ class RLeafletMap {
             $document->addScript("libraries/ramblers/vendors/geodesy/latlon-ellipsoidal.js", "text/javascript");
             $document->addScript("libraries/ramblers/vendors/geodesy/osgridref.js", "text/javascript");
         }
-        if ($options->draw) {
-            $document->addScript("libraries/ramblers/leaflet/ra-gpx-drawcontrol.js", "text/javascript");
-            $path = "libraries/ramblers/vendors/Leaflet.draw-0.4.14/dist/";
-            $document->addStyleSheet($path . "leaflet.draw.css", "text/css");
-            $document->addStyleSheet("libraries/ramblers/leaflet/ra-gpx-tools.css", "text/css");
-            $document->addScript($path . "leaflet.draw.js", "text/javascript");
-            $document->addScript("libraries/ramblers/leaflet/maplist.js", "text/javascript");
-            $document->addScript("libraries/ramblers/leaflet/ra-gpx-upload.js", "text/javascript");
-            $document->addScript("libraries/ramblers/leaflet/ra-gpx-download.js", "text/javascript");
-            $document->addScript("libraries/ramblers/leaflet/ra-gpx-reverse-route.js", "text/javascript");
-            $document->addScript("libraries/ramblers/leaflet/ra-gpx-simplify.js", "text/javascript");
-            $document->addScript("libraries/ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");
-            $document->addScript("libraries/ramblers/vendors/blurt-1.0.2/dist/js/blurt.min.js", "text/javascript");
-            $document->addStyleSheet("libraries/ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
-            $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
-        }
+//        if ($options->draw) {
+//            $document->addScript("libraries/ramblers/leaflet/ra-gpx-drawcontrol.js", "text/javascript");
+//            $path = "libraries/ramblers/vendors/Leaflet.draw-0.4.14/dist/";
+//            $document->addStyleSheet($path . "leaflet.draw.css", "text/css");
+//            $document->addStyleSheet("libraries/ramblers/leaflet/ra-gpx-tools.css", "text/css");
+//            $document->addScript($path . "leaflet.draw.js", "text/javascript");
+//            $document->addScript("libraries/ramblers/leaflet/maplist.js", "text/javascript");
+//            $document->addScript("libraries/ramblers/leaflet/ra-gpx-upload.js", "text/javascript");
+//            $document->addScript("libraries/ramblers/leaflet/ra-gpx-download.js", "text/javascript");
+//            $document->addScript("libraries/ramblers/leaflet/ra-gpx-reverse-route.js", "text/javascript");
+//            $document->addScript("libraries/ramblers/leaflet/ra-gpx-simplify.js", "text/javascript");
+//            $document->addScript("libraries/ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");
+//            $document->addScript("libraries/ramblers/vendors/blurt-1.0.2/dist/js/blurt.min.js", "text/javascript");
+//            $document->addStyleSheet("libraries/ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
+//            $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
+//        }
         if (RLicense::isBingKeyMapSet()) {
             // Bing maps
             $document->addScript("libraries/ramblers/vendors/bing/bing.js", "text/javascript");

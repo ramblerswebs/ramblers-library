@@ -173,3 +173,24 @@ div.leaflet-gpx-options div.status {
     background-color: #a7ffa7;
     color: #000000;
 }
+
+/* Smart Route */
+div.leaflet-bar a#leaflet-smart-route{
+    width:54px;
+}
+.leaflet-control-smart-route {
+    margin-bottom: 0px !important;
+    margin-right: 0px !important;
+}
+
+.leaflet-control-smart-route  div a {
+    background:#fff url(images/onicon.png) no-repeat 0 0;
+    background-size:54px 27px;
+    background-position: center; 
+    cursor: pointer;
+}
+.ra-smart-toolbar-button-disabled div a {
+    background:#ddd url(images/officon.png) no-repeat 0 0;
+    background-size:54px 27px;
+    background-position: center; 
+}

@@ -5,6 +5,7 @@ function RamblersLeafletMap(base) {
     this.mapLayers = null;
     this.currentLayer = null;
     this.bingkey = null;
+    this.ORSkey = null;
     this.gridsquare10 = null;
     this.gridsquare100 = null;
     this.displayOSGrid = true;
@@ -33,9 +34,15 @@ function RamblersLeafletMap(base) {
         draw: false,
         print: false,
         displayElevation: false,
+      //  smartRoute: false,
         ramblersPlaces: false,
         topoMapDefault: false,
         controlcontainer: false
+    };
+    this.DrawStyle = {
+        color: '#782327',
+        weight: 3,
+        opacity: 1
     };
 }
 

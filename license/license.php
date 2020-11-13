@@ -8,6 +8,7 @@
 class RLicense {
 
     private static $googlelicensekey = "undefined";
+    private static $openRoutingServicelicensekey = "undefined";
     private static $binglicensekey = true;
 
     public static function GoogleMapKey($value) {
@@ -21,6 +22,18 @@ class RLicense {
     public static function isGoogleKeyMapSet() {
         return false;
         //   return self::$googlelicensekey != "undefined";
+    }
+
+    public static function OpenRoutingServiceKey($value) {
+        self::$openRoutingServicelicensekey = $value;
+    }
+
+    public static function getOpenRoutingServiceKey() {
+        return self::$openRoutingServicelicensekey;
+    }
+
+    public static function isOpenRoutingServiceKeySet() {
+        return self::$openRoutingServicelicensekey != "undefined";
     }
 
     public static function BingMapKey($value) {

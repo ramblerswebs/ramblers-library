@@ -19,6 +19,7 @@ class RLeafletMapoptions {
     public $draw = false;
     public $print = false;
     public $displayElevation = false;
+    public $smartRoute = true;
     public $bing = false;
     public $ramblersPlaces = false;
     public $topoMapDefault = false;
@@ -38,6 +39,9 @@ class RLeafletMapoptions {
         if (RLicense::isGoogleKeyMapSet()) {
             $options .= "ramblersMap.googlekey='" . RLicense::getGoogleMapKey() . "';" . PHP_EOL;
             $options .= "ramblersMap.options.google = true;" . PHP_EOL;
+        }
+         if (RLicense::isOpenRoutingServiceKeySet()) {
+            $options .= "ramblersMap.ORSkey='" . RLicense::getOpenRoutingServiceKey() . "';" . PHP_EOL;
         }
         if ($this->cluster) {
             $options .= "ramblersMap.options.cluster = true;" . PHP_EOL;
@@ -75,6 +79,9 @@ class RLeafletMapoptions {
         if ($this->displayElevation) {
             $options .= "ramblersMap.options.displayElevation = true;" . PHP_EOL;
         }
+        if ($this->smartRoute) {
+            $options .= "ramblersMap.options.smartRoute = true;" . PHP_EOL;
+        }
         if ($this->ramblersPlaces) {
             $options .= "ramblersMap.options.ramblersPlaces = true;" . PHP_EOL;
         }
@@ -87,24 +94,4 @@ class RLeafletMapoptions {
        
         return $options;
     }
-
-    public function getFileNameREMOVE() {
-        $name = "-";
-        $name .= ($this->cluster) ? 'c' : '';
-        $name .= ($this->fullscreen) ? 'f' : '';
-        $name .= ($this->google) ? 'g' : '';
-        $name .= ($this->search) ? 's' : '';
-        $name .= ($this->locationsearch) ? 'l' : '';
-        $name .= ($this->osgrid) ? 'o' : '';
-        $name .= ($this->mouseposition) ? 'm' : '';
-        $name .= ($this->postcodes) ? 'p' : '';
-        $name .= ($this->fitbounds) ? 'b' : '';
-        $name .= ($this->draw) ? 'd' : '';
-        $name .= ($this->print) ? 'p' : '';
-        $name .= ($this->displayElevation) ? 'e' : '';
-        $name .= ($this->bing) ? 'b-' : '';
-        $name.="v005";
-        return $name;
-    }
-
 }

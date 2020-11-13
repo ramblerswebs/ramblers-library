@@ -174,7 +174,7 @@ form input#gpxtitlesearch{
 
 .leaflet-div-icon.leaflet-editing-icon.leaflet-touch-icon {
 
-    background: rgba(250,250,250, 0.2) ;
+    background: rgba(0,0,0, 0.2) ;
     border-width:3px;
     border-color: #222222;
 }

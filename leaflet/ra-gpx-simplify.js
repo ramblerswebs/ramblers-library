@@ -32,7 +32,7 @@ L.Control.GpxSimplify = L.Control.extend({
         this.status = L.DomUtil.create('div', 'points', this.holder);
         this.status.innerHTML = "Points";
 
-    var    element = L.DomUtil.create('div', 'slider', this.holder);
+        var element = L.DomUtil.create('div', 'slider', this.holder);
         element.innerHTML = "<input type=\"range\" min=\"1\" max=\"100\" value=\"49\" class=\"slider\" id=\"gpxsimplify\">";
         this.slider = element.childNodes[0];
         L.DomEvent.addListener(this.slider, 'change', this._simplify, this);
@@ -144,21 +144,21 @@ L.Control.GpxSimplify = L.Control.extend({
         //  alert("cancel");
     },
     _elevation: function (evt) {
-        var element =evt.currentTarget;
-         switch (simplify2D) {
+        var element = evt.currentTarget;
+        switch (simplify2D) {
             case "3D":
-                simplify2D="2D";
-                element.innerHTML="2D simplify Lat/Long";
+                simplify2D = "2D";
+                element.innerHTML = "2D simplify Lat/Long";
                 break;
             case "2D":
-                simplify2D="elev";
-                element.innerHTML="Maintain elevation";
+                simplify2D = "elev";
+                element.innerHTML = "Maintain elevation";
                 break;
             default:
-               simplify2D="3D";
-               element.innerHTML="3D simplify Lat/long and Alt";
+                simplify2D = "3D";
+                element.innerHTML = "3D simplify Lat/long and Alt";
         }
-         _simplify_this._simplify();
+        _simplify_this._simplify();
     }
 
 

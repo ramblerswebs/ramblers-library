@@ -25,17 +25,17 @@ class RJsonwalksStdLeaderstable extends RJsonwalksDisplaybase {
         $last = "";
 
         echo "<table class='$this->tableClass'>";
-        echo RHtml::addTableHeader(array("Contact", "Email", "Telephone 1", "Telephone 2"));
+        echo RHtml::addTableHeader(array("Contact", "Telephone 1", "Telephone 2"));
         foreach ($items as $walk) {
             $value = $walk->contactName . " - " . $walk->telephone1;
             if (!$walk->telephone2 == NULL) {
                 $value.=" ," . $walk->telephone2;
             }
-            if (!$walk->getEmail() == NULL) {
-                $value.=" ," . $walk->getEmail();
-            }
+        //    if (!$walk->getEmail() == NULL) {
+              //  $value.=" ," . $walk->getEmail();
+         //   }
             if ($value <> $last) {
-                echo RHtml::addTableRow(array($walk->contactName, $walk->getEmail($this->emailDisplayFormat), $walk->telephone1, $walk->telephone2));
+                echo RHtml::addTableRow(array($walk->contactName, $walk->telephone1, $walk->telephone2));
                 $last = $value;
             }
         }

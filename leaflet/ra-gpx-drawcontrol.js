@@ -1,7 +1,7 @@
 var L, ramblersMap;
 // code for drawing route/track
 function addDrawControl(lat, long, zoom) {
-    // zoom to correct area
+// zoom to correct area
     ramblersMap.map.setZoom(zoom);
     var latlong = new L.LatLng(lat, long);
     ramblersMap.map.panTo(latlong);
@@ -31,7 +31,6 @@ function addDrawControl(lat, long, zoom) {
         imperial: imperial    //display imperial units instead of metric
     });
     ramblersMap.elevationcontrol.addTo(ramblersMap.map);
-
     ramblersMap.drawnItems = new L.FeatureGroup();
     L.drawLocal.draw.toolbar.buttons.polyline = 'Plot a walking route(s)';
     L.drawLocal.draw.toolbar.buttons.marker = 'Add a marker';
@@ -39,27 +38,20 @@ function addDrawControl(lat, long, zoom) {
     L.drawLocal.edit.toolbar.buttons.editDisabled = 'No routes(s) to edit';
     L.drawLocal.edit.toolbar.buttons.remove = 'Delete walking route(s) or markers';
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No route(s) to delete';
-
     ramblersMap.map.addLayer(ramblersMap.drawnItems);
-
     // load gpx download control
     var download = new L.Control.GpxDownload();
     download.setRouteItems(ramblersMap.drawnItems);
     ramblersMap.map.addControl(download);
-
     var upload = new L.Control.GpxUpload();
     upload.setRouteItems(ramblersMap.drawnItems);
     ramblersMap.map.addControl(upload);
-
     var reverse = new L.Control.ReverseRoute();
     reverse.setRouteItems(ramblersMap.drawnItems);
     ramblersMap.map.addControl(reverse);
-
     var simplify = new L.Control.GpxSimplify();
     simplify.setRouteItems(ramblersMap.drawnItems);
     ramblersMap.map.addControl(simplify);
-
-
     var drawControl = new L.Control.Draw({
         position: 'bottomright',
         draw: {
@@ -91,8 +83,16 @@ function addDrawControl(lat, long, zoom) {
         //  color: '#007A87',
     });
     ramblersMap.DrawControl = drawControl;
-    ramblersMap.map.addControl(drawControl);
 
+    if (ramblersMap.ORSkey !== null) {
+        // add smart route layer
+        ramblersMap.map.SmartRouteLayer = L.featureGroup([]).addTo(ramblersMap.map);
+        ramblersMap.SmartRouteControl = new L.Control.SmartRoute();
+    } else {
+        ramblersMap.SmartRoute = {};
+        ramblersMap.SmartRoute.enabled = false;
+    }
+    enableDraw();
     ramblersMap.map.on(L.Draw.Event.CREATED, function (e) {
         var type = e.layerType,
                 layer = e.layer;
@@ -137,72 +137,127 @@ function addDrawControl(lat, long, zoom) {
     ramblersMap.drawnItems.on("reverse:reversed", function (e) {
         addElevations(false);
     });
-
     ramblersMap.map.on(L.Draw.Event.DRAWSTART, function (e) {
+        console.log('DRAW START');
+        if (ramblersMap.SmartRoute.enabled) {
+            //setOpacityZero();
+            // save number of layers so we can see if cancel used
+            ramblersMap.SmartRoute.NoLayers = ramblersMap.drawnItems.getLayers().length;
+            ramblersMap.SmartRoute.latlngs = null;
+            ramblersMap.SmartRoute.pending = false;
+            ramblersMap.SmartRoute.saveroute = false;
+            ramblersMap.SmartRouteControl.disable();
+        }
+
+        this.displayMouseGridSquare = ramblersMap.displayMouseGridSquare;
         ramblersMap.displayMouseGridSquare = false;
+
         enableMapMoveDrawing();
         setGpxToolStatus('off');
     });
-    ramblersMap.map.on(L.Draw.Event.DRAWSTOP, function () {
-        ramblersMap.displayMouseGridSquare = true;
+    ramblersMap.map.on(L.Draw.Event.DRAWVERTEX, function (e) {
+        if (ramblersMap.SmartRoute.enabled) {
+            console.log('DRAW VERTEX');
+           // var layers = ramblersMap.drawnItems.getLayers();
+            var layer = e.layers._layers;
+            ramblersMap.SmartRouteControl.displaySmartPoints(layer);
+        }
+    });
+
+    ramblersMap.map.on(L.Draw.Event.DRAWSTOP, function (e) {
+        if (ramblersMap.SmartRoute.enabled) {
+            console.log('DRAW STOP');
+            if (ramblersMap.SmartRoute.pending) {
+                // Let displaySmartPoints save route
+                ramblersMap.SmartRoute.saveroute = true;
+            } else {
+                ramblersMap.SmartRouteControl.saveSmartRoute();
+            }
+            ramblersMap.SmartRouteControl.enable();
+        }
+        //resetOpacity();
+        ramblersMap.displayMouseGridSquare = this.displayMouseGridSquare;
         disableMapMoveDrawing();
         addElevations(false);
         setGpxToolStatus('auto');
-
+        console.log('DRAW EXIT');
     });
     ramblersMap.map.on(L.Draw.Event.EDITSTART, function (e) {
         ramblersMap.map.setMaxZoom(22);
+        //ramblersMap.displayMouseGridSquare = false;
+        this.displayMouseGridSquare = ramblersMap.displayMouseGridSquare;
         ramblersMap.displayMouseGridSquare = false;
         enableMapMoveDrawing();
         setGpxToolStatus('off');
     });
     ramblersMap.map.on(L.Draw.Event.EDITED, function (e) {
         ramblersMap.map.setMaxZoom(18);
-        ramblersMap.displayMouseGridSquare = true;
+        ramblersMap.displayMouseGridSquare = this.displayMouseGridSquare;
         disableMapMoveDrawing();
         addElevations(true);
         setGpxToolStatus('auto');
     });
     ramblersMap.map.on(L.Draw.Event.EDITSTOP, function (e) {
         ramblersMap.map.setMaxZoom(18);
-        ramblersMap.displayMouseGridSquare = true;
+        ramblersMap.displayMouseGridSquare = this.displayMouseGridSquare;
         disableMapMoveDrawing();
+        addElevations(true);
         setGpxToolStatus('auto');
     });
+    ramblersMap.map.on(L.Draw.Event.EDITMOVE, function (e) {
+    });
+    ramblersMap.map.on(L.Draw.Event.EDITVERTEX, function (e) {
+    });
     ramblersMap.map.on(L.Draw.Event.DELETESTART, function (e) {
+        this.displayMouseGridSquare = ramblersMap.displayMouseGridSquare;
         ramblersMap.displayMouseGridSquare = false;
         enableMapMoveDrawing();
         setGpxToolStatus('off');
+        if (ramblersMap.SmartRoute.enabled) {
+            ramblersMap.SmartRouteControl.setOpacityZero();
+        }
     });
     ramblersMap.map.on(L.Draw.Event.DELETESTOP, function (e) {
-        ramblersMap.displayMouseGridSquare = true;
+        ramblersMap.displayMouseGridSquare = this.displayMouseGridSquare;
         disableMapMoveDrawing();
         listDrawnItems();
         setGpxToolStatus('auto');
+        if (ramblersMap.SmartRoute.enabled) {
+            ramblersMap.SmartRouteControl.setOpacityZero();
+        }
     });
     ramblersMap.map.on(L.Draw.Event.DELETED, function (e) {
-        ramblersMap.displayMouseGridSquare = true;
+        ramblersMap.displayMouseGridSquare = this.displayMouseGridSquare;
         disableMapMoveDrawing();
         listDrawnItems();
         setGpxToolStatus('auto');
+        if (ramblersMap.SmartRoute.enabled) {
+            ramblersMap.SmartRouteControl.setOpacityZero();
+        }
     });
-
     ramblersMap.map.on('simplify:started', function () {
         setGpxToolStatus('off');
-        ramblersMap.map.removeControl(drawControl);
-
+        disableDraw();
     });
     ramblersMap.map.on('simplify:saved', function () {
         setGpxToolStatus('auto');
         addElevations(true);
-        ramblersMap.map.addControl(drawControl);
+        enableDraw();
     });
     ramblersMap.map.on('simplify:cancelled', function () {
         setGpxToolStatus('auto');
-        ramblersMap.map.addControl(drawControl);
+        enableDraw();
     });
-
-
+    function setGpxToolStatus(status) {
+        ramblersMap.processPopups = status;
+        reverse.setStatus(status);
+        download.setStatus(status);
+        simplify.setStatus(status);
+        upload.setStatus(status);
+        if (ramblersMap.postcodes !== null) {
+            ramblersMap.postcodes.Enabled(status !== 'off');
+        }
+    }
     ramblersMap.drawnItems.on('popupopen', function (e) {
         if (ramblersMap.processPopups === 'off') {
             return;
@@ -249,31 +304,18 @@ function addDrawControl(lat, long, zoom) {
             marker.symbol = sSymbol;
             marker.title = sName + " - " + sDesc;
             setMarkerIcon(marker, sSymbol);
-
             //       marker.fire('revert-edited', {layer: marker});
         }
     });
     ramblersMap.map.on('popupclose', function (e) {
         download._popupclose(e);
     });
-
     function getElementValue(id) {
         var node = document.getElementById(id);
         if (node !== null) {
             return node.value;
         }
         return "Invalid";
-    }
-    function setGpxToolStatus(status) {
-        ramblersMap.processPopups = status;
-        reverse.setStatus(status);
-        download.setStatus(status);
-        simplify.setStatus(status);
-        upload.setStatus(status);
-        if (ramblersMap.postcodes !== null) {
-            ramblersMap.postcodes.Enabled(status !== 'off');
-        }
-
     }
 
 //Move the map around when we're editing or drawing
@@ -286,13 +328,11 @@ function addDrawControl(lat, long, zoom) {
         text = text.replace(/'/g, "&apos;");
         text = text.replace(/</g, "&lt;");
         text = text.replace(/>/g, "&gt;");
-
         return text;
     };
     mapMoveDrawingMouseMove = function (e) {
         var mousePos = e.containerPoint;
         var mapSize = ramblersMap.map.getSize();
-
         if (mousePos.y <= 20) {
             ramblersMap.map.panBy([0, -40]);
         } else if (mousePos.y + 20 > mapSize.y) {
@@ -310,13 +350,25 @@ function addDrawControl(lat, long, zoom) {
     };
     listDrawnItems();
 }
+function disableDraw() {
+    ramblersMap.map.removeControl(ramblersMap.DrawControl);
+    if (ramblersMap.ORSkey !== null) {
+        ramblersMap.map.removeControl(ramblersMap.SmartRouteControl);
+    }
+}
+function enableDraw() {
+    ramblersMap.map.addControl(ramblersMap.DrawControl);
+    if (ramblersMap.ORSkey !== null) {
+        ramblersMap.map.addControl(ramblersMap.SmartRouteControl);
+    }
+}
 function listDrawnItems() {
     var hasItems = ramblersMap.drawnItems.getLayers().length !== 0;
     ramblersMap.elevationcontrol.clear();
     var text = "";
     if (!hasItems) {
-       text = '<p><b>Plot a walking Route:</b> No routes or markers defined ';
-       text += '<br/>If you need help to get started please visit our <b><a href="'+ramblersMap.maphelppage+'" target="_blank">help site</a></b></p>';
+        text = '<p><b>Plot a walking Route:</b> No routes or markers defined ';
+        text += '<br/>If you need help to get started please visit our <b><a href="' + ramblersMap.maphelppage + '" target="_blank">Mapping Help Site</a></b></p>';
     } else {
         text += "<table>";
         text += "<tr><th>Segment</th><th>Length</th><th>Elevation Gain</th><th>Est Time</th><th>Number of points</th></tr>";
@@ -351,7 +403,7 @@ function polylineDistance(latlngs) {
     var tempLatLng = null;
     var totalDistance = 0.00000;
     for (i = 0, len = latlngs.length; i < len; i++) {
-       var latlng = latlngs[i];
+        var latlng = latlngs[i];
         if (tempLatLng === null) {
             tempLatLng = latlng;
         } else {
@@ -368,7 +420,7 @@ function polylineElevationGain(latlngs) {
     var tempLatLng = null;
     var elevationGain = 0.00000;
     for (i = 0, len = latlngs.length; i < len; i++) {
-       var latlng = latlngs[i];
+        var latlng = latlngs[i];
         if (tempLatLng === null) {
             tempLatLng = latlng;
         } else {
@@ -421,7 +473,7 @@ function getElevations(force) {
         if (nullItems.length > 500) {
             blurt("Tracks contains more than 500 points, response may be slow, please wait...");
         }
-       var points = "data=" + JSON.stringify(nullItems);
+        var points = "data=" + JSON.stringify(nullItems);
         var url = "https://elevation.theramblers.org.uk/";
         postJSON(url, points, function (err, items) {
             if (err !== null) {
@@ -471,3 +523,112 @@ function updateElevation(latlngs, item) {
         }
     }
 }
+function getLngLats(latlngs) {
+    var i = 0;
+    var lnglats = [];
+    var len = latlngs.length;
+    for (i = 0; i < len; i++) {
+        // change to long/lat rather than lat/long
+        lnglats[i] = [];
+        lnglats[i][0] = latlngs[i].lng;
+        lnglats[i][1] = latlngs[i].lat;
+    }
+    return lnglats;
+}
+function ragetLatlngs(lnglats) {
+    var latlngs = [];
+    for (const lnglat of lnglats) {
+        var latlng = L.latLng(lnglat[1], lnglat[0]);
+        latlngs.push(latlng);
+    }
+    return latlngs;
+}
+//function displaySmartPoints(layers) {
+//    var no = 0;
+//    var latlngs = [];
+//    for (const property in layers) {
+//        latlngs[no] = {};
+//        latlngs[no] = layers[property]._latlng;
+//        no += 1;
+//    }
+//    if (latlngs.length <= 1) {
+//        return;
+//    }
+//    ramblersMap.SmartRoute.pending = true;
+//    let request = new XMLHttpRequest();
+//    request.open('POST', "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson");
+//    request.setRequestHeader('Accept', 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8');
+//    request.setRequestHeader('Content-Type', 'application/json');
+//    request.setRequestHeader('Authorization', ramblersMap.ORSkey);
+//    request.onreadystatechange = function () {
+//        if (this.readyState === 4) {
+//            //   console.log('Status:', this.status);
+//            //   console.log('Headers:', this.getAllResponseHeaders());
+//            //   console.log('Body:', this.responseText);
+//            var data = JSON.parse(this.responseText);
+//            if (this.status === 200) {
+//                console.log('Data retrieved');
+//                drawSmartRoute(data); // also saves latlngs
+//                if (ramblersMap.SmartRoute.saveroute) {
+//                    saveSmartRoute();
+//                    ramblersMap.SmartRoute.saveroute = false;
+//                }
+//            } else {
+//                alert("Unable to fetch route, status " + this.status);
+//            }
+//            ramblersMap.SmartRoute.pending = false;
+//        }
+//    };
+//    var body = {};
+//    body.instructions = false;
+//    body.geometry_simplify = true;
+//    body.coordinates = getLngLats(latlngs);
+//    var search = JSON.stringify(body);
+//    request.send(search);
+//}
+//function drawSmartRoute(data) {
+//    var geometry = data.features[0].geometry;
+//    ramblersMap.map.SmartRouteLayer.clearLayers();
+//    var latlngs = ragetLatlngs(geometry.coordinates);
+//    ramblersMap.SmartRoute.latlngs = latlngs; // latlngs for when we save route.
+//    var style = ramblersMap.DrawStyle;
+//    ramblersMap.map.SmartRouteLayer.addLayer(L.polyline(latlngs, style));
+//
+//}
+//function setOpacityZero() {
+//    console.log("Opacity set to ZERO");
+//    var style = {};
+//    style.color = ramblersMap.DrawStyle.color;
+//    style.weight = ramblersMap.DrawStyle.weight;
+//    style.opacity = 0;
+//    ramblersMap.DrawControl.setDrawingOptions({
+//        polyline: {shapeOptions: style}});
+//}
+//function resetOpacity() {
+//    console.log("Opacity reset");
+//    var style = ramblersMap.DrawStyle;
+//    ramblersMap.DrawControl.setDrawingOptions({
+//        polyline: {shapeOptions: style}});
+//}
+//
+//function saveSmartRoute() {
+//    if (ramblersMap.SmartRoute.latlngs !== null) {
+//        console.log("Save");
+//        var layer;
+//        var layers = ramblersMap.drawnItems.getLayers();
+//
+//        // only save if route has not been cancelled
+//        if (layers.length > ramblersMap.SmartRoute.NoLayers) {
+//            // delete the draw layer and replace
+//            layer = layers[layers.length - 1];
+//            ramblersMap.drawnItems.removeLayer(layer);
+//            resetOpacity();
+//            var line = new L.Polyline(ramblersMap.SmartRoute.latlngs, ramblersMap.DrawStyle);
+//            ramblersMap.SmartRoute.latlngs = null;
+//            ramblersMap.drawnItems.addLayer(line);
+//            ramblersMap.drawnItems.fire('upload:addline', {line: line});
+//            setOpacityZero();
+//        }
+//        ramblersMap.map.SmartRouteLayer.clearLayers();
+//    }
+//}

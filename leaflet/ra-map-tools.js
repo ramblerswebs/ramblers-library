@@ -9,14 +9,11 @@ L.Control.RA_Map_Tools = L.Control.extend({
             weight: 2,
             opacity: 0.5}
     },
-    osMapOptions: {
-        display: 'none'
-    },
-    drawoptions: {
-        color: '#782327',
-        weight: 3,
-        opacity: 1
-    },
+//    drawoptions: {
+//        color: '#782327',
+//        weight: 3,
+//        opacity: 1
+//    },
     onAdd: function (map) {
         this._map = map;
         ramblersMap.RA_Map_Tools = this;
@@ -275,7 +272,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var title = document.createElement('h4');
         title.textContent = 'Plot Route';
         tag.appendChild(title);
-        var color = ramblersMap.RA_Map_Tools.drawoptions.color;
+        var color = ramblersMap.DrawStyle.color;
         var label = document.createElement('label');
         label.textContent = "Route line colour";
         tag.appendChild(label);
@@ -283,35 +280,35 @@ L.Control.RA_Map_Tools = L.Control.extend({
         drawColor.setAttribute('type', 'color');
         drawColor.setAttribute('value', color);
         tag.appendChild(drawColor);
-        this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.RA_Map_Tools.drawoptions, 'weight', 1, 10, 0.5);
-        this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.RA_Map_Tools.drawoptions, 'opacity', .1, 1, .01);
+        this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.DrawStyle, 'weight', 1, 10, 0.5);
+        this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.DrawStyle, 'opacity', .1, 1, .01);
         var example = this.addExampleLine(tag, "300px", "Example: ");
-        this.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.drawoptions);
+        this.addExampleLineStyle(example, ramblersMap.DrawStyle);
         tag.addEventListener("change", function (e) {
-            self.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.drawoptions);
+            self.addExampleLineStyle(example, ramblersMap.DrawStyle);
             var drawnItems = ramblersMap.drawnItems;
             drawnItems.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
                     ramblersMap.RA_Map_Tools._changePolyline(layer);
                 }
             });
-            //  var color = ramblersMap.RA_Map_Tools.drawoptions.color;
+            //  var color = ramblersMap.DrawStyle.color;
             ramblersMap.DrawControl.setDrawingOptions({
                 polyline: {
-                    shapeOptions: ramblersMap.RA_Map_Tools.drawoptions
+                    shapeOptions: ramblersMap.DrawStyle
                 }
             });
         });
         drawColor.addEventListener("change", function (e) {
             var color = drawColor.value;
-            ramblersMap.RA_Map_Tools.drawoptions.color = color;
+            ramblersMap.DrawStyle.color = color;
             let event = new Event("change", {bubbles: true}); // (2)
             tag.dispatchEvent(event);
         });
 
     },
     _changePolyline: function (polyline) {
-        polyline.setStyle(ramblersMap.RA_Map_Tools.drawoptions);
+        polyline.setStyle(ramblersMap.DrawStyle);
 
     },
     addTabItem: function (container, list, name, id) {

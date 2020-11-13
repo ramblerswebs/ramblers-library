@@ -159,7 +159,6 @@ L.Control.PostcodeStatus = L.Control.extend({
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
         var gr10 = grid.toString(8);
-        var i;
         var desc = "<b>Latitude: </b>" + e.latlng.lat.toFixed(5) + " ,  <b>Longitude: </b>" + e.latlng.lng.toFixed(5);
         if (gr !== "") {
             desc += "<br/><b>Grid Reference: </b>" + gr +
@@ -258,11 +257,15 @@ L.Control.PostcodeStatus = L.Control.extend({
         }
 
     },
-    _getPoint: function (east, north) {
+    _getPointInfo: function (east, north) {
+        var value = {};
         var os = new OsGridRef(east, north);
         var pt = OsGridRef.osGridToLatLon(os);
-        var latlng = L.latLng(pt.lat, pt.lon);
-        return latlng;
+        value.latlng = L.latLng(pt.lat, pt.lon);
+        var grid = OsGridRef.latLonToOsGrid(pt);
+        value.gr = grid.toString(6);
+
+        return value;
     },
     _displayOsMaps: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
@@ -645,23 +648,33 @@ L.Control.PostcodeStatus = L.Control.extend({
             point.openPopup();
         }
     },
-        displayOSMap: function (map, layer) {
-
+    displayOSMap: function (map, layer) {
+        var boundstr = "Bounds: <br/>";
         for (j = 0; j < map.bounds.length; j++) {
             var rect;
             var bounds = map.bounds[j];
-            var pt1 = ramblersMap.PostcodeStatus._getPoint(bounds.eastingmin, bounds.northingmin);
-            var pt2 = ramblersMap.PostcodeStatus._getPoint(bounds.eastingmax, bounds.northingmax);
-            var area = [pt1, pt2];
-            if (map.scale==="50000"){
-                 rect = L.rectangle(area, {color: "#ff0000", weight: 1});
-            }else{
+            var pt1 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmin, bounds.northingmin);
+            var pt2 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmax, bounds.northingmax);
+            var area = [pt1.latlng, pt2.latlng];
+            boundstr += pt1.gr + " to " + pt2.gr + "<br/>";
+        }
+      //  console.log(map.type + " " + map.number);
+      //  console.log(boundstr);
+        for (j = 0; j < map.bounds.length; j++) {
+            var rect;
+            var bounds = map.bounds[j];
+            var pt1 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmin, bounds.northingmin);
+            var pt2 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmax, bounds.northingmax);
+            var area = [pt1.latlng, pt2.latlng];
+            if (map.scale === "50000") {
+                rect = L.rectangle(area, {color: "#ff0000", weight: 1});
+            } else {
                 rect = L.rectangle(area, {color: "#ff7800", weight: 1});
             }
-            
             var msg = "<h4>" + map.type + " " + map.number + "</h4>";
             msg += "<p>" + map.title + "</p>";
-            msg += "<p>Scale: " + map.scale.substr(0,2) + "K to 1</p>";
+            msg += "<p>Scale: " + map.scale.substr(0, 2) + "K to 1</p>";
+            msg += boundstr;
             rect.bindPopup(msg);
             layer.addLayer(rect);
         }
