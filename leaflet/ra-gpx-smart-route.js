@@ -57,6 +57,7 @@ L.Control.SmartRoute = L.Control.extend({
             no += 1;
         }
         if (latlngs.length <= 1) {
+            ramblersMap.map.SmartRouteLayer.clearLayers();
             return;
         }
         ramblersMap.SmartRoute.pending = true;

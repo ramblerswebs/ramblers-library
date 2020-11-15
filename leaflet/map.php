@@ -79,7 +79,7 @@ class RLeafletMap {
 
         $this->addScriptsandStyles($options);
         echo "<div class='map-container'>" . PHP_EOL;
-  //      echo "<div id='ra-error-text'></div> " . PHP_EOL;
+        //      echo "<div id='ra-error-text'></div> " . PHP_EOL;
         echo "<div id='leafletmap'></div>" . PHP_EOL;
         echo "<script type='text/javascript'>" . PHP_EOL;
         echo $this->getMapInfo() . PHP_EOL;
@@ -91,6 +91,7 @@ class RLeafletMap {
         echo "</script>" . PHP_EOL;
         echo "</div>" . PHP_EOL;
         echo "<p class='mapcopyright'>OS data © Crown copyright and database 2018;   Royal Mail data © Royal Mail copyright and Database 2018</p>";
+        echo "<p class='mapcopyright'>© openrouteservice.org by HeiGIT | Map data © OpenStreetMap contributors</p>";
         echo "<p class='mapcopyright'>Maps Icons Collection https://mapicons.mapsmarker.com</p>";
     }
 
@@ -187,10 +188,10 @@ class RLeafletMap {
             $document->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
         }
 
-            $document->addScript("libraries/ramblers/leaflet/ra-map-mylocation.js", "text/javascript");
+        $document->addScript("libraries/ramblers/leaflet/ra-map-mylocation.js", "text/javascript");
 
         $document->addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
-        
+
         // tools
         $document->addStyleSheet("libraries/ramblers/leaflet/ra-map-tools.css", "text/css");
         $document->addScript("libraries/ramblers/leaflet/ra-map-tools.js", "text/javascript");

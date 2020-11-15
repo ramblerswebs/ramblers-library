@@ -138,7 +138,7 @@ function addDrawControl(lat, long, zoom) {
         addElevations(false);
     });
     ramblersMap.map.on(L.Draw.Event.DRAWSTART, function (e) {
-        console.log('DRAW START');
+        // console.log('DRAW START');
         if (ramblersMap.SmartRoute.enabled) {
             //setOpacityZero();
             // save number of layers so we can see if cancel used
@@ -157,8 +157,8 @@ function addDrawControl(lat, long, zoom) {
     });
     ramblersMap.map.on(L.Draw.Event.DRAWVERTEX, function (e) {
         if (ramblersMap.SmartRoute.enabled) {
-            console.log('DRAW VERTEX');
-           // var layers = ramblersMap.drawnItems.getLayers();
+            // console.log('DRAW VERTEX');
+            // var layers = ramblersMap.drawnItems.getLayers();
             var layer = e.layers._layers;
             ramblersMap.SmartRouteControl.displaySmartPoints(layer);
         }
@@ -166,7 +166,7 @@ function addDrawControl(lat, long, zoom) {
 
     ramblersMap.map.on(L.Draw.Event.DRAWSTOP, function (e) {
         if (ramblersMap.SmartRoute.enabled) {
-            console.log('DRAW STOP');
+            //  console.log('DRAW STOP');
             if (ramblersMap.SmartRoute.pending) {
                 // Let displaySmartPoints save route
                 ramblersMap.SmartRoute.saveroute = true;
@@ -180,7 +180,7 @@ function addDrawControl(lat, long, zoom) {
         disableMapMoveDrawing();
         addElevations(false);
         setGpxToolStatus('auto');
-        console.log('DRAW EXIT');
+        //  console.log('DRAW EXIT');
     });
     ramblersMap.map.on(L.Draw.Event.EDITSTART, function (e) {
         ramblersMap.map.setMaxZoom(22);
@@ -543,92 +543,3 @@ function ragetLatlngs(lnglats) {
     }
     return latlngs;
 }
-//function displaySmartPoints(layers) {
-//    var no = 0;
-//    var latlngs = [];
-//    for (const property in layers) {
-//        latlngs[no] = {};
-//        latlngs[no] = layers[property]._latlng;
-//        no += 1;
-//    }
-//    if (latlngs.length <= 1) {
-//        return;
-//    }
-//    ramblersMap.SmartRoute.pending = true;
-//    let request = new XMLHttpRequest();
-//    request.open('POST', "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson");
-//    request.setRequestHeader('Accept', 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8');
-//    request.setRequestHeader('Content-Type', 'application/json');
-//    request.setRequestHeader('Authorization', ramblersMap.ORSkey);
-//    request.onreadystatechange = function () {
-//        if (this.readyState === 4) {
-//            //   console.log('Status:', this.status);
-//            //   console.log('Headers:', this.getAllResponseHeaders());
-//            //   console.log('Body:', this.responseText);
-//            var data = JSON.parse(this.responseText);
-//            if (this.status === 200) {
-//                console.log('Data retrieved');
-//                drawSmartRoute(data); // also saves latlngs
-//                if (ramblersMap.SmartRoute.saveroute) {
-//                    saveSmartRoute();
-//                    ramblersMap.SmartRoute.saveroute = false;
-//                }
-//            } else {
-//                alert("Unable to fetch route, status " + this.status);
-//            }
-//            ramblersMap.SmartRoute.pending = false;
-//        }
-//    };
-//    var body = {};
-//    body.instructions = false;
-//    body.geometry_simplify = true;
-//    body.coordinates = getLngLats(latlngs);
-//    var search = JSON.stringify(body);
-//    request.send(search);
-//}
-//function drawSmartRoute(data) {
-//    var geometry = data.features[0].geometry;
-//    ramblersMap.map.SmartRouteLayer.clearLayers();
-//    var latlngs = ragetLatlngs(geometry.coordinates);
-//    ramblersMap.SmartRoute.latlngs = latlngs; // latlngs for when we save route.
-//    var style = ramblersMap.DrawStyle;
-//    ramblersMap.map.SmartRouteLayer.addLayer(L.polyline(latlngs, style));
-//
-//}
-//function setOpacityZero() {
-//    console.log("Opacity set to ZERO");
-//    var style = {};
-//    style.color = ramblersMap.DrawStyle.color;
-//    style.weight = ramblersMap.DrawStyle.weight;
-//    style.opacity = 0;
-//    ramblersMap.DrawControl.setDrawingOptions({
-//        polyline: {shapeOptions: style}});
-//}
-//function resetOpacity() {
-//    console.log("Opacity reset");
-//    var style = ramblersMap.DrawStyle;
-//    ramblersMap.DrawControl.setDrawingOptions({
-//        polyline: {shapeOptions: style}});
-//}
-//
-//function saveSmartRoute() {
-//    if (ramblersMap.SmartRoute.latlngs !== null) {
-//        console.log("Save");
-//        var layer;
-//        var layers = ramblersMap.drawnItems.getLayers();
-//
-//        // only save if route has not been cancelled
-//        if (layers.length > ramblersMap.SmartRoute.NoLayers) {
-//            // delete the draw layer and replace
-//            layer = layers[layers.length - 1];
-//            ramblersMap.drawnItems.removeLayer(layer);
-//            resetOpacity();
-//            var line = new L.Polyline(ramblersMap.SmartRoute.latlngs, ramblersMap.DrawStyle);
-//            ramblersMap.SmartRoute.latlngs = null;
-//            ramblersMap.drawnItems.addLayer(line);
-//            ramblersMap.drawnItems.fire('upload:addline', {line: line});
-//            setOpacityZero();
-//        }
-//        ramblersMap.map.SmartRouteLayer.clearLayers();
-//    }
-//}
