@@ -68,12 +68,16 @@ L.Control.SmartRoute = L.Control.extend({
         request.setRequestHeader('Authorization', ramblersMap.ORSkey);
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
-                //   console.log('Status:', this.status);
-                //   console.log('Headers:', this.getAllResponseHeaders());
-                //   console.log('Body:', this.responseText);
+                console.log('Status:', this.status);
+                console.log('Headers:', this.getAllResponseHeaders());
+                console.log('Body:', this.responseText);
                 var data = JSON.parse(this.responseText);
                 if (this.status === 200) {
-                    console.log('Data retrieved');
+                    //console.log('Data retrieved');
+                    var headers = this.getAllResponseHeaders();
+                    if (!ramblersMap.SmartRoute.checkLimits(headers)) {
+                        return;
+                    }
                     ramblersMap.SmartRouteControl.drawSmartRoute(data); // also saves latlngs
                     if (ramblersMap.SmartRoute.saveroute) {
                         ramblersMap.SmartRouteControl.saveSmartRoute();
@@ -115,6 +119,33 @@ L.Control.SmartRoute = L.Control.extend({
         var style = ramblersMap.DrawStyle;
         ramblersMap.DrawControl.setDrawingOptions({
             polyline: {shapeOptions: style}});
+    },
+    checkLimits: function (headers) {
+        var available = 0;
+        var lines = headers.split('\r\n');
+        var items = [];
+        lines.forEach(splitLine);
+        function splitLine(value) {
+            var temp = value.split(': ');
+            if (temp.length > 1) {
+                items[temp[0]] = temp[1];
+            }
+        }
+        if (typeof items["x-ratelimit-remaining"] !== 'undefined') {
+            available = parseInt(items["x-ratelimit-remaining"]);
+        }
+        if (available < 20) {
+            alert('Our usage of the Open Routing Service has reached the limit for today.\n\rPlease try again tomorrow or continue with straight line segments.');
+            ramblersMap.SmartRoute.turnOffSmartRouting();
+            return false;
+        }
+
+        return true;
+    },
+    turnOffSmartRouting: function () {
+        ramblersMap.SmartRoute.enabled = false;
+        ramblersMap.SmartRouteControl.resetOpacity();
+        ramblersMap.map.removeControl(ramblersMap.SmartRouteControl);
     },
 
     saveSmartRoute: function () {
