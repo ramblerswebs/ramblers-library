@@ -9,11 +9,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
             weight: 2,
             opacity: 0.5}
     },
-//    drawoptions: {
-//        color: '#782327',
-//        weight: 3,
-//        opacity: 1
-//    },
+
     onAdd: function (map) {
         this._map = map;
         ramblersMap.RA_Map_Tools = this;
@@ -286,18 +282,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         this.addExampleLineStyle(example, ramblersMap.DrawStyle);
         tag.addEventListener("change", function (e) {
             self.addExampleLineStyle(example, ramblersMap.DrawStyle);
-            var drawnItems = ramblersMap.drawnItems;
-            drawnItems.eachLayer(function (layer) {
-                if (layer instanceof L.Polyline) {
-                    ramblersMap.RA_Map_Tools._changePolyline(layer);
-                }
-            });
-            //  var color = ramblersMap.DrawStyle.color;
-            ramblersMap.DrawControl.setDrawingOptions({
-                polyline: {
-                    shapeOptions: ramblersMap.DrawStyle
-                }
-            });
+            ramblersMap.map.fire("draw:color-change", null);
         });
         drawColor.addEventListener("change", function (e) {
             var color = drawColor.value;

@@ -137,6 +137,20 @@ function addDrawControl(lat, long, zoom) {
     ramblersMap.drawnItems.on("reverse:reversed", function (e) {
         addElevations(false);
     });
+    ramblersMap.map.on('draw:color-change', function (e) {
+        var drawnItems = ramblersMap.drawnItems;
+        drawnItems.eachLayer(function (layer) {
+            if (layer instanceof L.Polyline) {
+                ramblersMap.RA_Map_Tools._changePolyline(layer);
+            }
+        });
+        ramblersMap.DrawControl.setDrawingOptions({
+            polyline: {shapeOptions: ramblersMap.DrawStyle}});
+        if (ramblersMap.SmartRoute.enabled) {
+            ramblersMap.SmartRoute.setOpacityZero();
+        }
+
+    });
     ramblersMap.map.on(L.Draw.Event.DRAWSTART, function (e) {
         // console.log('DRAW START');
         if (ramblersMap.SmartRoute.enabled) {

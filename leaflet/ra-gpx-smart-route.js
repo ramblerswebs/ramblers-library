@@ -16,7 +16,6 @@ L.Control.SmartRoute = L.Control.extend({
         L.DomEvent.disableClickPropagation(containerAll);
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(this.link, 'click', this._smart_routes, this);
-
         ramblersMap.SmartRoute = this;
         return containerAll;
     },
@@ -68,9 +67,9 @@ L.Control.SmartRoute = L.Control.extend({
         request.setRequestHeader('Authorization', ramblersMap.ORSkey);
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
-                console.log('Status:', this.status);
-                console.log('Headers:', this.getAllResponseHeaders());
-                console.log('Body:', this.responseText);
+                //console.log('Status:', this.status);
+                //console.log('Headers:', this.getAllResponseHeaders());
+                //console.log('Body:', this.responseText);
                 var data = JSON.parse(this.responseText);
                 if (this.status === 200) {
                     //console.log('Data retrieved');
@@ -106,7 +105,7 @@ L.Control.SmartRoute = L.Control.extend({
 
     },
     setOpacityZero: function () {
-        console.log("Opacity set to ZERO");
+        //console.log("Opacity set to ZERO");
         var style = {};
         style.color = ramblersMap.DrawStyle.color;
         style.weight = ramblersMap.DrawStyle.weight;
@@ -115,7 +114,7 @@ L.Control.SmartRoute = L.Control.extend({
             polyline: {shapeOptions: style}});
     },
     resetOpacity: function () {
-        console.log("Opacity reset");
+        // console.log("Opacity reset");
         var style = ramblersMap.DrawStyle;
         ramblersMap.DrawControl.setDrawingOptions({
             polyline: {shapeOptions: style}});
@@ -150,7 +149,7 @@ L.Control.SmartRoute = L.Control.extend({
 
     saveSmartRoute: function () {
         if (ramblersMap.SmartRoute.latlngs !== null) {
-            console.log("Save");
+            //console.log("Save");
             var layer;
             var layers = ramblersMap.drawnItems.getLayers();
 
