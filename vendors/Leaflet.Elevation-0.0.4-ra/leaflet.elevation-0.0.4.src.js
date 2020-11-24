@@ -1,4 +1,4 @@
-var d3;
+var d3, L, Infinity;
 L.Control.Elevation = L.Control.extend({
     options: {
         position: "topright",
@@ -211,8 +211,7 @@ L.Control.Elevation = L.Control.extend({
      * Finds an item with the smallest delta in distance to the given latlng coords
      */
     _findItemForLatLng: function (latlng) {
-        var result = null,
-                d = Infinity;
+        var result = null, d = Infinity;
         this._data.forEach(function (item) {
             var dist = latlng.distanceTo(item.latlng);
             if (dist < d) {

@@ -34,7 +34,7 @@ function RamblersLeafletMap(base) {
         draw: false,
         print: false,
         displayElevation: false,
-      //  smartRoute: false,
+        //  smartRoute: false,
         ramblersPlaces: false,
         topoMapDefault: false,
         controlcontainer: false
@@ -44,8 +44,11 @@ function RamblersLeafletMap(base) {
         weight: 3,
         opacity: 1
     };
+    this.RoutingOption = {
+        panToNewPoint: true,
+        joinSegments: true
+    };
 }
-
 function raLoadLeaflet() {
     if (ramblersMap.options.fullscreen) {
         ramblersMap.map = new L.Map("leafletmap", {
@@ -762,4 +765,3 @@ function votelike(gr, result) {
 function votedislike(gr, result) {
     document.getElementById(gr).innerHTML = "Incorrect vote recorded";
 }
-

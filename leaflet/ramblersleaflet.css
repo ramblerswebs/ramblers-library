@@ -171,13 +171,17 @@ form input#gpxtitlesearch{
     margin-top:10px;
     margin-right:10px;
 }
+div.leaflet-marker-icon.leaflet-div-icon.leaflet-editing-icon{
+    background: rgba(0, 0, 255, 0.3);
+}
 
-.leaflet-div-icon.leaflet-editing-icon.leaflet-touch-icon {
+/*.XXXleaflet-div-icon.leaflet-editing-icon.leaflet-touch-iconXXX {
 
     background: rgba(0,0,0, 0.2) ;
     border-width:3px;
     border-color: #222222;
 }
+.leaflet-editing-icon { width: 15px !important; height: 15px !important;}
 .ra-editing-iconDEL{
 
     background: rgba(120, 120, 120, 0.9) ;
@@ -187,7 +191,7 @@ form input#gpxtitlesearch{
     margin-top:-5px ;
     margin-left:-5px ;
     border: 1px solid #ff0000 ;
-}
+}*/
 
 span.placelocation{
     margin-right: 30px;

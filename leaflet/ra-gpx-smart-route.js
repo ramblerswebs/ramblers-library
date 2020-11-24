@@ -162,7 +162,12 @@ L.Control.SmartRoute = L.Control.extend({
                 var line = new L.Polyline(ramblersMap.SmartRoute.latlngs, ramblersMap.DrawStyle);
                 ramblersMap.SmartRoute.latlngs = null;
                 ramblersMap.drawnItems.addLayer(line);
-                ramblersMap.drawnItems.fire('upload:addline', {line: line});
+               
+                if (ramblersMap.RoutingOption.joinSegments){
+                     ramblersMap.map.fire('join:attach',null);
+                }else {
+                     ramblersMap.drawnItems.fire('upload:addline', {line: line});
+                }
                 ramblersMap.SmartRouteControl.setOpacityZero();
             }
             ramblersMap.map.SmartRouteLayer.clearLayers();

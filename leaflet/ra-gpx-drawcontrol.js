@@ -83,7 +83,6 @@ function addDrawControl(lat, long, zoom) {
         //  color: '#007A87',
     });
     ramblersMap.DrawControl = drawControl;
-
     if (ramblersMap.ORSkey !== null) {
         // add smart route layer
         ramblersMap.map.SmartRouteLayer = L.featureGroup([]).addTo(ramblersMap.map);
@@ -170,11 +169,21 @@ function addDrawControl(lat, long, zoom) {
         setGpxToolStatus('off');
     });
     ramblersMap.map.on(L.Draw.Event.DRAWVERTEX, function (e) {
+        var layer = e.layers._layers;
         if (ramblersMap.SmartRoute.enabled) {
             // console.log('DRAW VERTEX');
-            // var layers = ramblersMap.drawnItems.getLayers();
-            var layer = e.layers._layers;
             ramblersMap.SmartRouteControl.displaySmartPoints(layer);
+        }
+        if (ramblersMap.RoutingOption.panToNewPoint) {
+            var latlong; //= new L.LatLng(lat, long);
+            for (const property in layer) {
+                latlong = layer[property]._latlng;
+            }
+
+            ramblersMap.map.panTo(latlong);
+        }
+        if (ramblersMap.RoutingOption.joinSegments) {
+
         }
     });
 
@@ -189,12 +198,19 @@ function addDrawControl(lat, long, zoom) {
             }
             ramblersMap.SmartRouteControl.enable();
         }
-        //resetOpacity();
         ramblersMap.displayMouseGridSquare = this.displayMouseGridSquare;
         disableMapMoveDrawing();
+        if (!ramblersMap.SmartRoute.enabled) {
+            if (ramblersMap.RoutingOption.joinSegments) {
+                ramblersMap.map.fire('join:attach', null);
+            }
+        }
         addElevations(false);
         setGpxToolStatus('auto');
         //  console.log('DRAW EXIT');
+    });
+    ramblersMap.map.on('join:attach', function () {
+        joinLastSegment();
     });
     ramblersMap.map.on(L.Draw.Event.EDITSTART, function (e) {
         ramblersMap.map.setMaxZoom(22);
@@ -401,6 +417,82 @@ function listDrawnItems() {
         node.innerHTML = text;
     }
 }
+function  joinLastSegment() {
+    var no = ramblersMap.drawnItems.getLayers().length;
+    if (no > 1) {
+        var layers = ramblersMap.drawnItems.getLayers();
+        var isLine=layers[no - 1] instanceof L.Polyline;
+        if (!isLine){
+            return;
+        }
+        var nearest = findNearestLine(layers, layers[no - 1]);
+        if (nearest === null) {
+            return;
+        }
+        var latlngs = [];
+        var l1 = nearest.l1;
+        var l2 = nearest.l2;
+
+        latlngs = getMergedLinePoints(l1, l2);
+
+        var line = new L.Polyline(latlngs, ramblersMap.DrawStyle);
+
+        ramblersMap.drawnItems.removeLayer(l1.line);
+        ramblersMap.drawnItems.removeLayer(l2.line);
+        ramblersMap.drawnItems.addLayer(line);
+        ramblersMap.drawnItems.fire('upload:addline', {line: line});
+    }
+}
+function getMergedLinePoints(l1, l2) {
+    var latlngs;
+    if (l1.index > 0 && l2.index === 0) {
+        latlngs = l1.line._latlngs.concat(l2.line._latlngs);
+        return latlngs;
+    }
+     if (l1.index === 0 && l2.index >0) {
+        latlngs = l2.line._latlngs.concat(l1.line._latlngs);
+        return latlngs;
+    }
+     if (l1.index > 0 && l2.index > 0) {
+        latlngs = l1.line._latlngs.concat(l2.line._latlngs.reverse());
+        return latlngs;
+    }
+     if (l1.index === 0 && l2.index ===0) {
+        latlngs = l2.line._latlngs.reverse().concat(l1.line._latlngs);
+        return latlngs;
+    }
+}
+function findNearestLine(layers, joinLine) {
+    var nearest = null;
+    var shortest = Number.MAX_VALUE;
+    for (var i = 0; i < layers.length - 1; i++) {
+        var line = layers[i];
+        if (line instanceof L.Polyline) {
+            for (var j of [0, line._latlngs.length - 1]) {
+                var pt1 = line._latlngs[j];
+                for (var k of [0, joinLine._latlngs.length - 1]) {
+                    var pt2 = joinLine._latlngs[k];
+                    var dist = pt2.distanceTo(pt1);
+                    if (dist < shortest) {
+                        shortest = dist;
+                        //  console.log(dist);
+                        nearest = {l1: {
+                                line: line,
+                                index: j,
+                                pt: pt1},
+                            l2: {
+                                line: joinLine,
+                                index: k,
+                                pt: pt2},
+                            distance: dist};
+                    }
+                }
+            }
+        }
+    }
+    //  console.log(nearest);
+    return nearest;
+}
 
 function listpath(i, latlngs) {
     var dist = polylineDistance(latlngs);
@@ -484,8 +576,8 @@ function getElevations(force) {
         });
     }
     if (nullItems.length > 0) { // need to fetch elevations
-        if (nullItems.length > 500) {
-            blurt("Tracks contains more than 500 points, response may be slow, please wait...");
+        if (nullItems.length > 1000) {
+            blurt("Tracks contains more than 1000 points, response may be slow, please wait...");
         }
         var points = "data=" + JSON.stringify(nullItems);
         var url = "https://elevation.theramblers.org.uk/";

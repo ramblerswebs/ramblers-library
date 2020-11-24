@@ -54,33 +54,36 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var list = document.createElement('ul');
         list.setAttribute('class', 'nav nav-tabs tabs-stacked ');
         container.appendChild(list);
-        self.addTabItem(container, list, 'Search', 'search');
-        self.addTabItem(container, list, 'Ordnance Survey Maps', 'osmaps');
-        self.addTabItem(container, list, 'OS Grid', 'grid');
-        self.addTabItem(container, list, 'Mouse Right Click', 'mouse');
         if (ramblersMap.options.draw) {
-            self.addTabItem(container, list, 'Plot Route', 'route');
+            self.addTabItem(container, list, 'Plot Walking Route', 'route');
         }
+        self.addTabItem(container, list, 'Search', 'search');
+        self.addTabItem(container, list, 'Ordnance Survey', 'osmaps');
+        //      self.addTabItem(container, list, 'OS Grid', 'grid');
+        self.addTabItem(container, list, 'Mouse Right Click', 'mouse');
+
         self.addTabItem(container, list, 'Help', 'help');
         // tab content 
         var content = document.createElement('div');
         content.setAttribute('class', 'tab-content');
         container.appendChild(content);
-        var searchDiv = self.addTabContentItem(content, "search", true);
-        var osmapsDiv = self.addTabContentItem(content, "osmaps", false);
-        var osgridDiv = self.addTabContentItem(content, "grid", false);
-        var mouseDiv = self.addTabContentItem(content, "mouse", false);
         if (ramblersMap.options.draw) {
-            var drawDiv = self.addTabContentItem(content, "route", false);
+            var drawDiv = self.addTabContentItem(content, "route", true);
         }
+        var searchDiv = self.addTabContentItem(content, "search", false);
+        var osmapsDiv = self.addTabContentItem(content, "osmaps", false);
+        //     var osgridDiv = self.addTabContentItem(content, "grid", false);
+        var mouseDiv = self.addTabContentItem(content, "mouse", false);
+
         var helpDiv = self.addTabContentItem(content, "help", false);
-        self.addSearch(searchDiv);
-        self.addOSMaps(osmapsDiv);
-        self.addOSGrid(osgridDiv);
-        self.addMouse(mouseDiv);
         if (ramblersMap.options.draw) {
             self.addDrawOptions(drawDiv);
         }
+        self.addSearch(searchDiv);
+        self.addOSMaps(osmapsDiv);
+        //   self.addOSGrid(osgridDiv);
+        self.addMouse(mouseDiv);
+
 
         self.addHelp(helpDiv);
         var padding = document.createElement('p');
@@ -207,9 +210,8 @@ L.Control.RA_Map_Tools = L.Control.extend({
                 }
             });
         });
-    },
-    addOSGrid: function (tag) {
         var self = this;
+        tag.appendChild(document.createElement('hr'));
         var title = document.createElement('h4');
         title.textContent = 'Ordnance Survey Grid';
         tag.appendChild(title);
@@ -266,16 +268,26 @@ L.Control.RA_Map_Tools = L.Control.extend({
     addDrawOptions: function (tag) {
         var self = this;
         var title = document.createElement('h4');
-        title.textContent = 'Plot Route';
+        title.textContent = 'Plot Walking Route';
         tag.appendChild(title);
+        var titleoptions = document.createElement('h5');
+        titleoptions.textContent = 'Options';
+        tag.appendChild(titleoptions);
+        this.addYesNo(tag, 'divClass', "Pan: Centre map on last point added to route", ramblersMap.RoutingOption, 'panToNewPoint');
+        this.addYesNo(tag, 'divClass', "Join: Join new route to nearest existing route", ramblersMap.RoutingOption, 'joinSegments');
+        tag.appendChild(document.createElement('hr'));
+        var titlestyle = document.createElement('h5');
+        titlestyle.textContent = 'Display: Style of route';
+        tag.appendChild(titlestyle);
         var color = ramblersMap.DrawStyle.color;
-        var label = document.createElement('label');
-        label.textContent = "Route line colour";
-        tag.appendChild(label);
         var drawColor = document.createElement('input');
         drawColor.setAttribute('type', 'color');
         drawColor.setAttribute('value', color);
         tag.appendChild(drawColor);
+        var label = document.createElement('label');
+        label.textContent = "Route line colour";
+        label.setAttribute('class', 'help-label xxxx');
+        tag.appendChild(label);
         this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.DrawStyle, 'weight', 1, 10, 0.5);
         this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.DrawStyle, 'opacity', .1, 1, .01);
         var example = this.addExampleLine(tag, "300px", "Example: ");
@@ -350,6 +362,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.appendChild(comment);
         this.addNumber(tag, 'divClass', 'Display groups/area within %n km', mouse.displayOptions.groups, 'distance', 0.5, 500, 0.5);
         this.addNumber(tag, 'divClass', 'Display nearest %n groups/area.', mouse.displayOptions.groups, 'number', 1, 500, 1);
+        tag.appendChild(document.createElement('hr'));
         var hdg1 = document.createElement('h5');
         hdg1.textContent = 'Postcode Options';
         tag.appendChild(hdg1);
@@ -359,6 +372,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.appendChild(comment);
         this.addNumber(tag, 'divClass', 'Display postcodes within %n km', mouse.displayOptions.postcodes, 'distance', 0.5, 20, 0.5);
         this.addNumber(tag, 'divClass', 'Display nearest %n postcodes', mouse.displayOptions.postcodes, 'number', 1, 50, 1);
+        tag.appendChild(document.createElement('hr'));
         var hdg3 = document.createElement('h5');
         hdg3.textContent = 'Meeting/Starting Locations Options';
         tag.appendChild(hdg3);
@@ -368,6 +382,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.appendChild(comment);
         this.addNumber(tag, 'divClass', 'Display locations within %n km', mouse.displayOptions.starting, 'distance', 0.5, 20, 0.5);
         this.addNumber(tag, 'divClass', 'Display nearest %n locations', mouse.displayOptions.starting, 'number', 5, 500, 5);
+        tag.appendChild(document.createElement('hr'));
         var hdg4 = document.createElement('h5');
         hdg4.textContent = 'Open Street Map Options';
         tag.appendChild(hdg4);
@@ -498,7 +513,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         itemDiv.setAttribute('class', divClass);
         tag.appendChild(itemDiv);
         var _label = document.createElement('label');
-        _label.setAttribute('class', 'help-label xxxx');
+        _label.setAttribute('class', 'help-label');
         _label.textContent = label;
         var inputTag = document.createElement('input');
         //  inputTag.setAttribute('class', ' form-control-range');
