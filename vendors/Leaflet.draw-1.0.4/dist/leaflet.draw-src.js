@@ -8,7 +8,6 @@
 (function (window, document, undefined) {/**
  * Leaflet.draw assumes that you have already included the Leaflet library.
  */
-    var L;
     L.drawVersion = "1.0.4";
     /**
      * @class L.Draw
