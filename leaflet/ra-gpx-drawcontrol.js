@@ -88,6 +88,7 @@ function addDrawControl(lat, long, zoom) {
         ramblersMap.map.SmartRouteLayer = L.featureGroup([]).addTo(ramblersMap.map);
         ramblersMap.SmartRouteControl = new L.Control.SmartRoute();
     } else {
+        ramblersMap.SmartRouteControl=null;
         ramblersMap.SmartRoute = {};
         ramblersMap.SmartRoute.enabled = false;
     }
@@ -152,6 +153,9 @@ function addDrawControl(lat, long, zoom) {
     });
     ramblersMap.map.on(L.Draw.Event.DRAWSTART, function (e) {
         // console.log('DRAW START');
+        if (ramblersMap.SmartRouteControl!==null){
+             ramblersMap.SmartRouteControl.disable();
+        }
         if (ramblersMap.SmartRoute.enabled) {
             //setOpacityZero();
             // save number of layers so we can see if cancel used
@@ -159,8 +163,7 @@ function addDrawControl(lat, long, zoom) {
             ramblersMap.SmartRoute.latlngs = null;
             ramblersMap.SmartRoute.pending = false;
             ramblersMap.SmartRoute.saveroute = false;
-            ramblersMap.SmartRouteControl.disable();
-        }
+                   }
 
         this.displayMouseGridSquare = ramblersMap.displayMouseGridSquare;
         ramblersMap.displayMouseGridSquare = false;
@@ -196,7 +199,10 @@ function addDrawControl(lat, long, zoom) {
             } else {
                 ramblersMap.SmartRouteControl.saveSmartRoute();
             }
-            ramblersMap.SmartRouteControl.enable();
+           
+        }
+        if (ramblersMap.SmartRouteControl!==null){
+             ramblersMap.SmartRouteControl.enable();
         }
         ramblersMap.displayMouseGridSquare = this.displayMouseGridSquare;
         disableMapMoveDrawing();
@@ -382,13 +388,13 @@ function addDrawControl(lat, long, zoom) {
 }
 function disableDraw() {
     ramblersMap.map.removeControl(ramblersMap.DrawControl);
-    if (ramblersMap.ORSkey !== null) {
+    if (ramblersMap.SmartRouteControl!==null){
         ramblersMap.map.removeControl(ramblersMap.SmartRouteControl);
     }
 }
 function enableDraw() {
     ramblersMap.map.addControl(ramblersMap.DrawControl);
-    if (ramblersMap.ORSkey !== null) {
+    if (ramblersMap.SmartRouteControl!==null){
         ramblersMap.map.addControl(ramblersMap.SmartRouteControl);
     }
 }
