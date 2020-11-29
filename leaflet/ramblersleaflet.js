@@ -50,22 +50,13 @@ function RamblersLeafletMap(base) {
     };
 }
 function raLoadLeaflet() {
-    if (ramblersMap.options.fullscreen) {
-        ramblersMap.map = new L.Map("leafletmap", {
-            center: new L.LatLng(54.221592, -3.355007),
-            zoom: 5,
-            zoomSnap: 0.25,
-            maxZoom: 18,
-            fullscreenControl: true
-        });
-    } else {
-        ramblersMap.map = new L.Map("leafletmap", {
-            center: new L.LatLng(54.221592, -3.355007),
-            zoom: 5,
-            zoomSnap: 0.25,
-            maxZoom: 18});
-    }
-
+    ramblersMap.map = new L.Map("leafletmap", {
+        center: new L.LatLng(54.221592, -3.355007),
+        zoom: 5,
+        zoomSnap: 0.25,
+        maxZoom: 18,
+        zoomControl: false
+    });
     ramblersMap.mapLayers = new Object();
 // map types
     ramblersMap.mapLayers["Open Street Map"] = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -74,11 +65,11 @@ function raLoadLeaflet() {
         maxNativeZoom: 16,
         attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
     if (ramblersMap.options.bing) {
-//  var bingkey = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
         ramblersMap.mapLayers["Bing Aerial"] = new L.BingLayer(ramblersMap.bingkey, {type: 'Aerial'});
         ramblersMap.mapLayers["Bing Aerial (Labels)"] = new L.BingLayer(ramblersMap.bingkey, {type: 'AerialWithLabels'});
         ramblersMap.mapLayers["Ordnance Survey"] = new L.BingLayer(ramblersMap.bingkey, {type: 'ordnanceSurvey',
-            attribution: 'Bing/OS Crown Copyright'});
+            attribution: 'Bing/OS Crown Copyright', minZoom: 11,
+            maxZoom: 17});
     }
     createMouseMarkers();
     createPlaceMarkers();
@@ -104,9 +95,7 @@ function raLoadLeaflet() {
                 var bounds = getBounds(ramblersMap.markerList);
                 ramblersMap.map.fitBounds(bounds, {padding: [150, 150]});
             }
-        } else {
-
-        }
+        } 
     }
 // error message container
 
@@ -131,10 +120,11 @@ function raLoadLeaflet() {
         L.control.racontainer({id: 'js-gewmapButtons'}).addTo(ramblersMap.map);
     }
 
-
     if (ramblersMap.options.startingplaces) {
         L.control.usageAgreement().addTo(ramblersMap.map);
     }
+    ramblersMap.map.addControl(new L.Control.Zoom());
+    ramblersMap.map.addControl(new L.Control.Fullscreen());
     if (ramblersMap.options.print) {
         L.control.browserPrint({
             title: 'Print',
@@ -391,7 +381,7 @@ function directions($lat, $long) {
         alert("Sorry - Unable to find your location, we will ask Google to try");
         page = "https://www.google.com/maps/dir/Current+Location/" + $lat.toString() + "," + $long.toString();
     }
-    console.log(page);
+   // console.log(page);
     window.open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 function googlemap($lat, $long) {
@@ -457,6 +447,7 @@ var postJSON = function (url, data, callback) {
 function getMouseMoveAction(e) {
     var gr, gridref;
     var zoom = ramblersMap.map.getZoom();
+   // console.log(zoom);
     var p = new LatLon(e.latlng.lat, e.latlng.lng);
     var grid = OsGridRef.latLonToOsGrid(p);
     if (zoom > 16) {

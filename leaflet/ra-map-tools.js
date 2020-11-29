@@ -47,6 +47,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         displayModal("Loading", false);
         var tag = document.getElementById("modal-data");
         tag.innerHTML = "";
+        
         // tabs
         var container = document.createElement('div');
         container.setAttribute('class', 'tabs-left ');
@@ -59,20 +60,21 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         self.addTabItem(container, list, 'Search', 'search');
         self.addTabItem(container, list, 'Ordnance Survey', 'osmaps');
-        //      self.addTabItem(container, list, 'OS Grid', 'grid');
         self.addTabItem(container, list, 'Mouse Right Click', 'mouse');
 
-        self.addTabItem(container, list, 'Help', 'help');
+           self.addTabItem(container, list, 'Feedback', 'help');
         // tab content 
         var content = document.createElement('div');
         content.setAttribute('class', 'tab-content');
         container.appendChild(content);
+        var searchDiv;
         if (ramblersMap.options.draw) {
             var drawDiv = self.addTabContentItem(content, "route", true);
+            searchDiv = self.addTabContentItem(content, "search", false);
+        } else {
+            searchDiv = self.addTabContentItem(content, "search", true);
         }
-        var searchDiv = self.addTabContentItem(content, "search", false);
         var osmapsDiv = self.addTabContentItem(content, "osmaps", false);
-        //     var osgridDiv = self.addTabContentItem(content, "grid", false);
         var mouseDiv = self.addTabContentItem(content, "mouse", false);
 
         var helpDiv = self.addTabContentItem(content, "help", false);
@@ -81,13 +83,24 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         self.addSearch(searchDiv);
         self.addOSMaps(osmapsDiv);
-        //   self.addOSGrid(osgridDiv);
+        
         self.addMouse(mouseDiv);
 
 
         self.addHelp(helpDiv);
         var padding = document.createElement('p');
         container.appendChild(padding);
+         if (ramblersMap.maphelppage !== '') {
+                      var help = document.createElement('a');
+            help.setAttribute('class', 'link-button button-p1815');
+            help.setAttribute('href', ramblersMap.maphelppage);
+           help.setAttribute('target', '_blank');
+           help.style.cssFloat = "right";
+            help.textContent = "Visit our Mapping Help Site";
+           // var self = ramblersMap.RA_Map_Tools;
+            tag.appendChild(help);
+         //   L.DomEvent.on(help, 'click', self._display_help, self);
+        }
         if (ramblersMap.map.isFullscreen()) {
             ramblersMap.map.toggleFullscreen();
             //       var modal = document.getElementById('js-raModal');
@@ -102,10 +115,10 @@ L.Control.RA_Map_Tools = L.Control.extend({
     _returnToFullScreen: function () {
         ramblersMap.map.toggleFullscreen();
     },
-    _display_help: function (evt) {
-        var page = ramblersMap.maphelppage;
-        open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
-    },
+//    _display_help: function (evt) {
+//        var page = ramblersMap.maphelppage;
+//        open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
+//    },
     addSearch: function (tag) {
         var feed = new feeds();
         feed.getSearchTags(tag, tag);
@@ -114,37 +127,40 @@ L.Control.RA_Map_Tools = L.Control.extend({
             var result = ra.item;
             ramblersMap.RA_Map_Tools.searchLayer.clearLayers();
             result.center = new L.LatLng(result.lat, result.lon);
-            ramblersMap.map.setZoom(16);
+            //   ramblersMap.map.setZoom(16);
             new L.Marker(result.center, {icon: ramblersMap.redmarkericon})
                     .bindPopup("<b>" + result.class + ": " + result.type + "</b><br/>" + result.display_name)
                     .addTo(ramblersMap.RA_Map_Tools.searchLayer)
                     .openPopup();
-            ramblersMap.map.setView(result.center);
+            ramblersMap.map.setView(result.center, 16);
         });
     },
     addHelp: function (tag) {
         if (ramblersMap.maphelppage !== '') {
+//            var container = document.createElement('div');
+//            container.setAttribute('class', 'ra-gray-container');
+//            tag.appendChild(container);
+//
+////            var helphdg = document.createElement('h5');
+////            helphdg.textContent = "Link to Mapping Help";
+////            container.appendChild(helphdg);
+//
+//            var help = document.createElement('button');
+//            help.setAttribute('class', 'help map-tools');
+//            help.textContent = "Visit our Mapping Help Site";
+//            var self = ramblersMap.RA_Map_Tools;
+//            container.appendChild(help);
+//            L.DomEvent.on(help, 'click', self._display_help, self);
             var helpcomment = document.createElement('div');
             helpcomment.setAttribute('class', 'help map-tools');
-            helpcomment.textContent = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via ";
+            helpcomment.textContent = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via the HELP web site.";
             tag.appendChild(helpcomment);
 
-            var helplink = document.createElement('a');
-            helplink.setAttribute('href', 'https://maphelp.ramblers-webs.org.uk/map-help-contact.html');
-            helplink.setAttribute('target', '_blank');
-            helplink.textContent = "Ramblers-webs mapping help contact";
-            helpcomment.appendChild(helplink);
-
-            var helphdg = document.createElement('h4');
-            helphdg.textContent = "Link to Mapping Help";
-            tag.appendChild(helphdg);
-
-            var help = document.createElement('button');
-            help.setAttribute('class', 'help map-tools');
-            help.textContent = "Mapping Help";
-            var self = ramblersMap.RA_Map_Tools;
-            tag.appendChild(help);
-            L.DomEvent.on(help, 'click', self._display_help, self);
+//            var helplink = document.createElement('a');
+//            helplink.setAttribute('href', 'https://maphelp3.ramblers-webs.org.uk/map-help-contact.html');
+//            helplink.setAttribute('target', '_blank');
+//            helplink.textContent = "Ramblers-webs mapping help contact";
+//            helpcomment.appendChild(helplink);
         }
     },
     osZoomLevel: function () {
@@ -174,12 +190,12 @@ L.Control.RA_Map_Tools = L.Control.extend({
         select.appendChild(option0);
 
         var option1 = document.createElement('option');
-        option1.textContent = "Display outline of all Explorer 25K to 1 Maps";
+        option1.textContent = "Display outline of all Explorer 1:25k Maps";
         option1.setAttribute('value', '25K');
         select.appendChild(option1);
 
         var option2 = document.createElement('option');
-        option2.textContent = "Display outline of all Landranger 50K to 1 Maps";
+        option2.textContent = "Display outline of all Landranger 1:50k Maps";
         option2.setAttribute('value', '50K');
         select.appendChild(option2);
         var comment = document.createElement('div');

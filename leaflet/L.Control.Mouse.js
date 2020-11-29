@@ -85,6 +85,7 @@ L.Control.PostcodeStatus = L.Control.extend({
             '<option value="cafes">Right click/tap hold to see nearby Cafes</option>',
             '<option value="pubs">Right click/tap hold to see nearby Public Houses</option>',
             '<option value="toilets">Right click/tap hold to see nearby Toilets</option>',
+            '<option value="alltags">Right click/tap hold to see all nearby Items</option>',
             '</optgroup>'];
         var text = '<select id="ra-mouse-options">';
         var osmOptions = [];
@@ -147,6 +148,9 @@ L.Control.PostcodeStatus = L.Control.extend({
                     break;
                 case "bus_stops":
                     this._displayOSM(e, "bus_stops");
+                    break;
+                case "alltags":
+                    this._displayAllTags(e);
                     break;
             }
         }
@@ -262,9 +266,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         var os = new OsGridRef(east, north);
         var pt = OsGridRef.osGridToLatLon(os);
         value.latlng = L.latLng(pt.lat, pt.lon);
-        var grid = OsGridRef.latLonToOsGrid(pt);
-        value.gr = grid.toString(6);
-
+        value.gr = os.toString(6);
         return value;
     },
     _displayOsMaps: function (e) {
@@ -434,6 +436,59 @@ L.Control.PostcodeStatus = L.Control.extend({
             }, 6000, point);
         });
     },
+    _displayAllTags: function (e) {
+        alert('This option not available yet');
+        return;
+        var self = ramblersMap.PostcodeStatus;
+        var title = "All items";
+        var single = "Item";
+        var type = "Items";
+        var p = new LatLon(e.latlng.lat, e.latlng.lng);
+        var i;
+        var msg = "<b>Searching for " + type + " ...</b>";
+        this._map.mouseLayer.clearLayers();
+        var point = L.marker(p).bindPopup(msg);
+        this._map.mouseLayer.addLayer(point);
+        //  point.getPopup().setContent(msg);
+        point.openPopup();
+        this._latlng = e.latlng;
+        // var queryTemplate = '[out:json]; (node({{bbox}});way({{bbox}});relation({{bbox}});';
+        var queryTemplate = '[out:json];(way(around:200,52.71017,-1.3480224););out body;';
+        //   node({{bbox}})(if:count_tags() > 0);
+        //  var query = this.getQuery(queryTemplate, null, null);
+        var lat = this._latlng.lat;
+        var lng = this._latlng.lng;
+        var kwargs = {bbox: this.getBox()};
+        var query = L.Util.template(queryTemplate, kwargs);
+        //console.log("Query: " + query);
+        var url = this.getUrl(query);
+        //console.log("Query: " + url);
+        getJSON(url, function (err, items) {
+            if (err !== null) {
+                var msg = "Error: Something went wrong: " + err;
+                point.getPopup().setContent(msg);
+            } else {
+                if (items.elements.length === 0) {
+                    var closest = "No " + title + " found within " + self.displayOptions.osm.distance + "Km";
+                    point.getPopup().setContent(closest);
+                } else {
+                    msg = "<b>" + items.elements.length + " " + title + " found within " + self.displayOptions.osm.distance + "Km</b>";
+                    msg += "<p>" + items.osm3s.copyright + "</p>";
+                    point.getPopup().setContent(msg);
+                    point.openPopup();
+                    for (i = 0; i < items.elements.length; i++) {
+                        var item = items.elements[i];
+                        self.displayElement(item, single);
+                    }
+                    var bounds = self._map.mouseLayer.getBounds();
+                    self._map.fitBounds(bounds, {padding: [150, 150]});
+                }
+            }
+            setTimeout(function (point) {
+                self._map.removeLayer(point);
+            }, 6000, point);
+        });
+    },
     displayElement: function (node, title) {
         switch (node.type) {
             case "node":
@@ -555,7 +610,7 @@ L.Control.PostcodeStatus = L.Control.extend({
     },
     getBox: function () {
         var bounds = this._map.getBounds();
-        return bounds.getSouth() + "," + bounds.getWest() + "," + bounds.getNorth() + "," + bounds.getEast();
+        return bounds.getSouth().toPrecision(8) + "," + bounds.getWest().toPrecision(8) + "," + bounds.getNorth().toPrecision(8) + "," + bounds.getEast().toPrecision(8);
     },
     getRadius: function () {
         return this.displayOptions.osm.distance * 1000;
@@ -658,22 +713,24 @@ L.Control.PostcodeStatus = L.Control.extend({
             var area = [pt1.latlng, pt2.latlng];
             boundstr += pt1.gr + " to " + pt2.gr + "<br/>";
         }
-      //  console.log(map.type + " " + map.number);
-      //  console.log(boundstr);
+        //  console.log(map.type + " " + map.number);
+        //  console.log(boundstr);
         for (j = 0; j < map.bounds.length; j++) {
             var rect;
             var bounds = map.bounds[j];
             var pt1 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmin, bounds.northingmin);
-            var pt2 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmax, bounds.northingmax);
-            var area = [pt1.latlng, pt2.latlng];
+            var pt2 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmin, bounds.northingmax);
+            var pt3 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmax, bounds.northingmax);
+            var pt4 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmax, bounds.northingmin);
+            var area = [pt1.latlng, pt2.latlng, pt3.latlng, pt4.latlng];
             if (map.scale === "50000") {
-                rect = L.rectangle(area, {color: "#ff0000", weight: 1});
+                rect = L.polygon(area, {color: "#ff0000", weight: 1});
             } else {
-                rect = L.rectangle(area, {color: "#ff7800", weight: 1});
+                rect = L.polygon(area, {color: "#ff7800", weight: 1});
             }
             var msg = "<h4>" + map.type + " " + map.number + "</h4>";
             msg += "<p>" + map.title + "</p>";
-            msg += "<p>Scale: " + map.scale.substr(0, 2) + "K to 1</p>";
+            msg += "<p>Scale: 1:" + map.scale.substr(0, 2) + "k</p>";
             msg += boundstr;
             rect.bindPopup(msg);
             layer.addLayer(rect);

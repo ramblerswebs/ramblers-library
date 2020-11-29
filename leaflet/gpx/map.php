@@ -18,7 +18,7 @@ class RLeafletGpxMap extends RLeafletMap {
     public function displayPath($gpx) {
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/leaflet/maplist.js", "text/javascript");
-        $this->help_page = "https://maphelp.ramblers-webs.org.uk/walking-route.html";
+        $this->help_page = "https://maphelp3.ramblers-webs.org.uk/singleroute.html";
         $this->options->fullscreen = true;
         $this->options->cluster = false;
         $this->options->search = true;

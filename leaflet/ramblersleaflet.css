@@ -403,3 +403,8 @@ div#ra-map-container{
 .leaflet-draw-tooltip {
     margin-left:75px !important;
 }
+div.ra-gray-container{
+    background-color: #DDDDDD;
+    border-radius: 10px;
+    padding: 10px;
+}

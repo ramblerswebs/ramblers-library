@@ -24,7 +24,7 @@ class RLeafletMapdraw extends RLeafletMap {
     public function display() {
         echo "<div id='ra-map-container'>";
         echo "<div id='ra-map-details'><p></div>";
-        $this->help_page = "https://maphelp.ramblers-webs.org.uk/draw-walking-route.html";
+        $this->help_page = "https://maphelp3.ramblers-webs.org.uk/draw-walking-route.html";
         $this->options->fullscreen = true;
         $this->options->search = true;
         $this->options->locationsearch = true;
