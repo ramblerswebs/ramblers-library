@@ -659,3 +659,20 @@ function ragetLatlngs(lnglats) {
     }
     return latlngs;
 }
+function removeShortSegments(latlngsOrig) {
+    var latlngs = [];
+    var last = null;
+    var dist;
+    for (const latlng of latlngsOrig) {
+        if (last !== null) {
+            dist = last.distanceTo(latlng);
+            if (dist > 2) {
+                latlngs.push(latlng);
+            }
+        } else {
+            latlngs.push(latlng);
+        }
+        last = latlng;
+    }
+    return latlngs;
+}

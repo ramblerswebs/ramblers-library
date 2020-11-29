@@ -1,7 +1,7 @@
 var L, ramblersMap;
 L.Control.SmartRoute = L.Control.extend({
     options: {
-        title: 'Smart Routing - follow paths',
+        title: 'Turn Smart Routing on/off to follow paths',
         position: 'bottomright'
     },
     onAdd: function (map) {
@@ -159,7 +159,8 @@ L.Control.SmartRoute = L.Control.extend({
                 layer = layers[layers.length - 1];
                 ramblersMap.drawnItems.removeLayer(layer);
                 ramblersMap.SmartRouteControl.resetOpacity();
-                var line = new L.Polyline(ramblersMap.SmartRoute.latlngs, ramblersMap.DrawStyle);
+                var latlngs=removeShortSegments(ramblersMap.SmartRoute.latlngs);
+                var line = new L.Polyline(latlngs, ramblersMap.DrawStyle);
                 ramblersMap.SmartRoute.latlngs = null;
                 ramblersMap.drawnItems.addLayer(line);
                

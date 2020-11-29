@@ -160,7 +160,8 @@ L.Control.GpxUpload = L.Control.extend({
                 if (coords.length === 0)
                     continue;
                 // add track
-                var l = new L.Polyline(coords, options.polyline_options);
+                var latlngs=removeShortSegments(coords);
+                var l = new L.Polyline(latlngs, options.polyline_options);
                 ra_gpx_upload_this._itemsCollection.addLayer(l);
                 ra_gpx_upload_this._itemsCollection.fire('upload:addline', {line: l});
             }

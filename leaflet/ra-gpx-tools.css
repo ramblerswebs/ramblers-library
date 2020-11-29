@@ -10,7 +10,7 @@
 
 }
 .leaflet-control-gpx-download div{
-    margin-bottom: 3px !important;
+    margin-bottom: 1px !important;
 }
 .leaflet-control-gpx-download a {
     background:#fff url(images/download.png) no-repeat 0 0;
@@ -33,7 +33,7 @@
 
 }
 .leaflet-control-gpx-simplify div{
-    margin-bottom: 3px !important;
+    margin-bottom: 0px !important;
 }
 .leaflet-control-gpx-simplify div a {
     background:#fff url(images/simplify.png) no-repeat 0 0;
@@ -124,7 +124,7 @@ div.leaflet-gpx-options div input{
 
 /* upload */
 .leaflet-control-gpx-upload {
-    margin-bottom: 3px !important;
+    margin-bottom: 0px !important;
 }
 #upload-icon{
     background:#fff url(images/upload.png) no-repeat 0 0;
@@ -158,6 +158,9 @@ div.ra-upload-toolbar-button-disabled #upload-icon{
     margin-bottom: 0px !important;
     margin-right: 0px !important;
 }
+div.leaflet-control-reverse-route div{
+    margin-bottom: 0px !important;
+}
 .leaflet-control-reverse-route  div a {
     background:#fff url(images/reverse.png) no-repeat 0 0;
     background-size:27px 27px;
@@ -175,22 +178,23 @@ div.leaflet-gpx-options div.status {
 }
 
 /* Smart Route */
-div.leaflet-bar a#leaflet-smart-route{
-    width:54px;
+
+div.leaflet-control-smart-route div{
+     margin-bottom: 0px !important;
 }
-.leaflet-control-smart-route {
+div.leaflet-control-smart-route{
     margin-bottom: 0px !important;
     margin-right: 0px !important;
 }
 
 .leaflet-control-smart-route  div a {
-    background:#fff url(images/onicon.png) no-repeat 0 0;
-    background-size:54px 27px;
+    background:#fff url(images/smarton.png) no-repeat 0 0;
+    background-size:28px 27px;
     background-position: center; 
     cursor: pointer;
 }
 .ra-smart-toolbar-button-disabled div a {
-    background:#ddd url(images/officon.png) no-repeat 0 0;
-    background-size:54px 27px;
+    background:#ddd url(images/smartoff.png) no-repeat 0 0;
+    background-size:28px 27px;
     background-position: center; 
 }
