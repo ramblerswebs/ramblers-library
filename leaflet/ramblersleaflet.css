@@ -408,3 +408,8 @@ div.ra-gray-container{
     border-radius: 10px;
     padding: 10px;
 }
+.leaflet-control a{
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+}

@@ -312,7 +312,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         listItem.setAttribute('data-tab', id);
         list.appendChild(listItem);
         listItem.addEventListener('click', (function (e) {
-            var tab = e.originalTarget;
+            var tab = e.currentTarget;
             var elems = container.querySelectorAll(".active");
             elems.forEach(function (item, index) {
                 item.classList.remove("active");
