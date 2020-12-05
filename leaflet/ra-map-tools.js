@@ -47,22 +47,27 @@ L.Control.RA_Map_Tools = L.Control.extend({
         displayModal("Loading", false);
         var tag = document.getElementById("modal-data");
         tag.innerHTML = "";
-        
+        var title = document.createElement('h4');
+        title.textContent = "Mapping Tools";
+        tag.appendChild(title);
         // tabs
         var container = document.createElement('div');
-        container.setAttribute('class', 'tabs-left ');
+        container.setAttribute('class', 'tabs');
         tag.appendChild(container);
-        var list = document.createElement('ul');
-        list.setAttribute('class', 'nav nav-tabs tabs-stacked ');
-        container.appendChild(list);
+        var tabs = document.createElement('div');
+        tabs.setAttribute('class', 'ra-tabs-left ');
+        container.appendChild(tabs);
+        var list = document.createElement('div');
+        tabs.appendChild(list);
         if (ramblersMap.options.draw) {
-            self.addTabItem(container, list, 'Plot Walking Route', 'route');
+            self.addTabItem(container, list, 'Plot Walking Route', 'route', true);
+            self.addTabItem(container, list, 'Search', 'search', false);
+        } else {
+            self.addTabItem(container, list, 'Search', 'search', true);
         }
-        self.addTabItem(container, list, 'Search', 'search');
-        self.addTabItem(container, list, 'Ordnance Survey', 'osmaps');
-        self.addTabItem(container, list, 'Mouse Right Click', 'mouse');
-
-           self.addTabItem(container, list, 'Feedback', 'help');
+        self.addTabItem(container, list, 'Ordnance Survey', 'osmaps', false);
+        self.addTabItem(container, list, 'Mouse Right Click', 'mouse', false);
+        self.addTabItem(container, list, 'Feedback', 'help', false);
         // tab content 
         var content = document.createElement('div');
         content.setAttribute('class', 'tab-content');
@@ -83,23 +88,20 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         self.addSearch(searchDiv);
         self.addOSMaps(osmapsDiv);
-        
         self.addMouse(mouseDiv);
-
-
         self.addHelp(helpDiv);
         var padding = document.createElement('p');
         container.appendChild(padding);
-         if (ramblersMap.maphelppage !== '') {
-                      var help = document.createElement('a');
+        if (ramblersMap.maphelppage !== '') {
+            var help = document.createElement('a');
             help.setAttribute('class', 'link-button button-p1815');
             help.setAttribute('href', ramblersMap.maphelppage);
-           help.setAttribute('target', '_blank');
-           help.style.cssFloat = "right";
+            help.setAttribute('target', '_blank');
+            help.style.cssFloat = "right";
             help.textContent = "Visit our Mapping Help Site";
-           // var self = ramblersMap.RA_Map_Tools;
+            // var self = ramblersMap.RA_Map_Tools;
             tag.appendChild(help);
-         //   L.DomEvent.on(help, 'click', self._display_help, self);
+            //   L.DomEvent.on(help, 'click', self._display_help, self);
         }
         if (ramblersMap.map.isFullscreen()) {
             ramblersMap.map.toggleFullscreen();
@@ -115,10 +117,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
     _returnToFullScreen: function () {
         ramblersMap.map.toggleFullscreen();
     },
-//    _display_help: function (evt) {
-//        var page = ramblersMap.maphelppage;
-//        open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
-//    },
     addSearch: function (tag) {
         var feed = new feeds();
         feed.getSearchTags(tag, tag);
@@ -137,30 +135,10 @@ L.Control.RA_Map_Tools = L.Control.extend({
     },
     addHelp: function (tag) {
         if (ramblersMap.maphelppage !== '') {
-//            var container = document.createElement('div');
-//            container.setAttribute('class', 'ra-gray-container');
-//            tag.appendChild(container);
-//
-////            var helphdg = document.createElement('h5');
-////            helphdg.textContent = "Link to Mapping Help";
-////            container.appendChild(helphdg);
-//
-//            var help = document.createElement('button');
-//            help.setAttribute('class', 'help map-tools');
-//            help.textContent = "Visit our Mapping Help Site";
-//            var self = ramblersMap.RA_Map_Tools;
-//            container.appendChild(help);
-//            L.DomEvent.on(help, 'click', self._display_help, self);
             var helpcomment = document.createElement('div');
             helpcomment.setAttribute('class', 'help map-tools');
             helpcomment.textContent = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via the HELP web site.";
             tag.appendChild(helpcomment);
-
-//            var helplink = document.createElement('a');
-//            helplink.setAttribute('href', 'https://maphelp3.ramblers-webs.org.uk/map-help-contact.html');
-//            helplink.setAttribute('target', '_blank');
-//            helplink.textContent = "Ramblers-webs mapping help contact";
-//            helpcomment.appendChild(helplink);
         }
     },
     osZoomLevel: function () {
@@ -221,8 +199,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
                             ramblersMap.PostcodeStatus.displayOSMap(item, ramblersMap.map.osMapLayer);
                         }
                     }
-                    //   var bounds = ramblersMap.map.osMapLayer.getBounds();
-                    //   ramblersMap.map.osMapLayer.fitBounds(bounds, {padding: [150, 150]});
                 }
             });
         });
@@ -324,36 +300,37 @@ L.Control.RA_Map_Tools = L.Control.extend({
         polyline.setStyle(ramblersMap.DrawStyle);
 
     },
-    addTabItem: function (container, list, name, id) {
+    addTabItem: function (container, list, name, id, active) {
         var listItem;
-        listItem = document.createElement('li');
-        listItem.setAttribute('data-toggle', 'tab');
+        listItem = document.createElement('div');
+        // listItem.setAttribute('data-toggle', 'tab');
+        listItem.classList.add('ra-tab-item');
+        if (active) {
+            listItem.classList.add('active');
+        }
+        listItem.textContent = name;
+        listItem.setAttribute('data-tab', id);
         list.appendChild(listItem);
-        var link;
-        link = document.createElement('a');
-        link.setAttribute('href', '#' + id);
-        link.textContent = name;
-        listItem.appendChild(link);
-        link.ra_linkItem = listItem;
-        link.addEventListener('click', (function (e) {
+        listItem.addEventListener('click', (function (e) {
+            var tab = e.originalTarget;
             var elems = container.querySelectorAll(".active");
             elems.forEach(function (item, index) {
                 item.classList.remove("active");
             });
-            var id = e.currentTarget.hash.substring(1);
+            var id = tab.getAttribute('data-tab');
             var ele = document.getElementById(id);
             ele.classList.add('active');
+            tab.classList.add('active');
         }));
     },
     addTabContentItem: function (content, id, active) {
-        //<div id="home" class="tab-pane fade in active">
         var item;
         item = document.createElement('div');
         item.setAttribute('id', id);
         if (active) {
-            item.setAttribute('class', "tab-pane active");
+            item.setAttribute('class', "tab-panel active");
         } else {
-            item.setAttribute('class', "tab-pane");
+            item.setAttribute('class', "tab-panel");
         }
         content.appendChild(item);
         return item;
