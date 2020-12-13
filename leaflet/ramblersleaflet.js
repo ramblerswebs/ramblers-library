@@ -756,3 +756,12 @@ function votelike(gr, result) {
 function votedislike(gr, result) {
     document.getElementById(gr).innerHTML = "Incorrect vote recorded";
 }
+
+function showhide(evt, idName) {
+    var x = document.getElementById(idName);
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}

@@ -14,7 +14,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
 
     public function __construct() {
         $this->map = new RLeafletMap;
-        $this->map->help_page = "https://maphelp3.ramblers-webs.org.uk/ledwalks.html";
+        $this->map->help_page = "ledwalks.html";
         $options = $this->map->options;
         $options->cluster = true;
        // $options->displayElevation = true;

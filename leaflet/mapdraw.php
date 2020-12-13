@@ -10,6 +10,7 @@ class RLeafletMapdraw extends RLeafletMap {
     private $zoom = 10;
     private $lat = 52.89;
     private $long = -1.48;
+    public $displayDescription = true;
 
     public function __construct() {
         parent::__construct();
@@ -22,9 +23,14 @@ class RLeafletMapdraw extends RLeafletMap {
     }
 
     public function display() {
+        if ($this->displayDescription) {
+            echo "<div id='ra-description' class='clearfix'>";
+            echo file_get_contents(JURI::base() . "libraries/ramblers/leaflet/drawintro.html");
+            echo "</div>";
+        }
         echo "<div id='ra-map-container'>";
         echo "<div id='ra-map-details'><p></div>";
-        $this->help_page = "https://maphelp3.ramblers-webs.org.uk/draw-walking-route.html";
+        $this->help_page = "draw-walking-route.html";
         $this->options->fullscreen = true;
         $this->options->search = true;
         $this->options->locationsearch = true;
@@ -59,5 +65,4 @@ class RLeafletMapdraw extends RLeafletMap {
         $document->addStyleSheet("libraries/ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
         $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
     }
-
 }

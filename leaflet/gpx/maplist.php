@@ -26,7 +26,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $stats = new RGpxStatistics($this->folder, $this->getMetaFromGPX);
         $items = $stats->getJson();
         $this->addMapScript($items);
-        $this->help_page = "https://maphelp3.ramblers-webs.org.uk/listofroutes.html";
+        $this->help_page = "listofroutes.html";
         $this->options->cluster = true;
         $this->options->displayElevation = true;
         $this->options->fullscreen = true;

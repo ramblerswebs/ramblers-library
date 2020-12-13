@@ -194,7 +194,7 @@ div.leaflet-control-smart-route{
     cursor: pointer;
 }
 .ra-smart-toolbar-button-disabled div a {
-    background:#ddd url(images/smartoff.png) no-repeat 0 0;
+    background:#fff url(images/smartoff.png) no-repeat 0 0;
     background-size:28px 27px;
     background-position: center; 
 }

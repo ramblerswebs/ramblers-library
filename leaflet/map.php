@@ -17,6 +17,7 @@ class RLeafletMap {
     public $options;
     public $help_page = "";
     public $leafletLoad = true;
+    private $help_site = "https://maphelp4.ramblers-webs.org.uk/";
 
     //  const COMBINED_JS = "cache/ra_leaflet/ra-leafet";
     //  const FOLDER = "cache/ra_leaflet";
@@ -52,7 +53,7 @@ class RLeafletMap {
             $this->map->replaceString("[base]", $folder . "/");
         }
         if ($this->help_page != "") {
-            $optionstext = "ramblersMap.maphelppage='" . $this->help_page . "';";
+            $optionstext = "ramblersMap.maphelppage='" . $this->help_site . $this->help_page . "';";
             $this->map->replaceString("// [set MapOptions]", $optionstext);
         }
         //$optionstext = $options->text();
@@ -100,8 +101,8 @@ class RLeafletMap {
 
         $document = JFactory::getDocument();
         // Leaflet
-        $document->addStyleSheet("libraries/ramblers/vendors/leaflet1.6/leaflet.css", "text/css");
-        $document->addScript("libraries/ramblers/vendors/leaflet1.6/leaflet.js", "text/javascript");
+        $document->addStyleSheet("libraries/ramblers/vendors/leaflet1.7/leaflet.css", "text/css");
+        $document->addScript("libraries/ramblers/vendors/leaflet1.7/leaflet.js", "text/javascript");
         $document->addScript("libraries/ramblers/leaflet/ramblersleaflet.js", "text/javascript");
         $document->addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
         // add script for Google Plus codes https://plus.codes

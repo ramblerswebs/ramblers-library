@@ -72,7 +72,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         // send walks as json file
         // write json to display a number of them
         $this->map = new RLeafletMap();
-        $this->map->help_page = "https://maphelp3.ramblers-webs.org.uk/ledwalks.html";
+        $this->map->help_page = "ledwalks.html";
         $this->map->leafletLoad = false;
         $options = $this->map->options;
         $options->cluster = true;

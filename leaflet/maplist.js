@@ -125,17 +125,6 @@ function displayGpxdetails(g) {
     }
 }
 
-
-function showhide(evt, idName) {
-    var x = document.getElementById(idName);
-    if (x.style.display === "none") {
-        x.style.display = "block";
-    } else {
-        x.style.display = "none";
-    }
-
-}
-
 function displayGPXName(route) {
     var link = '<b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b>';
     return link;

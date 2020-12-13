@@ -85,8 +85,8 @@ L.Control.PostcodeStatus = L.Control.extend({
             '<option value="cafes">Right click/tap hold to see nearby Cafes</option>',
             '<option value="pubs">Right click/tap hold to see nearby Public Houses</option>',
             '<option value="toilets">Right click/tap hold to see nearby Toilets</option>',
-            '<option value="alltags">Right click/tap hold to see all nearby Items</option>',
             '</optgroup>'];
+        //  '<option value="alltags">Right click/tap hold to see all nearby Items</option>',
         var text = '<select id="ra-mouse-options">';
         var osmOptions = [];
         osmOptions["cafes"] = {};
