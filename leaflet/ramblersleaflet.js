@@ -68,8 +68,7 @@ function raLoadLeaflet() {
         ramblersMap.mapLayers["Bing Aerial"] = new L.BingLayer(ramblersMap.bingkey, {type: 'Aerial'});
         ramblersMap.mapLayers["Bing Aerial (Labels)"] = new L.BingLayer(ramblersMap.bingkey, {type: 'AerialWithLabels'});
         ramblersMap.mapLayers["Ordnance Survey"] = new L.BingLayer(ramblersMap.bingkey, {type: 'ordnanceSurvey',
-            attribution: 'Bing/OS Crown Copyright', minZoom: 11,
-            maxZoom: 17});
+            attribution: 'Bing/OS Crown Copyright'});
     }
     createMouseMarkers();
     createPlaceMarkers();
