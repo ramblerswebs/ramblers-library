@@ -25,7 +25,11 @@ class RLeafletMapdraw extends RLeafletMap {
     public function display() {
         if ($this->displayDescription) {
             echo "<div id='ra-description' class='clearfix'>";
-            echo file_get_contents(JURI::base() . "libraries/ramblers/leaflet/drawintro.html");
+            if (RLicense::isOpenRoutingServiceKeySet()) {
+                echo $intro = file_get_contents(JURI::base() . "libraries/ramblers/leaflet/drawintrosmart.html");
+            } else {
+                echo $intro = file_get_contents(JURI::base() . "libraries/ramblers/leaflet/drawintro.html");
+            }
             echo "</div>";
         }
         echo "<div id='ra-map-container'>";
@@ -65,4 +69,5 @@ class RLeafletMapdraw extends RLeafletMap {
         $document->addStyleSheet("libraries/ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
         $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
     }
+
 }

@@ -17,7 +17,7 @@ class RLeafletMap {
     public $options;
     public $help_page = "";
     public $leafletLoad = true;
-    private $help_site = "https://maphelp4.ramblers-webs.org.uk/";
+    private $help_site = "https://maphelp.ramblers-webs.org.uk/";
 
     //  const COMBINED_JS = "cache/ra_leaflet/ra-leafet";
     //  const FOLDER = "cache/ra_leaflet";
