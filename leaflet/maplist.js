@@ -203,7 +203,7 @@ function updateGPXid(id) {
         header += '<b>Description:</b> ' + route.description + '<br/>';
     }
     header += formatAltitude(route);
-    header += "<b>Est time <a href=\"https://maphelp3.ramblers-webs.org.uk/information-03/naitsmith-s-rule.html\" target='_blank'>(Naismith)</a>:</b> " + naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
+    header += "<b>Est time <a href=\"https://maphelp.ramblers-webs.org.uk/naismith.html\" target='_blank'>(Naismith)</a>:</b> " + naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
     if (route.duration !== 0) {
         header += "<b>Actual Time:</b> " + timeconv(route.duration) + '<br/>';
     }
