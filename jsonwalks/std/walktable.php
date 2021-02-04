@@ -32,6 +32,10 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         }
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
+        if (count($items) == 0) {
+            echo "<p>Sorry, but no walks are available</p>";
+            return;
+        }
         echo "<table class='gradeTable $this->tableClass'>";
         if ($walks->hasMeetPlace()) {
             echo RHtml::addTableHeader(array("Date", "Meet", "Start", "Title", "Distance", "Grade", "Contact"));

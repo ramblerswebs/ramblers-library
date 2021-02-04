@@ -18,7 +18,13 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
     public $addContacttoHeader = false;  // not used
     public $displayGroup = null;  // should the Group name be displayed
     public $displayClass = "pantone7474white";
+    public $paginationTop = true;
+    public $paginationBottom = true;
+    public $noPagination = false;
+    public $displayDetailsPrompt = true;
+    public $filterCancelled = true;
     private $map = null;
+    public $jplistName = "display";
 
     public function DisplayWalks($walks) {
         if ($this->printOn) {
@@ -26,8 +32,6 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
             echo "<p>User: Please use the Print option next to the pagination controls</p>";
             return;
         }
-// echo "<span class='grade'>this some text <span class='grade easy'/> and some more";
-// echo "<p>....  <span data-descr='Easy'><span class='grade easy middle' onclick='javascript:dGH()'></span></span><span> with a few</span></p>";
         $items = $walks->allWalks();
         $document = JFactory::getDocument();
         $display = new RJsonwalksStdCancelledwalks();
@@ -52,25 +56,35 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         }
         $document->addScript("libraries/ramblers/jsonwalks/std/display.js", "text/javascript");
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
-        // remove cancelled walks
-        $walks->filterCancelled();
+        if ($this->filterCancelled) {
+            $walks->filterCancelled();
+        }
         $items = $walks->allWalks();
         $text = "ramblerswalks='" . addslashes(json_encode(array_values($items))) . "'";
         //  echo $text;
-        $out = "window.addEventListener('load', function(event) {
-            ramblerswalksDetails = new RamblersWalksDetails();" .
-                "ramblerswalksDetails.displayClass='" . $this->displayClass . "';
-            FullDetailsLoad(); });
-            function addContent() {" . $text . "};";
+        $out = "window.addEventListener('load', function(event) {";
+        $out .= "ramblerswalksDetails = new RamblersWalksDetails();";
+        $out .= "ramblerswalksDetails.displayClass='" . $this->displayClass . "';";
+        $out .= "ramblerswalksDetails.jplistName='" . $this->jplistName . "';";
+        $out .= "ramblerswalksDetails.noPagination='" . $this->noPagination . "';";
+        $out .= "ramblerswalksDetails.displayDetailsPrompt='" . $this->displayDetailsPrompt . "';";
+        $out .= "DisplayLoad(); });function addContent() {" . $text . "};";
         $document->addScriptDeclaration($out, "text/javascript");
         echo "<div id='raouter'>";
         echo "<div id='raoptions' ></div>";
         echo "<div id='rainner'>";
-        echo "<div id='rapagination-1' ></div>";
+        if ($this->paginationTop) {
+            echo "<div id='rapagination-1' ></div>";
+        } else {
+            echo "<div id='rapagination-1' style='display:none' ></div>";
+        }
         echo "<div id='rawalks' >Processing data - this should be replaced shortly.</div>";
-        echo "<div id='rapagination-2' ></div>";
-        // send walks as json file
-        // write json to display a number of them
+        if ($this->paginationBottom) {
+            echo "<div id='rapagination-2' ></div>";
+        } else {
+            echo "<div id='rapagination-2' style='display:none' ></div>";
+        }
+
         $this->map = new RLeafletMap();
         $this->map->help_page = "ledwalks.html";
         $this->map->leafletLoad = false;
@@ -89,7 +103,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $this->displayMap();
         echo "</div>";
         echo "</div></div>";
-        if ($number > 3) {
+        if ($number > 3) {    // display cancelled walks if too many
             echo "<p style='height:20px;'></p>";
             echo $cancelledOutput;  // display cancelled walks information
         }

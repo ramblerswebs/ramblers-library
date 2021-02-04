@@ -14,7 +14,8 @@ L.Control.GpxUpload = L.Control.extend({
             desc: "",
             author: "",
             copyright: "",
-            date: ""
+            date: "",
+            links: []
         };
         var container = L.DomUtil.create('div', 'leaflet-control-gpx-upload leaflet-bar leaflet-control');
         this._createIcon(container);
@@ -55,6 +56,9 @@ L.Control.GpxUpload = L.Control.extend({
     },
     get_date: function () {
         return this._info.date;
+    },
+    get_links: function () {
+        return this._info.links;
     },
     _gpxreader: function (gpx, options) {
         var _MAX_POINT_INTERVAL_MS = 15000;
@@ -134,18 +138,17 @@ L.Control.GpxUpload = L.Control.extend({
         this._info.desc = '';
         this._info.author = '';
         this._info.date = '';
-      //  ra_gpx_upload_this = this;
+        this._info.links = [];
+        //  ra_gpx_upload_this = this;
         var meta = xml.getElementsByTagName('metadata');
         //  var test = this._ra_get_child(meta[0], 'time');
         if (typeof meta !== 'undefined') {
             if (meta.length > 0) {
                 ra_gpx_upload_this._info.name = this._ra_get_child_text(meta[0], 'name');
-
                 ra_gpx_upload_this._info.desc = this._ra_get_child_text(meta[0], 'desc');
-
                 ra_gpx_upload_this._info.author = this._ra_get_children_text(meta[0], 'author', 'name');
-
                 ra_gpx_upload_this._info.date = this._ra_get_child_text(meta[0], 'time');
+                ra_gpx_upload_this._info.links = this._ra_get_child_links(meta[0], 'link');
             }
         }
         if (ra_gpx_upload_this._info.name === "") {
@@ -160,7 +163,7 @@ L.Control.GpxUpload = L.Control.extend({
                 if (coords.length === 0)
                     continue;
                 // add track
-                var latlngs=removeShortSegments(coords);
+                var latlngs = removeShortSegments(coords);
                 var l = new L.Polyline(latlngs, options.polyline_options);
                 ra_gpx_upload_this._itemsCollection.addLayer(l);
                 ra_gpx_upload_this._itemsCollection.fire('upload:addline', {line: l});
@@ -217,7 +220,6 @@ L.Control.GpxUpload = L.Control.extend({
             children.forEach(
                     function (node, currentIndex, listObj) {
                         var find = ra_gpx_upload_this.findname;
-                        //console.log(node + ', ' + currentIndex + ', ' + this);
                         if (node.nodeName === find) {
                             ra_gpx_upload_this.result = node.textContent;
                         }
@@ -226,6 +228,35 @@ L.Control.GpxUpload = L.Control.extend({
                     );
         }
         return  this._escapeChars(ra_gpx_upload_this.result);
+    },
+    _ra_get_child_links: function (elem) {
+        var children = elem.childNodes;
+
+        ra_gpx_upload_this = this;
+        ra_gpx_upload_this.result = [];
+        ra_gpx_upload_this.findname = "link";
+        if (typeof children !== 'undefined') {
+
+            children.forEach(
+                    function (node, currentIndex, listObj) {
+                        var find = ra_gpx_upload_this.findname;
+                        if (node.nodeName === find) {
+                            var href = node.getAttribute('href');
+                            if (href !== null) {
+                                var text = "";
+                                var temp = node.firstElementChild;
+                                if (temp !== null) {
+                                    text = temp.textContent;
+                                }
+                                var item = {href: href, text: text};
+                                ra_gpx_upload_this.result.push(item);
+                            }
+                        }
+                    },
+                    "name"
+                    );
+        }
+        return  ra_gpx_upload_this.result;
     },
     _ra_get_children_text: function (elem, name1, name2) {
         var child = this._ra_get_child(elem, name1);
@@ -254,7 +285,7 @@ L.Control.GpxUpload = L.Control.extend({
             children.forEach(
                     function (node, currentIndex, listObj) {
                         var find = ra_gpx_upload_this.findname;
-                        console.log(node + ', ' + currentIndex + ', ' + this);
+                        // console.log(node + ', ' + currentIndex + ', ' + this);
                         if (node.nodeName === find) {
                             ra_gpx_upload_this.result = node;
                         }
@@ -301,7 +332,7 @@ L.Control.GpxUpload = L.Control.extend({
         // Read in the image file as a data URL.
         reader.readAsText(file);
         ra_gpx_upload_this.filename = file.name;
-        ra_gpx_upload_this.filename= ra_gpx_upload_this.filename.replace(/.gpx$/i,'');
+        ra_gpx_upload_this.filename = ra_gpx_upload_this.filename.replace(/.gpx$/i, '');
         return false;
     },
     BuildXMLFromString: function (text) {

@@ -9,7 +9,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
             weight: 2,
             opacity: 0.5}
     },
-
     onAdd: function (map) {
         this._map = map;
         ramblersMap.RA_Map_Tools = this;
@@ -40,6 +39,11 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         container.title = this.options.title;
         container.addEventListener("click", this._displayOptions);
+        if (ramblersMap.options.draw) {
+            ramblersMap.RA_Map_Tools.saveDrawOptions = false;
+            this.getDrawSettings();
+            //       }
+        }
         return container;
     },
     _displayOptions: function () {
@@ -81,7 +85,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         var osmapsDiv = self.addTabContentItem(content, "osmaps", false);
         var mouseDiv = self.addTabContentItem(content, "mouse", false);
-
         var helpDiv = self.addTabContentItem(content, "help", false);
         if (ramblersMap.options.draw) {
             self.addDrawOptions(drawDiv);
@@ -105,8 +108,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         if (ramblersMap.map.isFullscreen()) {
             ramblersMap.map.toggleFullscreen();
-            //       var modal = document.getElementById('js-raModal');
-            //       modal.addEventListener("close", self._returnToFullScreen());
             var closeBtn = document.getElementById("btnClose");
             // When the user clicks on <span> (x), close the modal
             closeBtn.addEventListener("click", function () {
@@ -158,7 +159,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var title = document.createElement('h4');
         title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
         tag.appendChild(title);
-
         var select = document.createElement('select');
         select.style.width = '350px';
         tag.appendChild(select);
@@ -166,12 +166,10 @@ L.Control.RA_Map_Tools = L.Control.extend({
         option0.textContent = "Do not display Ordnance Survey map outlines";
         option0.setAttribute('value', 'none');
         select.appendChild(option0);
-
         var option1 = document.createElement('option');
         option1.textContent = "Display outline of all Explorer 1:25k Maps";
         option1.setAttribute('value', '25K');
         select.appendChild(option1);
-
         var option2 = document.createElement('option');
         option2.textContent = "Display outline of all Landranger 1:50k Maps";
         option2.setAttribute('value', '50K');
@@ -191,7 +189,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
             getJSON(url, function (err, items) {
                 if (err !== null) {
                     var msg = "Error: Something went wrong: " + err;
-
                 } else {
                     if (items.length !== 0) {
                         for (i = 0; i < items.length; i++) {
@@ -207,9 +204,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var title = document.createElement('h4');
         title.textContent = 'Ordnance Survey Grid';
         tag.appendChild(title);
-
         var osGrid = this.addYesNo(tag, 'divClass', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", ramblersMap.OSGrid, 'display');
-
         var color = ramblersMap.RA_Map_Tools.options.osgrid.color;
         label = document.createElement('label');
         label.textContent = "OS Grid line colour";
@@ -235,7 +230,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
         title.textContent = 'As you zoom in, the mouse can display a 100m or a 10m square showing the area covered by a 6 or 8 figure grid reference.';
         tag.appendChild(title);
         var mouseGrid = this.addYesNo(tag, 'divClass', "Display 10m/100m grid reference squares", ramblersMap, 'displayMouseGridSquare');
-
         tag.addEventListener("change", function (e) {
             self.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.options.osgrid);
             ramblersMap.OSGrid.basicgrid = false;
@@ -265,8 +259,8 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var titleoptions = document.createElement('h5');
         titleoptions.textContent = 'Options';
         tag.appendChild(titleoptions);
-        this.addYesNo(tag, 'divClass', "Pan: Centre map on last point added to route", ramblersMap.RoutingOption, 'panToNewPoint');
-        this.addYesNo(tag, 'divClass', "Join: Join new route to nearest existing route", ramblersMap.RoutingOption, 'joinSegments');
+        var pan = this.addYesNo(tag, 'divClass', "Pan: Centre map on last point added to route", ramblersMap.RoutingOption, 'panToNewPoint');
+        var join = this.addYesNo(tag, 'divClass', "Join: Join new route to nearest existing route", ramblersMap.RoutingOption, 'joinSegments');
         tag.appendChild(document.createElement('hr'));
         var titlestyle = document.createElement('h5');
         titlestyle.textContent = 'Display: Style of route';
@@ -283,8 +277,20 @@ L.Control.RA_Map_Tools = L.Control.extend({
         this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.DrawStyle, 'weight', 1, 10, 0.5);
         this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.DrawStyle, 'opacity', .1, 1, .01);
         var example = this.addExampleLine(tag, "300px", "Example: ");
+        tag.appendChild(document.createElement('hr'));
+        var cookies = this.addYesNo(tag, 'divClass', "Save settings between sessions/future visits to web site (you accept cookies)", ramblersMap.RA_Map_Tools, 'saveDrawOptions');
         this.addExampleLineStyle(example, ramblersMap.DrawStyle);
+        cookies.addEventListener("click", function (e) {
+            ramblersMap.RA_Map_Tools.setDrawSettings();
+        });
+        pan.addEventListener("yesnochange", function (e) {
+            ramblersMap.RA_Map_Tools.setDrawSettings();
+        });
+        join.addEventListener("yesnochange", function (e) {
+            ramblersMap.RA_Map_Tools.setDrawSettings();
+        });
         tag.addEventListener("change", function (e) {
+            ramblersMap.RA_Map_Tools.setDrawSettings();
             self.addExampleLineStyle(example, ramblersMap.DrawStyle);
             ramblersMap.map.fire("draw:color-change", null);
         });
@@ -294,11 +300,38 @@ L.Control.RA_Map_Tools = L.Control.extend({
             let event = new Event("change", {bubbles: true}); // (2)
             tag.dispatchEvent(event);
         });
+    },
+    getDrawSettings: function () {
+        var _this = ramblersMap.RA_Map_Tools;
+        var scookie = _this.readCookie('raDraw');
+        if (scookie !== null) {
+            var cookie = JSON.parse(scookie);
+            ramblersMap.RA_Map_Tools.saveDrawOptions = cookie.saveOptions;
+            ramblersMap.RoutingOption.panToNewPoint = cookie.panToNewPoint;
+            ramblersMap.RoutingOption.joinSegments = cookie.joinSegments;
+            ramblersMap.DrawStyle.weight = cookie.weight;
+            ramblersMap.DrawStyle.opacity = cookie.opacity;
+            ramblersMap.DrawStyle.color = cookie.colour;
+        } else {
 
+        }
+    },
+    setDrawSettings: function () {
+        if (ramblersMap.RA_Map_Tools.saveDrawOptions) {
+            var cookie = {};
+            cookie.saveOptions = ramblersMap.RA_Map_Tools.saveDrawOptions;
+            cookie.panToNewPoint = ramblersMap.RoutingOption.panToNewPoint;
+            cookie.joinSegments = ramblersMap.RoutingOption.joinSegments;
+            cookie.weight = ramblersMap.DrawStyle.weight;
+            cookie.opacity = ramblersMap.DrawStyle.opacity;
+            cookie.colour = ramblersMap.DrawStyle.color;
+            ramblersMap.RA_Map_Tools.createCookie(JSON.stringify(cookie), 'raDraw', 365);
+        } else {
+            ramblersMap.RA_Map_Tools.eraseCookie('raDraw');
+        }
     },
     _changePolyline: function (polyline) {
         polyline.setStyle(ramblersMap.DrawStyle);
-
     },
     addTabItem: function (container, list, name, id, active) {
         var listItem;
@@ -552,10 +585,8 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         inputTag.raobject = raobject;
         inputTag.property = property;
-
         inputTag.addEventListener("click", function (e) {
             inputTag.raobject[inputTag.property] = !inputTag.raobject[inputTag.property];
-
             if (inputTag.raobject[property]) {
                 inputTag.textContent = "Yes";
                 inputTag.classList.add("button-p0555");
@@ -570,8 +601,31 @@ L.Control.RA_Map_Tools = L.Control.extend({
         });
         itemDiv.appendChild(_label);
         itemDiv.appendChild(inputTag);
-
         return inputTag;
+    },
+    createCookie: function (raobject, name, days) {
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            var expires = "; expires=" + date.toGMTString();
+        } else
+            var expires = "";
+        document.cookie = name + "=" + raobject + expires + "; path=/;samesite=strict";
+    },
+    readCookie: function (name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) === ' ')
+                c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0)
+                return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    },
+    eraseCookie: function (name) {
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970; path=/;";
     }
 
 });

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var ramblerswalksDetails, ramblerswalks, ramblersMap, jplist, OpenLocationCode;
+var ramblerswalksDetails, ramblerswalks, ramblersBase, ramblersMap, jplist, OpenLocationCode;
 function RamblersWalksDetails() {
     this.isES6 = isES6();
     this.walkClass = "walk";
@@ -12,15 +12,16 @@ function RamblersWalksDetails() {
     this.displayStartTime = true;
     this.displayStartDescription = true;
     this.tableFormat = '[{ "title": "Date", "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}","{,meetPC}"]},{    "title": "Start",    "items": ["{start}","{,startGR}","{,startPC}"]},{    "title": "Title",    "items": ["{mediathumbr}","{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
-    this.listFormat = '[ "{dowddmm}", "{,meet}", "{,start}","{,title}","{,distance}","{,contactname}","{,telephone}" ] ';
+    this.listFormat = '[ "{dowdd}", "{,meet}", "{,start}","{,title}","{,distance}","{,contactname}","{,telephone}" ] ';
     this.detailsFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
     this.options;
     this.filter = {};
     this.defaultOptions = "<table><tr><td class='ra-tab active' id='Details' onclick=\"javascript:ra_format('Details')\">Details</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
+    this.withMonth = ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"];
+    this.jplistName = "group1";
 }
 
-
-function FullDetailsLoad() {
+function DisplayLoad() {
 // executes when complete page is fully loaded, including all frames, objects and images
     if (typeof addFilterFormats === 'function') {
         addFilterFormats();
@@ -33,7 +34,9 @@ function FullDetailsLoad() {
     setLimits();
     addFilterEvents();
     addSelectAll();
-    raLoadLeaflet();
+    if (document.getElementById("leafletmap") !== null) {
+        raLoadLeaflet();
+    }
     displayWalks($walks);
 }
 
@@ -132,11 +135,13 @@ function displayWalks($walks) {
             setTagHtml("rapagination-2", addPagination(no));
             setTagHtml("rawalks", displayWalksText($walks));
             // jplist.init();
-            if (ramblerswalksDetails.isES6 && no !== 0) {
-                jplist.init({
-                    storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                    storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
-                });
+            if (!ramblerswalksDetails.noPagination) {
+                if (ramblerswalksDetails.isES6 && no !== 0) {
+                    jplist.init({
+                        storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
+                        storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
+                    });
+                }
             }
 
             break;
@@ -156,11 +161,13 @@ function displayWalks($walks) {
             setTagHtml("rapagination-1", addPagination(no));
             setTagHtml("rapagination-2", addPagination(no));
             setTagHtml("rawalks", displayContacts($walks));
-            if (ramblerswalksDetails.isES6) {
-                jplist.init({
-                    storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                    storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
-                });
+            if (!ramblerswalksDetails.noPagination) {
+                if (ramblerswalksDetails.isES6) {
+                    jplist.init({
+                        storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
+                        storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
+                    });
+                }
             }
             break;
     }
@@ -202,6 +209,8 @@ function displayWalksText($walks) {
     var month = "";
     var $class = "";
     var no = 0;
+    var should = shouldDisplayMonth();
+
     for (index = 0, len = $walks.length; index < len; ++index) {
         $walk = $walks[index];
         if ($walk.display) {
@@ -211,18 +220,19 @@ function displayWalksText($walks) {
             } else {
                 $class = "even";
             }
+            var displayMonth = month !== $walk.month && should;
             switch (ramblerswalksDetails.filter.RA_Display_Format) {
                 case "Details":
-                    $out += displayWalk_Details($walk, $class);
+                    $out += displayWalk_Details($walk, $class, displayMonth);
                     break;
                 case "List":
-                    $out += displayWalk_List($walk, $class, month !== $walk.month);
-                    month = $walk.month
+                    $out += displayWalk_List($walk, $class, displayMonth);
                     break;
                 case "Table":
-                    $out += displayWalk_Table($walk, $class);
+                    $out += displayWalk_Table($walk, $class, displayMonth);
                     break;
             }
+            month = $walk.month;
             odd = !odd;
         }
     }
@@ -239,22 +249,69 @@ function displayWalksText($walks) {
     }
     return  header + $out + footer;
 }
+function shouldDisplayMonth() {
+    var index, len, $item;
+    switch (ramblerswalksDetails.filter.RA_Display_Format) {
+        case "Details":
+            var $items = JSON.parse(ramblerswalksDetails.detailsFormat);
+            for (var index = 0, len = $items.length; index < len; ++index) {
+                $item = $items[index];
+                if (ramblerswalksDetails.withMonth.includes($item)) {
+                    return false;
+                }
+            }
+            break;
+        case "List":
+            var $items = JSON.parse(ramblerswalksDetails.listFormat);
+            for (index = 0, len = $items.length; index < len; ++index) {
+                $item = $items[index];
+                if (ramblerswalksDetails.withMonth.includes($item)) {
+                    return false;
+                }
+            }
+            break;
+        case "Table":
+            var cindex, clen;
+            var $cols = JSON.parse(ramblerswalksDetails.tableFormat);
+            for (cindex = 0, clen = $cols.length; cindex < clen; ++cindex) {
+                $items = $cols[cindex].items;
+                for (index = 0, len = $items.length; index < len; ++index) {
+                    $item = $items[index];
+                    if (ramblerswalksDetails.withMonth.includes($item)) {
+                        return false;
+                    }
+                }
+            }
+            break;
+    }
+    return true;
+}
+
 function displayWalksHeader($walks) {
     var $out = "";
     switch (ramblerswalksDetails.filter.RA_Display_Format) {
         case "Details":
-            $out += "<p class='noprint'>Click on item to display full details of walk</p>";
-            $out += "<div data-jplist-group=\"group1\">";
+            if (ramblerswalksDetails.displayDetailsPrompt) {
+                $out += "<p class='noprint'>Click on item to display full details of walk</p>";
+            }
+            $out += "<div data-jplist-group=\"" + ramblerswalksDetails.jplistName + "\">";
             break;
         case "List":
-            $out += "<p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
-            $out += "<div data-jplist-group=\"group1\">";
+            if (ramblerswalksDetails.displayDetailsPrompt) {
+                $out += "<p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
+            }
+            $out += "<div data-jplist-group=\"" + ramblerswalksDetails.jplistName + "\">";
             break;
         case "Table":
-            $out += "<p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
+            if (ramblerswalksDetails.displayDetailsPrompt) {
+                $out += "<p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
+            }
             $out += "<table class='" + ramblerswalksDetails.displayClass + "'>\n";
-            $out += displayTableHeader();
-            $out += "<tbody data-jplist-group=\"group1\">";
+            var should = shouldDisplayMonth();
+            if (!should) {
+                $out += displayTableHeader();
+            }
+            $out += "<tbody data-jplist-group=\"" + ramblerswalksDetails.jplistName + "\">";
             break;
     }
     return $out;
@@ -333,12 +390,12 @@ function addFilterEvents() {
         var body = bodies[i];
         var filters = document.getElementsByClassName('ra-walksfilter');
         for (var i = 0; i < filters.length; i++) {
-            setFilterColumns(filters[i])
+            setFilterColumns(filters[i]);
         }
         body.onresize = function (event) {
             var filters = document.getElementsByClassName('ra-walksfilter');
             for (var i = 0; i < filters.length; i++) {
-                setFilterColumns(filters[i])
+                setFilterColumns(filters[i]);
             }
         };
     }
@@ -415,7 +472,7 @@ function setGroups($walks) {
     var htmltag = document.getElementById("ra_groups");
     if (htmltag) {
         htmltag.innerHTML = $out;
-        if (keysSorted.length == 1) {
+        if (keysSorted.length === 1) {
             htmltag.style.display = "none";
         }
     }
@@ -444,10 +501,10 @@ function ra_filter(event) {
     displayWalks($walks);
 }
 function ra_select(event) {
-    var all = event.target.innerHTML == "All";
+    var all = event.target.innerHTML === "All";
     var parent = event.target.parentNode;
     var next = parent.nextElementSibling;
-    if (next.tagName == "UL") {
+    if (next.tagName === "UL") {
         var children = next.children;
         Object.keys(children).forEach(function (key) {
             var node = children[key].childNodes[0];
@@ -600,34 +657,19 @@ function displayWalk($walk) {
 
     return $display;
 }
-
-function displayWalk_List($walk, $class, $displayMonth) {
-    var $items = JSON.parse(ramblerswalksDetails.listFormat);
-    var $out = "";
-    if ($displayMonth) {
-        $out += "<div data-jplist-item >"
-        $out += "<h3>" + $walk.month + "</h3>";
-        $out += "<div class='" + $class + " walk" + $walk.status + "' >"
-    } else {
-        $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >"
-
-    }
-    var index, len, $items, $text, $item;
-    for (index = 0, len = $items.length; index < len; ++index) {
-        $item = $items[index];
-        $text = getWalkValue($walk, $item, true);
-        $out += $text;
-    }
-    if ($displayMonth) {
-        $out += "</div>\n";
-    }
-    return $out + "</div>\n";
-}
-
-function displayWalk_Details($walk, $class) {
+function displayWalk_Details($walk, $class, $displayMonth) {
     var $items = JSON.parse(ramblerswalksDetails.detailsFormat);
     var $text, $image;
-    var $out = "";
+    var $out = "", $out1 = "";
+
+    if ($displayMonth) {
+        $out1 += "<div data-jplist-item >";
+        $out1 += "<h3>" + $walk.month + "</h3>";
+        $out1 += "<div class='" + $class + " walk" + $walk.status + "' >";
+    } else {
+        $out1 += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+    }
+
     $image = '<span class="walkdetail" >';
     $image += getGradeSpan($walk, 'details');
     var index, len, $items, $text, $item;
@@ -638,9 +680,68 @@ function displayWalk_Details($walk, $class) {
     }
 //   $out += "<span class='ra-detailsimg'></span>";
     $out += getCloseImg();
-    $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</span></div>\n";
+    //  $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</span></div>\n";
+    $text = $out1 + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</span></div>\n";
+    if ($displayMonth) {
+        $text += "</div>\n";
+    }
     return $text;
 }
+
+
+function displayWalk_List($walk, $class, $displayMonth) {
+    var $items = JSON.parse(ramblerswalksDetails.listFormat);
+    var $out = "";
+    if ($displayMonth) {
+        $out += "<div data-jplist-item >";
+        $out += "<h3>" + $walk.month + "</h3>";
+        $out += "</div>\n";
+        $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+    } else {
+        $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+    }
+    var index, len, $items, $text, $item;
+    for (index = 0, len = $items.length; index < len; ++index) {
+        $item = $items[index];
+        $text = getWalkValue($walk, $item, true);
+        $out += $text;
+    }
+    if ($displayMonth) {
+        //      $out += "</div>\n";
+    }
+    return $out + "</div>\n";
+}
+function displayWalk_Table($walk, $class, $displayMonth) {
+    var $cols = JSON.parse(ramblerswalksDetails.tableFormat);
+    //  var $out = "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >"
+    var $out = "";
+    var $out1 = "";
+
+    if ($displayMonth) {
+
+        $out1 += "<tr data-jplist-item ><td>";
+        $out1 += "<h3>" + $walk.month + "</h3>";
+        $out1 += "</td></tr>";
+        $out1 += "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+    } else {
+        $out1 += "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+    }
+
+    var index, len, $items;
+    for (index = 0, len = $cols.length; index < len; ++index) {
+        $out += "<td>";
+        $items = $cols[index].items;
+        $out += getColValue($walk, $items);
+        $out += "</td>";
+    }
+    $out += "</tr>";
+//    if ($displayMonth) {
+//        $out += "</div>\n";
+//    }
+    return $out1 + $out;
+}
+
+
 function newTooltip($walk, $text) {
     if ($walk.status === "New") {
         return "<span data-descr='Walk updated " + getDate($walk.dateUpdated.date) + "' class=' walkNew'><span>" + $text + "</span></span";
@@ -664,7 +765,7 @@ function displayContacts($walks) {
     });
     var dispTel1, dispTel2;
     if (ramblerswalksDetails.isES6) {
-        typeof x === "undefined"
+        typeof x === "undefined";
         dispTel1 = typeof $contacts.find(checkContactTelephone1) !== "undefined";
         dispTel2 = typeof $contacts.find(checkContactTelephone2) !== "undefined";
     } else {
@@ -679,7 +780,7 @@ function displayContacts($walks) {
     if (dispTel2) {
         out += "</th><th>Telephone2";
     }
-    out += "</th></tr><tbody data-jplist-group=\"group1\">";
+    out += "</th></tr><tbody data-jplist-group=\"" + ramblerswalksDetails.jplistName + "\">";
     for (index = 0, len = $contacts.length; index < len; ++index) {
         $contact = $contacts[index];
         out += "<tr data-jplist-item><td>" + $contact.name;
@@ -720,7 +821,7 @@ function isEquivalent(a, b) {
     var bProps = Object.getOwnPropertyNames(b);
     // If number of properties is different,
     // objects are not equivalent
-    if (aProps.length != bProps.length) {
+    if (aProps.length !== bProps.length) {
         return false;
     }
 
@@ -738,20 +839,6 @@ function isEquivalent(a, b) {
     return true;
 }
 
-function displayWalk_Table($walk, $class) {
-    var $cols = JSON.parse(ramblerswalksDetails.tableFormat);
-    //  var $out = "<tr data-jplist-item>";
-    var $out = "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >"
-
-    var index, len, $items;
-    for (index = 0, len = $cols.length; index < len; ++index) {
-        $out += "<td>";
-        $items = $cols[index].items;
-        $out += getColValue($walk, $items);
-        $out += "</td>";
-    }
-    return $out + "</tr>";
-}
 function getColValue($walk, $items) {
     var index, len, $out, $item, $text;
     $out = "";
@@ -1171,11 +1258,11 @@ function displayWalkDetails($walk) {
             for (index = 0, len = $walk.media.length; index < len; ++index) {
                 var item = $walk.media[index];
                 var caption = '';
-                if (item.caption != '') {
+                if (item.caption !== '') {
                     caption = "<div>" + item.caption + "</div>";
                 }
 
-                if (item.copyright != '') {
+                if (item.copyright !== '') {
                     caption += "<div><i>&copy; " + item.copyright + "</i></div>";
                 }
 
@@ -1194,7 +1281,7 @@ function displayWalkDetails($walk) {
 function mediasize(e) {
     var size = parseInt(e.getAttribute("data-size"));
     size += 1;
-    if (size == 4) {
+    if (size === 4) {
         size = 1;
     }
     e.setAttribute("data-size", size);
@@ -1323,7 +1410,7 @@ function gradeCSS($walk) {
 function displayWalksMap($walks) {
     removeClusterMarkers();
     var index, len, $walk;
-    if ($walks.length == 0) {
+    if ($walks.length === 0) {
         return;
     }
     for (index = 0, len = $walks.length; index < len; ++index) {
@@ -1401,12 +1488,12 @@ function addPagination(no) {
     }
 
     var $div = "<div data-jplist-control=\"pagination\" \
-            data-group=\"group1\" \
-            data-items-per-page=\"20\" \
+            data-group=\"" + ramblerswalksDetails.jplistName + "\" \
+            data-items-per-page=\"" + ramblerswalksDetails.itemsPerPage + "\" \
             data-current-page=\"0\" \
             data-id=\"no-items\" \
             data-name=\"pagination1\"> \
-             <span data-type=\"info\"> \
+            <span data-type=\"info\"> \
              <a class='link-button small button-p4485' onclick=\"javascript:printTag('rawalks')\">Print</a> \
             {startItem} - {endItem} of {itemsNumber} \
             </span> ";
@@ -1414,7 +1501,7 @@ function addPagination(no) {
             <button type=\"button\" data-type=\"first\">First</button> \
             <button type=\"button\" data-type=\"prev\">Previous</button> \
             <span class=\"jplist-holder\" data-type=\"pages\"> \
-                <button type=\"button\" data-type=\"page\">{pageNumber}</button> \
+            <button type=\"button\" data-type=\"page\">{pageNumber}</button> \
             </span> <button type=\"button\" data-type=\"next\">Next</button> \
             <button type=\"button\" data-type=\"last\">Last</button> \
             </span> \

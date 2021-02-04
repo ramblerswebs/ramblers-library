@@ -22,6 +22,10 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
     function DisplayWalks($walks) {
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
+        if (count($items) == 0) {
+            echo "<p>Sorry, but no walks are available</p>";
+            return;
+        }
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         foreach ($items as $walk) {
             $thismonth = $walk->walkDate->format('F');
@@ -75,17 +79,17 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
             }
         }
         $text .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
-           if ($walk->isLeader) {
-            $text.=", Leader ";
+        if ($walk->isLeader) {
+            $text .= ", Leader ";
         } else {
-            $text.=", Contact ";
+            $text .= ", Contact ";
         }
-        $text.= $walk->contactName;
+        $text .= $walk->contactName;
         if ($walk->telephone1 != "") {
-            $text.= " " . $walk->telephone1;
+            $text .= " " . $walk->telephone1;
         } else {
             if ($walk->telephone2 != "") {
-                $text.= " " . $walk->telephone2;
+                $text .= " " . $walk->telephone2;
             }
         }
         echo "<div class='" . $this->walkClass . $walk->status . "' >" . PHP_EOL;

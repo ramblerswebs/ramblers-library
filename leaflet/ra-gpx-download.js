@@ -1,4 +1,4 @@
-var L, ramblersMap;
+var L, ramblersMap, document;
 L.Control.GpxDownload = L.Control.extend({
     options: {
         title: 'Download your walking routes as a GPX file',
@@ -14,12 +14,14 @@ L.Control.GpxDownload = L.Control.extend({
             desc: "",
             author: "",
             copyright: "",
+            links: [],
             gpxTrack: false,
             date: ""
         };
         var containerAll = L.DomUtil.create('div', 'leaflet-control-gpx-download ra-download-toolbar-button-disabled');
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control', containerAll);
         this._createIcon(container);
+        ramblersMap.ra_gpx_download = this;
         this._container = container;
         L.DomEvent.disableClickPropagation(containerAll);
         L.DomEvent.disableClickPropagation(container);
@@ -62,6 +64,9 @@ L.Control.GpxDownload = L.Control.extend({
     set_date: function (value) {
         this._info.date = value;
     },
+    set_links: function (value) {
+        this._info.links = value;
+    },
     setStatus: function (status) {
         this.enabled = true;
         if (status === "off") {
@@ -101,56 +106,50 @@ L.Control.GpxDownload = L.Control.extend({
     _details: function (evt) {
         this._map.fire('download:cancelled');
         this.holder.style.display = "none";
-        var bounds = this._map.getBounds();
-        var lng = (bounds.getEast() + bounds.getWest()) / 2;
-        var lat = bounds.getSouth();
-        //var centre = this._map.getCenter();
-        //    var marker = L.marker(centre);
-        var gpxName = this._info.name;
-        var gpxDesc = this._info.desc;
-        var gpxAuthor = this._info.author;
-        var gpxDate = this._info.date;
-        if (gpxDate.length > 10) {
-            gpxDate = gpxDate.substring(0, 10);
+        var html = '<form id="js-gpxForm"></form>';
+        displayModal(html, false);
+        if (ramblersMap.map.isFullscreen()) {
+            ramblersMap.map.toggleFullscreen();
+            var closeBtn = document.getElementById("btnClose");
+            // When the user clicks on <span> (x), close the modal
+            closeBtn.addEventListener("click", function () {
+                ramblersMap.ra_gpx_download._returnToFullScreen();
+            });
         }
-        var gpxTrack = this._info.gpxTrack;
-        var content = '<form><span><b>File Name/Title</b></span><br/><input id="gpxName" type="text"/ value="' + gpxName + '" /><br/>';
-        content += '<span><b>File Description<b/></span><br/><textarea id="gpxDesc" >' + gpxDesc + '</textarea><br/>';
-        content += '<span><b>Author/Leader</b></span><br/><input id="gpxAuthor" type="text"/ value="' + gpxAuthor + '" /><br/>';
-        content += '<span><b>Date</b></span><br/><input type="date" id="gpxDate" name="trip" value=' + gpxDate + ' min="1970-01-01" max="2100-12-31" /><br/>';
-        content += 'Save As GPX Track rather than GPX Route<br/><input type="checkbox" id="gpxTrack" name="route" />';
-        content += '</form>';
-
-        this.popup.setLatLng([lat, lng]);
-        this.popup.setContent(content);
-        this.popup.openOn(this._map);
-        var ele = document.getElementById('gpxTrack');
-        ele.checked = gpxTrack;
+        this._addDetailsForm("js-gpxForm");
 
     },
-    _popupclose: function (e) {
-        var popup = e.popup;
-        if (popup === this.popup) {
-            this._info.name = this._escapeChars(this.getElementValue('gpxName'));
-            this._info.desc = this._escapeChars(this.getElementValue('gpxDesc'));
-            this._info.author = this._escapeChars(this.getElementValue('gpxAuthor'));
-            //        this._info.copyright = this.getElementValue('gpxCopyright');
-            //this._info.gpxTrack = this.getElementValue('gpxTrack').checked;
-            var ele = document.getElementById('gpxTrack');
-            this._info.gpxTrack = ele.checked;
-            this._info.date = this.getElementValue('gpxDate');
-            if (this._info.date !== "") {
-                this._info.date += "T12:00:00Z";
-            }
-
-        }
+    _returnToFullScreen: function () {
+        ramblersMap.map.toggleFullscreen();
     },
-    getElementValue: function (id) {
-        var node = document.getElementById(id);
-        if (node !== null) {
-            return node.value;
+    _addDetailsForm: function (tagname) {
+        var formtag = document.getElementById(tagname);
+        var heading = document.createElement('h2');
+        heading.textContent = 'GPX File Details';
+        formtag.appendChild(heading);
+        this._addText(formtag, 'ra-gpx-popup', 'File Name/Title', this._info, 'name');
+        this.addTextArea(formtag, 'ra-gpx-popup', 'File Description', 3, this._info, 'desc');
+        this._addText(formtag, 'ra-gpx-popup', 'Author/Leader', this._info, 'author');
+        this._addDate(formtag, 'ra-gpx-popup', 'Date', this._info, 'date');
+        this.linksDiv = document.createElement('div');
+        formtag.appendChild(this.linksDiv);
+        this._addDetailsFormLinks(this.linksDiv);
+        this._addCheckbox(formtag, 'ra-gpx-popup', 'Save As GPX Track rather than GPX Route', this._info, 'gpxTrack');
+    },
+    _addDetailsFormLinks: function (tagname) {
+        var _label = document.createElement('label');
+        _label.textContent = 'Links';
+        _label.style.fontWeight = 'bold';
+        tagname.appendChild(_label);
+        var i, len;
+        for (i = 0, len = this._info.links.length; i < len; i++) {
+            var link = this._info.links[i];
+            this._addMetaLink(tagname, 'ra-gpx-popup', link, 'text', 'href', i === len - 1);
         }
-        return "Invalid";
+        if (this._info.links.length === 0) {
+            this._addMetaLink(tagname, 'ra-gpx-popup', null, null, null, true);
+        }
+
     },
     _save: function (e) {
         if (this.enabled) {
@@ -191,14 +190,13 @@ L.Control.GpxDownload = L.Control.extend({
         gpxData += 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + "\n";
         gpxData += 'xmlns="http://www.topografix.com/GPX/1/1"' + "\n";
         gpxData += 'xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">' + "\n";
-        ra_gpx_download_this = this;
-        gpxData += ra_gpx_download_this._addMetaData();
+        gpxData += ramblersMap.ra_gpx_download._addMetaData();
         this._itemsCollection.eachLayer(function (layer) {
             if (layer instanceof L.Marker) {
-                gpxData += ra_gpx_download_this._addMarker(layer);
+                gpxData += ramblersMap.ra_gpx_download._addMarker(layer);
             }
             if (layer instanceof L.Polyline) {
-                gpxData += ra_gpx_download_this._addPolyline(layer);
+                gpxData += ramblersMap.ra_gpx_download._addPolyline(layer);
             }
         });
 
@@ -215,21 +213,29 @@ L.Control.GpxDownload = L.Control.extend({
         return text;
     },
     _addMetaData: function () {
-        out = "<metadata>";
-        if (ra_gpx_download_this._info.name !== "") {
-            //        out += "<name>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.name) + "</name>";
-            out += "<name>" + ra_gpx_download_this._info.name + "</name>";
+        var out = "<metadata>";
+        if (ramblersMap.ra_gpx_download._info.name !== "") {
+            //        out += "<name>" + ramblersMap.ra_gpx_download._escapeChars(ramblersMap.ra_gpx_download._info.name) + "</name>";
+            out += "<name>" + ramblersMap.ra_gpx_download._info.name + "</name>";
         }
-        if (ra_gpx_download_this._info.desc !== "") {
-            //         out += "<desc>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.desc) + "</desc>";
-            out += "<desc>" + ra_gpx_download_this._info.desc + "</desc>";
+        if (ramblersMap.ra_gpx_download._info.desc !== "") {
+            //         out += "<desc>" + ramblersMap.ra_gpx_download._escapeChars(ramblersMap.ra_gpx_download._info.desc) + "</desc>";
+            out += "<desc>" + ramblersMap.ra_gpx_download._info.desc + "</desc>";
         }
-        if (ra_gpx_download_this._info.author !== "") {
-            //         out += "<author><name>" + ra_gpx_download_this._escapeChars(ra_gpx_download_this._info.author) + "</name></author>";
-            out += "<author><name>" + ra_gpx_download_this._info.author + "</name></author>";
+        if (ramblersMap.ra_gpx_download._info.author !== "") {
+            //         out += "<author><name>" + ramblersMap.ra_gpx_download._escapeChars(ramblersMap.ra_gpx_download._info.author) + "</name></author>";
+            out += "<author><name>" + ramblersMap.ra_gpx_download._info.author + "</name></author>";
         }
-        if (ra_gpx_download_this._info.date !== "") {
-            out += "<time>" + ra_gpx_download_this._info.date + "</time>";
+        if (ramblersMap.ra_gpx_download._info.date !== "") {
+            out += "<time>" + ramblersMap.ra_gpx_download._info.date + "</time>";
+        }
+        var i, len;
+        for (i = 0, len = ramblersMap.ra_gpx_download._info.links.length; i < len; i++) {
+            var link = ramblersMap.ra_gpx_download._info.links[i];
+            if (link.href !== "") {
+                out += "<link href=\"" + link.href + "\">";
+                out += "<text>" + link.text + "</text></link>";
+            }
         }
         out += "</metadata>\n";
         return out;
@@ -254,14 +260,14 @@ L.Control.GpxDownload = L.Control.extend({
             var data = '<trk>' + "\n";
             data += '<trkseg>' + "\n";
             latlngs = polyline.getLatLngs();
-            data += ra_gpx_download_this._listtrack(latlngs);
+            data += ramblersMap.ra_gpx_download._listtrack(latlngs);
 
             data += '</trkseg>' + "\n";
             data += '</trk>' + "\n";
         } else {
             var data = '<rte>' + "\n";
             latlngs = polyline.getLatLngs();
-            data += ra_gpx_download_this._listroute(latlngs);
+            data += ramblersMap.ra_gpx_download._listroute(latlngs);
             data += '</rte>' + "\n";
         }
         return data;
@@ -291,8 +297,172 @@ L.Control.GpxDownload = L.Control.extend({
             text += ' </rtept>\n';
         }
         return text;
-    }
+    },
+    _addText: function (tag, divClass, label, raobject, property) {
+        var itemDiv = document.createElement('div');
+        itemDiv.setAttribute('class', divClass);
+        tag.appendChild(itemDiv);
+        var div = document.createElement('div');
+        div.setAttribute('class', divClass);
+        div.setAttribute('class', 'ra-inline');
+        itemDiv.appendChild(div);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        div.appendChild(_label);
+        var inputTag = document.createElement('input');
+        inputTag.setAttribute('type', 'text');
+        inputTag.raobject = raobject;
+        inputTag.raproperty = property;
+        div.appendChild(inputTag);
+        if (raobject.hasOwnProperty(property)) {  // Initialise value
+            inputTag.value = raobject[property];
+        }
+        inputTag.addEventListener("input", function (e) {
+            e.target.raobject[e.target.raproperty] = e.target.value;
+        });
+        return inputTag;
+    },
+    addTextArea: function (tag, divClass, label, rows, raobject, property) {
+        var itemDiv = document.createElement('div');
+        itemDiv.setAttribute('class', divClass);
+        tag.appendChild(itemDiv);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        itemDiv.appendChild(_label);
+        var inputTag = document.createElement('textarea');
+        inputTag.setAttribute('class', 'ra-inline');
+        inputTag.setAttribute('rows', rows);
+        inputTag.style.width = '95%';
+        inputTag.raobject = raobject;
+        inputTag.raproperty = property;
+        itemDiv.appendChild(inputTag);
+        if (raobject.hasOwnProperty(property)) {  // Initialise value
+            inputTag.value = raobject[property];
+        }
+        inputTag.addEventListener("change", function (e) {
+            e.target.raobject[e.target.raproperty] = e.target.value;
+        });
+        return inputTag;
+    },
+    _addDate: function (tag, divClass, label, raobject, property) {
+        var itemDiv = document.createElement('div');
+        itemDiv.setAttribute('class', divClass);
+        tag.appendChild(itemDiv);
+        var div = document.createElement('div');
+        div.setAttribute('class', divClass);
+        div.setAttribute('class', 'ra-inline');
+        itemDiv.appendChild(div);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        div.appendChild(_label);
+        var inputTag = document.createElement('input');
+        inputTag.setAttribute('type', "date");
+        inputTag.raobject = raobject;
+        inputTag.raproperty = property;
+        div.appendChild(inputTag);
+        if (raobject.hasOwnProperty(property)) {  // Initialise value
+            inputTag.value = raobject[property].substring(0, 10);
+        }
+        inputTag.addEventListener("change", function (e) {
+            e.target.raobject[e.target.raproperty] = e.target.value + "T12:00:00Z";
+            ;
+        });
+        return inputTag;
+    },
+    _addCheckbox: function (tag, divClass, label, raobject, property) {
+        var itemDiv = document.createElement('div');
+        itemDiv.setAttribute('class', divClass);
+        tag.appendChild(itemDiv);
+        var div = document.createElement('div');
+        div.setAttribute('class', divClass);
+        div.setAttribute('class', 'ra-inline');
+        itemDiv.appendChild(div);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        div.appendChild(_label);
+        var inputTag = document.createElement('input');
+        inputTag.setAttribute('type', 'checkbox');
+        inputTag.raobject = raobject;
+        inputTag.raproperty = property;
+        div.appendChild(inputTag);
+        if (raobject.hasOwnProperty(property)) {  // Initialise value
+            inputTag.value = raobject[property];
+        }
+        inputTag.addEventListener("click", function (e) {
+            e.target.raobject[e.target.raproperty] = e.target.checked;
+        });
+        return inputTag;
+    },
+    _addMetaLink: function (tag, divClass, raobject, property1, property2, last = false) {
+        var itemDiv = document.createElement('div');
+        itemDiv.setAttribute('class', divClass);
+        tag.appendChild(itemDiv);
+        var div = document.createElement('div');
+        div.setAttribute('class', divClass);
+        itemDiv.appendChild(div);
+        if (raobject !== null) {
+            var inputName = document.createElement('input');
+            inputName.setAttribute('type', 'text');
+            inputName.setAttribute('placeholder', 'Name of link');
+            inputName.raobject = raobject;
+            inputName.raproperty1 = property1;
 
+            div.appendChild(inputName);
+            var inputLink = document.createElement('input');
+            inputLink.setAttribute('type', 'text');
+            inputLink.setAttribute('placeholder', 'Link URL');
+            inputLink.raobject = raobject;
+            inputLink.raproperty2 = property2;
+            div.appendChild(inputLink);
+            if (raobject.hasOwnProperty(property1)) {  // Initialise value
+                inputName.value = raobject[property1];
+            }
+            inputName.addEventListener("input", function (e) {
+                e.target.raobject[e.target.raproperty1] = e.target.value;
+            });
+            if (raobject.hasOwnProperty(property2)) {  // Initialise value
+                inputLink.value = raobject[property2];
+            }
+            inputLink.addEventListener("input", function (e) {
+                e.target.raobject[e.target.raproperty2] = e.target.value;
+            });
+            var delButton = document.createElement('button');
+            delButton.setAttribute('type', 'button');
+            delButton.textContent = '-';
+            delButton.raobject = raobject;
+            div.appendChild(delButton);
+            delButton.addEventListener("click", function (e) {
+                var item = e.currentTarget.raobject;
+                ramblersMap.ra_gpx_download._deleteLink(item);
+                ramblersMap.ra_gpx_download._redisplayLinks();
+            });
+        }
+        if (last) {
+            var newButton = document.createElement('button');
+            newButton.setAttribute('type', 'button');
+            newButton.textContent = '+';
+            div.appendChild(newButton);
+            newButton.addEventListener("click", function (e) {
+                var item = {href: '', text: ''};
+                ramblersMap.ra_gpx_download._info.links.push(item);
+                ramblersMap.ra_gpx_download._redisplayLinks();
+            });
+        }
+        return;
+    },
+    _redisplayLinks: function () {
+        var tag = ramblersMap.ra_gpx_download.linksDiv;
+        tag.innerHTML = '';
+        this._addDetailsFormLinks(tag);
+    },
+    _deleteLink: function (item) {
+        var items = this._info.links;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i] === item) {
+                items.splice(i, 1);
+            }
+        }
+    }
 });
 L.control.gpxdownload = function (options) {
     return new L.Control.GpxDownload(options);

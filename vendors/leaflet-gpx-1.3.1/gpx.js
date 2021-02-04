@@ -484,7 +484,7 @@ L.GPX = L.FeatureGroup.extend({
             this._info.elevation._points.push([this._info.length, ll.meta.ele]);
             this._info.duration.end = ll.meta.time;
 
-            if (last != null) {
+            if (last !== null) {
                 this._info.length += this._dist3d(last, ll);
 
                 var t = ll.meta.ele - last.meta.ele;

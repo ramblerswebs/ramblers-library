@@ -55,6 +55,10 @@ class RJsonwalksFeed {
         $this->displayLimit = $no;
     }
 
+    public function filterCancelled() {
+        $this->walks->filterCancelled();
+    }
+
     public function filterDistanceFrom($easting, $northing, $distanceKm) {
         $this->walks->filterDistanceFrom($easting, $northing, $distanceKm);
     }
@@ -122,7 +126,7 @@ class RJsonwalksFeed {
         $items = $this->walks->allWalks();
         foreach ($items as $walk) {
             if ($walk->isCancelled()) {
-                $number+=1;
+                $number += 1;
             }
         }
         return $number;
@@ -132,10 +136,6 @@ class RJsonwalksFeed {
         if ($this->walks == null) {
             echo "No walks found";
             return;
-        }
-        if ($this->walks->totalWalks() == 0) {
-           // echo "No walks found";
-          //  return;
         }
         $document = JFactory::getDocument();
         $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
@@ -169,12 +169,12 @@ class RJsonwalksFeed {
                     echo "<p><b>End of list</b></p>";
                 } else {
                     $more = "ra_more" . $blockId;
-                    $blockId+=1;
+                    $blockId += 1;
                     $block = "ra_block" . $blockId;
                     echo "<div class='ra_walks_more' id='" . $more . "' ><p></p><a " . $this->getTogglePair($block, $more) . " >Display more walks ...</a><p>&nbsp;</p><p>&nbsp;</p></div>";
                 }
                 echo "</div>" . PHP_EOL;
-                $i+=1;
+                $i += 1;
             }
         }
     }
@@ -218,7 +218,7 @@ class RJsonwalksFeed {
         $walks = new RJsonwalksWalks(null);
         $groups[] = $walks;
         foreach ($allwalks as $walk) {
-            $no +=1;
+            $no += 1;
             $walks->addWalk($walk);
             if ($no >= $this->displayLimit) {
                 $no = 0;
@@ -229,7 +229,6 @@ class RJsonwalksFeed {
         return $groups;
     }
 
-    
     public function filterFeed($filter) { // filter by component filter subform
         if ($filter->titlecontains !== '') {
             $this->filterTitleContains($filter->titlecontains, "keep");

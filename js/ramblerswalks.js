@@ -177,6 +177,6 @@ function createModalTag(print = true) {
     $tag += '</div>';
     $tag += '<p style="clear:right;"> </p>';
     $tag += '<div id="modal-data"></div>';
-    $tag += '</div></div>';
+    $tag += '<hr/></div></div>';
     modaltag.innerHTML = $tag;
 }

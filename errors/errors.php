@@ -87,7 +87,7 @@ class RErrors {
                 echo '<b>No ' . $feedTitle . ' found.</b> [Error 2]';
                 break;
             case "[]":
-                echo '<b>Sorry no ' . $feedTitle . ' found</b>';
+                // echo '<b>Sorry no ' . $feedTitle . ' found</b>';
                 break;
             default:
                 $json = json_decode($contents);

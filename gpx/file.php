@@ -21,6 +21,7 @@ class RGpxFile {
     public $date = '';
     public $author = '';
     public $duration = 0;
+    public $links = [];
     //   public $copyright = '';
     private $file = null;
     private $registered = false;
@@ -32,7 +33,7 @@ class RGpxFile {
 
     private function parse() {
         if (!$this->registered) {
-            JLoader::registerNamespace('phpGPX', "libraries/ramblers/vendors/phpGPX-master2081220/src");
+            JLoader::registerNamespace('phpGPX', "libraries/ramblers/vendors/phpGPX-1.0.1/src");
             $this->registered = true;
         }
         $gpxfile = new phpGPX\phpGPX();
@@ -51,13 +52,16 @@ class RGpxFile {
                     $this->author = $meta->author->name;
                 }
             }
+            if ($meta->links !== null) {
+                $this->links = $meta->links;
+            }
             //   if ($meta->copyright !== null) {
             //       $this->copyright = $meta->copyright->year . $meta->copyright->license;
             //   }
             $this->date = "...";
             if (isset($meta->time)) {
                 $this->date = $meta->time->format("Y-m-d");
-            } 
+            }
         }
         // tracks
         $firstpointset = false;

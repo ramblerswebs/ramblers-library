@@ -135,6 +135,7 @@ function addDrawControl(lat, long, zoom) {
         download.set_author(upload.get_author());
         download.set_copyright(upload.get_copyright());
         download.set_date(upload.get_date());
+        download.set_links(upload.get_links());
     });
     ramblersMap.drawnItems.on("reverse:reversed", function (e) {
         addElevations(false);
@@ -345,9 +346,9 @@ function addDrawControl(lat, long, zoom) {
             //       marker.fire('revert-edited', {layer: marker});
         }
     });
-    ramblersMap.map.on('popupclose', function (e) {
-        download._popupclose(e);
-    });
+//    ramblersMap.map.on('popupclose', function (e) {
+//        download._popupclose(e);
+//    });
     function getElementValue(id) {
         var node = document.getElementById(id);
         if (node !== null) {

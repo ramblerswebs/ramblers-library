@@ -18,6 +18,10 @@ class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
         $schemawalks = array();
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
+        if (count($items) == 0) {
+            echo "<p>Sorry, but no walks are available</p>";
+            return;
+        }
         $no = 0;
         if (!$this->displayGradesIcon) {
             echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;

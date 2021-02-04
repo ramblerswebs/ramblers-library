@@ -120,6 +120,7 @@ function displayGpxdetails(g) {
                 header += '<b>Elevation Gain:</b> ' + info.elevation.gain.toFixed(0) + ' m<br/>';
             }
             header += "<b>Est time:</b> " + naismith(info.length, info.elevation.gain);
+            
             document.getElementById('gpxsingleheader').innerHTML = header;
         }
     }
@@ -194,7 +195,7 @@ function updateGPXid(id) {
     var header, path;
     var route = getRoutefromID(id);
     header = "<h2>" + route.title + "</h2>";
-    header += "<button style='float:right' class=\"link-button button-p5565 small white\" onclick=\"showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><p>";
+    header += "<button style='float:right' class=\"link-button button-p5565 small white\" onclick=\"showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><span>";
     if (ramblersGpx.displayAsPreviousWalks) {
         header += '<b>Date:</b> ' + route.date + '<br/>';
         header += '<b>Leader:</b> ' + route.author + '<br/>';
@@ -218,7 +219,16 @@ function updateGPXid(id) {
         header += "<b>Routes:</b> " + route.routes.toFixed(0);
     }
 
-    header += "</p></div>";
+    header += "</div>";
+    if (route.links.length > 0) {
+        header += '<b>Links</b><ul>';
+        for (var index = 0; index < route.links.length; ++index) {
+            var link = route.links[index];
+            header += '<li><a href="' + link.href + '" target="_blank" >' + link.text + '</a>';
+        }
+        header += '</ul>';
+    }
+    header += "</div>";
     path = ramblersGpx.folder + "/" + route.filename;
     document.getElementById('gpxheader').innerHTML = header;
     displayGPX(path, ramblersGpx.linecolour, 0);
