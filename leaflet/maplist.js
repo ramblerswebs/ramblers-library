@@ -34,7 +34,7 @@ function displayData() {
     }
 }
 function displayGPX(file, linecolour, imperial) {
-    // remove old gpx route
+// remove old gpx route
     if (ramblersGpx.elevation !== null) {
         ramblersGpx.elevation.remove();
         ramblersGpx.elevation = null;
@@ -98,7 +98,6 @@ function displayGPX(file, linecolour, imperial) {
     g.addTo(ramblersMap.map);
     ramblersGpx.elevation = el;
     ramblersGpx.gpx = g;
-
 }
 function displayGpxdetails(g) {
     if (document.getElementById('gpxsingleheader') !== null) {
@@ -120,7 +119,6 @@ function displayGpxdetails(g) {
                 header += '<b>Elevation Gain:</b> ' + info.elevation.gain.toFixed(0) + ' m<br/>';
             }
             header += "<b>Est time:</b> " + naismith(info.length, info.elevation.gain);
-            
             document.getElementById('gpxsingleheader').innerHTML = header;
         }
     }
@@ -205,7 +203,6 @@ function updateGPXid(id) {
         header += '<b>Description:</b> ' + route.description + '<br/>';
     }
     header += formatAltitude(route);
-
     header += "<b>Est time <a href=\"https://maphelp3.ramblers-webs.org.uk/information-03/naitsmith-s-rule.html\" target='_blank'>(Naismith)</a>:</b> " + naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
     if (route.duration !== 0) {
         header += "<b>Actual Time:</b> " + timeconv(route.duration) + '<br/>';
@@ -220,13 +217,15 @@ function updateGPXid(id) {
     }
 
     header += "</div>";
-    if (route.links.length > 0) {
-        header += '<b>Links</b><ul>';
-        for (var index = 0; index < route.links.length; ++index) {
-            var link = route.links[index];
-            header += '<li><a href="' + link.href + '" target="_blank" >' + link.text + '</a>';
+    if (route.links !== undefined) {
+        if (route.links.length > 0) {
+            header += '<b>Links</b><ul>';
+            for (var index = 0; index < route.links.length; ++index) {
+                var link = route.links[index];
+                header += '<li><a href="' + link.href + '" target="_blank" >' + link.text + '</a>';
+            }
+            header += '</ul>';
         }
-        header += '</ul>';
     }
     header += "</div>";
     path = ramblersGpx.folder + "/" + route.filename;
@@ -316,9 +315,8 @@ function addPagination() {
         return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
     }
 
-    //  var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
+//  var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
     var $div = '<div class="ra-route-filter">';
-
     $div += ' <span class="dropdown mr-3" \
        data-jplist-control="dropdown-sort" \
        data-opened-class="show" \
@@ -422,7 +420,6 @@ function setTagHtml(id, html) {
 function ra_format(option) {
     document.getElementById("Map").classList.remove('active');
     document.getElementById("List").classList.remove('active');
-
     document.getElementById(option).classList.add('active');
     switch (option) {
         case 'List':
@@ -436,8 +433,10 @@ function ra_format(option) {
             break;
     }
 }
-function timeconv(seconds)
-{
+function timeconv(seconds) {
+    if (isNaN(seconds)) {
+        return "";
+    }
     var strtime, hrs, mins;
     hrs = Math.floor(seconds / 3600);
     seconds -= hrs * 3600;
