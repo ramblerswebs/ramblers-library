@@ -55,7 +55,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         echo "<div id='gpxouter' >";
         echo "<div id='gpxmap'>";
         echo "<p> </p>";
-        echo "<div id = \"gpxheader\" ><h4>Click on any walk to display route</h4></div>";
+        echo "<div id = \"gpxheader\" ><h4>Click on any walk to see summary popup, click on title to display route</h4></div>";
 
         $text = " 
                 ramblersGpx=new RamblersLeafletGpx();
