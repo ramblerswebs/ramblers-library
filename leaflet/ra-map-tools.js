@@ -312,6 +312,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
             ramblersMap.DrawStyle.weight = cookie.weight;
             ramblersMap.DrawStyle.opacity = cookie.opacity;
             ramblersMap.DrawStyle.color = cookie.colour;
+            ramblersMap.map.fire("draw:color-change", null);
         } else {
 
         }
