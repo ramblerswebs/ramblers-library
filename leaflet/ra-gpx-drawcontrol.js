@@ -152,6 +152,7 @@ function addDrawControl(lat, long, zoom) {
         if (ramblersMap.SmartRoute.enabled) {
             ramblersMap.SmartRoute.setOpacityZero();
         }
+        upload.set_polyline_style(ramblersMap.DrawStyle);
 
     });
     ramblersMap.map.on(L.Draw.Event.DRAWSTART, function (e) {
@@ -260,6 +261,7 @@ function addDrawControl(lat, long, zoom) {
         ramblersMap.displayMouseGridSquare = this.displayMouseGridSquare;
         disableMapMoveDrawing();
         listDrawnItems();
+        resetMetadata();
         setGpxToolStatus('auto');
         if (ramblersMap.SmartRoute.enabled) {
             ramblersMap.SmartRouteControl.setOpacityZero();
@@ -269,6 +271,7 @@ function addDrawControl(lat, long, zoom) {
         ramblersMap.displayMouseGridSquare = this.displayMouseGridSquare;
         disableMapMoveDrawing();
         listDrawnItems();
+        resetMetadata();
         setGpxToolStatus('auto');
         if (ramblersMap.SmartRoute.enabled) {
             ramblersMap.SmartRouteControl.setOpacityZero();
@@ -287,6 +290,16 @@ function addDrawControl(lat, long, zoom) {
         setGpxToolStatus('auto');
         enableDraw();
     });
+    function resetMetadata() {
+        if (ramblersMap.drawnItems.getLayers().length === 0) {
+            download.set_name('');
+            download.set_desc('');
+            download.set_author('');
+            download.set_copyright('');
+            download.set_date('');
+            download.set_links([]);
+        }
+    }
     function setGpxToolStatus(status) {
         ramblersMap.processPopups = status;
         reverse.setStatus(status);

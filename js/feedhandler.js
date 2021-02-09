@@ -1,4 +1,4 @@
-var OsGridRef, ramblers;
+var OsGridRef;
 feeds = function () {
 
     this.getSearchTags = function (eventTag, contentTag) {
@@ -12,20 +12,20 @@ feeds = function () {
 
         var ukField = {checked: true};
         this.addYesNo(formDiv, 'divClass', "UK Only", ukField, 'checked');
-        
+
         var inputField = document.createElement('input');
         inputField.setAttribute('type', 'text');
         inputField.setAttribute('class', 'map-select');
         inputField.setAttribute('placeholder', 'Enter place name or grid reference');
         inputField.textContent = 'Location Search  ';
         formDiv.appendChild(inputField);
-     
+
         var searchBtn = this.searchButton(formDiv);
 
         var comment1 = document.createElement('p');
         comment1.setAttribute('class', 'smaller');
         comment1.innerHTML = 'You may enter a OS Grid Reference, of any length, a post code or a road or place name with the town or county. You may qualify a road or place name e.g. Bulls Head, Foolow or London Road, Derby.  ';
-        comment1.innerHTML += " You may also specify a location using <a href='https://what3words.com/about-us/' target='_blank'>What3Words</a>, e.g for Ramblers' Central Office menu.label.slam";
+        comment1.innerHTML += " You may also specify a location using <a href='https://what3words.com/about-us/' target='_blank'>What3Words</a>, e.g for the summit of Snowden ///super.ultra.enhancement";
         formDiv.appendChild(comment1);
 
         inputField.addEventListener("keyup", function (event) {
@@ -79,13 +79,12 @@ feeds = function () {
             var items = selectTag.ra.items;
             var item = items[selectTag.value];
             //  alert("accept" + item.display_name);
+            var closeBtn = document.getElementById("btnClose");
+            closeBtn.dispatchEvent(new Event("click"));
             let event = new Event("locationfound", {bubbles: true}); // (2)
             event.ra = {};
             event.ra.item = item;
             eventTag.dispatchEvent(event);
-            //       ramblers.controller.displayMarkersOnMap();
-            var closeBtn = document.getElementById("btnClose");
-            closeBtn.dispatchEvent(new Event("click"));
         });
         selectTag.addEventListener("change", function () {
             if (selectTag.value < 0) {

@@ -1,4 +1,4 @@
-var L, ramblersMap, document;
+var L, document;
 L.Control.GpxDownload = L.Control.extend({
     options: {
         title: 'Download your walking routes as a GPX file',
@@ -21,7 +21,6 @@ L.Control.GpxDownload = L.Control.extend({
         var containerAll = L.DomUtil.create('div', 'leaflet-control-gpx-download ra-download-toolbar-button-disabled');
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control', containerAll);
         this._createIcon(container);
-        ramblersMap.ra_gpx_download = this;
         this._container = container;
         L.DomEvent.disableClickPropagation(containerAll);
         L.DomEvent.disableClickPropagation(container);
@@ -33,15 +32,12 @@ L.Control.GpxDownload = L.Control.extend({
     },
     _appendButtons: function (container) {
         this.holder = L.DomUtil.create('div', 'leaflet-gpx-options', container);
-
         var element = L.DomUtil.create('div', 'details', this.holder);
         element.innerHTML = "Edit Details";
         L.DomEvent.addListener(element, 'click', this._details, this);
-
         element = L.DomUtil.create('div', 'save', this.holder);
         element.innerHTML = "Save";
         L.DomEvent.addListener(element, 'click', this._save, this);
-
         element = L.DomUtil.create('div', 'cancel', this.holder);
         element.innerHTML = "Cancel";
         L.DomEvent.addListener(element, 'click', this._cancel, this);
@@ -108,19 +104,18 @@ L.Control.GpxDownload = L.Control.extend({
         this.holder.style.display = "none";
         var html = '<form id="js-gpxForm"></form>';
         displayModal(html, false);
-        if (ramblersMap.map.isFullscreen()) {
-            ramblersMap.map.toggleFullscreen();
+        if (this._map.isFullscreen()) {
+            this._map.toggleFullscreen();
             var closeBtn = document.getElementById("btnClose");
-            // When the user clicks on <span> (x), close the modal
+            var _this = this;
             closeBtn.addEventListener("click", function () {
-                ramblersMap.ra_gpx_download._returnToFullScreen();
+                _this._returnToFullScreen();
             });
         }
         this._addDetailsForm("js-gpxForm");
-
     },
     _returnToFullScreen: function () {
-        ramblersMap.map.toggleFullscreen();
+        this._map.toggleFullscreen();
     },
     _addDetailsForm: function (tagname) {
         var formtag = document.getElementById(tagname);
@@ -190,16 +185,16 @@ L.Control.GpxDownload = L.Control.extend({
         gpxData += 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' + "\n";
         gpxData += 'xmlns="http://www.topografix.com/GPX/1/1"' + "\n";
         gpxData += 'xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">' + "\n";
-        gpxData += ramblersMap.ra_gpx_download._addMetaData();
+        gpxData += this._addMetaData();
+        var _this = this;
         this._itemsCollection.eachLayer(function (layer) {
             if (layer instanceof L.Marker) {
-                gpxData += ramblersMap.ra_gpx_download._addMarker(layer);
+                gpxData += _this._addMarker(layer);
             }
             if (layer instanceof L.Polyline) {
-                gpxData += ramblersMap.ra_gpx_download._addPolyline(layer);
+                gpxData += _this._addPolyline(layer);
             }
         });
-
         gpxData += '</gpx>';
         return gpxData;
     },
@@ -209,47 +204,53 @@ L.Control.GpxDownload = L.Control.extend({
         text = text.replace(/'/g, "&apos;");
         text = text.replace(/</g, "&lt;");
         text = text.replace(/>/g, "&gt;");
-
         return text;
     },
     _addMetaData: function () {
         var out = "<metadata>";
-        if (ramblersMap.ra_gpx_download._info.name !== "") {
-            //        out += "<name>" + ramblersMap.ra_gpx_download._escapeChars(ramblersMap.ra_gpx_download._info.name) + "</name>";
-            out += "<name>" + ramblersMap.ra_gpx_download._info.name + "</name>";
+        if (this._info.name !== "") {
+            out += "<name>" + this._escapeChars(this._info.name) + "</name>";
         }
-        if (ramblersMap.ra_gpx_download._info.desc !== "") {
-            //         out += "<desc>" + ramblersMap.ra_gpx_download._escapeChars(ramblersMap.ra_gpx_download._info.desc) + "</desc>";
-            out += "<desc>" + ramblersMap.ra_gpx_download._info.desc + "</desc>";
+        if (this._info.desc !== "") {
+            out += "<desc>" + this._escapeChars(this._info.desc) + "</desc>";
         }
-        if (ramblersMap.ra_gpx_download._info.author !== "") {
-            //         out += "<author><name>" + ramblersMap.ra_gpx_download._escapeChars(ramblersMap.ra_gpx_download._info.author) + "</name></author>";
-            out += "<author><name>" + ramblersMap.ra_gpx_download._info.author + "</name></author>";
+        if (this._info.author !== "") {
+            out += "<author><name>" + this._escapeChars(this._info.author) + "</name></author>";
         }
-        if (ramblersMap.ra_gpx_download._info.date !== "") {
-            out += "<time>" + ramblersMap.ra_gpx_download._info.date + "</time>";
+        if (this._info.date !== "") {
+            out += "<time>" + this._info.date + "</time>";
         }
         var i, len;
-        for (i = 0, len = ramblersMap.ra_gpx_download._info.links.length; i < len; i++) {
-            var link = ramblersMap.ra_gpx_download._info.links[i];
-            if (link.href !== "") {
+        for (i = 0, len = this._info.links.length; i < len; i++) {
+            var link = this._info.links[i];
+            if (this._validURL(link.href)) {
                 out += "<link href=\"" + link.href + "\">";
-                out += "<text>" + link.text + "</text></link>";
+                out += "<text>" + this._escapeChars(link.text) + "</text></link>";
             }
         }
         out += "</metadata>\n";
         return out;
     },
+    _validURL: function (str) {
+        var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+        return !!pattern.test(str);
+    },
     _addMarker: function (marker) {
+
         var data = '<wpt lat="' + marker._latlng.lat + '" lon="' + marker._latlng.lng + '">' + "\n";
         if (marker.hasOwnProperty('name')) {
-            data += '<name>' + marker.name + '</name>' + "\n";
+            data += '<name>' + this._escapeChars(marker.name) + '</name>' + "\n";
         }
         if (marker.hasOwnProperty('desc')) {
-            data += '<desc>' + marker.desc + '</desc>' + "\n";
+            data += '<desc>' + this._escapeChars(marker.desc) + '</desc>' + "\n";
         }
         if (marker.hasOwnProperty('symbol')) {
-            data += '<sym>' + marker.symbol + '</sym>' + "\n";
+            data += '<sym>' + this._escapeChars(marker.symbol) + '</sym>' + "\n";
         }
         data += '</wpt>\n';
         return data;
@@ -260,14 +261,13 @@ L.Control.GpxDownload = L.Control.extend({
             var data = '<trk>' + "\n";
             data += '<trkseg>' + "\n";
             latlngs = polyline.getLatLngs();
-            data += ramblersMap.ra_gpx_download._listtrack(latlngs);
-
+            data += this._listtrack(latlngs);
             data += '</trkseg>' + "\n";
             data += '</trk>' + "\n";
         } else {
             var data = '<rte>' + "\n";
             latlngs = polyline.getLatLngs();
-            data += ramblersMap.ra_gpx_download._listroute(latlngs);
+            data += this._listroute(latlngs);
             data += '</rte>' + "\n";
         }
         return data;
@@ -315,6 +315,7 @@ L.Control.GpxDownload = L.Control.extend({
         inputTag.raproperty = property;
         div.appendChild(inputTag);
         if (raobject.hasOwnProperty(property)) {  // Initialise value
+            //       inputTag.value = _this._unEscapeChars(raobject[property]);
             inputTag.value = raobject[property];
         }
         inputTag.addEventListener("input", function (e) {
@@ -365,7 +366,6 @@ L.Control.GpxDownload = L.Control.extend({
         }
         inputTag.addEventListener("change", function (e) {
             e.target.raobject[e.target.raproperty] = e.target.value + "T12:00:00Z";
-            ;
         });
         return inputTag;
     },
@@ -394,6 +394,7 @@ L.Control.GpxDownload = L.Control.extend({
         return inputTag;
     },
     _addMetaLink: function (tag, divClass, raobject, property1, property2, last = false) {
+        var _this = this;
         var itemDiv = document.createElement('div');
         itemDiv.setAttribute('class', divClass);
         tag.appendChild(itemDiv);
@@ -406,7 +407,6 @@ L.Control.GpxDownload = L.Control.extend({
             inputName.setAttribute('placeholder', 'Name of link');
             inputName.raobject = raobject;
             inputName.raproperty1 = property1;
-
             div.appendChild(inputName);
             var inputLink = document.createElement('input');
             inputLink.setAttribute('type', 'text');
@@ -425,6 +425,11 @@ L.Control.GpxDownload = L.Control.extend({
             }
             inputLink.addEventListener("input", function (e) {
                 e.target.raobject[e.target.raproperty2] = e.target.value;
+                if (_this._validURL(e.target.value)) {
+                    e.target.style.color = "#000000";
+                } else {
+                    e.target.style.color = "#CC0000";
+                }
             });
             var delButton = document.createElement('button');
             delButton.setAttribute('type', 'button');
@@ -433,8 +438,8 @@ L.Control.GpxDownload = L.Control.extend({
             div.appendChild(delButton);
             delButton.addEventListener("click", function (e) {
                 var item = e.currentTarget.raobject;
-                ramblersMap.ra_gpx_download._deleteLink(item);
-                ramblersMap.ra_gpx_download._redisplayLinks();
+                _this._deleteLink(item);
+                _this._redisplayLinks();
             });
         }
         if (last) {
@@ -444,14 +449,14 @@ L.Control.GpxDownload = L.Control.extend({
             div.appendChild(newButton);
             newButton.addEventListener("click", function (e) {
                 var item = {href: '', text: ''};
-                ramblersMap.ra_gpx_download._info.links.push(item);
-                ramblersMap.ra_gpx_download._redisplayLinks();
+                _this._info.links.push(item);
+                _this._redisplayLinks();
             });
         }
         return;
     },
     _redisplayLinks: function () {
-        var tag = ramblersMap.ra_gpx_download.linksDiv;
+        var tag = this.linksDiv;
         tag.innerHTML = '';
         this._addDetailsFormLinks(tag);
     },

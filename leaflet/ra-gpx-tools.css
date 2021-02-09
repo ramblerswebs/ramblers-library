@@ -147,10 +147,7 @@ div.ra-upload-toolbar-button-disabled #upload-icon{
     margin-bottom:0px;
     cursor: pointer;
 }
-.image-upload > input
-{
-    display: none;
-}
+
 
 /* Reverse */
 

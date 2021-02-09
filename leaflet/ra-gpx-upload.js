@@ -6,9 +6,10 @@ L.Control.GpxUpload = L.Control.extend({
     },
     onAdd: function (map) {
         this._map = map;
+        this.polylineStyle = {color: '#782327'};
         this.enabled = true;
         this.filename = "";
-        ra_gpx_upload_this = this;
+        var _this=this;
         this._info = {
             name: "",
             desc: "",
@@ -18,10 +19,27 @@ L.Control.GpxUpload = L.Control.extend({
             links: []
         };
         var container = L.DomUtil.create('div', 'leaflet-control-gpx-upload leaflet-bar leaflet-control');
-        this._createIcon(container);
+        this.input = this._createIcon(container);
         container.title = this.options.title;
         this._container = container;
-        container.getElementById('gpx-file-upload').addEventListener('change', this._uploadGpx, false);
+        // container.that = this;
+        this.input.addEventListener('change', function (evt) {
+            //     var a = that;
+            var files = evt.target.files; // FileList object
+            var file = files[0];
+            var reader = new FileReader();
+            // Closure to capture the file information.
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    _this._gpxreader(reader.result, {async: true});
+                };
+            })(file);
+            // Read in the image file as a data URL.
+            reader.readAsText(file);
+            _this.filename = file.name;
+            _this.filename = _this.filename.replace(/.gpx$/i, '');
+            return false;
+        });
         return container;
     },
     setRouteItems: function (itemsCollection) {
@@ -29,18 +47,33 @@ L.Control.GpxUpload = L.Control.extend({
     },
     _createIcon: function (container) {
         var div = L.DomUtil.create('div', 'image-upload', container);
-        div.innerHTML = '<label for="gpx-file-upload"><div id="upload-icon"></div></label><input id="gpx-file-upload" type="file" accept=".gpx"/>';
-        return div;
+        container.appendChild(div);
+        var label = document.createElement('label');
+        label.setAttribute('for', "gpx-file-upload");
+        div.appendChild(label);
+        var icondiv = document.createElement('div');
+        icondiv.setAttribute('id', "upload-icon");
+        label.appendChild(icondiv);
+        var input = document.createElement('input');
+        input.setAttribute('id', "gpx-file-upload");
+        input.style.display = 'none';
+        input.setAttribute('type', "file");
+        input.setAttribute('accept', "*.gpx");
+        div.appendChild(input);
+        return input;
     },
     setStatus: function (status) {
         this.enabled = status !== "off";
         if (this.enabled) {
-            document.getElementById("gpx-file-upload").disabled = false;
+            this.input.disabled = false;
             L.DomUtil.removeClass(this._container, 'ra-upload-toolbar-button-disabled');
         } else {
-            document.getElementById("gpx-file-upload").disabled = true;
+            this.input.disabled = true;
             L.DomUtil.addClass(this._container, 'ra-upload-toolbar-button-disabled');
         }
+    },
+    set_polyline_style: function (style) {
+        this.polylineStyle = style;
     },
     get_name: function () {
         return this._info.name;
@@ -61,7 +94,7 @@ L.Control.GpxUpload = L.Control.extend({
         return this._info.links;
     },
     _gpxreader: function (gpx, options) {
-        var _MAX_POINT_INTERVAL_MS = 15000;
+        //    var _MAX_POINT_INTERVAL_MS = 15000;
         var _DEFAULT_MARKER_OPTS = {
             wptIconUrls: {
                 '': 'libraries/ramblers/leaflet/gpx/images/pin-icon-wpt.png'
@@ -72,19 +105,13 @@ L.Control.GpxUpload = L.Control.extend({
             shadowAnchor: [25, 41],
             clickable: false
         };
-        var _DEFAULT_POLYLINE_OPTS = {
-            color: '#782327'
-        };
         var _DEFAULT_GPX_OPTS = {
             parseElements: ['track', 'route', 'waypoint']
         };
-        options.max_point_interval = options.max_point_interval || _MAX_POINT_INTERVAL_MS;
+        //   options.max_point_interval = options.max_point_interval || _MAX_POINT_INTERVAL_MS;
         options.marker_options = this._ra_gpx_merge_objs(
                 _DEFAULT_MARKER_OPTS,
                 options.marker_options || {});
-        options.polyline_options = this._ra_gpx_merge_objs(
-                _DEFAULT_POLYLINE_OPTS,
-                options.polyline_options || {});
         options.gpx_options = this._ra_gpx_merge_objs(
                 _DEFAULT_GPX_OPTS,
                 options.gpx_options || {});
@@ -106,11 +133,11 @@ L.Control.GpxUpload = L.Control.extend({
         return _;
     },
     _ra_gpx_parse: function (input, options, async) {
-
+        var _this = this;
         var cb = function (input, options) {
-            var gpx = ra_gpx_upload_this.BuildXMLFromString(input);
-            ra_gpx_upload_this._ra_gpx_parse_gpx_data(gpx, options);
-            ra_gpx_upload_this._itemsCollection.fire('upload:loaded');
+            var gpx = _this.BuildXMLFromString(input);
+            _this._ra_gpx_parse_gpx_data(gpx, options);
+            _this._itemsCollection.fire('upload:loaded');
         };
         if (input.substr(0, 1) === '<') { // direct XML has to start with a <
             if (async) {
@@ -127,6 +154,7 @@ L.Control.GpxUpload = L.Control.extend({
     _ra_gpx_parse_gpx_data: function (xml, options) {
         var j, i, el;
         var tags = [];
+        var that = this;
         var parseElements = options.gpx_options.parseElements;
         if (parseElements.indexOf('route') > -1) {
             tags.push(['rte', 'rtept']);
@@ -139,20 +167,19 @@ L.Control.GpxUpload = L.Control.extend({
         this._info.author = '';
         this._info.date = '';
         this._info.links = [];
-        //  ra_gpx_upload_this = this;
         var meta = xml.getElementsByTagName('metadata');
         //  var test = this._ra_get_child(meta[0], 'time');
         if (typeof meta !== 'undefined') {
             if (meta.length > 0) {
-                ra_gpx_upload_this._info.name = this._ra_get_child_text(meta[0], 'name');
-                ra_gpx_upload_this._info.desc = this._ra_get_child_text(meta[0], 'desc');
-                ra_gpx_upload_this._info.author = this._ra_get_children_text(meta[0], 'author', 'name');
-                ra_gpx_upload_this._info.date = this._ra_get_child_text(meta[0], 'time');
-                ra_gpx_upload_this._info.links = this._ra_get_child_links(meta[0], 'link');
+                this._info.name = this._ra_get_child_text(meta[0], 'name');
+                this._info.desc = this._ra_get_child_text(meta[0], 'desc');
+                this._info.author = this._ra_get_children_text(meta[0], 'author', 'name');
+                this._info.date = this._ra_get_child_text(meta[0], 'time');
+                this._info.links = this._ra_get_child_links(meta[0], 'link');
             }
         }
-        if (ra_gpx_upload_this._info.name === "") {
-            ra_gpx_upload_this._info.name = ra_gpx_upload_this.filename;
+        if (that._info.name === "") {
+            this._info.name = this.filename;
         }
 
 
@@ -164,9 +191,9 @@ L.Control.GpxUpload = L.Control.extend({
                     continue;
                 // add track
                 var latlngs = removeShortSegments(coords);
-                var l = new L.Polyline(latlngs, options.polyline_options);
-                ra_gpx_upload_this._itemsCollection.addLayer(l);
-                ra_gpx_upload_this._itemsCollection.fire('upload:addline', {line: l});
+                var l = new L.Polyline(latlngs, this.polylineStyle);
+                this._itemsCollection.addLayer(l);
+                this._itemsCollection.fire('upload:addline', {line: l});
             }
         }
 
@@ -197,12 +224,12 @@ L.Control.GpxUpload = L.Control.extend({
                     title: name,
                     icon: symIcon
                 });
-                marker.name = name;
-                marker.desc = desc;
-                marker.symbol = symKey;
+                marker.name = this.escapeHtml(name);
+                marker.desc = this.escapeHtml(desc);
+                marker.symbol = this.escapeHtml(symKey);
                 marker.bindPopup("<b>" + name + "</b>" + (desc.length > 0 ? '<br>' + desc : '')).openPopup();
-                ra_gpx_upload_this._itemsCollection.fire('upload:addpoint', {point: marker, point_type: 'waypoint'});
-                ra_gpx_upload_this._itemsCollection.addLayer(marker);
+                this._itemsCollection.fire('upload:addpoint', {point: marker, point_type: 'waypoint'});
+                this._itemsCollection.addLayer(marker);
                 //  layers.push(marker);
             }
         }
@@ -211,52 +238,51 @@ L.Control.GpxUpload = L.Control.extend({
     },
     _ra_get_child_text: function (elem, name) {
         var children = elem.childNodes;
-
-        ra_gpx_upload_this = this;
-        ra_gpx_upload_this.result = "";
-        ra_gpx_upload_this.findname = name;
+  var _this = this;
+        this.result = "";
+        this.findname = name;
         if (typeof children !== 'undefined') {
 
             children.forEach(
                     function (node, currentIndex, listObj) {
-                        var find = ra_gpx_upload_this.findname;
+                        var find = _this.findname;
                         if (node.nodeName === find) {
-                            ra_gpx_upload_this.result = node.textContent;
+                            _this.result = node.textContent;
                         }
                     },
                     "name"
                     );
         }
-        return  this._escapeChars(ra_gpx_upload_this.result);
+        return  this._unEscapeChars(this.result);
     },
     _ra_get_child_links: function (elem) {
         var children = elem.childNodes;
 
-        ra_gpx_upload_this = this;
-        ra_gpx_upload_this.result = [];
-        ra_gpx_upload_this.findname = "link";
+        var that = this;
+        that.result = [];
+        that.findname = "link";
         if (typeof children !== 'undefined') {
 
             children.forEach(
                     function (node, currentIndex, listObj) {
-                        var find = ra_gpx_upload_this.findname;
+                        var find = that.findname;
                         if (node.nodeName === find) {
                             var href = node.getAttribute('href');
                             if (href !== null) {
                                 var text = "";
                                 var temp = node.firstElementChild;
                                 if (temp !== null) {
-                                    text = temp.textContent;
+                                    text = that._unEscapeChars(temp.textContent);
                                 }
                                 var item = {href: href, text: text};
-                                ra_gpx_upload_this.result.push(item);
+                                that.result.push(item);
                             }
                         }
                     },
                     "name"
                     );
         }
-        return  ra_gpx_upload_this.result;
+        return  that.result;
     },
     _ra_get_children_text: function (elem, name1, name2) {
         var child = this._ra_get_child(elem, name1);
@@ -265,35 +291,43 @@ L.Control.GpxUpload = L.Control.extend({
         }
         return "";
     },
-    _escapeChars: function (text) {
-        text = text.replace(/&/g, "&amp;"); // do this first so others are not changed
-        text = text.replace(/"/g, "&quot;");
-        text = text.replace(/'/g, "&apos;");
-        text = text.replace(/</g, "&lt;");
-        text = text.replace(/>/g, "&gt;");
+    _unEscapeChars: function (text) {
+        text = text.replace("&quot;", '"');
+        text = text.replace("&apos;", "'");
+        text = text.replace("&lt;", '<');
+        text = text.replace("&gt;", '>');
+        text = text.replace("&amp;", '&'); // do this last so others are not changed
 
         return text;
+    },
+    escapeHtml: function (unsafe) {
+        return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
     },
     _ra_get_child: function (elem, name) {
         var children = elem.childNodes;
 
-        ra_gpx_upload_this = this;
-        ra_gpx_upload_this.result = undefined;
-        ra_gpx_upload_this.findname = name;
+        var that = this;
+        this.result = undefined;
+        this.findname = name;
         if (typeof children !== 'undefined') {
 
             children.forEach(
                     function (node, currentIndex, listObj) {
-                        var find = ra_gpx_upload_this.findname;
+                        var find = that.findname;
                         // console.log(node + ', ' + currentIndex + ', ' + this);
                         if (node.nodeName === find) {
-                            ra_gpx_upload_this.result = node;
+                            that.result = node;
                         }
                     },
                     "name"
                     );
         }
-        return ra_gpx_upload_this.result;
+        return that.result;
     },
     _ra_get_text: function (elem, tag) {
         var textEl = elem.getElementsByTagName(tag);
@@ -301,7 +335,7 @@ L.Control.GpxUpload = L.Control.extend({
         if (textEl.length > 0) {
             text = textEl[0].textContent;
         }
-        return this._escapeChars(text);
+        return this._unEscapeChars(text);
     }
     ,
     _ra_gpx_parse_trkseg: function (line, tag) {
@@ -317,23 +351,6 @@ L.Control.GpxUpload = L.Control.extend({
             coords.push(ll);
         }
         return coords;
-    },
-    _uploadGpx: function (evt) {
-
-        var files = evt.target.files; // FileList object
-        var file = files[0];
-        var reader = new FileReader();
-        // Closure to capture the file information.
-        reader.onload = (function (theFile) {
-            return function (e) {
-                ra_gpx_upload_this._gpxreader(reader.result, {async: true});
-            };
-        })(file);
-        // Read in the image file as a data URL.
-        reader.readAsText(file);
-        ra_gpx_upload_this.filename = file.name;
-        ra_gpx_upload_this.filename = ra_gpx_upload_this.filename.replace(/.gpx$/i, '');
-        return false;
     },
     BuildXMLFromString: function (text) {
 

@@ -94,7 +94,7 @@ function raLoadLeaflet() {
                 var bounds = getBounds(ramblersMap.markerList);
                 ramblersMap.map.fitBounds(bounds, {padding: [150, 150]});
             }
-        } 
+        }
     }
 // error message container
 
@@ -109,7 +109,7 @@ function raLoadLeaflet() {
     }
 
     try {
-        L.control.ra_map_tools({}).addTo(ramblersMap.map);
+        ramblersMap.RA_Map_Tools = L.control.ra_map_tools({}).addTo(ramblersMap.map);
     } catch (err) {
         document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
     }
@@ -380,7 +380,7 @@ function directions($lat, $long) {
         alert("Sorry - Unable to find your location, we will ask Google to try");
         page = "https://www.google.com/maps/dir/Current+Location/" + $lat.toString() + "," + $long.toString();
     }
-   // console.log(page);
+    // console.log(page);
     window.open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
 }
 function googlemap($lat, $long) {
@@ -446,7 +446,7 @@ var postJSON = function (url, data, callback) {
 function getMouseMoveAction(e) {
     var gr, gridref;
     var zoom = ramblersMap.map.getZoom();
-   // console.log(zoom);
+    // console.log(zoom);
     var p = new LatLon(e.latlng.lat, e.latlng.lng);
     var grid = OsGridRef.latLonToOsGrid(p);
     if (zoom > 16) {
@@ -480,8 +480,6 @@ function getMouseMoveAction(e) {
     var lng = e.latlng.lng.toFixed(5);
     var lat = e.latlng.lat.toFixed(5);
     var value = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
-    //  value += '<br/>' + getMapCode(e.latlng.lat, e.latlng.lng, true);
-    //  value += '<br/>' + getPlusCode(e.latlng.lat, e.latlng.lng, true);
     return  gridref + value;
 }
 

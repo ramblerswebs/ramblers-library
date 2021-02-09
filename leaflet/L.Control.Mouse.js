@@ -168,9 +168,6 @@ L.Control.PostcodeStatus = L.Control.extend({
             desc += "<br/><b>Grid Reference: </b>" + gr +
                     "<br/><b>Grid Reference: </b>" + gr10 + " (8 Figure)";
         }
-// desc += getBrowserStatus();
-        //  desc += '<br/>' + getMapCode(e.latlng.lat, e.latlng.lng, true);
-        //  desc += '<br/>' + getPlusCode(e.latlng.lat, e.latlng.lng, true) + "<br/>";
         var tag = document.getElementById("ra-w3w");
         if (tag !== null) {
             tag.remove();

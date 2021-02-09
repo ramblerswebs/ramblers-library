@@ -11,26 +11,26 @@ L.Control.RA_Map_Tools = L.Control.extend({
     },
     onAdd: function (map) {
         this._map = map;
-        ramblersMap.RA_Map_Tools = this;
-        ramblersMap.map.osMapLayer = L.featureGroup([]).addTo(ramblersMap.map);
-        ramblersMap.OSGrid = {};
-        ramblersMap.OSGrid.display = false;
-        ramblersMap.OSGrid.basicgrid = false;
-        ramblersMap.OSGrid.layer = L.layerGroup().addTo(ramblersMap.map);
+        this.osMapLayer = L.featureGroup([]).addTo(map);
+        this.OSGrid = {};
+        this.OSGrid.display = false;
+        this.OSGrid.basicgrid = false;
+        this.OSGrid.layer = L.layerGroup().addTo(map);
+        var _this = this;
         // OS Grid Display
-        ramblersMap.map.on('zoomend', function () {
-            ramblersMap.RA_Map_Tools.osZoomLevel();
-            ramblersMap.RA_Map_Tools.displayOSGrid();
+        map.on('zoomend', function () {
+            _this.osZoomLevel();
+            _this.displayOSGrid();
         });
-        ramblersMap.map.on('moveend', function () {
-            ramblersMap.RA_Map_Tools.displayOSGrid();
+        map.on('moveend', function () {
+            _this.displayOSGrid();
         });
-        ramblersMap.map.on('baselayerchange', function (e) {
-            ramblersMap.baseTiles = e.name;
-            ramblersMap.RA_Map_Tools.osZoomLevel();
+        map.on('baselayerchange', function (e) {
+            _this.baseTiles = e.name;
+            _this.osZoomLevel();
         });
-        ramblersMap.OSGrid.basicgrid = false;
-        ramblersMap.RA_Map_Tools.displayOSGrid();
+        this.OSGrid.basicgrid = false;
+        this.displayOSGrid();
         this.searchLayer = L.featureGroup([]);
         this.searchLayer.addTo(this._map);
         var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-display-tools');
@@ -38,104 +38,103 @@ L.Control.RA_Map_Tools = L.Control.extend({
             container.setAttribute('id', this.options.id);
         }
         container.title = this.options.title;
-        container.addEventListener("click", this._displayOptions);
+        container.addEventListener("click", function (e) {
+            displayModal("Loading", false);
+            var tag = document.getElementById("modal-data");
+            tag.innerHTML = "";
+            var title = document.createElement('h4');
+            title.textContent = "Mapping Tools";
+            tag.appendChild(title);
+            // tabs
+            var container = document.createElement('div');
+            container.setAttribute('class', 'tabs');
+            tag.appendChild(container);
+            var tabs = document.createElement('div');
+            tabs.setAttribute('class', 'ra-tabs-left ');
+            container.appendChild(tabs);
+            var list = document.createElement('div');
+            tabs.appendChild(list);
+            if (ramblersMap.options.draw) {
+                _this.addTabItem(container, list, 'Plot Walking Route', 'route', true);
+                _this.addTabItem(container, list, 'Search', 'search', false);
+            } else {
+                _this.addTabItem(container, list, 'Search', 'search', true);
+            }
+            _this.addTabItem(container, list, 'Ordnance Survey', 'osmaps', false);
+            _this.addTabItem(container, list, 'Mouse Right Click', 'mouse', false);
+            _this.addTabItem(container, list, 'Feedback', 'help', false);
+            // tab content 
+            var content = document.createElement('div');
+            content.setAttribute('class', 'tab-content');
+            container.appendChild(content);
+            var searchDiv;
+            if (ramblersMap.options.draw) {
+                var drawDiv = _this.addTabContentItem(content, "route", true);
+                searchDiv = _this.addTabContentItem(content, "search", false);
+            } else {
+                searchDiv = _this.addTabContentItem(content, "search", true);
+            }
+            var osmapsDiv = _this.addTabContentItem(content, "osmaps", false);
+            var mouseDiv = _this.addTabContentItem(content, "mouse", false);
+            var helpDiv = _this.addTabContentItem(content, "help", false);
+            if (ramblersMap.options.draw) {
+                _this.addDrawOptions(drawDiv);
+            }
+            _this.addSearch(searchDiv);
+            _this.addOSMaps(osmapsDiv);
+            _this.addMouse(mouseDiv);
+            _this.addHelp(helpDiv);
+            var padding = document.createElement('p');
+            container.appendChild(padding);
+            if (ramblersMap.maphelppage !== '') {
+                var help = document.createElement('a');
+                help.setAttribute('class', 'link-button button-p1815');
+                help.setAttribute('href', ramblersMap.maphelppage);
+                help.setAttribute('target', '_blank');
+                help.style.cssFloat = "right";
+                help.textContent = "Visit our Mapping Help Site";
+                tag.appendChild(help);
+            }
+            if (_this._map.isFullscreen()) {
+                _this._map.toggleFullscreen();
+                var closeBtn = document.getElementById("btnClose");
+                // When the user clicks on <span> (x), close the modal
+                var self = _this;
+                closeBtn.addEventListener("click", function () {
+                    self._returnToFullScreen();
+                });
+            }
+        });
         if (ramblersMap.options.draw) {
-            ramblersMap.RA_Map_Tools.saveDrawOptions = false;
-            this.getDrawSettings();
+            _this.saveDrawOptions = false;
+            _this.getDrawSettings();
             //       }
         }
         return container;
     },
-    _displayOptions: function () {
-        var self = ramblersMap.RA_Map_Tools;
-        displayModal("Loading", false);
-        var tag = document.getElementById("modal-data");
-        tag.innerHTML = "";
-        var title = document.createElement('h4');
-        title.textContent = "Mapping Tools";
-        tag.appendChild(title);
-        // tabs
-        var container = document.createElement('div');
-        container.setAttribute('class', 'tabs');
-        tag.appendChild(container);
-        var tabs = document.createElement('div');
-        tabs.setAttribute('class', 'ra-tabs-left ');
-        container.appendChild(tabs);
-        var list = document.createElement('div');
-        tabs.appendChild(list);
-        if (ramblersMap.options.draw) {
-            self.addTabItem(container, list, 'Plot Walking Route', 'route', true);
-            self.addTabItem(container, list, 'Search', 'search', false);
-        } else {
-            self.addTabItem(container, list, 'Search', 'search', true);
-        }
-        self.addTabItem(container, list, 'Ordnance Survey', 'osmaps', false);
-        self.addTabItem(container, list, 'Mouse Right Click', 'mouse', false);
-        self.addTabItem(container, list, 'Feedback', 'help', false);
-        // tab content 
-        var content = document.createElement('div');
-        content.setAttribute('class', 'tab-content');
-        container.appendChild(content);
-        var searchDiv;
-        if (ramblersMap.options.draw) {
-            var drawDiv = self.addTabContentItem(content, "route", true);
-            searchDiv = self.addTabContentItem(content, "search", false);
-        } else {
-            searchDiv = self.addTabContentItem(content, "search", true);
-        }
-        var osmapsDiv = self.addTabContentItem(content, "osmaps", false);
-        var mouseDiv = self.addTabContentItem(content, "mouse", false);
-        var helpDiv = self.addTabContentItem(content, "help", false);
-        if (ramblersMap.options.draw) {
-            self.addDrawOptions(drawDiv);
-        }
-        self.addSearch(searchDiv);
-        self.addOSMaps(osmapsDiv);
-        self.addMouse(mouseDiv);
-        self.addHelp(helpDiv);
-        var padding = document.createElement('p');
-        container.appendChild(padding);
-        if (ramblersMap.maphelppage !== '') {
-            var help = document.createElement('a');
-            help.setAttribute('class', 'link-button button-p1815');
-            help.setAttribute('href', ramblersMap.maphelppage);
-            help.setAttribute('target', '_blank');
-            help.style.cssFloat = "right";
-            help.textContent = "Visit our Mapping Help Site";
-            // var self = ramblersMap.RA_Map_Tools;
-            tag.appendChild(help);
-            //   L.DomEvent.on(help, 'click', self._display_help, self);
-        }
-        if (ramblersMap.map.isFullscreen()) {
-            ramblersMap.map.toggleFullscreen();
-            var closeBtn = document.getElementById("btnClose");
-            // When the user clicks on <span> (x), close the modal
-            closeBtn.addEventListener("click", function () {
-                ramblersMap.RA_Map_Tools._returnToFullScreen();
-            });
-        }
-    },
+
     _returnToFullScreen: function () {
-        ramblersMap.map.toggleFullscreen();
+        this._map.toggleFullscreen();
     },
     addSearch: function (tag) {
+        var _this = this;
         var feed = new feeds();
         feed.getSearchTags(tag, tag);
         tag.addEventListener("locationfound", function (e) {
             var ra = e.ra;
             var result = ra.item;
-            ramblersMap.RA_Map_Tools.searchLayer.clearLayers();
+            _this.searchLayer.clearLayers();
             result.center = new L.LatLng(result.lat, result.lon);
             //   ramblersMap.map.setZoom(16);
             new L.Marker(result.center, {icon: ramblersMap.redmarkericon})
                     .bindPopup("<b>" + result.class + ": " + result.type + "</b><br/>" + result.display_name)
-                    .addTo(ramblersMap.RA_Map_Tools.searchLayer)
+                    .addTo(_this.searchLayer)
                     .openPopup();
-            ramblersMap.map.setView(result.center, 16);
+            _this._map.setView(result.center, 16);
         });
     },
     addHelp: function (tag) {
-        if (ramblersMap.maphelppage !== '') {
+        if (this._map.maphelppage !== '') {
             var helpcomment = document.createElement('div');
             helpcomment.setAttribute('class', 'help map-tools');
             helpcomment.textContent = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via the HELP web site.";
@@ -144,8 +143,8 @@ L.Control.RA_Map_Tools = L.Control.extend({
     },
     osZoomLevel: function () {
         document.getElementById("ra-error-text").innerHTML = "";
-        if (ramblersMap.baseTiles === 'Ordnance Survey') {
-            var zoom = ramblersMap.map.getZoom();
+        if (this._map.baseTiles === 'Ordnance Survey') {
+            var zoom = this._map.getZoom();
             if (zoom <= 11) {
                 document.getElementById("ra-error-text").innerHTML = "Info: Zoom in to see Ordnance Survey Maps";
             }
@@ -155,7 +154,8 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
     },
     addOSMaps: function (tag) {
-        ramblersMap.map.osMapLayer.clearLayers();
+        var _this = this;
+        this.osMapLayer.clearLayers();
         var title = document.createElement('h4');
         title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
         tag.appendChild(title);
@@ -181,10 +181,11 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.appendChild(comment);
         select.addEventListener("change", function (e) {
             var option = e.target.value;
-            if (option == 'none') {
-                ramblersMap.map.osMapLayer.clearLayers();
+            if (option === 'none') {
+                _this.osMapLayer.clearLayers();
                 return;
             }
+            var self = _this;
             var url = "https://osmaps.theramblers.org.uk/index.php?mapscale=" + option;
             getJSON(url, function (err, items) {
                 if (err !== null) {
@@ -193,34 +194,26 @@ L.Control.RA_Map_Tools = L.Control.extend({
                     if (items.length !== 0) {
                         for (i = 0; i < items.length; i++) {
                             var item = items[i];
-                            ramblersMap.PostcodeStatus.displayOSMap(item, ramblersMap.map.osMapLayer);
+                            ramblersMap.PostcodeStatus.displayOSMap(item, self.osMapLayer);
                         }
                     }
                 }
             });
         });
-        var self = this;
+
         tag.appendChild(document.createElement('hr'));
         var title = document.createElement('h4');
         title.textContent = 'Ordnance Survey Grid';
         tag.appendChild(title);
-        var osGrid = this.addYesNo(tag, 'divClass', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", ramblersMap.OSGrid, 'display');
-        var color = ramblersMap.RA_Map_Tools.options.osgrid.color;
-        label = document.createElement('label');
-        label.textContent = "OS Grid line colour";
+        var osGrid = this.addYesNo(tag, 'divClass', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", this.OSGrid, 'display');
+        var gridColor = this.addColour(tag, 'divClass', 'OS Grid line colour', this.options.osgrid, 'color');
+        var label = document.createElement('label');
+        label.textContent = "OS Grid line style";
         tag.appendChild(label);
-        var osGridColor = document.createElement('input');
-        osGridColor.setAttribute('type', 'color');
-        osGridColor.setAttribute('value', color);
-        tag.appendChild(osGridColor);
-        // var weight = ramblersMap.RA_Map_Tools.options.osgrid.weight;
-        label = document.createElement('label');
-        label.textContent = "OS Grid line thickness";
-        tag.appendChild(label);
-        this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.RA_Map_Tools.options.osgrid, 'weight', 1, 10, 0.5);
-        this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.RA_Map_Tools.options.osgrid, 'opacity', .1, 1, .01);
+        this.addNumber(tag, 'divClass', 'Line weight %n pixels', this.options.osgrid, 'weight', 1, 10, 0.5);
+        this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', this.options.osgrid, 'opacity', .1, 1, .01);
         var example = this.addExampleLine(tag, "300px", "Example: ");
-        this.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.options.osgrid);
+        this.addExampleLineStyle(example, this.options.osgrid);
         title = document.createElement('hr');
         tag.appendChild(title);
         title = document.createElement('h4');
@@ -229,30 +222,24 @@ L.Control.RA_Map_Tools = L.Control.extend({
         title = document.createElement('p');
         title.textContent = 'As you zoom in, the mouse can display a 100m or a 10m square showing the area covered by a 6 or 8 figure grid reference.';
         tag.appendChild(title);
-        var mouseGrid = this.addYesNo(tag, 'divClass', "Display 10m/100m grid reference squares", ramblersMap, 'displayMouseGridSquare');
+        this.addYesNo(tag, 'divClass', "Display 10m/100m grid reference squares", ramblersMap, 'displayMouseGridSquare');
         tag.addEventListener("change", function (e) {
-            self.addExampleLineStyle(example, ramblersMap.RA_Map_Tools.options.osgrid);
-            ramblersMap.OSGrid.basicgrid = false;
-            ramblersMap.RA_Map_Tools.displayOSGrid();
+            _this.addExampleLineStyle(example, _this.options.osgrid);
+            _this.OSGrid.basicgrid = false;
+            _this.displayOSGrid();
         });
         osGrid.addEventListener("yesnochange", function (e) {
             //  ramblersMap.OSGrid.display = !ramblersMap.OSGrid.display;
-            ramblersMap.OSGrid.basicgrid = false;
-            ramblersMap.RA_Map_Tools.displayOSGrid();
+            _this.OSGrid.basicgrid = false;
+            _this.displayOSGrid();
         });
-        mouseGrid.addEventListener("yesnochange", function (e) {
-            //  ramblersMap.OSGrid.display = !ramblersMap.OSGrid.display;
-            //  ramblersMap.OSGrid.basicgrid = false;
-            //  ramblersMap.RA_Map_Tools.displayOSGrid();
-        });
-        osGridColor.addEventListener("change", function (e) {
-            ramblersMap.RA_Map_Tools.options.osgrid.color = osGridColor.value;
-            ramblersMap.OSGrid.basicgrid = false;
-            ramblersMap.RA_Map_Tools.displayOSGrid();
+        gridColor.addEventListener("change", function (e) {
+            _this.OSGrid.basicgrid = false;
+            _this.displayOSGrid();
         });
     },
     addDrawOptions: function (tag) {
-        var self = this;
+        var _this = this;
         var title = document.createElement('h4');
         title.textContent = 'Plot Walking Route';
         tag.appendChild(title);
@@ -265,70 +252,65 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var titlestyle = document.createElement('h5');
         titlestyle.textContent = 'Display: Style of route';
         tag.appendChild(titlestyle);
-        var color = ramblersMap.DrawStyle.color;
-        var drawColor = document.createElement('input');
-        drawColor.setAttribute('type', 'color');
-        drawColor.setAttribute('value', color);
-        tag.appendChild(drawColor);
-        var label = document.createElement('label');
-        label.textContent = "Route line colour";
-        label.setAttribute('class', 'help-label xxxx');
-        tag.appendChild(label);
-        this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.DrawStyle, 'weight', 1, 10, 0.5);
-        this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.DrawStyle, 'opacity', .1, 1, .01);
+        var drawColor = this.addColour(tag, 'divClass', 'Route line colour', ramblersMap.DrawStyle, 'color');
+        var weight = this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.DrawStyle, 'weight', 1, 10, 0.5);
+        var opacity = this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.DrawStyle, 'opacity', .1, 1, .01);
         var example = this.addExampleLine(tag, "300px", "Example: ");
-        tag.appendChild(document.createElement('hr'));
-        var cookies = this.addYesNo(tag, 'divClass', "Save settings between sessions/future visits to web site (you accept cookies)", ramblersMap.RA_Map_Tools, 'saveDrawOptions');
         this.addExampleLineStyle(example, ramblersMap.DrawStyle);
+        tag.appendChild(document.createElement('hr'));
+        var cookies = this.addYesNo(tag, 'divClass', "Save settings between sessions/future visits to web site (you accept cookies)", this, 'saveDrawOptions');
+        var reset = this.addButton(tag, 'divClass', "Reset Plot Walking Route options to default values", 'Reset');
+        reset.addEventListener("click", function (e) {
+            _this.setYesNo(pan, true);
+            _this.setYesNo(join, true);
+            _this.setNumber(weight, 3);
+            _this.setNumber(opacity, 1);
+            _this.setColour(drawColor, '#782327');
+        });
         cookies.addEventListener("click", function (e) {
-            ramblersMap.RA_Map_Tools.setDrawSettings();
+            _this.setDrawSettings();
         });
         pan.addEventListener("yesnochange", function (e) {
-            ramblersMap.RA_Map_Tools.setDrawSettings();
+            _this.setDrawSettings();
         });
         join.addEventListener("yesnochange", function (e) {
-            ramblersMap.RA_Map_Tools.setDrawSettings();
+            _this.setDrawSettings();
         });
         tag.addEventListener("change", function (e) {
-            ramblersMap.RA_Map_Tools.setDrawSettings();
-            self.addExampleLineStyle(example, ramblersMap.DrawStyle);
-            ramblersMap.map.fire("draw:color-change", null);
+            _this.setDrawSettings();
+            _this.addExampleLineStyle(example, ramblersMap.DrawStyle);
+            _this._map.fire("draw:color-change", null);
         });
         drawColor.addEventListener("change", function (e) {
-            var color = drawColor.value;
-            ramblersMap.DrawStyle.color = color;
             let event = new Event("change", {bubbles: true}); // (2)
             tag.dispatchEvent(event);
         });
     },
     getDrawSettings: function () {
-        var _this = ramblersMap.RA_Map_Tools;
-        var scookie = _this.readCookie('raDraw');
+        var scookie = this.readCookie('raDraw');
         if (scookie !== null) {
             var cookie = JSON.parse(scookie);
-            ramblersMap.RA_Map_Tools.saveDrawOptions = cookie.saveOptions;
+            this.saveDrawOptions = cookie.saveOptions;
             ramblersMap.RoutingOption.panToNewPoint = cookie.panToNewPoint;
             ramblersMap.RoutingOption.joinSegments = cookie.joinSegments;
             ramblersMap.DrawStyle.weight = cookie.weight;
             ramblersMap.DrawStyle.opacity = cookie.opacity;
             ramblersMap.DrawStyle.color = cookie.colour;
-            ramblersMap.map.fire("draw:color-change", null);
-        } else {
-
+            this._map.fire("draw:color-change", null);
         }
     },
     setDrawSettings: function () {
-        if (ramblersMap.RA_Map_Tools.saveDrawOptions) {
+        if (this.saveDrawOptions) {
             var cookie = {};
-            cookie.saveOptions = ramblersMap.RA_Map_Tools.saveDrawOptions;
+            cookie.saveOptions = this.saveDrawOptions;
             cookie.panToNewPoint = ramblersMap.RoutingOption.panToNewPoint;
             cookie.joinSegments = ramblersMap.RoutingOption.joinSegments;
             cookie.weight = ramblersMap.DrawStyle.weight;
             cookie.opacity = ramblersMap.DrawStyle.opacity;
             cookie.colour = ramblersMap.DrawStyle.color;
-            ramblersMap.RA_Map_Tools.createCookie(JSON.stringify(cookie), 'raDraw', 365);
+            this.createCookie(JSON.stringify(cookie), 'raDraw', 365);
         } else {
-            ramblersMap.RA_Map_Tools.eraseCookie('raDraw');
+            this.eraseCookie('raDraw');
         }
     },
     _changePolyline: function (polyline) {
@@ -420,19 +402,19 @@ L.Control.RA_Map_Tools = L.Control.extend({
         this.addNumber(tag, 'divClass', 'Display items within %n km', mouse.displayOptions.osm, 'distance', 0.5, 5, 0.5);
     },
     displayOSGrid: function () {
-        if (!ramblersMap.OSGrid.display) {
-            ramblersMap.OSGrid.layer.clearLayers();
+        if (!this.OSGrid.display) {
+            this.OSGrid.layer.clearLayers();
             return;
         }
         var gs = 100000;
-        var zoom = ramblersMap.map.getZoom();
+        var zoom = this._map.getZoom();
         if (zoom > 10) {
             gs = 10000;
         }
         if (zoom > 12.5) {
             gs = 1000;
         }
-        var bounds = ramblersMap.map.getBounds();
+        var bounds = this._map.getBounds();
         var pNE = new LatLon(bounds._northEast.lat, bounds._northEast.lng);
         var pSW = new LatLon(bounds._southWest.lat, bounds._southWest.lng);
         var ne = OsGridRef.latLonToOsGrid(pNE);
@@ -456,26 +438,26 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
 
         if (gs === 100000) {
-            if (ramblersMap.OSGrid.basicgrid) {
+            if (this.OSGrid.basicgrid) {
                 return;
             } else {
                 sw.easting = 0;
                 sw.northing = 0;
                 ne.easting = 700000;
                 ne.northing = 1400000;
-                ramblersMap.OSGrid.basicgrid = true;
+                this.OSGrid.basicgrid = true;
             }
         } else {
-            ramblersMap.OSGrid.basicgrid = false;
+            this.OSGrid.basicgrid = false;
         }
-        ramblersMap.OSGrid.layer.clearLayers();
-        this.drawOSMapGrid(ne, sw, gs, ramblersMap.OSGrid.layer);
+        this.OSGrid.layer.clearLayers();
+        this.drawOSMapGrid(ne, sw, gs, this.OSGrid.layer);
     },
     drawOSMapGrid: function (ne, sw, gs, layer) {
         var style;
-        var color = ramblersMap.RA_Map_Tools.options.osgrid.color;
-        var weight = ramblersMap.RA_Map_Tools.options.osgrid.weight;
-        var opacity = ramblersMap.RA_Map_Tools.options.osgrid.opacity;
+        var color = this.options.osgrid.color;
+        var weight = this.options.osgrid.weight;
+        var opacity = this.options.osgrid.opacity;
         switch (gs) {
             case 1000:
                 style = {color: color, weight: weight, opacity: opacity};
@@ -564,6 +546,54 @@ L.Control.RA_Map_Tools = L.Control.extend({
         itemDiv.appendChild(_label);
         return inputTag;
     },
+    setNumber: function (tag, value) {
+        tag.value = value;
+        let event = new Event("input", {bubbles: true});
+        tag.dispatchEvent(event);
+    },
+    addColour: function (tag, divClass, labeltext, raobject, property) {
+        var itemDiv = document.createElement('div');
+        itemDiv.setAttribute('class', divClass);
+        tag.appendChild(itemDiv);
+        var label = document.createElement('label');
+        label.textContent = labeltext;
+        itemDiv.appendChild(label);
+        var inputColor = document.createElement('input');
+        inputColor.setAttribute('type', 'color');
+        inputColor.setAttribute('value', raobject[property]);
+        itemDiv.appendChild(inputColor);
+        inputColor.raobject = raobject;
+        inputColor.raproperty = property;
+
+        inputColor.addEventListener("change", function (e) {
+            e.target.raobject[e.target.raproperty] = e.target.value;
+            let event = new Event("change", {bubbles: true}); // (2)
+            tag.dispatchEvent(event);
+        });
+        return inputColor;
+    },
+    setColour: function (tag, value) {
+        tag.value = value;
+        let event = new Event("change", {bubbles: true});
+        tag.dispatchEvent(event);
+    },
+    addButton: function (tag, divClass, label, buttonText) {
+        var itemDiv = document.createElement('div');
+        itemDiv.setAttribute('class', divClass);
+        tag.appendChild(itemDiv);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        _label.style.display = "inline";
+        var inputTag = document.createElement('button');
+        inputTag.setAttribute('class', 'small link-button white');
+        inputTag.style.display = "inline";
+        inputTag.style.marginLeft = "10px";
+        inputTag.textContent = buttonText;
+        inputTag.classList.add("button-p5565");
+        itemDiv.appendChild(_label);
+        itemDiv.appendChild(inputTag);
+        return inputTag;
+    },
     addYesNo: function (tag, divClass, label, raobject, property) {
         var itemDiv = document.createElement('div');
         itemDiv.setAttribute('class', divClass);
@@ -603,6 +633,10 @@ L.Control.RA_Map_Tools = L.Control.extend({
         itemDiv.appendChild(_label);
         itemDiv.appendChild(inputTag);
         return inputTag;
+    },
+    setYesNo: function (tag, value) {
+        tag.raobject[tag.property] = !value;
+        tag.click();
     },
     createCookie: function (raobject, name, days) {
         if (days) {
