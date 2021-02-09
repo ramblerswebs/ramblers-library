@@ -101,7 +101,7 @@ L.Control.GpxDownload = L.Control.extend({
     },
     _details: function (evt) {
         this._map.fire('download:cancelled');
-        this.holder.style.display = "none";
+        //this.holder.style.display = "none";
         var html = '<form id="js-gpxForm"></form>';
         displayModal(html, false);
         if (this._map.isFullscreen()) {

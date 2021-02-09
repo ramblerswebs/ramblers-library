@@ -222,7 +222,11 @@ function updateGPXid(id) {
             header += '<b>Links</b><ul>';
             for (var index = 0; index < route.links.length; ++index) {
                 var link = route.links[index];
-                header += '<li><a href="' + link.href + '" target="_blank" >' + link.text + '</a>';
+                var text = link.text;
+                if (text === "") {
+                    text = link.href;
+                }
+                header += '<li><a href="' + link.href + '" target="_blank" >' + text + '</a>';
             }
             header += '</ul>';
         }
