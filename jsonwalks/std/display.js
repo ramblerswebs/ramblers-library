@@ -38,6 +38,8 @@ function DisplayLoad() {
         raLoadLeaflet();
     }
     displayWalks($walks);
+    // to support Area walks display
+    document.cookie =  "AreaCode=;expires=Thu, 01 Jan 1970; path=/;";
 }
 
 function getOptions() {

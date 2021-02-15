@@ -424,5 +424,18 @@ div.ra-inline{
 }
 div.ra-inline label{
     padding-right: 20px;
-
 }
+.area-icon {
+    background: rgba(120, 35, 39, 0.7);
+    padding:5px;
+    border-radius: 5px;
+    font-weight: bold;
+    color:white;
+}
+
+.area-icon.a {
+    background: rgba(120, 35, 39, 0.7);
+}
+.area-icon a {
+ color:white;   
+}    
