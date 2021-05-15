@@ -4,12 +4,11 @@
  * Description of WalksDisplay
  *
  * @author Chris Vaughan
-   Modified Brian Smith Easy Surrey Walkers
  */
 // no direct access
 defined("_JEXEC") or die("Restricted access");
 
-class RJsonwalksSr02Nextwalks extends RJsonwalksDisplaybase {
+class RJsonwalksStdNextwalks extends RJsonwalksDisplaybase {
 
     public $walkClass = "nextwalk";
     public $feedClass = "walksfeed";
@@ -19,21 +18,33 @@ class RJsonwalksSr02Nextwalks extends RJsonwalksDisplaybase {
         $schemawalks = array();
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
+        if (count($items) == 0) {
+            echo "<p>Sorry, but no walks are available</p>";
+            return;
+        }
         $no = 0;
-        echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;
-
+        if (!$this->displayGradesIcon) {
+            echo "<ul class='" . $this->feedClass . "' >" . PHP_EOL;
+        }
         foreach ($items as $walk) {
             $no+=1;
             if ($no > $this->nowalks) {
                 break;
             }
-            $date = "<b>" . $walk->walkDate->format('l, jS F') . "</b>:";
-            $desc = $date . "<br /> " . $walk->title;
+            $date = "<b>" . $walk->walkDate->format('D, jS F') . "</b>";
+            $desc = $date . ", " . $walk->title;
             if ($walk->distanceMiles > 0) {
-                $desc .= ", " . $walk->distanceMiles . "mi<i>(" . $walk->distanceKm . "km)</i>";
+                $desc .= ", " . $walk->distanceMiles . "mi/" . $walk->distanceKm . "km";
             }
+            $out = "<span class='" . $this->walkClass . $walk->status . "' " . ">";
+            $out .= $this->getWalkHref($walk, $desc);
+            $out .= "</span>";
 
-            echo "<li> <div class='" . $this->walkClass . $walk->status . "' " . "><a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $desc . "</a></div>" . PHP_EOL;
+            if ($this->displayGradesIcon) {
+                echo "<span class='nextWalksWithGrade'>" . $walk->getGradeSpan("left") . $out . "</span>\r\n";
+            } else {
+                echo "<li>" . $out . "</li>" . PHP_EOL;
+            }
             if ($walk->isCancelled()) {
                 echo "CANCELLED: " . $walk->cancellationReason;
             } else {
@@ -55,7 +66,9 @@ class RJsonwalksSr02Nextwalks extends RJsonwalksDisplaybase {
             }
         }
 
-        echo "</ul>" . PHP_EOL;
+        if (!$this->displayGradesIcon) {
+            echo "</ul>" . PHP_EOL;
+        }
         $script = json_encode($schemawalks);
         $script = str_replace('"context":', '"@context":', $script);
         $script = str_replace('"type":', '"@type":', $script);
@@ -64,8 +77,7 @@ class RJsonwalksSr02Nextwalks extends RJsonwalksDisplaybase {
         $doc->addScriptDeclaration($script, "application/ld+json");
     }
 
-    function noWalks($no) {
+    public function noWalks($no) {
         $this->nowalks = $no;
     }
-
 }

@@ -3,12 +3,12 @@
     <name>RamblersLibrary</name>
     <libraryname>ramblers</libraryname>
     <author>Chris Vaughan Derby and South Derbyshire</author>
-    <creationDate>22 January 2021</creationDate>
+    <creationDate>14 May 2021</creationDate>
     <copyright>Copyright (C) 2016/2021</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>https://github.com/ramblerswebs/ramblers-library/wiki</authorUrl>
-    <version>3.2.0</version>
+    <version>4.0.0RC1</version>
     <description>Ramblers classes to process, JSON Walks feeds, Retrieve CB membership information</description>
     
     <files>
@@ -38,9 +38,6 @@
         <folder>jsonwalks/de02</folder>
         <folder>jsonwalks/leaflet</folder>
         <folder>jsonwalks/sr02</folder>
-        <folder>jsonwalks/sr02/accordian</folder>
-        <folder>jsonwalks/sr02/accordian/js</folder>
-        <folder>jsonwalks/sr02/accordian/style</folder>
         <folder>jsonwalks/std</folder>
         <folder>jsonwalks/sx05</folder>
         <folder>leaflet</folder>
