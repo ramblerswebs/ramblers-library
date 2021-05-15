@@ -10,138 +10,117 @@ defined("_JEXEC") or die("Restricted access");
 
 class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
-    private $tableClass = "walksTable";
+    private $walksClass = "walks";
     private $walkClass = "walk";
+    private $customFormat = null;
+    private $monthlyReminderClass = null;
+    private $monthlyReminderMethod = null;
+    private $rowClassClass = null;
+    private $rowClassMethod = null;
     public $link = true;
     public $addDescription = true;
     public $addGroupName = false;
     public $addLocation = true;
+    private $tableFormat = [
+        ['title' => 'Date', 'items' => ["{dowddmm}"]],
+        ['title' => 'Meet', 'items' => ["{meet}", "{,meetGR}", "{,meetPC}"]],
+        ['title' => 'Start', 'items' => ["{start}", "{,startGR}", "{,startPC}"]],
+        ['title' => 'Title', 'items' => ["{mediathumbr}", "{title}"]],
+        ['title' => 'Distance', 'items' => ["{distance}"]],
+        ['title' => 'Grade', 'items' => ["{grade+}"]],
+        ['title' => 'Contact', 'items' => ["{contact}"]]];
 
-    const BR = "<br />";
+    public function customFormat($format) {
+        $this->customFormat = $format;
+    }
 
-    function DisplayWalks($walks) {
-        echo "</p>";
-//        if ($this->displayGradesSidebar) {
-//            RJsonwalksWalk::gradeSidebar();
-//        }
-        $printOn = JRequest::getVar('print') == 1;
-        if ($printOn) {
-            $doc = JFactory::getDocument();
-            $style = 'table { border-collapse: collapse;} table, td, th { border: 1px solid #657291;}td { padding: 5px;}';
-            $doc->addStyleDeclaration($style);
-        }
+    public function DisplayWalks($walks) {
+
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
-        if (count($items) == 0) {
-            echo "<p>Sorry, but no walks are available</p>";
-            return;
+        if ($this->customFormat !== null) {
+            $this->tableFormat = $this->customFormat;
         }
-        echo "<table class='gradeTable $this->tableClass'>";
-        if ($walks->hasMeetPlace()) {
-            echo RHtml::addTableHeader(array("Date", "Meet", "Start", "Title", "Distance", "Grade", "Contact"));
-            foreach ($items as $walk) {
-                $this->displayWalkForProgrammeTable($walk, true);
-            }
-        } else {
-            echo RHtml::addTableHeader(array("Date", "Start", "Title", "Distance", "Grade", "Contact"));
-            foreach ($items as $walk) {
-                $this->displayWalkForProgrammeTable($walk, false);
-            }
+        $groupByMonth = RJsonwalksWalk::groupByMonth($this->tableFormat);
+        $odd = false;
+        $lastValue = "";
+        echo "<table class='" . $this->walksClass . "' >" . PHP_EOL;
+
+        if (!$groupByMonth) {
+            echo $this->displayTableHeader();
         }
 
+        foreach ($items as $walk) {
+            if ($groupByMonth) {
+                $thismonth = $walk->getMonthGroup($walk);
+                $displayMonth = $thismonth !== $lastValue;
+                $lastValue = $thismonth;
+                if ($displayMonth) {
+                    if ($displayMonth) {
+                        $out = "<tr><td>";
+                        $out .= "<h3>" . $walk->month . $walk->addYear() . "</h3>";
+                        $out .= "</td></tr>";
+                        echo $out;
+                    }
+                    if ($this->monthlyReminderClass !== null) {
+                        call_user_func(array($this->monthlyReminderClass, $this->monthlyReminderMethod), $thismonth);
+                    }
+                }
+            }
+            echo $this->displayWalk_Table($walk, $this->walkClass);
+            $odd = !$odd;
+        }
         echo "</table>" . PHP_EOL;
     }
 
-    function setTableClass($class) {
-        $this->tableClass = $class;
+    public function setMonthlyReminder($clss, $method) {
+        $this->monthlyReminderClass = $clss;
+        $this->monthlyReminderMethod = $method;
     }
 
-    function setWalksClass($class) {
+    public function setRowClass($clss, $method) {
+        $this->rowClassClass = $clss;
+        $this->rowClassMethod = $method;
+    }
+
+    public function setWalksClass($class) {
         $this->walksClass = $class;
     }
 
-    function setWalkClass($class) {
+    public function setWalkClass($class) {
         $this->walkClass = $class;
     }
 
-    private function displayWalkForProgrammeTable($walk, $hasMeet) {
-        $group = "";
-        if ($this->addGroupName) {
-            $group = self::BR . $walk->groupName;
+    private function displayTableHeader() {
+        $cols = $this->tableFormat;
+        $out = "<tr>";
+        foreach ($cols as $col) {
+            $out .= "<th>" . $col['title'] . "</th>";
         }
-
-        $date = "<b>" . $walk->walkDate->format('l, jS F') . "</b>";
-        if ($this->printOn) {
-            $date = "<div class='" . $this->walkClass . $walk->status . " printon'>" . $date . $group . "</div>";
-        } else {
-            $date = "<div class='" . $this->walkClass . $walk->status . "'>" . $date . $group . "</div>";
-        }
-        if ($walk->hasMeetPlace) {
-            $meet = $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
-            if ($this->addLocation) {
-                $meet .= $this->addLocation($walk->meetLocation);
-            }
-        } else {
-            $meet = ".";
-        }
-
-        if ($walk->startLocation->exact) {
-            $start = $walk->startLocation->timeHHMMshort . " at " . $walk->startLocation->description;
-            if ($this->addLocation) {
-                $start .= $this->addLocation($walk->startLocation);
-            }
-        } else {
-            $start = ".";
-        }
-        if ($this->link) {
-            if ($this->printOn) {
-                $text = $walk->title;
-            } else {
-                $text = "<a href='" . $walk->detailsPageUrl . "' target='_blank' >" . $walk->title . "</a>";
-            }
-        } else {
-            $text = $walk->title;
-        }
-        $text = "<strong>" . $text . "</strong>";
-        $title = "<div class='" . $walk->status . "'>" . $text . " </div>";
-        if ($this->addDescription) {
-            $title .= $walk->description;
-        }
-
-        $dist = $walk->distanceMiles . "mi / " . $walk->distanceKm . "km";
-        $contact = "";
-        if ($walk->isLeader) {
-            $contact = "Leader";
-        } else {
-            $contact = "Contact";
-        }
-        if ($walk->contactName <> "") {
-            $contact .= self::BR . "<strong>" . $walk->contactName . "</strong>";
-        }
-        if ($walk->getEmail() <> "") {
-            $contact .= self::BR . $walk->getEmail($this->emailDisplayFormat);
-        }
-        if ($walk->telephone1 <> "") {
-            $contact .= self::BR . $walk->telephone1;
-        }
-        if ($walk->telephone2 <> "") {
-            $contact .= self::BR . $walk->telephone2;
-        }
-        $grade = $walk->nationalGrade . self::BR . $walk->localGrade;
-        if ($this->displayGradesIcon AND ! $this->printOn) {
-            $grade = "<div>".$walk->getGradeSpan("middle"). $walk->nationalGrade . self::BR . $walk->localGrade."</div>" ;
-        }
-        $class = $this->tableClass;
-        if ($hasMeet) {
-            echo RHtml::addTableRow(array($date, $meet, $start, $title, $dist, $grade, $contact), $class);
-        } else {
-            echo RHtml::addTableRow(array($date, $start, $title, $dist, $grade, $contact), $class);
-        }
+        return $out . "</tr>";
     }
 
-    private function addLocation($location) {
-        $text = self::BR . $location->gridref . " / " . $location->postcode;
-        return $text;
+    private function displayWalk_Table($walk, $class) {
+        $cols = $this->tableFormat;
+        $nClass = $class;
+        if ($this->rowClassClass !== null) {
+            $nClass = call_user_func(array($this->rowClassClass, $this->rowClassMethod), $walk);
+        }
+        $out = "<tr class='" . $nClass . " walk" . $walk->status . "' >";
+
+        foreach ($cols as $col) {
+            if (array_key_exists('class', $col)) {
+                $class = $col['class'];
+                $out .= "<td " . $class . ">";
+            } else {
+                $out .= "<td>";
+            }
+            $items = $col['items'];
+            $out .= $walk->getWalkValues($items);
+            $out .= "</td>";
+        }
+        $out .= "</tr>";
+        return $out;
     }
 
 }

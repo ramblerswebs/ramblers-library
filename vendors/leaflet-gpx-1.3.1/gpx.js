@@ -49,7 +49,7 @@ var _DEFAULT_MARKER_OPTS = {
     endIconUrl: 'pin-icon-end.png',
     shadowUrl: 'pin-shadow.png',
     wptIconUrls: {
-        '': 'pin-icon-wpt.png',
+        '': 'pin-icon-wpt.png'
     },
     iconSize: [33, 50],
     shadowSize: [50, 50],
