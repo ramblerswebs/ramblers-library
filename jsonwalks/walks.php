@@ -98,6 +98,22 @@ class RJsonwalksWalks {
             }
         }
     }
+    
+    public function allFestivals() {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if (count($walk->festivals)===0) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+    
+    public function noFestivals() {
+        foreach ($this->arrayofwalks as $key => $walk) {
+           if (count($walk->festivals)>0) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
 
     private function notInItems($items, $text) {
         if ($items == NULL) {

@@ -3,325 +3,439 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var L, ramblersMap, ramblersGpx, markerRoute, jplist;
+var L, ra, jplist;
 
-function RamblersLeafletGpx() {
-    this.isES6 = isES6();
-    this.routes = null;
-    this.folder = null;
-    this.linecolour = "#782327";
-    this.dateorder = false;
-    this.authororder = false;
-    this.distorder = false;
-    this.titleorder = false;
-    this.gainorder = false;
-    this.download = 0;
-    this.elevation = null;
-    this.description = true;
-    this.displayAsPreviousWalks = false;
-    this.gpx = null;
-    this.searchtext = '';
+
+if (typeof (ra) === "undefined") {
+    ra = {};
 }
-function displayData() {
-    setTagHtml('ra-pagination1', addPagination());
-    displayGPXTable();
-    addGPXMarkers();
-    if (ramblersGpx.isES6) {
-        jplist.init({
-            storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
-            storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
+ra.gpx = (function () {
+    var gpx = {};
+    gpx.displayGPX = function (lmap, data) {
+        var file = data.gpxfile;
+        var linecolour = data.linecolour;
+        var imperial = data.imperial;
+        var detailsDivId = data.detailsDivId;
+        /////////////////////////
+        var _map = lmap.map;
+        var el = lmap.elevationControl();
+        var g = new L.GPX(ra.baseDirectory() + file, {async: true,
+            polyline_options: {color: linecolour},
+            marker_options: {
+                startIconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/pin-icon-start.png',
+                endIconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/pin-icon-end.png',
+                shadowUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/pin-shadow.png'
+            }});
+        g.on('addline', function (e) {
+            el.addData(e.line);
         });
-    }
-}
-function displayGPX(file, linecolour, imperial) {
-// remove old gpx route
-    if (ramblersGpx.elevation !== null) {
-        ramblersGpx.elevation.remove();
-        ramblersGpx.elevation = null;
-    }
-    if (ramblersGpx.gpx !== null) {
-        ramblersGpx.gpx.remove();
-        ramblersGpx.gpx = null;
-    }
-    var el = L.control.elevation({
-        position: "topleft",
-        theme: "steelblue-theme", //default: lime-theme
-        width: 600,
-        height: 125,
-        margins: {
-            top: 10,
-            right: 20,
-            bottom: 30,
-            left: 50
-        },
-        useHeightIndicator: true, //if false a marker is drawn at map position
-        interpolation: "linear", //see https://github.com/mbostock/d3/wiki/SVG-Shapes#wiki-area_interpolate
-        hoverNumber: {
-            decimalsX: 1, //decimals on distance (always in km)
-            decimalsY: 0, //deciamls on hehttps://www.npmjs.com/package/leaflet.coordinatesight (always in m)
-            formatter: undefined //custom formatter function may be injected
-        },
-        xTicks: undefined, //number of ticks in x axis, calculated by default according to width
-        yTicks: undefined, //number of ticks on y axis, calculated by default according to height
-        collapsed: true, //collapsed mode, show chart on click or mouseover
-        imperial: imperial    //display imperial units instead of metric
-    });
-    el.addTo(ramblersMap.map);
-    var g = new L.GPX(ramblersMap.base + file, {async: true,
-        polyline_options: {color: linecolour},
-        marker_options: {
-            startIconUrl: ramblersMap.base + 'libraries/ramblers/leaflet/images/pin-icon-start.png',
-            endIconUrl: ramblersMap.base + 'libraries/ramblers/leaflet/images/pin-icon-end.png',
-            shadowUrl: ramblersMap.base + 'libraries/ramblers/leaflet/images/pin-shadow.png'
-        }});
-    g.on('addline', function (e) {
-        el.addData(e.line);
-    });
-    g.on('addpoint', function (e) {
-        if (e.point_type === "waypoint") {
-            var marker = e.point;
-            var icon = L.icon({
-                iconUrl: ramblersMap.base + 'libraries/ramblers/leaflet/images/redmarker.png',
-                iconSize: [36, 41], // size of the icon
-                iconAnchor: [18, 41],
-                popupAnchor: [0, -20]
-            });
-            marker.setIcon(icon);
-            var sSymbol = marker.options.iconkey;
-            setMarkerIcon(marker, sSymbol);
-        }
-    });
-    g.on('loaded', function (e) {
-        ramblersMap.map.fitBounds(e.target.getBounds());
-        displayGpxdetails(g);
-    });
-    g.addTo(ramblersMap.map);
-    ramblersGpx.elevation = el;
-    ramblersGpx.gpx = g;
-}
-function displayGpxdetails(g) {
-    if (document.getElementById('gpxsingleheader') !== null) {
-        var info = g._info;
-        var header = "";
-        if (info !== "undefined" && info !== null) {
-            if (info.name !== "undefined" && info.name !== null) {
-                header = '<b>Name:</b> ' + info.name + "<br/>";
+        g.on('addpoint', function (e) {
+            if (e.point_type === "waypoint") {
+                var marker = e.point;
+                var icon = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/redmarker.png',
+                    iconSize: [36, 41], // size of the icon
+                    iconAnchor: [18, 41],
+                    popupAnchor: [0, -20]
+                });
+                marker.setIcon(icon);
+                var sSymbol = marker.options.iconkey;
+                ra.map.icon.setMarker(marker, sSymbol);
             }
-            header += '<b>Distance:</b> ' + getGPXDistance(info.length) + '<br/>';
-            if (info.desc !== "undefined" && info.desc !== null) {
-                header += '<b>Description:</b> ' + info.desc + '<br/>';
-            }
-            if (info.elevation.gain === 0) {
-                header += "No elevation data<br/>";
-            } else {
-                header += '<b>Min Altitude:</b> ' + info.elevation.min.toFixed(0) + ' m<br/>';
-                header += '<b>Max Altitude:</b> ' + info.elevation.max.toFixed(0) + ' m<br/>';
-                header += '<b>Elevation Gain:</b> ' + info.elevation.gain.toFixed(0) + ' m<br/>';
-            }
-            header += "<b>Est time:</b> " + naismith(info.length, info.elevation.gain);
-            document.getElementById('gpxsingleheader').innerHTML = header;
-        }
-    }
-}
+        });
+        g.on('loaded', function (e) {
+            _map.fitBounds(e.target.getBounds());
+            gpx.displayGpxdetails(g, detailsDivId);
+        });
+        g.addTo(_map);
 
-function displayGPXName(route) {
-    var link = '<b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b>';
-    return link;
-}
-function displayGPXTable() {
-    var out, index;
-    var tag;
-    var extra = "";
-    tag = document.getElementById("dataTab");
-    if (tag !== null) {
-        out = '<table id="gpxdetails"><thead>';
-        if (ramblersGpx.displayAsPreviousWalks) {
-            extra = "<th class=\"alignleft\">Date</th><th class=\"alignleft\">Leader</th>";
-        }
-        out += "<tr>" + extra + "<th class=\"alignleft\">Title</th><th>Distance Km</th><th>Miles</th><th>min Altitude</th><th>max Altitude</th><th>Elevation Gain</th>";
-        if (ramblersGpx.download === 0) {
-            out += "</tr>";
-        } else {
-            out += "<th>GPX</th></tr>";
-        }
-        out += "</thead>";
-        out += '<tbody data-jplist-group=\"group1\">';
-        for (index = 0; index < ramblersGpx.routes.length; ++index) {
-            var route = ramblersGpx.routes[index];
-            if (displayRoute(route)) {
-                out += '<tr data-jplist-item>';
-                out += displayGPXRow(route);
-                out += '</tr>';
-            }
-        }
-        out += '</tbody></table>';
-        if (ramblersGpx.download === 1) {
-            out += "<p>* To be able to download GPX Routes, you need to log on to our web site.</p>";
-        }
-        tag.innerHTML = out;
-    }
-}
-function displayGPXRow(route) {
-    var link = "";
-    if (ramblersGpx.displayAsPreviousWalks) {
-        link += '<td class="wDate"><b>' + route.date + '</b></td>';
-        link += '<td class="wAuthor alignleft">' + route.author + '</td>';
-    }
-    link += '<td class="wTitle alignleft"><b><a href="javascript:updateGPXid(' + route.id + ')">' + route.title + '</a></b></td>';
-    link += '<td class="wDistance">' + (route.distance / 1000).toFixed(1) + '</td>';
-    link += '<td>' + m_to_mi(route.distance).toFixed(2) + '</td>';
-    if (route.cumulativeElevationGain === 0) {
-        link += '<td>...</td>';
-        link += '<td>...</td>';
-        link += '<td class="wElevation">...</td>';
-    } else {
-        link += '<td>' + route.minAltitude.toFixed(0) + '</td>';
-        link += '<td>' + route.maxAltitude.toFixed(0) + '</td>';
-        link += '<td class="wElevation">' + route.cumulativeElevationGain.toFixed(0) + '</td>';
-    }
-    link += '<td>' + getGPXdownloadLink(route) + '</td>';
-    return link;
-}
-function getGPXDistance(distance) {
-    var dist, miles;
-    dist = m_to_km(distance);
-    miles = m_to_mi(distance);
-    return dist.toFixed(1) + ' km / ' + miles.toFixed(2) + 'mi';
-}
-function updateGPXid(id) {
-    ra_format("Map");
-    var header, path;
-    var route = getRoutefromID(id);
-    header = "<h2>" + route.title + "</h2>";
-    header += "<button style='float:right' class=\"link-button button-p5565 small white\" onclick=\"showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><span>";
-    if (ramblersGpx.displayAsPreviousWalks) {
-        header += '<b>Date:</b> ' + route.date + '<br/>';
-        header += '<b>Leader:</b> ' + route.author + '<br/>';
-    }
-    header += '<b>Distance:</b> ' + getGPXDistance(route.distance) + '<br/>';
-    if (route.description !== '') {
-        header += '<b>Description:</b> ' + route.description + '<br/>';
-    }
-    header += formatAltitude(route);
-    header += "<b>Est time <a href=\"https://maphelp.ramblers-webs.org.uk/naismith.html\" target='_blank'>(Naismith)</a>:</b> " + naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
-    if (route.duration !== 0) {
-        header += "<b>Actual Time:</b> " + timeconv(route.duration) + '<br/>';
-    }
-    header += "<b>Download route:</b> " + getGPXdownloadLink(route) + '<br/>';
-    if (route.tracks > 0) {
-        header += "<b>Tracks:</b> " + route.tracks.toFixed(0);
-    }
+    };
 
-    if (route.routes > 0) {
-        header += "<b>Routes:</b> " + route.routes.toFixed(0);
-    }
-
-    header += "</div>";
-    if (route.links !== undefined) {
-        if (route.links.length > 0) {
-            header += '<b>Links</b><ul>';
-            for (var index = 0; index < route.links.length; ++index) {
-                var link = route.links[index];
-                var text = link.text;
-                if (text === "") {
-                    text = link.href;
+    gpx.displayGpxdetails = function (g, divId) {
+        if (document.getElementById(divId) !== null) {
+            var info = g._info;
+            var header = "";
+            if (info !== "undefined" && info !== null) {
+                if (info.name !== "undefined" && info.name !== null) {
+                    header = '<b>Name:</b> ' + info.name + "<br/>";
                 }
-                header += '<li><a href="' + link.href + '" target="_blank" >' + text + '</a>';
+                header += '<b>Distance:</b> ' + ra.map.getGPXDistance(info.length) + '<br/>';
+                if (info.desc !== "undefined" && info.desc !== null) {
+                    header += '<b>Description:</b> ' + info.desc + '<br/>';
+                }
+                if (info.elevation.gain === 0) {
+                    header += "No elevation data<br/>";
+                } else {
+                    header += '<b>Min Altitude:</b> ' + info.elevation.min.toFixed(0) + ' m<br/>';
+                    header += '<b>Max Altitude:</b> ' + info.elevation.max.toFixed(0) + ' m<br/>';
+                    header += '<b>Elevation Gain:</b> ' + info.elevation.gain.toFixed(0) + ' m<br/>';
+                }
+                header += "<b>Est time:</b> " + ra.math.naismith(info.length, info.elevation.gain);
+                document.getElementById(divId).innerHTML = header;
+                //////////////////////////////////////////////
             }
-            header += '</ul>';
         }
-    }
-    header += "</div>";
-    path = ramblersGpx.folder + "/" + route.filename;
-    document.getElementById('gpxheader').innerHTML = header;
-    displayGPX(path, ramblersGpx.linecolour, 0);
-    location.hash = '#gpxheader';
+    };
+    return gpx;
 }
-function getRoutefromID(id) {
-    for (var index = 0; index < ramblersGpx.routes.length; ++index) {
-        var route = ramblersGpx.routes[index];
-        if (route.id === id) {
-            return route;
+());
+
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+function gpxFolderDisplay(options) {
+    this._map = null;
+    this.options = options;
+    this.base = ra.baseDirectory();
+    this.controls = {
+        folder: null,
+        linecolour: "#782327",
+        dateorder: false,
+        authororder: false,
+        distorder: false,
+        titleorder: false,
+        gainorder: false,
+        download: 0,
+        elevation: null,
+        description: true,
+        displayAsPreviousWalks: false,
+        gpx: null,
+        searchtext: ''
+    };
+    var tags1 = [
+        {name: 'table', parent: 'root', tag: 'table', attrs: {id: 'gpxoptions'}},
+        {name: 'row', parent: 'table', tag: 'tr'},
+        {name: 'map', parent: 'row', tag: 'td', attrs: {class: 'ra-tab active', id: 'Map'}, textContent: 'Map'},
+        {name: 'list', parent: 'row', tag: 'td', attrs: {class: 'ra-tab', id: 'List'}, textContent: 'List'},
+        {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {id: 'gpxouter'}},
+        {name: 'gpxmap', parent: 'gpxouter', tag: 'div', attrs: {id: 'gpxmap'}},
+        {parent: 'gpxmap', tag: 'p'},
+        {parent: 'gpxmap', tag: 'div', attrs: {id: 'gpxheader'}},
+        {parent: 'gpxmap', tag: 'h4', textContent: 'Click on any walk to see summary, click on title to display route'},
+        {name: 'gpxlist', parent: 'gpxouter', tag: 'div', attrs: {id: 'gpxlist'}, style: {display: 'none'}},
+        {parent: 'gpxlist', tag: 'div', attrs: {id: 'ra-pagination1'}},
+        {name: 'tableTab', parent: 'gpxlist', tag: 'div', attrs: {textContent: 'Program loading: please give this a minute or so. If this does not vanish then please contact the web master!'}}
+    ];
+    this.routes = null;
+
+    this.masterdiv = document.getElementById(options.divId);
+
+    this.elements = ra.html.generateTags(this.masterdiv, tags1);
+    var _this = this;
+    this.elements.map.addEventListener("click", function () {
+        _this.ra_format('Map');
+    });
+    this.elements.list.addEventListener("click", function () {
+        _this.ra_format('List');
+    });
+    this.lmap = new leafletMap(this.elements.gpxmap, options);
+    this._map = this.lmap.map;
+    this.el = this.lmap.elevationControl();
+    this.gpx = null;
+    this.cluster = new cluster(this._map);
+    this._map.on('popupopen', function () {
+        var tabs = document.querySelectorAll('.leaflet-popup-content div[data-route-id]');
+        for (var i = 0; i < tabs.length; ++i) {
+            tabs[i].addEventListener("click", function () {
+                var id = this.getAttribute('data-route-id');
+                _this.updateGPXid(id);
+            });
         }
-    }
-    return null;
-}
+    });
 
-function addGPXMarkers() {
-    for (var index = 0; index < ramblersGpx.routes.length; ++index) {
-        var route = ramblersGpx.routes[index];
-        if (displayRoute(route)) {
-            addGPXMarker(route);
+
+    this.displayData = function (data) {
+        this.setData(data);
+        ra.html.setTag('ra-pagination1', this.addPagination());
+        this.displayGPXTable();
+        this.addGPXMarkers();
+        this.addRouteEvents();
+        if (ra.isES6()) {
+            jplist.init({
+                storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
+                storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
+            });
         }
-    }
-}
-function addGPXMarker(route) {
-    var $popup, $lat, $long;
-    $popup = "<div style='font-size:120%'>" + displayGPXName(route) + "</div>";
-    $popup += '<b>Distance</b> - ' + getGPXDistance(route.distance) + '<br/>';
-    $popup += formatAltitude(route);
-    $lat = route.latitude;
-    $long = route.longitude;
-    addMarker($popup, $lat, $long, ramblersMap.markerRoute);
-}
-function formatAltitude(route) {
-    var text;
-    text = "";
-    if (route.cumulativeElevationGain === 0) {
-        return "No elevation data<br/>";
-    } else {
-        text += '<b>Min Altitude:</b> ' + route.minAltitude.toFixed(0) + ' m<br/>';
-        text += '<b>Max Altitude:</b> ' + route.maxAltitude.toFixed(0) + ' m<br/>';
-        text += '<b>Elevation Gain:</b> ' + route.cumulativeElevationGain.toFixed(0) + ' m<br/>';
-    }
-    return text;
-}
-function getGPXdownloadLink(route) {
-    var path, link;
-    link = "";
-    if (ramblersGpx.download === 1) {
-        link = "*";
-    }
-    if (ramblersGpx.download === 2) {
-        path = ramblersMap.base + ramblersGpx.folder + "/" + route.filename;
-        link = "<a href='" + path + "'><img  alt='gpx' src='" + ramblersMap.base + "libraries/ramblers/images/orange-gpx-32.png' width='20' height='20'></a>";
-    }
-    return link;
-}
+    };
+    this.setData = function (data) {
+        this.routes = data.items;
+        this.controls.folder = data.folder;
+        this.controls.linecolour = data.linecolour;
+        this.controls.displayAsPreviousWalks = data.displayAsPreviousWalks;
+        this.controls.download = data.download;
+    };
+    this.ra_format = function (option) {
+        this.elements.map.classList.remove('active');
+        this.elements.list.classList.remove('active');
+        document.getElementById(option).classList.add('active');
+        switch (option) {
+            case 'List':
+                this.elements.gpxmap.style.display = "none";
+                this.elements.gpxlist.style.display = "inline";
+                break;
+            case 'Map':
+                this.elements.gpxlist.style.display = "none";
+                this.elements.gpxmap.style.display = "inline";
+                this._map.invalidateSize();
+                break;
+        }
+    };
+    this.displayGPXName = function (route) {
+        var link = '<b><div data-route-id="' + route.id + '">' + route.title + '</div></b>';
+        return link;
+    };
+    this.addRouteEvents = function () {
+        var i;
+        var _this = this;
+        var tabs = document.querySelectorAll('div[data-route-id]');
+        for (var i = 0; i < tabs.length; ++i) {
+            tabs[i].addEventListener("click", function () {
+                var id = this.getAttribute('data-route-id');
+                _this.updateGPXid(id);
+            });
+        }
+    };
+    this.displayGPXTable = function () {
+        var out, index;
+        var tag;
+        var extra = "";
+        tag = this.elements.tableTab;
+        if (tag !== null) {
+            out = '<table id="gpxdetails"><thead>';
+            if (this.controls.displayAsPreviousWalks) {
+                extra = "<th class=\"alignleft\">Date</th><th class=\"alignleft\">Leader</th>";
+            }
+            out += "<tr>" + extra + "<th class=\"alignleft\">Title</th><th>Distance Km</th><th>Miles</th><th>min Altitude</th><th>max Altitude</th><th>Elevation Gain</th>";
+            if (this.controls.download === 0) {
+                out += "</tr>";
+            } else {
+                out += "<th>GPX</th></tr>";
+            }
+            out += "</thead>";
+            out += '<tbody data-jplist-group=\"group1\">';
+            for (index = 0; index < this.routes.length; ++index) {
+                var route = this.routes[index];
+                if (this.displayRoute(route)) {
+                    out += '<tr data-jplist-item>';
+                    out += this.displayGPXRow(route);
+                    out += '</tr>';
+                }
+            }
+            out += '</tbody></table>';
+            if (this.controls.download === 1) {
+                out += "<p>* To be able to download GPX Routes, you need to log on to our web site.</p>";
+            }
+            tag.innerHTML = out;
+        }
+    };
+    this.displayGPXRow = function (route) {
+        var link = "";
+        if (this.controls.displayAsPreviousWalks) {
+            link += '<td class="wDate"><b>' + route.date + '</b></td>';
+            link += '<td class="wAuthor alignleft">' + route.author + '</td>';
+        }
+        link += '<td class="wTitle alignleft">' + this.displayGPXName(route) + '</td>';
+        link += '<td class="wDistance">' + (route.distance / 1000).toFixed(1) + '</td>';
+        link += '<td>' + ra.units.metresToMi(route.distance).toFixed(2) + '</td>';
+        if (route.cumulativeElevationGain === 0) {
+            link += '<td>...</td>';
+            link += '<td>...</td>';
+            link += '<td class="wElevation">...</td>';
+        } else {
+            link += '<td>' + route.minAltitude.toFixed(0) + '</td>';
+            link += '<td>' + route.maxAltitude.toFixed(0) + '</td>';
+            link += '<td class="wElevation">' + route.cumulativeElevationGain.toFixed(0) + '</td>';
+        }
+        link += '<td>' + this.getGPXdownloadLink(route) + '</td>';
+        return link;
+    };
 
-function displayRoute(route) {
-    if (ramblersGpx.searchtext === '') {
-        return true;
-    }
-    if (route.title.toLowerCase().includes(ramblersGpx.searchtext)) {
-        return true;
-    }
-    return false;
-}
-function gpxsearch() {
-    var x = document.getElementById("searchform");
-    var text = "";
-    var i, y;
-    for (i = 0; i < x.length; i++) {
-        text += x.elements[i].value;
-        y = x.elements[i];
-    }
-    ramblersGpx.searchtext = text.toLowerCase();
-    displayTabs();
-    removeClusterMarkers();
-    addGPXMarkers();
-    ramblersMap.markersCG.addLayers(ramblersMap.markerList);
-    return false;
-}
+    this.updateGPXid = function (sid) {
+        var id = parseInt(sid);
+        this.ra_format("Map");
+        var header, path;
+        var route = this.getRoutefromID(id);
+        header = "<h2>" + route.title + "</h2>";
+        header += "<button style='float:right' class=\"link-button button-p5565 small white\" onclick=\"ra.html.showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><span>";
+        if (this.controls.displayAsPreviousWalks) {
+            header += '<b>Date:</b> ' + route.date + '<br/>';
+            header += '<b>Leader:</b> ' + route.author + '<br/>';
+        }
+        header += '<b>Distance:</b> ' + ra.map.getGPXDistance(route.distance) + '<br/>';
+        if (route.description !== '') {
+            header += '<b>Description:</b> ' + route.description + '<br/>';
+        }
+        header += this.formatAltitude(route);
+        header += "<b>Est time <a href=\"https://maphelp.ramblers-webs.org.uk/naismith.html\" target='_blank'>(Naismith)</a>:</b> " + ra.math.naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
+        if (route.duration !== 0) {
+            header += "<b>Actual Time:</b> " + ra.time.secsToHrsMins(route.duration) + '<br/>';
+        }
+        header += "<b>Download route:</b> " + this.getGPXdownloadLink(route) + '<br/>';
+        if (route.tracks > 0) {
+            header += "<b>Tracks:</b> " + route.tracks.toFixed(0);
+        }
 
-function addPagination() {
-    if (!ramblersGpx.isES6) {
-        return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
-    }
+        if (route.routes > 0) {
+            header += "<b>Routes:</b> " + route.routes.toFixed(0);
+        }
+
+        header += "</div>";
+        if (route.links !== undefined) {
+            if (route.links.length > 0) {
+                header += '<b>Links</b><ul>';
+                for (var index = 0; index < route.links.length; ++index) {
+                    var link = route.links[index];
+                    var text = link.text;
+                    if (text === "") {
+                        text = link.href;
+                    }
+                    header += '<li><a href="' + link.href + '" target="_blank" >' + text + '</a>';
+                }
+                header += '</ul>';
+            }
+        }
+        header += "</div>";
+        path = this.controls.folder + "/" + route.filename;
+        document.getElementById('gpxheader').innerHTML = header;
+        var data = {};
+        data.gpxfile = path;
+        data.linecolour = this.controls.linecolour;
+        data.imperial = 0;
+        this.displayGPX(data);
+        location.hash = '#gpxheader';
+    };
+    this.displayGPX = function (data) {
+        var file = data.gpxfile;
+        var linecolour = data.linecolour;
+        var imperial = data.imperial;
+        var detailsDivId = data.detailsDivId;
+        var _this = this;
+        // remove old gpx route and elevation
+        this.el.clear();
+        if (this.gpx !== null) {
+            this.gpx.remove();
+            this.gpx = null;
+        }
+
+        this.gpx = new L.GPX(this.base + file, {async: true,
+            polyline_options: {color: linecolour},
+            marker_options: {
+                startIconUrl: this.base + 'libraries/ramblers/leaflet/images/route-start.png',
+                endIconUrl: this.base + 'libraries/ramblers/leaflet/images/route-end.png',
+                shadowUrl: null,
+                iconSize: [20, 20], // size of the icon
+                iconAnchor: [10, 10]
+            }});
+        this.gpx.on('addline', function (e) {
+            _this.el.addData(e.line);
+        });
+        this.gpx.on('addpoint', function (e) {
+            if (e.point_type === "waypoint") {
+                var marker = e.point;
+                var icon = L.icon({
+                    iconUrl: this.base + 'libraries/ramblers/leaflet/images/redmarker.png',
+                    iconSize: [36, 41], // size of the icon
+                    iconAnchor: [18, 41],
+                    popupAnchor: [0, -20]
+                });
+                marker.setIcon(icon);
+                var sSymbol = marker.options.iconkey;
+                ra.map.icon.setMarker(marker, sSymbol);
+            }
+        });
+        this.gpx.on('loaded', function (e) {
+            _this._map.fitBounds(e.target.getBounds());
+            _this._map.closePopup();
+        });
+        this.gpx.addTo(this._map);
+    };
+    this.getRoutefromID = function (id) {
+        for (var index = 0; index < this.routes.length; ++index) {
+            var route = this.routes[index];
+            if (route.id === id) {
+                return route;
+            }
+        }
+        return null;
+    };
+
+    this.addGPXMarkers = function () {
+        for (var index = 0; index < this.routes.length; ++index) {
+            var route = this.routes[index];
+            if (this.displayRoute(route)) {
+                this.addGPXMarker(route);
+            }
+        }
+        this.cluster.addClusterMarkers();
+    };
+    this.addGPXMarker = function (route) {
+        var $popup, $lat, $long;
+        $popup = "<div style='font-size:120%'>" + this.displayGPXName(route) + "</div>";
+        $popup += '<b>Distance</b> - ' + ra.map.getGPXDistance(route.distance) + '<br/>';
+        $popup += this.formatAltitude(route);
+        $lat = route.latitude;
+        $long = route.longitude;
+        this.cluster.addMarker($popup, $lat, $long, ra.map.icon.markerRoute);
+    };
+    this.formatAltitude = function (route) {
+        var text;
+        text = "";
+        if (route.cumulativeElevationGain === 0) {
+            return "No elevation data<br/>";
+        } else {
+            text += '<b>Min Altitude:</b> ' + route.minAltitude.toFixed(0) + ' m<br/>';
+            text += '<b>Max Altitude:</b> ' + route.maxAltitude.toFixed(0) + ' m<br/>';
+            text += '<b>Elevation Gain:</b> ' + route.cumulativeElevationGain.toFixed(0) + ' m<br/>';
+        }
+        return text;
+    };
+    this.getGPXdownloadLink = function (route) {
+        var path, link;
+        link = "";
+        if (this.controls.download === 1) {
+            link = "*";
+        }
+        if (this.controls.download === 2) {
+            path = ra.baseDirectory() + this.controls.folder + "/" + route.filename;
+            link = "<a href='" + path + "'><img  alt='gpx' src='" + ra.baseDirectory() + "libraries/ramblers/images/orange-gpx-32.png' width='20' height='20'></a>";
+        }
+        return link;
+    };
+
+    this.displayRoute = function (route) {
+        if (this.controls.searchtext === '') {
+            return true;
+        }
+        if (route.title.toLowerCase().includes(this.controls.searchtext)) {
+            return true;
+        }
+        return false;
+    };
+    this.gpxsearch = function () {
+        var x = document.getElementById("searchform");
+        var text = "";
+        var i, y;
+        for (i = 0; i < x.length; i++) {
+            text += x.elements[i].value;
+            y = x.elements[i];
+        }
+        this.controls.searchtext = text.toLowerCase();
+        this.displayTabs();
+        this.cluster.removeClusterMarkers();
+        this.addGPXMarkers();
+        this.cluster.addClusterMarkers();
+        return false;
+    };
+
+    this.addPagination = function () {
+        if (!ra.isES6()) {
+            return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
+        }
 
 //  var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
-    var $div = '<div class="ra-route-filter">';
-    $div += ' <span class="dropdown mr-3" \
+        var $div = '<div class="ra-route-filter">';
+        $div += ' <span class="dropdown mr-3" \
        data-jplist-control="dropdown-sort" \
        data-opened-class="show" \
        data-group="group1" \
@@ -341,26 +455,26 @@ function addPagination() {
             <a class="dropdown-item" \
            href="#" \
            data-path="default">Sort By</a>';
-    if (ramblersGpx.displayAsPreviousWalks) {
-        $div += addJPlistSortItem('.wDate', 'Date ▲', 'text', 'asc', true);
-        $div += addJPlistSortItem('.wDate', 'Date ▼', 'text', 'desc', false);
-        $div += addJPlistSortItem('.wAuthor', 'Leader ▲', 'text', 'asc', false);
-        $div += addJPlistSortItem('.wAuthor', 'Leader ▼', 'text', 'desc', false);
-        $div += addJPlistSortItem('.wTitle', 'Title ▲', 'text', 'asc', false);
-        $div += addJPlistSortItem('.wTitle', 'Title ▼', 'text', 'desc', false);
-        $div += addJPlistSortItem('.wDistance', 'Distance ▲', 'number', 'asc', false);
-        $div += addJPlistSortItem('.wDistance', 'Distance ▼', 'number', 'desc', false);
-        $div += addJPlistSortItem('.wElevation', 'Elevation ▲', 'number', 'asc', false);
-        $div += addJPlistSortItem('.wElevation', 'Elevation ▼', 'number', 'desc', false);
-    } else {
-        $div += addJPlistSortItem('.wTitle', 'Title ▲', 'text', 'asc', true);
-        $div += addJPlistSortItem('.wTitle', 'Title ▼', 'text', 'desc', false);
-        $div += addJPlistSortItem('.wDistance', 'Distance ▲', 'number', 'asc', false);
-        $div += addJPlistSortItem('.wDistance', 'Distance ▼', 'number', 'desc', false);
-        $div += addJPlistSortItem('.wElevation', 'Elevation ▲', 'number', 'asc', false);
-        $div += addJPlistSortItem('.wElevation', 'Elevation ▼', 'number', 'desc', false);
-    }
-    $div += '</span> \
+        if (this.controls.displayAsPreviousWalks) {
+            $div += this.addJPlistSortItem('.wDate', 'Date ▲', 'text', 'asc', true);
+            $div += this.addJPlistSortItem('.wDate', 'Date ▼', 'text', 'desc', false);
+            $div += this.addJPlistSortItem('.wAuthor', 'Leader ▲', 'text', 'asc', false);
+            $div += this.addJPlistSortItem('.wAuthor', 'Leader ▼', 'text', 'desc', false);
+            $div += this.addJPlistSortItem('.wTitle', 'Title ▲', 'text', 'asc', false);
+            $div += this.addJPlistSortItem('.wTitle', 'Title ▼', 'text', 'desc', false);
+            $div += this.addJPlistSortItem('.wDistance', 'Distance ▲', 'number', 'asc', false);
+            $div += this.addJPlistSortItem('.wDistance', 'Distance ▼', 'number', 'desc', false);
+            $div += this.addJPlistSortItem('.wElevation', 'Elevation ▲', 'number', 'asc', false);
+            $div += this.addJPlistSortItem('.wElevation', 'Elevation ▼', 'number', 'desc', false);
+        } else {
+            $div += this.addJPlistSortItem('.wTitle', 'Title ▲', 'text', 'asc', true);
+            $div += this.addJPlistSortItem('.wTitle', 'Title ▼', 'text', 'desc', false);
+            $div += this.addJPlistSortItem('.wDistance', 'Distance ▲', 'number', 'asc', false);
+            $div += this.addJPlistSortItem('.wDistance', 'Distance ▼', 'number', 'desc', false);
+            $div += this.addJPlistSortItem('.wElevation', 'Elevation ▲', 'number', 'asc', false);
+            $div += this.addJPlistSortItem('.wElevation', 'Elevation ▼', 'number', 'desc', false);
+        }
+        $div += '</span> \
 <input class="ra-route-search" \
      data-jplist-control="textbox-filter" \
      data-group="group1" \
@@ -381,11 +495,11 @@ function addPagination() {
             <span data-type=\"info\"> \
             {startItem} - {endItem} of {itemsNumber} \
             </span> ';
-    var $display = "";
-    if (ramblersGpx.routes.length < 15) {
-        $display = ' style=\"display:none;\" ';
-    }
-    $div += '  <span' + $display + '> \
+        var $display = "";
+        if (this.routes.length < 15) {
+            $display = ' style=\"display:none;\" ';
+        }
+        $div += '  <span' + $display + '> \
             <button type=\"button\" data-type=\"first\">First</button> \
             <button type=\"button\" data-type=\"prev\">Previous</button> \
             <span class=\"jplist-holder\" data-type=\"pages\"> \
@@ -401,51 +515,18 @@ function addPagination() {
         <option value=\"30\"> 30 per page </option> \
         <option value=\"0\"> view all </option> \
     </select> ';
-    $div += '</div> ';
-    return $div;
-}
+        $div += '</div> ';
+        return $div;
+    };
 
-function addJPlistSortItem(col, title, type, order, selected) {
-    var sel = '';
-    if (selected) {
-        sel = ' data-selected="true"';
-    }
-    var out = '<a class="dropdown-item"href="#" data-path="' + col +
-            '" data-order="' + order + '" data-type="' + type + '"' + sel + ' >' + title + '</a> ';
-    return out;
-}
+    this.addJPlistSortItem = function (col, title, type, order, selected) {
+        var sel = '';
+        if (selected) {
+            sel = ' data-selected="true"';
+        }
+        var out = '<a class="dropdown-item"href="#" data-path="' + col +
+                '" data-order="' + order + '" data-type="' + type + '"' + sel + ' >' + title + '</a> ';
+        return out;
+    };
 
-function setTagHtml(id, html) {
-    var tag = document.getElementById(id);
-    if (tag) {
-        tag.innerHTML = html;
-    }
-}
-function ra_format(option) {
-    document.getElementById("Map").classList.remove('active');
-    document.getElementById("List").classList.remove('active');
-    document.getElementById(option).classList.add('active');
-    switch (option) {
-        case 'List':
-            document.getElementById("gpxmap").style.display = "none";
-            document.getElementById("gpxlist").style.display = "inline";
-            break;
-        case 'Map':
-            document.getElementById("gpxlist").style.display = "none";
-            document.getElementById("gpxmap").style.display = "inline";
-            ramblersMap.map.invalidateSize();
-            break;
-    }
-}
-function timeconv(seconds) {
-    if (isNaN(seconds)) {
-        return "";
-    }
-    var strtime, hrs, mins;
-    hrs = Math.floor(seconds / 3600);
-    seconds -= hrs * 3600;
-    mins = Math.floor(seconds / 60);
-    seconds -= mins * 60;
-    strtime = hrs.toFixed() + 'hrs ' + mins.toFixed() + 'mins';
-    return strtime;
 }

@@ -37,7 +37,7 @@ class ROrganisation {
 
     private function readFeed($rafeedurl) {
 
-        $result = $this->srfr->getFeed($rafeedurl);
+        $result = $this->srfr->getFeed($rafeedurl, "Ramblers Organisation");
         $status = $result["status"];
         $contents = $result["contents"];
 
@@ -77,7 +77,7 @@ class ROrganisation {
                 if (json_last_error() == JSON_ERROR_NONE) {
                     foreach ($json as $value) {
                         $ok = $this->checkJsonProperties($value);
-                        $error+=$ok;
+                        $error += $ok;
                     }
                     if ($error > 0) {
                         $app = JApplicationCms::getInstance('site');
@@ -131,7 +131,7 @@ class ROrganisation {
                 $code = "Area " . $area->code . ": ";
             }
 
-            echo RHtml::addTableRow([ $code . $area->getLink($this->showLinks), " ", $area->website, $area->status]);
+            echo RHtml::addTableRow([$code . $area->getLink($this->showLinks), " ", $area->website, $area->status]);
 
             if ($this->showGroups) {
                 $code = "";
@@ -150,7 +150,7 @@ class ROrganisation {
                         }
                     }
                     //    Echo "<div class='ra_group'>" . $code . $group->getLink($this->showLinks) . "</div>";
-                    echo RHtml::addTableRow([ "", $code . $group->getLink($this->showLinks), $group->website, $group->status]);
+                    echo RHtml::addTableRow(["", $code . $group->getLink($this->showLinks), $group->website, $group->status]);
                 }
             }
         }
@@ -188,32 +188,60 @@ class ROrganisation {
         }
     }
 
-    public function addMapMarkers($map) {
+    public function display($map) {
         if (isset($map)) {
-            $map->addBounds();
+            $document = JFactory::getDocument();
+            $document->addScript("libraries/ramblers/organisation/organisation.js", "text/javascript");
+            $map->setCommand('organisationMap');
+            $map->help_page = "";
+            $map->options->fullscreen = true;
+            $map->options->search = true;
+            $map->options->locationsearch = true;
+            $map->options->osgrid = true;
+            $map->options->mouseposition = true;
+            $map->options->rightclick = true;
+            $map->options->fitbounds = true;
+            $map->options->displayElevation = true;
             $map->options->cluster = true;
-            $text = "";
-            foreach ($this->groups as $key => $group) {
-                $areatext = "";
-                if ($group->scope <> "A") {
-                    $areacode = substr($key, 0, 2);
-                    $area = $this->areas[$areacode];
-                    $areatext = "Area <br/><a href='" . $area->url . "' target='_blank'>" . $area->name . "</a><br/>";
-                }
-                $marker = $group->addMapMarker($areatext);
-                $text.=$marker . PHP_EOL;
-            }
-            $map->addContent($text);
+            $map->options->mylocation = true;
+            $map->options->maptools = true;
+            $map->options->draw = true;
+            $map->options->print = true;
+            $map->options->ramblersPlaces = true;
+
+            $data = new class {
+                
+            };
+            $data->groups = $this->groups;
+            $data->areas = $this->areas;
+            $map->setDataObject($data);
+            $map->display();
+            echo "<h4>Map of Ramblers Areas and Groups</h4>";
+
+
+            //   $map->addBounds();
+//            $text = "";
+//            foreach ($this->groups as $key => $group) {
+//                $areatext = "";
+//                if ($group->scope <> "A") {
+//                    $areacode = substr($key, 0, 2);
+//                    $area = $this->areas[$areacode];
+//                    $areatext = "Area <br/><a href='" . $area->url . "' target='_blank'>" . $area->name . "</a><br/>";
+//                }
+//                $marker = $group->addMapMarker($areatext);
+//                $text.=$marker . PHP_EOL;
+//            }
+//            $map->addContent($text);
         }
     }
 
-    public function centreMap($centreGroup) {
-        $this->centreGroup = strtoupper($centreGroup);
-    }
-
-    public function setZoom($zoom) {
-        $this->mapZoom = $zoom;
-    }
+//    public function centreMap($centreGroup) {
+//        $this->centreGroup = strtoupper($centreGroup);
+//    }
+//
+//    public function setZoom($zoom) {
+//        $this->mapZoom = $zoom;
+//    }
 
     private function checkJsonProperties($item) {
         $properties = array("scope", "groupCode", "name", "url", "description", "latitude",

@@ -43,12 +43,12 @@ class RAccounts {
         if ($format != RAccountsAccount::FORMAT_SINGLE) { // all domains
             $this->getAccounts($sortbystatus);
             echo "<table style='font-size: 85%'>";
-            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format,  RAccountsLogfile::DISP_NONE));
+            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format, RAccountsLogfile::DISP_NONE));
             foreach ($this->dbresults as $item) :
                 $adomain = strtolower(trim($item->domain));
                 $status = $item->status;
                 $webmaster = $item->web_master;
-                $account = new RAccountsAccount($adomain, $status,$webmaster);
+                $account = new RAccountsAccount($adomain, $status, $webmaster);
                 $cols = $account->getColumns($format, RAccountsLogfile::DISP_NONE);
                 if ($cols <> null) {
                     echo RHtml::addTableRow($cols);
@@ -66,13 +66,13 @@ class RAccounts {
                     $adomain = strtolower(trim($item->domain));
                     if ($adomain == $domain) {
                         $status = $item->status;
-                         $webmaster = $item->web_master;
-                        $account = new RAccountsAccount($adomain, $status,$webmaster);
-                        $cols = $account->getColumns($format,  RAccountsLogfile::DISP_VIEW);
+                        $webmaster = $item->web_master;
+                        $account = new RAccountsAccount($adomain, $status, $webmaster);
+                        $cols = $account->getColumns($format, RAccountsLogfile::DISP_VIEW);
                         if ($cols <> null) {
                             RAccountsAccount::displayTitle($format);
                             echo "<table style='font-size: 85%'>";
-                            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format,  RAccountsLogfile::DISP_VIEW));
+                            echo RHtml::addTableHeader(RAccountsAccount::getHeader($format, RAccountsLogfile::DISP_VIEW));
                             echo RHtml::addTableRow($cols);
                             echo "</table>";
                             $account->displayDetails($format);
@@ -89,7 +89,7 @@ class RAccounts {
         $map->options->locationsearch = true;
         $map->options->osgrid = true;
         $map->options->mouseposition = true;
-        $map->options->postcodes = true;
+        $map->options->rightclick = true;
         $map->options->fitbounds = true;
         $map->options->cluster = true;
         $map->options->draw = false;
@@ -98,7 +98,7 @@ class RAccounts {
         $this->readAccounts();
         $text = "";
         foreach ($this->dbresults as $item) :
-            $text.= $this->addMapMarker($map, $item) . PHP_EOL;
+            $text .= $this->addMapMarker($map, $item) . PHP_EOL;
         endforeach;
         $map->addContent($text);
     }
@@ -109,35 +109,32 @@ class RAccounts {
         $long = $item->longitude;
         $lat = $item->latitude;
         $url = "http://www." . $item->domain;
-        switch (strlen($item->code) == 2) {
-            case true:
-                $title = str_replace("'", "", $item->areaname);
-               // $icon = "ramblersMap.walkingarea";
-                $iclass="group-icon a";
-                $class = "groupA" ;
-                $text = "Area: " . $title . " [" . $item->code . "]";
-                break;
-            case false:
-                $title = str_replace("'", "", $item->groupname);
-              //  $icon = "ramblersMap.walkinggroup";
-                 $iclass="group-icon g";
-                 $class = "groupG" ;
-                $text = str_replace("'", "", "Area: " . $item->areaname) . "<br/>";
-                if (strlen($item->code) == 4) {
-                    $text .= "Group: " . $title . " [" . $item->code . "]";
-                }
-                break;
+        if (strlen($item->code) === 2) {
+            $title = str_replace("'", "", $item->areaname);
+            // $icon = "ramblersMap.walkingarea";
+            $iclass = "group-icon a";
+            $class = "groupA";
+            $text = "Area: " . $title . " [" . $item->code . "]";
+        } else {
+
+            $title = str_replace("'", "", $item->groupname);
+            //  $icon = "ramblersMap.walkinggroup";
+            $iclass = "group-icon g";
+            $class = "groupG";
+            $text = str_replace("'", "", "Area: " . $item->areaname) . "<br/>";
+            if (strlen($item->code) === 4) {
+                $text .= "Group: " . $title . " [" . $item->code . "]";
+            }
         }
-      //  $class = "website";
-     //   $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" . $url . "</a></div>";
-     //   $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
-        
-       // $class = "group" . $this->scope;
+        //  $class = "website";
+        //   $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" . $url . "</a></div>";
+        //   $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
+        // $class = "group" . $this->scope;
         $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" . $title . "</a></div>";
         $icon = "myicon=L.divIcon({className: '" . $iclass . "', iconSize: null, html: '" . $title . "'});  ";
         $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", myicon);";
 
-        return $icon.$marker;
+        return $icon . $marker;
     }
 
     public function readAccounts() {
@@ -156,7 +153,8 @@ class RAccounts {
             $this->dbresults = $db->loadObjectList();
         }
     }
-    public function getResults(){
+
+    public function getResults() {
         return $this->dbresults;
     }
 

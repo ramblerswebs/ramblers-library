@@ -1,4 +1,4 @@
-var L, ramblersMap, OsGridRef;
+var L, ra, document, OsGridRef;
 L.Control.RA_Map_Tools = L.Control.extend({
     options: {
         id: null,
@@ -9,6 +9,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
             weight: 2,
             opacity: 0.5}
     },
+    _userOptions: null,
     onAdd: function (map) {
         this._map = map;
         this.osMapLayer = L.featureGroup([]).addTo(map);
@@ -39,7 +40,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         container.title = this.options.title;
         container.addEventListener("click", function (e) {
-            displayModal("Loading", false);
+            ra.modal.display("Loading", false);
             var tag = document.getElementById("modal-data");
             tag.innerHTML = "";
             var title = document.createElement('h4');
@@ -54,42 +55,48 @@ L.Control.RA_Map_Tools = L.Control.extend({
             container.appendChild(tabs);
             var list = document.createElement('div');
             tabs.appendChild(list);
-            if (ramblersMap.options.draw) {
+            if (_this._userOptions.plotroute !== null) {
                 _this.addTabItem(container, list, 'Plot Walking Route', 'route', true);
                 _this.addTabItem(container, list, 'Search', 'search', false);
             } else {
                 _this.addTabItem(container, list, 'Search', 'search', true);
             }
             _this.addTabItem(container, list, 'Ordnance Survey', 'osmaps', false);
-            _this.addTabItem(container, list, 'Mouse Right Click', 'mouse', false);
+            if (_this._userOptions.rightclick !== null) {
+                _this.addTabItem(container, list, 'Mouse Right Click', 'mouse', false);
+            }
             _this.addTabItem(container, list, 'Feedback', 'help', false);
             // tab content 
             var content = document.createElement('div');
             content.setAttribute('class', 'tab-content');
             container.appendChild(content);
             var searchDiv;
-            if (ramblersMap.options.draw) {
+            if (_this._userOptions.plotroute!==null) {
                 var drawDiv = _this.addTabContentItem(content, "route", true);
                 searchDiv = _this.addTabContentItem(content, "search", false);
             } else {
                 searchDiv = _this.addTabContentItem(content, "search", true);
             }
             var osmapsDiv = _this.addTabContentItem(content, "osmaps", false);
-            var mouseDiv = _this.addTabContentItem(content, "mouse", false);
+            if (_this._userOptions.rightclick !== null) {
+                var mouseDiv = _this.addTabContentItem(content, "mouse", false);
+            }
             var helpDiv = _this.addTabContentItem(content, "help", false);
-            if (ramblersMap.options.draw) {
+            if (_this._userOptions.plotroute!==null) {
                 _this.addDrawOptions(drawDiv);
             }
             _this.addSearch(searchDiv);
             _this.addOSMaps(osmapsDiv);
-            _this.addMouse(mouseDiv);
+            if (_this._userOptions.rightclick !== null) {
+                _this.addMouse(mouseDiv);
+            }
             _this.addHelp(helpDiv);
             var padding = document.createElement('p');
             container.appendChild(padding);
-            if (ramblersMap.maphelppage !== '') {
+            if (_this._helpPage !== '') {
                 var help = document.createElement('a');
                 help.setAttribute('class', 'link-button button-p1815');
-                help.setAttribute('href', ramblersMap.maphelppage);
+                help.setAttribute('href', _this._helpPage);
                 help.setAttribute('target', '_blank');
                 help.style.cssFloat = "right";
                 help.textContent = "Visit our Mapping Help Site";
@@ -105,14 +112,19 @@ L.Control.RA_Map_Tools = L.Control.extend({
                 });
             }
         });
-        if (ramblersMap.options.draw) {
+        if (_this._userOptions.plotroute!==null) {
             _this.saveDrawOptions = false;
             _this.getDrawSettings();
             //       }
         }
         return container;
     },
-
+    userOptions: function (value) {
+        this._userOptions = value;
+    },
+    helpPage: function (value) {
+        this._helpPage = value;
+    },
     _returnToFullScreen: function () {
         this._map.toggleFullscreen();
     },
@@ -121,12 +133,11 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var feed = new feeds();
         feed.getSearchTags(tag, tag);
         tag.addEventListener("locationfound", function (e) {
-            var ra = e.ra;
-            var result = ra.item;
+            var raData = e.raData;
+            var result = raData.item;
             _this.searchLayer.clearLayers();
             result.center = new L.LatLng(result.lat, result.lon);
-            //   ramblersMap.map.setZoom(16);
-            new L.Marker(result.center, {icon: ramblersMap.redmarkericon})
+            new L.Marker(result.center, {icon: ra.map.icon.redmarker})
                     .bindPopup("<b>" + result.class + ": " + result.type + "</b><br/>" + result.display_name)
                     .addTo(_this.searchLayer)
                     .openPopup();
@@ -134,7 +145,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         });
     },
     addHelp: function (tag) {
-        if (this._map.maphelppage !== '') {
+        if (this._helpPage !== '') {
             var helpcomment = document.createElement('div');
             helpcomment.setAttribute('class', 'help map-tools');
             helpcomment.textContent = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via the HELP web site.";
@@ -143,7 +154,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
     },
     osZoomLevel: function () {
         document.getElementById("ra-error-text").innerHTML = "";
-        if (this._map.baseTiles === 'Ordnance Survey') {
+        if (this.baseTiles === 'Ordnance Survey') {
             var zoom = this._map.getZoom();
             if (zoom <= 11) {
                 document.getElementById("ra-error-text").innerHTML = "Info: Zoom in to see Ordnance Survey Maps";
@@ -187,14 +198,14 @@ L.Control.RA_Map_Tools = L.Control.extend({
             }
             var self = _this;
             var url = "https://osmaps.theramblers.org.uk/index.php?mapscale=" + option;
-            getJSON(url, function (err, items) {
+            ra.ajax.getJSON(url, function (err, items) {
                 if (err !== null) {
                     var msg = "Error: Something went wrong: " + err;
                 } else {
                     if (items.length !== 0) {
                         for (i = 0; i < items.length; i++) {
                             var item = items[i];
-                            ramblersMap.PostcodeStatus.displayOSMap(item, self.osMapLayer);
+                            ra.map.os.display(item, self.osMapLayer);
                         }
                     }
                 }
@@ -222,14 +233,14 @@ L.Control.RA_Map_Tools = L.Control.extend({
         title = document.createElement('p');
         title.textContent = 'As you zoom in, the mouse can display a 100m or a 10m square showing the area covered by a 6 or 8 figure grid reference.';
         tag.appendChild(title);
-        this.addYesNo(tag, 'divClass', "Display 10m/100m grid reference squares", ramblersMap, 'displayMouseGridSquare');
+        this.addYesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions.mouse, 'displayMouseGridSquare');
         tag.addEventListener("change", function (e) {
             _this.addExampleLineStyle(example, _this.options.osgrid);
             _this.OSGrid.basicgrid = false;
             _this.displayOSGrid();
         });
         osGrid.addEventListener("yesnochange", function (e) {
-            //  ramblersMap.OSGrid.display = !ramblersMap.OSGrid.display;
+            this._ramblersMap.OSGrid.display = !this._ramblersMap.OSGrid.display;
             _this.OSGrid.basicgrid = false;
             _this.displayOSGrid();
         });
@@ -246,17 +257,17 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var titleoptions = document.createElement('h5');
         titleoptions.textContent = 'Options';
         tag.appendChild(titleoptions);
-        var pan = this.addYesNo(tag, 'divClass', "Pan: Centre map on last point added to route", ramblersMap.RoutingOption, 'panToNewPoint');
-        var join = this.addYesNo(tag, 'divClass', "Join: Join new route to nearest existing route", ramblersMap.RoutingOption, 'joinSegments');
+        var pan = this.addYesNo(tag, 'divClass', "Pan: Centre map on last point added to route", this._userOptions.plotroute.draw, 'panToNewPoint');
+        var join = this.addYesNo(tag, 'divClass', "Join: Join new route to nearest existing route", this._userOptions.plotroute.draw, 'joinSegments');
         tag.appendChild(document.createElement('hr'));
         var titlestyle = document.createElement('h5');
         titlestyle.textContent = 'Display: Style of route';
         tag.appendChild(titlestyle);
-        var drawColor = this.addColour(tag, 'divClass', 'Route line colour', ramblersMap.DrawStyle, 'color');
-        var weight = this.addNumber(tag, 'divClass', 'Line weight %n pixels', ramblersMap.DrawStyle, 'weight', 1, 10, 0.5);
-        var opacity = this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', ramblersMap.DrawStyle, 'opacity', .1, 1, .01);
+        var drawColor = this.addColour(tag, 'divClass', 'Route line colour', this._userOptions.plotroute.style, 'color');
+        var weight = this.addNumber(tag, 'divClass', 'Line weight %n pixels', this._userOptions.plotroute.style, 'weight', 1, 10, 0.5);
+        var opacity = this.addNumber(tag, 'divClass', 'Line opacity %n (0-1)', this._userOptions.plotroute.style, 'opacity', .1, 1, .01);
         var example = this.addExampleLine(tag, "300px", "Example: ");
-        this.addExampleLineStyle(example, ramblersMap.DrawStyle);
+        this.addExampleLineStyle(example, this._userOptions.plotroute.style);
         tag.appendChild(document.createElement('hr'));
         var cookies = this.addYesNo(tag, 'divClass', "Save settings between sessions/future visits to web site (you accept cookies)", this, 'saveDrawOptions');
         var reset = this.addButton(tag, 'divClass', "Reset Plot Walking Route options to default values", 'Reset');
@@ -278,7 +289,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         });
         tag.addEventListener("change", function (e) {
             _this.setDrawSettings();
-            _this.addExampleLineStyle(example, ramblersMap.DrawStyle);
+            _this.addExampleLineStyle(example, _this._userOptions.plotroute.style);
             _this._map.fire("draw:color-change", null);
         });
         drawColor.addEventListener("change", function (e) {
@@ -287,15 +298,15 @@ L.Control.RA_Map_Tools = L.Control.extend({
         });
     },
     getDrawSettings: function () {
-        var scookie = this.readCookie('raDraw');
+        var scookie = ra.cookie.read('raDraw');
         if (scookie !== null) {
             var cookie = JSON.parse(scookie);
             this.saveDrawOptions = cookie.saveOptions;
-            ramblersMap.RoutingOption.panToNewPoint = cookie.panToNewPoint;
-            ramblersMap.RoutingOption.joinSegments = cookie.joinSegments;
-            ramblersMap.DrawStyle.weight = cookie.weight;
-            ramblersMap.DrawStyle.opacity = cookie.opacity;
-            ramblersMap.DrawStyle.color = cookie.colour;
+            this._userOptions.plotroute.draw.panToNewPoint = cookie.panToNewPoint;
+            this._userOptions.plotroute.draw.joinSegments = cookie.joinSegments;
+            this._userOptions.plotroute.style.weight = cookie.weight;
+            this._userOptions.plotroute.style.opacity = cookie.opacity;
+            this._userOptions.plotroute.style.color = cookie.colour;
             this._map.fire("draw:color-change", null);
         }
     },
@@ -303,18 +314,18 @@ L.Control.RA_Map_Tools = L.Control.extend({
         if (this.saveDrawOptions) {
             var cookie = {};
             cookie.saveOptions = this.saveDrawOptions;
-            cookie.panToNewPoint = ramblersMap.RoutingOption.panToNewPoint;
-            cookie.joinSegments = ramblersMap.RoutingOption.joinSegments;
-            cookie.weight = ramblersMap.DrawStyle.weight;
-            cookie.opacity = ramblersMap.DrawStyle.opacity;
-            cookie.colour = ramblersMap.DrawStyle.color;
-            this.createCookie(JSON.stringify(cookie), 'raDraw', 365);
+            cookie.panToNewPoint = this._userOptions.plotroute.draw.panToNewPoint;
+            cookie.joinSegments = this._userOptions.plotroute.draw.joinSegments;
+            cookie.weight = this._userOptions.plotroute.style.weight;
+            cookie.opacity = this._userOptions.plotroute.style.opacity;
+            cookie.colour = this._userOptions.plotroute.style.color;
+            ra.cookie.create(JSON.stringify(cookie), 'raDraw', 365);
         } else {
-            this.eraseCookie('raDraw');
+            ra.cookie.erase('raDraw');
         }
     },
     _changePolyline: function (polyline) {
-        polyline.setStyle(ramblersMap.DrawStyle);
+        polyline.setStyle(this._userOptions.plotroute.style);
     },
     addTabItem: function (container, list, name, id, active) {
         var listItem;
@@ -353,7 +364,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
     },
     addMouse: function (tag) {
         var comment;
-        var mouse = ramblersMap.PostcodeStatus;
+        // var mouse = this._ramblersMap.PostcodeStatus;
         var title = document.createElement('h4');
         title.textContent = 'Mouse right click/tap and hold';
         tag.appendChild(title);
@@ -369,8 +380,8 @@ L.Control.RA_Map_Tools = L.Control.extend({
         comment.setAttribute('class', 'smaller');
         comment.textContent = 'Find a Ramblers walking group in your area';
         tag.appendChild(comment);
-        this.addNumber(tag, 'divClass', 'Display groups/area within %n km', mouse.displayOptions.groups, 'distance', 0.5, 500, 0.5);
-        this.addNumber(tag, 'divClass', 'Display nearest %n groups/area.', mouse.displayOptions.groups, 'number', 1, 500, 1);
+        this.addNumber(tag, 'divClass', 'Display groups/area within %n km', this._userOptions.rightclick.groups, 'distance', 0.5, 500, 0.5);
+        this.addNumber(tag, 'divClass', 'Display nearest %n groups/area.', this._userOptions.rightclick.groups, 'number', 1, 500, 1);
         tag.appendChild(document.createElement('hr'));
         var hdg1 = document.createElement('h5');
         hdg1.textContent = 'Postcode Options';
@@ -379,8 +390,8 @@ L.Control.RA_Map_Tools = L.Control.extend({
         comment.setAttribute('class', 'smaller');
         comment.textContent = 'Useful for finding correct postcode for your satnav';
         tag.appendChild(comment);
-        this.addNumber(tag, 'divClass', 'Display postcodes within %n km', mouse.displayOptions.postcodes, 'distance', 0.5, 20, 0.5);
-        this.addNumber(tag, 'divClass', 'Display nearest %n postcodes', mouse.displayOptions.postcodes, 'number', 1, 50, 1);
+        this.addNumber(tag, 'divClass', 'Display postcodes within %n km', this._userOptions.rightclick.postcodes, 'distance', 0.5, 20, 0.5);
+        this.addNumber(tag, 'divClass', 'Display nearest %n postcodes', this._userOptions.rightclick.postcodes, 'number', 1, 50, 1);
         tag.appendChild(document.createElement('hr'));
         var hdg3 = document.createElement('h5');
         hdg3.textContent = 'Meeting/Starting Locations Options';
@@ -389,8 +400,8 @@ L.Control.RA_Map_Tools = L.Control.extend({
         comment.setAttribute('class', 'smaller');
         comment.textContent = 'Find locations Ramblers Groups have used to meet or start a walk';
         tag.appendChild(comment);
-        this.addNumber(tag, 'divClass', 'Display locations within %n km', mouse.displayOptions.starting, 'distance', 0.5, 20, 0.5);
-        this.addNumber(tag, 'divClass', 'Display nearest %n locations', mouse.displayOptions.starting, 'number', 5, 500, 5);
+        this.addNumber(tag, 'divClass', 'Display locations within %n km', this._userOptions.rightclick.starting, 'distance', 0.5, 20, 0.5);
+        this.addNumber(tag, 'divClass', 'Display nearest %n locations', this._userOptions.rightclick.starting, 'number', 5, 500, 5);
         tag.appendChild(document.createElement('hr'));
         var hdg4 = document.createElement('h5');
         hdg4.textContent = 'Open Street Map Options';
@@ -399,7 +410,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
         comment.setAttribute('class', 'smaller');
         comment.textContent = 'This option affects the display of parking, bus stops, cafes, public housea and toilets.';
         tag.appendChild(comment);
-        this.addNumber(tag, 'divClass', 'Display items within %n km', mouse.displayOptions.osm, 'distance', 0.5, 5, 0.5);
+        this.addNumber(tag, 'divClass', 'Display items within %n km', this._userOptions.rightclick.osm, 'distance', 0.5, 5, 0.5);
     },
     displayOSGrid: function () {
         if (!this.OSGrid.display) {
@@ -638,31 +649,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.raobject[tag.property] = !value;
         tag.click();
     },
-    createCookie: function (raobject, name, days) {
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            var expires = "; expires=" + date.toGMTString();
-        } else
-            var expires = "";
-        document.cookie = name + "=" + raobject + expires + "; path=/;samesite=strict";
-    },
-    readCookie: function (name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) === ' ')
-                c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0)
-                return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-    },
-    eraseCookie: function (name) {
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970; path=/;";
-    }
-
 });
 L.control.ra_map_tools = function (options) {
     return new L.Control.RA_Map_Tools(options);

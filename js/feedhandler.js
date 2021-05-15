@@ -1,4 +1,4 @@
-var OsGridRef;
+var ra, OsGridRef;
 feeds = function () {
 
     this.getSearchTags = function (eventTag, contentTag) {
@@ -24,7 +24,7 @@ feeds = function () {
 
         var comment1 = document.createElement('p');
         comment1.setAttribute('class', 'smaller');
-        comment1.innerHTML = 'You may enter a OS Grid Reference, of any length, a post code or a road or place name with the town or county. You may qualify a road or place name e.g. Bulls Head, Foolow or London Road, Derby.  ';
+        comment1.innerHTML = 'You may enter an OS Grid Reference, of any length, a post code or a road or place name with the town or county. You may qualify a road or place name e.g. Bulls Head, Foolow or London Road, Derby.  ';
         comment1.innerHTML += " You may also specify a location using <a href='https://what3words.com/about-us/' target='_blank'>What3Words</a>, e.g for the summit of Snowden ///super.ultra.enhancement";
         formDiv.appendChild(comment1);
 
@@ -51,22 +51,22 @@ feeds = function () {
         acceptBtn.style.display = "none";
         formDiv.appendChild(acceptBtn);
 
-        searchBtn.ra = {};
-        searchBtn.ra.feedhelper = this;
-        searchBtn.ra.inputField = inputField;
-        searchBtn.ra.searchBtn = searchBtn;
-        searchBtn.ra.selectDiv = selectDiv;
-        searchBtn.ra.acceptBtn = acceptBtn;
-        searchBtn.ra.selectTag = selectTag;
+        searchBtn.raData = {};
+        searchBtn.raData.feedhelper = this;
+        searchBtn.raData.inputField = inputField;
+        searchBtn.raData.searchBtn = searchBtn;
+        searchBtn.raData.selectDiv = selectDiv;
+        searchBtn.raData.acceptBtn = acceptBtn;
+        searchBtn.raData.selectTag = selectTag;
 
-        searchBtn.ra.ukField = ukField;
+        searchBtn.raData.ukField = ukField;
         searchBtn.addEventListener("click", function (e) {
             var target = e.currentTarget;
             selectTitle.textContent = 'Searching ...';
-            target.ra.feedhelper.getPossibleMapLocations(target.ra);
+            target.raData.feedhelper.getPossibleMapLocations(target.raData);
         });
         searchBtn.addEventListener("mapLocations", function (e) {
-            var feed = e.target.ra.feedhelper;
+            var feed = e.target.raData.feedhelper;
             //   alert("mapLocations " + e.target.tagName); // Hello from H1
             feed.setUpSelectTagForMapSearch(selectTitle, selectTag, e.error, e.data, function (item) {
                 item.class = capitalizeFirstLetter(item.class);
@@ -76,14 +76,14 @@ feeds = function () {
             });
         });
         acceptBtn.addEventListener("click", function (e) {
-            var items = selectTag.ra.items;
+            var items = selectTag.raData.items;
             var item = items[selectTag.value];
             //  alert("accept" + item.display_name);
             var closeBtn = document.getElementById("btnClose");
             closeBtn.dispatchEvent(new Event("click"));
             let event = new Event("locationfound", {bubbles: true}); // (2)
-            event.ra = {};
-            event.ra.item = item;
+            event.raData = {};
+            event.raData.item = item;
             eventTag.dispatchEvent(event);
         });
         selectTag.addEventListener("change", function () {
@@ -107,15 +107,15 @@ feeds = function () {
         var eventTag = e.target;
         var $html = '<div id="js-search-content"></div>';
         $html += '<p></p>';
-        displayModal($html);
+        ra.modal.display($html);
         var contentTag = document.getElementById("js-search-content");
         this.getSearchTags(eventTag, contentTag);
     };
-    this.getPossibleMapLocations = function (ra) { // called via an event on input field
-        var inputField = ra.inputField;
+    this.getPossibleMapLocations = function (raData) { // called via an event on input field
+        var inputField = raData.inputField;
         var input = inputField.value;
-        var ukonly = ra.ukField.checked;
-        var searchBtn = ra.searchBtn;
+        var ukonly = raData.ukField.checked;
+        var searchBtn = raData.searchBtn;
         var found = false;
         try {
             var gr;
@@ -144,26 +144,26 @@ feeds = function () {
             if (regex.test(input)) {
                 // print(text + " is the format of a three word address");
                 inputField.addEventListener("what3wordsfound", function (e) {
-                    var ra = e.ra;
+                    var raData = e.raData;
                     let event = new Event("mapLocations", {});
                     var result = [];
 
-                    event.error = ra.err;
-                    if (ra.err === null) {
+                    event.error = raData.err;
+                    if (raData.err === null) {
                         result[0] = {};
-                        result[0].lat = ra.coordinates.lat;
-                        result[0].lon = ra.coordinates.lng;
-                        result[0].display_name = ra.nearestPlace + " - " + ra.words;
+                        result[0].lat = raData.coordinates.lat;
+                        result[0].lon = raData.coordinates.lng;
+                        result[0].display_name = raData.nearestPlace + " - " + raData.words;
                         result[0].class = "What3words";
                         result[0].type = "Location";
                     }
-                    if (ra.err === 400) {
+                    if (raData.err === 400) {
                         event.error = null;
                     }
                     event.data = result;
                     searchBtn.dispatchEvent(event);
                 });
-                What3WordsToLocation(inputField, input);
+                ra.w3w.toLocation(inputField, input);
                 return;
             }
         }
@@ -175,7 +175,7 @@ feeds = function () {
                 url = url + "&countrycodes=gb";
             }
             //   var url = "https://nominatim.openstreetmap.org/search?q=" + input + "&format=json&countrycodes=gb";
-            getJSON(url, function (err, result) {
+            ra.ajax.getJSON(url, function (err, result) {
                 let event = new Event("mapLocations", {});
                 event.error = err;
                 event.data = result;
@@ -221,8 +221,8 @@ feeds = function () {
                 } else {
                     selectTag.setAttribute('size', items.length + 2);
                 }
-                selectTag.ra = {};
-                selectTag.ra.items = items; // save items for accept button
+                selectTag.raData = {};
+                selectTag.raData.items = items; // save items for accept button
                 selectTag.setAttribute('class', 'map-select');
                 var option = document.createElement("option");
                 option.value = -1;
@@ -269,8 +269,8 @@ feeds = function () {
                 } else {
                     selectTag.setAttribute('size', items.length + 2);
                 }
-                selectTag.ra = {};
-                selectTag.ra.items = items; // save items for accept button
+                selectTag.raData = {};
+                selectTag.raData.items = items; // save items for accept button
                 selectTag.setAttribute('class', 'map-select');
                 var option = document.createElement("option");
                 option.value = -1;
@@ -294,7 +294,7 @@ feeds = function () {
         var $html = '';
         $html += '<div id="js-location-search"></div>';
         $html += '<p></p>';
-        displayModal($html);
+        ra.modal.display($html);
         var formDiv = document.getElementById("js-location-search");
         var label = document.createElement('label');
         label.textContent = title;
@@ -325,12 +325,12 @@ feeds = function () {
         formDiv.appendChild(acceptBtn);
         acceptBtn.style.display = "none";
 
-        searchBtn.ra = {};
-        searchBtn.ra.feedhelper = findButton.feedhelper;
-        searchBtn.ra.inputField = inputField;
-        searchBtn.ra.selectDiv = selectDiv;
-        searchBtn.ra.acceptBtn = acceptBtn;
-        searchBtn.ra.selectTag = selectTag;
+        searchBtn.raData = {};
+        searchBtn.raData.feedhelper = findButton.feedhelper;
+        searchBtn.raData.inputField = inputField;
+        searchBtn.raData.selectDiv = selectDiv;
+        searchBtn.raData.acceptBtn = acceptBtn;
+        searchBtn.raData.selectTag = selectTag;
         inputField.addEventListener("keyup", function (event) {
             if (event.key === "Enter") {
                 // click search button
@@ -340,21 +340,21 @@ feeds = function () {
         searchBtn.addEventListener("click", function (e) {
             var target = e.currentTarget;
             selectTitle.textContent = 'Searching ...';
-            target.ra.feedhelper.getPossibleRecords(target, url);
+            target.raData.feedhelper.getPossibleRecords(target, url);
         });
         searchBtn.addEventListener("records", function (e) {
-            var feed = e.target.ra.feedhelper;
+            var feed = e.target.raData.feedhelper;
             feed.setUpSelectTag(selectTitle, selectTag, e.error, e.data, record);
         });
         acceptBtn.addEventListener("click", function (e) {
-            var items = selectTag.ra.items;
+            var items = selectTag.raData.items;
             var item = items[selectTag.value];
             //  alert("accept" + item.display_name);
             let event = new Event("recordfound", {bubbles: true}); // (2)
-            event.ra = {};
+            event.raData = {};
             item.latitude = parseFloat(item.latitude); // in case it is char
             item.longitude = parseFloat(item.longitude);
-            event.ra.item = item;
+            event.raData.item = item;
             findButton.dispatchEvent(event);
             var closeBtn = document.getElementById("btnClose");
             closeBtn.dispatchEvent(new Event("click"));
@@ -376,9 +376,9 @@ feeds = function () {
         });
     };
     this.getPossibleRecords = function (searchBtn, urlbase) {
-        var inputField = searchBtn.ra.inputField;
+        var inputField = searchBtn.raData.inputField;
         var url = urlbase + inputField.value;
-        getJSON(url, function (err, result) {
+        ra.ajax.getJSON(url, function (err, result) {
             let event = new Event("records", {});
             event.error = err;
             if (typeof (result) !== "undefined" && result !== null) {

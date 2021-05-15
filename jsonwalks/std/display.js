@@ -3,1503 +3,721 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var ramblerswalksDetails, ramblerswalks, ramblersBase, ramblersMap, jplist, OpenLocationCode;
-function RamblersWalksDetails() {
-    this.isES6 = isES6();
-    this.walkClass = "walk";
-    this.displayClass = "pantone1815";
-    this.displayDefault = "Details";
-    this.displayStartTime = true;
-    this.displayStartDescription = true;
-    this.tableFormat = '[{ "title": "Date", "items": ["{dowddmm}"]},{   "title": "Meet",    "items": ["{meet}","{,meetGR}","{,meetPC}"]},{    "title": "Start",    "items": ["{start}","{,startGR}","{,startPC}"]},{    "title": "Title",    "items": ["{mediathumbr}","{title}"]},{    "title": "Difficulty",    "items": ["{difficulty}"]},{    "title": "Contact",    "items": ["{contact}"]}]';
-    this.listFormat = '[ "{dowdd}", "{,meet}", "{,start}","{,title}","{,distance}","{,contactname}","{,telephone}" ] ';
-    this.detailsFormat = '[ "{dowddmm}", "{,title}","{,distance}","{,contactname}" ] ';
-    this.options;
-    this.filter = {};
-    this.defaultOptions = "<table><tr><td class='ra-tab active' id='Details' onclick=\"javascript:ra_format('Details')\">Details</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>";
-    this.withMonth = ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"];
-    this.jplistName = "group1";
+var ra, jplist, addFilterFormats;
+
+if (typeof (ra) === "undefined") {
+    ra = {};
 }
 
-function DisplayLoad() {
-// executes when complete page is fully loaded, including all frames, objects and images
-    if (typeof addFilterFormats === 'function') {
-        addFilterFormats();
-    }
-    addContent();
-    getOptions();
-    initFilters();
-    var $walks = getAllWalks();
-    setGroups($walks);
-    setLimits();
-    addFilterEvents();
-    addSelectAll();
-    if (document.getElementById("leafletmap") !== null) {
-        raLoadLeaflet();
-    }
-    displayWalks($walks);
-    // to support Area walks display
-    document.cookie =  "AreaCode=;expires=Thu, 01 Jan 1970; path=/;";
-}
+var raDisplay = (function () {
 
-function getOptions() {
-    ramblerswalksDetails.filter.RA_Display_Format = ramblerswalksDetails.displayDefault;
-    var $tag = document.getElementById("raDisplayOptions");
-    if ($tag) {
-        var $text = $tag.innerHTML;
-        ramblerswalksDetails.options = $text;
-        document.getElementById("raDisplayOptions").innerHTML = "";
-        document.getElementById("raoptions").innerHTML = ramblerswalksDetails.options;
-        //document.getElementById(ramblerswalksDetails.filter.RA_Display_Format).style.backgroundColor = '#AAAAAA';
-        document.getElementById(ramblerswalksDetails.filter.RA_Display_Format).classList.add('active');
-    } else {
-        document.getElementById("raoptions").innerHTML = ramblerswalksDetails.defaultOptions;
-    }
-}
+    var raDisplay = function () {
+        // var display = {};
+        this._allwalks = null;
+        this.map = null;
 
-function setLimits() {
-    var $walks = JSON.parse(ramblerswalks);
-    var len;
-    var minDate = "";
-    var maxDate = "";
-    len = $walks.length;
-    if (len === 0) {
-        var filters = document.getElementsByClassName('ra-walksfilter');
-        for (var i = 0; i < filters.length; i++) {
-            filters[i].style.display = 'none'; // do not display filters
-        }
-        return;
-    }
-    minDate = $walks[0].walkDate.date.substring(0, 10);
-    maxDate = $walks[len - 1].walkDate.date.substring(0, 10);
-    var tag = document.getElementById('RA_DateStart');
-    if (tag) {
-        tag.min = minDate;
-        tag.max = maxDate;
-        tag.value = minDate;
-    }
-    tag = document.getElementById('RA_DateEnd');
-    if (tag) {
-        tag.min = minDate;
-        tag.max = maxDate;
-        tag.value = maxDate;
-    }
-    ramblerswalksDetails.filter["RA_DateStart"] = "";
-    ramblerswalksDetails.filter["RA_DateEnd"] = "";
-}
-function getAllWalks() {
-    var $walks = JSON.parse(ramblerswalks);
-    var index, len, $walk;
-    for (index = 0, len = $walks.length; index < len; ++index) {
-        $walk = $walks[index];
-        $walk.display = displayWalk($walk);
-        $walk.display = true;
-    }
-    return $walks;
-}
-function getWalks() {
-    var $walks = JSON.parse(ramblerswalks);
-    var index, len, $walk;
-    for (index = 0, len = $walks.length; index < len; ++index) {
-        $walk = $walks[index];
-        $walk.display = displayWalk($walk);
-    }
-    return $walks;
-}
-function getWalk(id) {
-    var $walks = JSON.parse(ramblerswalks);
-    var index, len, $walk;
-    for (index = 0, len = $walks.length; index < len; ++index) {
-        $walk = $walks[index];
-        $walk.display = true;
-        if (id === $walk.id) {
-            return $walk;
-        }
-    }
-    return null;
-}
+        this.elements = null;
+        this.settings = {
+            walkClass: "walk",
+            displayClass: "",
+            displayDefault: "Details",
+            displayStartTime: true,
+            displayStartDescription: true,
+            tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{mediathumbr}", "{title}"]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
+            listFormat: ["{dowdd}", "{,meet}", "{,start}", "{,title}", "{,distance}", "{,contactname}", "{,telephone}"],
+            detailsFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
+            mapFormat: ["{gradeimgRight}", "{dowddmm}", "{lf}", "{title}", "{lf}", "{distance}", "{,grade}", "{lf}", "{startOSMap}", "{startDirections}"],
+            //  defaultOptions: "<table><tr><td class='ra-tab active' id='Details' onclick=\"javascript:ra_format('Details')\">Grades</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>",
+            withMonth: ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"],
+            jplistName: "group1",
+            filterTag: "js-walksFilterPos2",
+            filter: {},
+            options: null
+        };
+        this.options = {filterPosition: 3,
+            defaultView: "Details",
+            detailsView: true,
+            tableView: true,
+            listView: true,
+            mapView: true,
+            contactsView: false,
+            diagnostics: false,
+            listFormat: null,
+            tableFormat: null,
+            detailsFormat: null};
+        this.optionTag = {};
+        this.load = function (mapOptions, data) {
 
-function displayWalks($walks) {
-    var no = 0;
-    for (index = 0, len = $walks.length; index < len; ++index) {
-        $walk = $walks[index];
-        if ($walk.display) {
-            no += 1;
-        }
-    }
+            this.mapOptions = mapOptions;
 
-    switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "Details":
-        case "List":
-        case "Table":
-            displayMap("hidden");
-            setTagHtml("rapagination-1", addPagination(no));
-            setTagHtml("rapagination-2", addPagination(no));
-            setTagHtml("rawalks", displayWalksText($walks));
-            // jplist.init();
-            if (!ramblerswalksDetails.noPagination) {
-                if (ramblerswalksDetails.isES6 && no !== 0) {
-                    jplist.init({
-                        storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                        storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
-                    });
-                }
+            var tags = [
+                {name: 'outer', parent: 'root', tag: 'div', attrs: {id: 'raouter'}},
+                {parent: 'outer', tag: 'div', attrs: {id: 'js-filterDiagnostics'}},
+                {parent: 'outer', tag: 'div', attrs: {id: 'js-walksFilterPos2'}},
+                {name: 'raoptions', parent: 'outer', tag: 'div', attrs: {id: 'raoptions'}},
+                {name: 'inner', parent: 'outer', tag: 'div', attrs: {id: 'rainner'}},
+                {parent: 'inner', tag: 'div', attrs: {id: 'js-walksFilterPos3'}},
+                {name: 'pagTop', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-1'}},
+                {parent: 'inner', tag: 'div', attrs: {id: 'rawalks'}, textContent: 'Processing data - this should be replaced shortly.'},
+                {name: 'pagBottom', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-2'}},
+                {name: 'map', parent: 'inner', tag: 'div', attrs: {id: 'ra-map'}}
+            ];
+
+            this.masterdiv = document.getElementById(mapOptions.divId);
+
+            this.elements = ra.html.generateTags(this.masterdiv, tags);
+            if (!mapOptions.paginationTop) {
+                this.elements.pagTop.style.diaplay = 'none';
             }
-
-            break;
-        case "Map":
-            setTagHtml("rapagination-1", "");
-            setTagHtml("rapagination-2", "");
-            setTagHtml("rawalks", "");
-            displayMap("visible");
-            displayWalksMap($walks);
-            if (ramblersMap.markerList.length !== 0) {
-                var bounds = getBounds(ramblersMap.markerList);
-                ramblersMap.map.fitBounds(bounds);
+            if (!mapOptions.paginationBottom) {
+                this.elements.pagBottom.style.diaplay = 'none';
             }
-            break;
-        case "Contacts":
-            displayMap("hidden");
-            setTagHtml("rapagination-1", addPagination(no));
-            setTagHtml("rapagination-2", addPagination(no));
-            setTagHtml("rawalks", displayContacts($walks));
-            if (!ramblerswalksDetails.noPagination) {
-                if (ramblerswalksDetails.isES6) {
-                    jplist.init({
-                        storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                        storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
-                    });
-                }
+            var $legend1 = '<strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.';
+            var $legend2 = '<img src="libraries/ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="libraries/ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="libraries/ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.';
+            if (data.legendposition === 'top') {
+                var leg = document.createElement('p');
+                leg.innerHTML = $legend1;
+                this.elements.map.appendChild(leg);
+                leg = document.createElement('p');
+                leg.innerHTML = $legend2;
+                this.elements.map.appendChild(leg);
             }
-            break;
-    }
-}
-function displayMap(which) {
-    var tag = document.getElementById("ra-map");
-    if (tag) {
-//  tag.style.visibility = which;
-        if (which === "hidden") {
-            tag.style.display = "none";
-            setPaginationMargin("on");
-        } else {
-            tag.style.display = "inline";
-            setPaginationMargin("off");
-            ramblersMap.map.invalidateSize();
-        }
-    }
-}
-function setPaginationMargin(which) {
-    var tag1 = document.getElementById("rapagination-1");
-    var tag2 = document.getElementById("rapagination-2");
-    if (tag1 && tag2) {
-        if (which === "on") {
-            tag1.style.paddingBottom = "5px";
-            tag2.style.paddingTop = "5px";
-        } else {
-            tag1.style.paddingBottom = "0px";
-            tag2.style.paddingTop = "0px";
-        }
-    }
-}
+            this.lmap = new leafletMap(this.elements.map, mapOptions);
+            this.map = this.lmap.map;
+            this.cluster = new cluster(this.map);
+            if (data.customListFormat !== null) {
+                this.settings.listFormat = data.customListFormat;
+            }
+            if (data.customTableFormat !== null) {
+                this.settings.tableFormat = data.customTableFormat;
+            }
+            if (data.customDetailsFormat !== null) {
+                this.settings.detailsFormat = data.customDetailsFormat;
+            }
+            this.settings.displayClass = data.displayClass;
+            if (typeof addFilterFormats === 'function') {
+                this.options = JSON.parse(addFilterFormats());
+            }
+            this.processOptions(this.options, this.elements.raoptions);
+            this.getOptions();
+            this._allwalks = ra.walk.convertPHPWalks(data.walks);
+            ra.walk.registerWalks(this._allwalks);
+            var $walks = this.getAllWalks();
+//            if (document.getElementById("leafletmap") !== null) {
+//                raLoadLeaflet();
+//            }
+            this.setFilters($walks);
+            this.displayWalks($walks);
+            // to support Area walks display
+            document.cookie = "AreaCode=;expires=Thu, 01 Jan 1970; path=/;samesite=Strict";
+        };
 
-function displayWalksText($walks) {
-    var index, len, $walk;
-    var $out = "";
-    var header = "";
-    var footer = "";
-    var odd = true;
-    var month = "";
-    var $class = "";
-    var no = 0;
-    var should = shouldDisplayMonth();
-
-    for (index = 0, len = $walks.length; index < len; ++index) {
-        $walk = $walks[index];
-        if ($walk.display) {
-            no += 1;
-            if (odd) {
-                $class = "odd";
+        this.getOptions = function () {
+            this.settings.filter.RA_Display_Format = this.settings.displayDefault;
+            var $tag = document.getElementById("raDisplayOptions");
+            if ($tag) {
+                var $text = $tag.innerHTML;
+                this.settings.options = $text;
+                document.getElementById("raDisplayOptions").innerHTML = "";
+                // this.elements.raoptions.innerHTML = this.settings.options;
+                //document.getElementById(display.settings.filter.RA_Display_Format).style.backgroundColor = '#AAAAAA';
+                document.getElementById(this.settings.filter.RA_Display_Format).classList.add('active');
             } else {
-                $class = "even";
+                //    alert("we are here");
+
+                //   this.elements.raoptions.innerHTML = this.settings.defaultOptions;
             }
-            var displayMonth = month !== $walk.month && should;
-            switch (ramblerswalksDetails.filter.RA_Display_Format) {
+        };
+
+        this.getAllWalks = function () {
+            var $walks = this._allwalks;
+            var index, len, $walk;
+            for (index = 0, len = $walks.length; index < len; ++index) {
+                $walk = $walks[index];
+                $walk.display = true;
+            }
+            return $walks;
+        };
+        this.getWalks = function () {
+            var $walks = this._allwalks;
+            var index, len, $walk;
+            for (index = 0, len = $walks.length; index < len; ++index) {
+                $walk = $walks[index];
+                $walk.display = this.displayWalk($walk);
+            }
+            return $walks;
+        };
+
+        this.displayWalks = function ($walks) {
+            var no = 0;
+            var index, len, $walk;
+
+            for (index = 0, len = $walks.length; index < len; ++index) {
+                $walk = $walks[index];
+                if ($walk.display) {
+                    no += 1;
+                }
+            }
+
+            switch (this.settings.filter.RA_Display_Format) {
                 case "Details":
-                    $out += displayWalk_Details($walk, $class, displayMonth);
+                case "List":
+                case "Table":
+                    this.displayMap("hidden");
+                    if ($walks.length === 0) {
+                        ra.html.setTag("rawalks", '<h3>Sorry there are no walks at the moment.</h3>');
+                        return;
+                    }
+                    ra.html.setTag("rapagination-1", this.addPagination(no));
+                    ra.html.setTag("rapagination-2", this.addPagination(no));
+                    ra.html.setTag("rawalks", this.displayWalksText($walks));
+                    // jplist.init();
+                    if (!this.settings.noPagination) {
+                        if (ra.isES6() && no !== 0) {
+                            jplist.init({
+                                storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
+                                storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
+                            });
+                        }
+                    }
+
+                    break;
+                case "Map":
+                    ra.html.setTag("rapagination-1", "");
+                    ra.html.setTag("rapagination-2", "");
+                    ra.html.setTag("rawalks", "");
+                    this.displayMap("visible");
+                    this.displayWalksMap($walks);
+//                    if (ramblersMap.markerList.length !== 0) {
+//                        var bounds = getBounds(ramblersMap.markerList);
+//                        ramblersMap.map.fitBounds(bounds);
+//                    }
+                    break;
+                case "Contacts":
+                    this.displayMap("hidden");
+                    ra.html.setTag("rapagination-1", addPagination(no));
+                    ra.html.setTag("rapagination-2", addPagination(no));
+                    ra.html.setTag("rawalks", displayContacts($walks));
+                    if (!this.settings.noPagination) {
+                        if (ra.isES6()) {
+                            jplist.init({
+                                storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
+                                storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
+                            });
+                        }
+                    }
+                    break;
+            }
+        };
+        this.displayMap = function (which) {
+            var tag = this.elements.map;
+            ;
+            if (tag) {
+//  tag.style.visibility = which;
+                if (which === "hidden") {
+                    tag.style.display = "none";
+                    setPaginationMargin("on");
+                } else {
+                    tag.style.display = "block";
+                    setPaginationMargin("off");
+                    this.map.invalidateSize();
+                }
+            }
+        };
+        setPaginationMargin = function (which) {
+            var tag1 = document.getElementById("rapagination-1");
+            var tag2 = document.getElementById("rapagination-2");
+            if (tag1 && tag2) {
+                if (which === "on") {
+                    tag1.style.paddingBottom = "5px";
+                    tag2.style.paddingTop = "5px";
+                } else {
+                    tag1.style.paddingBottom = "0px";
+                    tag2.style.paddingTop = "0px";
+                }
+            }
+        };
+
+        this.displayWalksText = function ($walks) {
+            var index, len, $walk;
+            var $out = "";
+            var header = "";
+            var footer = "";
+            var odd = true;
+            var month = "";
+            var $class = "";
+            var no = 0;
+            var should = this.shouldDisplayMonth();
+
+            for (index = 0, len = $walks.length; index < len; ++index) {
+                $walk = $walks[index];
+                if ($walk.display) {
+                    no += 1;
+                    if (odd) {
+                        $class = "odd";
+                    } else {
+                        $class = "even";
+                    }
+                    var displayMonth = month !== $walk.month && should;
+                    switch (this.settings.filter.RA_Display_Format) {
+                        case "Details":
+                            $out += this.displayWalk_Details($walk, $class, displayMonth);
+                            break;
+                        case "List":
+                            $out += this.displayWalk_List($walk, $class, displayMonth);
+                            break;
+                        case "Table":
+                            $out += this.displayWalk_Table($walk, $class, displayMonth);
+                            break;
+                    }
+                    month = $walk.month;
+                    odd = !odd;
+                }
+            }
+
+            if (no === 0) {
+                $out = "<h3>Sorry, but no walks meet your filter search</h3>";
+                ra.html.setTag("rapagination-1", "");
+                ra.html.setTag("rapagination-2", "");
+                header = "";
+                footer = "";
+            } else {
+                header = this.displayWalksHeader($walks);
+                footer = this.displayWalksFooter();
+            }
+            return  header + $out + footer;
+        };
+        this.shouldDisplayMonth = function () {
+            var index, len, $item;
+            switch (this.settings.filter.RA_Display_Format) {
+                case "Details":
+                    var $items = this.settings.detailsFormat;
+                    for (var index = 0, len = $items.length; index < len; ++index) {
+                        $item = $items[index];
+                        if (this.settings.withMonth.includes($item)) {
+                            return false;
+                        }
+                    }
                     break;
                 case "List":
-                    $out += displayWalk_List($walk, $class, displayMonth);
+                    var $items = this.settings.listFormat;
+                    for (index = 0, len = $items.length; index < len; ++index) {
+                        $item = $items[index];
+                        if (this.settings.withMonth.includes($item)) {
+                            return false;
+                        }
+                    }
                     break;
                 case "Table":
-                    $out += displayWalk_Table($walk, $class, displayMonth);
+                    var cindex, clen;
+                    var $cols = this.settings.tableFormat;
+                    for (cindex = 0, clen = $cols.length; cindex < clen; ++cindex) {
+                        $items = $cols[cindex].items;
+                        for (index = 0, len = $items.length; index < len; ++index) {
+                            $item = $items[index];
+                            if (this.settings.withMonth.includes($item)) {
+                                return false;
+                            }
+                        }
+                    }
                     break;
             }
-            month = $walk.month;
-            odd = !odd;
-        }
-    }
+            return true;
+        };
 
-    if (no === 0) {
-        $out = "<h3>Sorry, but no walks meet your filter search</h3>";
-        setTagHtml("rapagination-1", "");
-        setTagHtml("rapagination-2", "");
-        header = "";
-        footer = "";
-    } else {
-        header = displayWalksHeader($walks);
-        footer = displayWalksFooter();
-    }
-    return  header + $out + footer;
-}
-function shouldDisplayMonth() {
-    var index, len, $item;
-    switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "Details":
-            var $items = JSON.parse(ramblerswalksDetails.detailsFormat);
-            for (var index = 0, len = $items.length; index < len; ++index) {
-                $item = $items[index];
-                if (ramblerswalksDetails.withMonth.includes($item)) {
-                    return false;
-                }
+        this.displayWalksHeader = function ($walks) {
+            var $out = "";
+            switch (this.settings.filter.RA_Display_Format) {
+                case "Details":
+                    if (this.settings.displayDetailsPrompt) {
+                        $out += "<p class='noprint'>Click on item to display full details of walk</p>";
+                    }
+                    $out += "<div data-jplist-group=\"" + this.settings.jplistName + "\">";
+                    break;
+                case "List":
+                    if (this.settings.displayDetailsPrompt) {
+                        $out += "<p class='noprint'>Click on item to display full details of walk</p>";
+                    }
+                    $out += "<div data-jplist-group=\"" + this.settings.jplistName + "\">";
+                    break;
+                case "Table":
+                    if (this.settings.displayDetailsPrompt) {
+                        $out += "<p class='noprint'>Click on item to display full details of walk</p>";
+                    }
+                    $out += "<table class='" + this.settings.displayClass + "'>\n";
+                    var should = this.shouldDisplayMonth();
+                    if (!should) {
+                        $out += this.displayTableHeader();
+                    }
+                    $out += "<tbody data-jplist-group=\"" + this.settings.jplistName + "\">";
+                    break;
             }
-            break;
-        case "List":
-            var $items = JSON.parse(ramblerswalksDetails.listFormat);
-            for (index = 0, len = $items.length; index < len; ++index) {
-                $item = $items[index];
-                if (ramblerswalksDetails.withMonth.includes($item)) {
-                    return false;
-                }
+            return $out;
+        };
+        this.displayTableHeader = function () {
+            var $cols = this.settings.tableFormat;
+            var $out = "<tr>";
+            var index, len, $heading;
+            for (index = 0, len = $cols.length; index < len; ++index) {
+                $heading = $cols[index].title;
+                $out += "<th>" + $heading + "</th>";
             }
-            break;
-        case "Table":
-            var cindex, clen;
-            var $cols = JSON.parse(ramblerswalksDetails.tableFormat);
-            for (cindex = 0, clen = $cols.length; cindex < clen; ++cindex) {
-                $items = $cols[cindex].items;
-                for (index = 0, len = $items.length; index < len; ++index) {
-                    $item = $items[index];
-                    if (ramblerswalksDetails.withMonth.includes($item)) {
-                        return false;
+            return $out + "</tr>";
+        };
+        this.displayWalksFooter = function () {
+            var $out = "";
+            switch (this.settings.filter.RA_Display_Format) {
+                case "Details":
+                    $out += "</div>";
+                    $out += "<div style='height:20px;'>  </div>";
+                    break;
+                case "List":
+                    $out += "</div>";
+                    $out += "<div style='height:20px;'>  </div>";
+                    break;
+                case "Table":
+                    $out += "</tbody></table>\n";
+                    break;
+            }
+            return $out;
+        };
+        this.resetDisplay = function (tag) {
+            var htmltag = document.getElementById(tag);
+            if (htmltag) {
+                htmltag.parentElement.style.display = "list-item";
+            }
+        };
+
+//        this.ra_format = function (option) {
+//            document.getElementById(this.settings.filter.RA_Display_Format).classList.remove('active');
+//            this.settings.filter.RA_Display_Format = option;
+//            document.getElementById(this.settings.filter.RA_Display_Format).classList.add('active');
+//            var $walks = this.getWalks();
+//            this.displayWalks($walks);
+//        };
+
+        this.displayWalk = function ($walk) {
+            var $display = true;
+            switch ($walk.dayofweek) {
+                case "Monday":
+                    $display = this.settings.filter.RA_DayOfWeek_0;
+                    this.resetDisplay("RA_DayOfWeek_0");
+                    break;
+                case "Tuesday":
+                    $display = this.settings.filter.RA_DayOfWeek_1;
+                    this.resetDisplay("RA_DayOfWeek_1");
+                    break;
+                case "Wednesday":
+                    $display = this.settings.filter.RA_DayOfWeek_2;
+                    this.resetDisplay("RA_DayOfWeek_2");
+                    break;
+                case "Thursday":
+                    $display = this.settings.filter.RA_DayOfWeek_3;
+                    this.resetDisplay("RA_DayOfWeek_3");
+                    break;
+                case "Friday":
+                    $display = this.settings.filter.RA_DayOfWeek_4;
+                    this.resetDisplay("RA_DayOfWeek_4");
+                    break;
+                case "Saturday":
+                    $display = this.settings.filter.RA_DayOfWeek_5;
+                    this.resetDisplay("RA_DayOfWeek_5");
+                    break;
+                case "Sunday":
+                    $display = this.settings.filter.RA_DayOfWeek_6;
+                    this.resetDisplay("RA_DayOfWeek_6");
+                    break;
+                default:
+                    break;
+            }
+            if (!$display) {
+                return false;
+            }
+            switch ($walk.nationalGrade) {
+                case "Easy Access":
+                    $display = this.settings.filter.RA_Diff_ea;
+                    this.resetDisplay("RA_Diff_ea");
+                    break;
+                case "Easy":
+                    $display = this.settings.filter.RA_Diff_e;
+                    this.resetDisplay("RA_Diff_e");
+                    break;
+                case "Leisurely":
+                    $display = this.settings.filter.RA_Diff_l;
+                    this.resetDisplay("RA_Diff_l");
+                    break;
+                case "Moderate":
+                    $display = this.settings.filter.RA_Diff_m;
+                    this.resetDisplay("RA_Diff_m");
+                    break;
+                case "Strenuous":
+                    $display = this.settings.filter.RA_Diff_s;
+                    this.resetDisplay("RA_Diff_s");
+                    break;
+                case "Technical":
+                    $display = this.settings.filter.RA_Diff_t;
+                    this.resetDisplay("RA_Diff_t");
+                    break;
+                default:
+                    break;
+            }
+            if (!$display) {
+                return false;
+            }
+            var dist = Math.ceil($walk.distanceMiles);
+            switch (dist) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    $display = this.settings.filter.RA_Dist_0;
+                    this.resetDisplay("RA_Dist_0");
+                    break;
+                case 4:
+                case 5:
+                    $display = this.settings.filter.RA_Dist_1;
+                    this.resetDisplay("RA_Dist_1");
+                    break;
+                case 6:
+                case 7:
+                case 8:
+                    $display = this.settings.filter.RA_Dist_2;
+                    this.resetDisplay("RA_Dist_2");
+                    break;
+                case 9:
+                case 10:
+                    $display = this.settings.filter.RA_Dist_3;
+                    this.resetDisplay("RA_Dist_3");
+                    break;
+                case 11:
+                case 12:
+                case 13:
+                    $display = this.settings.filter.RA_Dist_4;
+                    this.resetDisplay("RA_Dist_4");
+                    break;
+                case 14:
+                case 15:
+                    $display = this.settings.filter.RA_Dist_5;
+                    this.resetDisplay("RA_Dist_5");
+                    break;
+                default:
+                    $display = this.settings.filter.RA_Dist_6;
+                    this.resetDisplay("RA_Dist_6");
+                    break;
+            }
+            if (!$display) {
+                return false;
+            }
+            $display = this.settings.filter[$walk.groupCode];
+            if (!$display) {
+                return false;
+            }
+            var d1 = $walk.walkDate.substring(0, 10);
+            var d = this.settings.filter["RA_DateStart"];
+            if (d !== "") {
+                $display = d1 >= d;
+            }
+            if (!$display) {
+                return false;
+            }
+            var d = this.settings.filter["RA_DateEnd"];
+            if (d !== "") {
+                $display = d1 <= d;
+            }
+            if (!$display) {
+                return false;
+            }
+
+            return $display;
+        };
+        this.displayWalk_Details = function ($walk, $class, $displayMonth) {
+            var $text, $image;
+            var $out = "", $out1 = "";
+
+            if ($displayMonth) {
+                $out1 += "<div data-jplist-item >";
+                $out1 += "<h3>" + $walk.month + ra.walk.addYear($walk) + "</h3>";
+                $out1 += "<div class='" + $class + " walk" + $walk.status + "' >";
+            } else {
+                $out1 += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+            }
+            $image = '<span class="walkdetail" >';
+            $out += ra.walk.getWalkValues($walk, this.settings.detailsFormat);
+
+//   $out += "<span class='ra-detailsimg'></span>";
+            // $out += getCloseImg();
+            $text = $out1 + $image + ra.walk.newTooltip($walk, $out) + "\n</span></div>\n";
+            if ($displayMonth) {
+                $text += "</div>\n";
+            }
+            return $text;
+        };
+
+        this.displayWalk_List = function ($walk, $class, $displayMonth) {
+            var $items = this.settings.listFormat;
+            var $out = "";
+            if ($displayMonth) {
+                $out += "<div data-jplist-item >";
+                $out += "<h3>" + $walk.month + ra.walk.addYear($walk) + "</h3>";
+                $out += "</div>\n";
+                $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+            } else {
+                $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+            }
+            // $out +=  ra.walk.addWalkLink($walk.id, ra.walk.getWalkValues($walk, $items), "");
+            $out += ra.walk.getWalkValues($walk, $items);
+            return $out + "</div>\n";
+        };
+        this.displayWalk_Table = function ($walk, $class, $displayMonth) {
+            var $cols = this.settings.tableFormat;
+            //  var $out = "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >"
+            var $out = "";
+            var $customClass = "";
+            if ($displayMonth) {
+                $out += "<tr data-jplist-item ><td>";
+                $out += "<h3>" + $walk.month + ra.walk.addYear($walk) + "</h3>";
+                $out += "</td></tr>";
+            }
+            if (typeof displayTableRowClass === 'function') {
+                $customClass = displayTableRowClass($walk);
+                $out += "<tr data-jplist-item class='" + $customClass + " walk" + $walk.status + "' >";
+            } else {
+                $out += "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+            }
+            var index, len, $items;
+            for (index = 0, len = $cols.length; index < len; ++index) {
+                $out += "<td>";
+                $items = $cols[index].items;
+                $out += ra.walk.getWalkValues($walk, $items);
+                //  $out += ra.walk.addWalkLink($walk.id, ra.walk.getWalkValues($walk, $items), "");
+                $out += "</td>";
+            }
+
+
+            $out += "</tr>";
+            return $out;
+        };
+
+        this.displayContacts = function ($walks) {
+            var $contacts = [];
+            var index, len, $walk, out;
+            for (index = 0, len = $walks.length; index < len; ++index) {
+                $walk = $walks[index];
+                if ($walk.display) {
+                    var $contact = {name: $walk.contactName, telephone1: $walk.telephone1, telephone2: $walk.telephone2};
+                    if (!ra.contains($contacts, $contact)) {
+                        $contacts.push($contact);
                     }
                 }
             }
-            break;
-    }
-    return true;
-}
-
-function displayWalksHeader($walks) {
-    var $out = "";
-    switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "Details":
-            if (ramblerswalksDetails.displayDetailsPrompt) {
-                $out += "<p class='noprint'>Click on item to display full details of walk</p>";
+            $contacts.sort(function (a, b) {
+                return a.name.toLowerCase() > b.name.toLowerCase();
+            });
+            var dispTel1, dispTel2;
+            if (ra.isES6()) {
+                // typeof x === "undefined";
+                dispTel1 = typeof $contacts.find(checkContactTelephone1) !== "undefined";
+                dispTel2 = typeof $contacts.find(checkContactTelephone2) !== "undefined";
+            } else {
+                dispTel1 = true;
+                dispTel2 = false;
             }
-            $out += "<div data-jplist-group=\"" + ramblerswalksDetails.jplistName + "\">";
-            break;
-        case "List":
-            if (ramblerswalksDetails.displayDetailsPrompt) {
-                $out += "<p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
+            out = "<table class='" + this.settings.displayClass + " contacts'>\n";
+            out += "<tr><th>Name";
+            if (dispTel1) {
+                out += "</th><th>Telephone1";
             }
-            $out += "<div data-jplist-group=\"" + ramblerswalksDetails.jplistName + "\">";
-            break;
-        case "Table":
-            if (ramblerswalksDetails.displayDetailsPrompt) {
-                $out += "<p class='noprint'>Click on <b>Date</b> or <b>Title</b> to display full details of walk</p>";
+            if (dispTel2) {
+                out += "</th><th>Telephone2";
             }
-            $out += "<table class='" + ramblerswalksDetails.displayClass + "'>\n";
-            var should = shouldDisplayMonth();
-            if (!should) {
-                $out += displayTableHeader();
+            out += "</th></tr><tbody data-jplist-group=\"" + this.settings.jplistName + "\">";
+            for (index = 0, len = $contacts.length; index < len; ++index) {
+                $contact = $contacts[index];
+                out += "<tr data-jplist-item><td>" + $contact.name;
+                if (dispTel1) {
+                    out += "</td><td>" + $contact.telephone1;
+                }
+                if (dispTel2) {
+                    out += "</td><td>" + $contact.telephone2;
+                }
+                out += "</td></tr>";
             }
-            $out += "<tbody data-jplist-group=\"" + ramblerswalksDetails.jplistName + "\">";
-            break;
-    }
-    return $out;
-}
-function displayTableHeader() {
-    var $cols = JSON.parse(ramblerswalksDetails.tableFormat);
-    var $out = "<tr>";
-    var index, len, $heading;
-    for (index = 0, len = $cols.length; index < len; ++index) {
-        $heading = $cols[index].title;
-        $out += "<th>" + $heading + "</th>";
-    }
-    return $out + "</tr>";
-}
-function displayWalksFooter() {
-    var $out = "";
-    switch (ramblerswalksDetails.filter.RA_Display_Format) {
-        case "Details":
-            $out += "</div>";
-            $out += "<div style='height:20px;'>  </div>";
-            break;
-        case "List":
-            $out += "</div>";
-            $out += "<div style='height:20px;'>  </div>";
-            break;
-        case "Table":
-            $out += "</tbody></table>\n";
-            break;
-    }
-    return $out;
-}
-
-
-function walksPrint() {
-    var $walks;
-    $walks = getWalks();
-    var $html = displayWalksText($walks);
-    displayModal($html);
-}
-function displayWalkID(id) {
-    var $walk = getWalk(id);
-    var $html;
-    if ($walk === null) {
-        $html = "<h3>Sorry cannot find that walk</h3>";
-    } else {
-        $html = displayWalkDetails($walk);
-    }
-    displayModal($html);
-}
-
-function   initFilters() {
-    setChecked("RA_DayOfWeek_0");
-    setChecked("RA_DayOfWeek_1");
-    setChecked("RA_DayOfWeek_2");
-    setChecked("RA_DayOfWeek_3");
-    setChecked("RA_DayOfWeek_4");
-    setChecked("RA_DayOfWeek_5");
-    setChecked("RA_DayOfWeek_6");
-    setChecked("RA_Diff_ea");
-    setChecked("RA_Diff_e");
-    setChecked("RA_Diff_l");
-    setChecked("RA_Diff_m");
-    setChecked("RA_Diff_s");
-    setChecked("RA_Diff_t");
-    setChecked("RA_Dist_0");
-    setChecked("RA_Dist_1");
-    setChecked("RA_Dist_2");
-    setChecked("RA_Dist_3");
-    setChecked("RA_Dist_4");
-    setChecked("RA_Dist_5");
-    setChecked("RA_Dist_6");
-}
-function addFilterEvents() {
-    var bodies = document.getElementsByTagName('body');
-    for (var i = 0; i < bodies.length; i++) {
-        var body = bodies[i];
-        var filters = document.getElementsByClassName('ra-walksfilter');
-        for (var i = 0; i < filters.length; i++) {
-            setFilterColumns(filters[i]);
-        }
-        body.onresize = function (event) {
-            var filters = document.getElementsByClassName('ra-walksfilter');
-            for (var i = 0; i < filters.length; i++) {
-                setFilterColumns(filters[i]);
-            }
+            out += "</tbody></table>";
+            return out;
         };
-    }
-    var anchors = document.getElementsByTagName('h3');
-    for (var i = 0; i < anchors.length; i++) {
-        var anchor = anchors[i];
-        if (anchor.className === "ra_openclose") {
-            anchor.onclick = function (event) {
-                var anchor = event.target;
-                if (anchor.className === "ra-closed" || anchor.className === "ra-open") {
-                    anchor = anchor.parentNode;
-                }
-                var child = anchor.lastChild; /* ra-closed */
-                var tag = anchor.parentNode.lastChild; /* content */
-                if (tag.style.display !== "none") {
-                    tag.style.display = "none";
-                    child.classList.add('ra-closed');
-                    child.classList.remove('ra-open');
-                } else {
-                    tag.style.display = "block";
-                    child.classList.add('ra-open');
-                    child.classList.remove('ra-closed');
-                }
-            };
-        }
-    }
-}
-function setFilterColumns(filter) {
-    var width = filter.offsetWidth;
-    filter.style.columnCount = 1;
-    if (width > 480) {
-        filter.style.columnCount = 2;
-        if (width > 780) {
-            filter.style.columnCount = 3;
-        }
-    }
-}
-function addSelectAll() {
-    var anchors = document.getElementsByTagName('h3');
-    for (var i = 0; i < anchors.length; i++) {
-        var anchor = anchors[i];
-        if (anchor.className === "ra_openclose") {
-            var next = anchor.nextSibling;
-            if (next.className === "ra_filter") {
-                var children = next.childNodes;
-                if (children.length > 2) {
 
+        checkContactTelephone1 = function (contact) {
+            return contact.telephone1 !== "";
+        };
+        checkContactTelephone2 = function (contact) {
+            return contact.telephone2 !== "";
+        };
+
+        this.displayWalksMap = function ($walks) {
+            this.cluster.removeClusterMarkers();
+            var index, len, $walk;
+            if ($walks.length === 0) {
+                return;
+            }
+            for (index = 0, len = $walks.length; index < len; ++index) {
+                $walk = $walks[index];
+                if ($walk.display) {
+                    this.addWalkMarker($walk);
                 }
             }
-        }
-    }
-}
-function setGroups($walks) {
-    var index, len, $walk, i;
-    var groups = {};
-    for (index = 0, len = $walks.length; index < len; ++index) {
-        $walk = $walks[index];
-        groups[$walk.groupCode] = $walk.groupName;
-    }
-    var keysSorted = Object.keys(groups).sort(function (a, b) {
-        return groups[a] > groups[b];
-    });
-    var $out = "<h3 class='ra_openclose'>Groups<span class='ra-closed'></span></h3><div class='ra_filter' style='display:none;'>";
-    $out += "<span class='ra_select'>[<span onclick=\"javascript:ra_select(event)\">All</span>] [<span onclick=\"javascript:ra_select(event)\">None</span>]</span>";
-    $out += "<ul>";
-    for (i = 0, len = keysSorted.length; i < len; i++) {
-        var key = keysSorted[i];
-        var group = groups[key];
-        var $item = '<li><input id="' + key + '" type="checkbox" onchange="javascript:ra_filter(event)" checked/><label>' + group + '</label></li>';
-        $out += $item;
-        ramblerswalksDetails.filter[key] = true;
-    }
-    $out += "</ul></div>";
-    var htmltag = document.getElementById("ra_groups");
-    if (htmltag) {
-        htmltag.innerHTML = $out;
-        if (keysSorted.length === 1) {
-            htmltag.style.display = "none";
-        }
-    }
-}
-function setChecked(tag) {
-    ramblerswalksDetails.filter[tag] = true;
-    var htmltag = document.getElementById(tag);
-    if (htmltag) {
-        htmltag.checked = true;
-        htmltag.parentElement.style.display = "none";
-    }
-}
-function resetDisplay(tag) {
-    var htmltag = document.getElementById(tag);
-    if (htmltag) {
-        htmltag.parentElement.style.display = "list-item";
-    }
-}
-function ra_filter(event) {
-    if (event.target.id === "RA_DateStart" || event.target.id === "RA_DateEnd") {
-        ramblerswalksDetails.filter[event.target.id] = event.target.value;
-    } else {
-        ramblerswalksDetails.filter[event.target.id] = event.target.checked;
-    }
-    var $walks = getWalks();
-    displayWalks($walks);
-}
-function ra_select(event) {
-    var all = event.target.innerHTML === "All";
-    var parent = event.target.parentNode;
-    var next = parent.nextElementSibling;
-    if (next.tagName === "UL") {
-        var children = next.children;
-        Object.keys(children).forEach(function (key) {
-            var node = children[key].childNodes[0];
-            node.checked = all;
-            ramblerswalksDetails.filter[node.id] = all;
-        });
-    }
-    var $walks = getWalks();
-    displayWalks($walks);
-}
-function ra_format(option) {
-    document.getElementById(ramblerswalksDetails.filter.RA_Display_Format).classList.remove('active');
-    ramblerswalksDetails.filter.RA_Display_Format = option;
-    document.getElementById(ramblerswalksDetails.filter.RA_Display_Format).classList.add('active');
-    var $walks = getWalks();
-    displayWalks($walks);
-}
+            this.cluster.addClusterMarkers();
+            return;
+        };
+        this.addWalkMarker = function ($walk) {
+            var $long, $lat, $icon, $class, $details, $map;
+            var $popup;
+            var $this = this.settings;
+            $long = $walk.startLocation.longitude;
+            $lat = $walk.startLocation.latitude;
 
-function displayWalk($walk) {
-    var $display = true;
-    switch ($walk.dayofweek) {
-        case "Monday":
-            $display = ramblerswalksDetails.filter.RA_DayOfWeek_0;
-            resetDisplay("RA_DayOfWeek_0");
-            break;
-        case "Tuesday":
-            $display = ramblerswalksDetails.filter.RA_DayOfWeek_1;
-            resetDisplay("RA_DayOfWeek_1");
-            break;
-        case "Wednesday":
-            $display = ramblerswalksDetails.filter.RA_DayOfWeek_2;
-            resetDisplay("RA_DayOfWeek_2");
-            break;
-        case "Thursday":
-            $display = ramblerswalksDetails.filter.RA_DayOfWeek_3;
-            resetDisplay("RA_DayOfWeek_3");
-            break;
-        case "Friday":
-            $display = ramblerswalksDetails.filter.RA_DayOfWeek_4;
-            resetDisplay("RA_DayOfWeek_4");
-            break;
-        case "Saturday":
-            $display = ramblerswalksDetails.filter.RA_DayOfWeek_5;
-            resetDisplay("RA_DayOfWeek_5");
-            break;
-        case "Sunday":
-            $display = ramblerswalksDetails.filter.RA_DayOfWeek_6;
-            resetDisplay("RA_DayOfWeek_6");
-            break;
-        default:
-            break;
-    }
-    if (!$display) {
-        return false;
-    }
-    switch ($walk.nationalGrade) {
-        case "Easy Access":
-            $display = ramblerswalksDetails.filter.RA_Diff_ea;
-            resetDisplay("RA_Diff_ea");
-            break;
-        case "Easy":
-            $display = ramblerswalksDetails.filter.RA_Diff_e;
-            resetDisplay("RA_Diff_e");
-            break;
-        case "Leisurely":
-            $display = ramblerswalksDetails.filter.RA_Diff_l;
-            resetDisplay("RA_Diff_l");
-            break;
-        case "Moderate":
-            $display = ramblerswalksDetails.filter.RA_Diff_m;
-            resetDisplay("RA_Diff_m");
-            break;
-        case "Strenuous":
-            $display = ramblerswalksDetails.filter.RA_Diff_s;
-            resetDisplay("RA_Diff_s");
-            break;
-        case "Technical":
-            $display = ramblerswalksDetails.filter.RA_Diff_t;
-            resetDisplay("RA_Diff_t");
-            break;
-        default:
-            break;
-    }
-    if (!$display) {
-        return false;
-    }
-    var dist = Math.ceil($walk.distanceMiles);
-    switch (dist) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-            $display = ramblerswalksDetails.filter.RA_Dist_0;
-            resetDisplay("RA_Dist_0");
-            break;
-        case 4:
-        case 5:
-            $display = ramblerswalksDetails.filter.RA_Dist_1;
-            resetDisplay("RA_Dist_1");
-            break;
-        case 6:
-        case 7:
-        case 8:
-            $display = ramblerswalksDetails.filter.RA_Dist_2;
-            resetDisplay("RA_Dist_2");
-            break;
-        case 9:
-        case 10:
-            $display = ramblerswalksDetails.filter.RA_Dist_3;
-            resetDisplay("RA_Dist_3");
-            break;
-        case 11:
-        case 12:
-        case 13:
-            $display = ramblerswalksDetails.filter.RA_Dist_4;
-            resetDisplay("RA_Dist_4");
-            break;
-        case 14:
-        case 15:
-            $display = ramblerswalksDetails.filter.RA_Dist_5;
-            resetDisplay("RA_Dist_5");
-            break;
-        default:
-            $display = ramblerswalksDetails.filter.RA_Dist_6;
-            resetDisplay("RA_Dist_6");
-            break;
-    }
-    if (!$display) {
-        return false;
-    }
-    $display = ramblerswalksDetails.filter[$walk.groupCode];
-    if (!$display) {
-        return false;
-    }
-    var d1 = $walk.walkDate.date.substring(0, 10);
-    var d = ramblerswalksDetails.filter["RA_DateStart"];
-    if (d !== "") {
-        $display = d1 >= d;
-    }
-    if (!$display) {
-        return false;
-    }
-    var d = ramblerswalksDetails.filter["RA_DateEnd"];
-    if (d !== "") {
-        $display = d1 <= d;
-    }
-    if (!$display) {
-        return false;
-    }
-
-    return $display;
-}
-function displayWalk_Details($walk, $class, $displayMonth) {
-    var $items = JSON.parse(ramblerswalksDetails.detailsFormat);
-    var $text, $image;
-    var $out = "", $out1 = "";
-
-    if ($displayMonth) {
-        $out1 += "<div data-jplist-item >";
-        $out1 += "<h3>" + $walk.month + "</h3>";
-        $out1 += "<div class='" + $class + " walk" + $walk.status + "' >";
-    } else {
-        $out1 += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
-    }
-
-    $image = '<span class="walkdetail" >';
-    $image += getGradeSpan($walk, 'details');
-    var index, len, $items, $text, $item;
-    for (index = 0, len = $items.length; index < len; ++index) {
-        $item = $items[index];
-        $text = getWalkValue($walk, $item, false);
-        $out += $text;
-    }
-//   $out += "<span class='ra-detailsimg'></span>";
-    $out += getCloseImg();
-    //  $text = "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' \n>" + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</span></div>\n";
-    $text = $out1 + $image + newTooltip($walk, addWalkLink($walk, $out, true, "ra-details")) + "\n</span></div>\n";
-    if ($displayMonth) {
-        $text += "</div>\n";
-    }
-    return $text;
-}
-
-
-function displayWalk_List($walk, $class, $displayMonth) {
-    var $items = JSON.parse(ramblerswalksDetails.listFormat);
-    var $out = "";
-    if ($displayMonth) {
-        $out += "<div data-jplist-item >";
-        $out += "<h3>" + $walk.month + "</h3>";
-        $out += "</div>\n";
-        $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
-    } else {
-        $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
-    }
-    var index, len, $items, $text, $item;
-    for (index = 0, len = $items.length; index < len; ++index) {
-        $item = $items[index];
-        $text = getWalkValue($walk, $item, true);
-        $out += $text;
-    }
-    if ($displayMonth) {
-        //      $out += "</div>\n";
-    }
-    return $out + "</div>\n";
-}
-function displayWalk_Table($walk, $class, $displayMonth) {
-    var $cols = JSON.parse(ramblerswalksDetails.tableFormat);
-    //  var $out = "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >"
-    var $out = "";
-    var $out1 = "";
-
-    if ($displayMonth) {
-
-        $out1 += "<tr data-jplist-item ><td>";
-        $out1 += "<h3>" + $walk.month + "</h3>";
-        $out1 += "</td></tr>";
-        $out1 += "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
-    } else {
-        $out1 += "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
-    }
-
-    var index, len, $items;
-    for (index = 0, len = $cols.length; index < len; ++index) {
-        $out += "<td>";
-        $items = $cols[index].items;
-        $out += getColValue($walk, $items);
-        $out += "</td>";
-    }
-    $out += "</tr>";
-//    if ($displayMonth) {
-//        $out += "</div>\n";
-//    }
-    return $out1 + $out;
-}
-
-
-function newTooltip($walk, $text) {
-    if ($walk.status === "New") {
-        return "<span data-descr='Walk updated " + getDate($walk.dateUpdated.date) + "' class=' walkNew'><span>" + $text + "</span></span";
-    }
-    return $text;
-}
-function displayContacts($walks) {
-    var $contacts = [];
-    var index, len, $walk, out;
-    for (index = 0, len = $walks.length; index < len; ++index) {
-        $walk = $walks[index];
-        if ($walk.display) {
-            var $contact = {name: $walk.contactName, telephone1: $walk.telephone1, telephone2: $walk.telephone2};
-            if (!contains($contacts, $contact)) {
-                $contacts.push($contact);
-            }
-        }
-    }
-    $contacts.sort(function (a, b) {
-        return a.name.toLowerCase() > b.name.toLowerCase();
-    });
-    var dispTel1, dispTel2;
-    if (ramblerswalksDetails.isES6) {
-        typeof x === "undefined";
-        dispTel1 = typeof $contacts.find(checkContactTelephone1) !== "undefined";
-        dispTel2 = typeof $contacts.find(checkContactTelephone2) !== "undefined";
-    } else {
-        dispTel1 = true;
-        dispTel2 = false;
-    }
-    out = "<table class='" + ramblerswalksDetails.displayClass + " contacts'>\n";
-    out += "<tr><th>Name";
-    if (dispTel1) {
-        out += "</th><th>Telephone1";
-    }
-    if (dispTel2) {
-        out += "</th><th>Telephone2";
-    }
-    out += "</th></tr><tbody data-jplist-group=\"" + ramblerswalksDetails.jplistName + "\">";
-    for (index = 0, len = $contacts.length; index < len; ++index) {
-        $contact = $contacts[index];
-        out += "<tr data-jplist-item><td>" + $contact.name;
-        if (dispTel1) {
-            out += "</td><td>" + $contact.telephone1;
-        }
-        if (dispTel2) {
-            out += "</td><td>" + $contact.telephone2;
-        }
-        out += "</td></tr>";
-    }
-    out += "</tbody></table>";
-    return out;
-}
-
-//function checkContactEmail(contact) {
-//    return contact.email !== "";
-//}
-function checkContactTelephone1(contact) {
-    return contact.telephone1 !== "";
-}
-function checkContactTelephone2(contact) {
-    return contact.telephone2 !== "";
-}
-
-function contains(items, item) {
-    var index, len;
-    for (index = 0, len = items.length; index < len; ++index) {
-        if (isEquivalent(items[index], item)) {
-            return true;
-        }
-    }
-    return false;
-}
-function isEquivalent(a, b) {
-// Create arrays of property names
-    var aProps = Object.getOwnPropertyNames(a);
-    var bProps = Object.getOwnPropertyNames(b);
-    // If number of properties is different,
-    // objects are not equivalent
-    if (aProps.length !== bProps.length) {
-        return false;
-    }
-
-    for (var i = 0; i < aProps.length; i++) {
-        var propName = aProps[i];
-        // If values of same property are not equal,
-        // objects are not equivalent
-        if (a[propName] !== b[propName]) {
-            return false;
-        }
-    }
-
-// If we made it this far, objects
-// are considered equivalent
-    return true;
-}
-
-function getColValue($walk, $items) {
-    var index, len, $out, $item, $text;
-    $out = "";
-    for (index = 0, len = $items.length; index < len; ++index) {
-        $item = $items[index];
-        $text = getWalkValue($walk, $item, true);
-        $out += $text;
-    }
-    return $out;
-}
-
-function getWalkValue($walk, $option, addlink) {
-    var BR = "<br/>";
-    var out = "";
-    var $prefix;
-    var values = getPrefix($option);
-    $prefix = values[0];
-    $option = values[1];
-    switch ($option) {
-        case "{lf}":
-            out = "<br/>";
-            break;
-        case "{group}":
-            out = $walk.groupName;
-            break;
-        case "{dowShortdd}":
-            out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + ", " + $walk.day + "</b>", addlink, "");
-            break;
-        case "{dowShortddmm}":
-            out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + ", " + $walk.day + " " + $walk.month + "</b>", addlink, "");
-            break;
-        case "{dowShortddyyyy}":
-            out = addWalkLink($walk, "<b>" + shortDoW($walk.dayofweek) + " " + $walk.walkDate.date.substr(0, 4) + "</b>", addlink, "");
-            break;
-        case "{dowdd}":
-            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + "</b>", addlink, "");
-            break;
-        case "{dowddmm}":
-            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + "</b>", addlink, "");
-            break;
-        case "{dowddmmyyyy}":
-            out = addWalkLink($walk, "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + " " + $walk.walkDate.date.substr(0, 4) + "</b>", addlink, "");
-            break;
-        case "{meet}":
-            if ($walk.hasMeetPlace) {
-                out = $walk.meetLocation.timeHHMMshort;
-                if ($walk.meetLocation.description) {
-                    out += " at " + $walk.meetLocation.description;
-                }
-            }
-            break;
-        case "{meetTime}":
-            if ($walk.hasMeetPlace) {
-                out = $walk.meetLocation.timeHHMMshort;
-            }
-            break;
-        case "{meetPlace}":
-            if ($walk.hasMeetPlace) {
-                out = $walk.meetLocation.description;
-            }
-            break;
-        case "{meetGR}":
-            if ($walk.hasMeetPlace) {
-                out = $walk.meetLocation.gridref;
-            }
-            break;
-        case "{meetPC}":
-            if ($walk.hasMeetPlace) {
-                out = $walk.meetLocation.postcode;
-            }
-            break;
-        case "{meetOLC}":
-            if ($walk.hasMeetPlace) {
-                if ($walk.meetLocation.exact) {
-                    out = OpenLocationCode.encode($walk.meetLocation.latitude, $walk.meetLocation.longitude);
-                }
-            }
-            break;
-        case "{meetMapCode}":
-            if ($walk.hasMeetPlace) {
-                if ($walk.meetLocation.exact) {
-                    out = getMapCode($walk.meetLocation.latitude, $walk.meetLocation.longitude, false);
-                }
-            }
-            break;
-        case "{start}":
             if ($walk.startLocation.exact) {
-                out = $walk.startLocation.timeHHMMshort;
-                if ($walk.startLocation.description) {
-                    out += " at " + $walk.startLocation.description;
-                }
-            }
-            break;
-        case "{startTime}":
-            if ($walk.startLocation.exact) {
-                out = $walk.startLocation.timeHHMMshort;
-            }
-            break;
-        case "{startPlace}":
-            if ($walk.startLocation.exact) {
-                if ($walk.startLocation.description) {
-                    out += $walk.startLocation.description;
-                }
-            }
-            break;
-        case "{startGR}":
-            if ($walk.startLocation.exact) {
-                out = $walk.startLocation.gridref;
-            }
-            break;
-        case "{startPC}":
-            if ($walk.startLocation.exact) {
-                out = $walk.startLocation.postcode;
-            }
-            break;
-        case "{startOLC}":
-            if ($walk.startLocation.exact) {
-                out = OpenLocationCode.encode($walk.startLocation.latitude, $walk.startLocation.longitude);
-            }
-            break;
-        case "{startMapCode}":
-            if ($walk.startLocation.exact) {
-                out = getMapCode($walk.startLocation.latitude, $walk.startLocation.longitude, false);
-            }
-            break;
-        case "{title}":
-            out = addWalkLink($walk, $walk.title, addlink, "");
-            out = "<b>" + out + "</b>";
-            break;
-        case "{description}":
-            out = $walk.description;
-            break;
-        case "{difficulty}":
-            out = getWalkValue($walk, "{distance}", addlink);
-            out += "<br/><span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dGH()'>" + $walk.nationalGrade + "</span>";
-            if ($walk.localGrade !== "") {
-                out += "<br/>" + $walk.localGrade;
-            }
-            break;
-        case "{distance}":
-            if ($walk.distanceMiles > 0) {
-                out = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
-            }
-            break;
-        case "{nationalGrade}":
-            out = "<span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dGH()'>" + $walk.nationalGrade + "</span>";
-            break;
-        case "{nGrade}":
-            out = "<span class='pointer " + $walk.nationalGrade.replace(/ /g, "") + "' onclick='javascript:dGH()'>" + $walk.nationalGrade.substr(0, 1) + "</span>";
-            break;
-        case "{localGrade}":
-            out = $walk.localGrade;
-            break;
-        case "{additionalNotes}":
-            out = $walk.additionalNotes;
-            break;
-        case "{contact}":
-            out = "";
-            if ($walk.isLeader) {
-                $prefix += "Leader";
+                $icon = ra.map.icon.markerStart;
             } else {
-                $prefix += "Contact";
+                $icon = ra.map.icon.markerArea;
             }
-            if ($walk.contactName !== "") {
-                out += " <strong>" + $walk.contactName + "</strong>";
+            if (ra.walk.isCancelled($walk)) {
+                $icon = ra.map.icon.markerCancelled;
             }
-            if ($walk.email !== "") {
-                out += BR + getEmailLink($walk);
-            }
-            if ($walk.telephone1 !== "") {
-                out += BR + $walk.telephone1;
-            }
-            if ($walk.telephone2 !== "") {
-                out += BR + $walk.telephone2;
-            }
-            break;
-        case "{contactname}":
-            var $contact = "";
-            if ($walk.isLeader) {
-                $prefix += "Leader ";
-            } else {
-                $prefix += "Contact ";
-            }
-            if ($walk.contactName !== "") {
-                $contact += $walk.contactName;
-            }
-            out = $contact;
-            break;
-        case "{telephone}":
-        case "{telephone1}":
-            if ($walk.telephone1 !== "") {
-                out += $walk.telephone1;
-            }
-            break;
-        case "{telephone2}":
-            if ($walk.telephone2 !== "") {
-                out += $walk.telephone2;
-            }
-            break;
-        case "{email}":
-        case "{emailat}":
-            var $contact = "";
-            if ($walk.email !== "") {
-                $contact += $walk.email;
-            }
-            out = $contact;
-            break;
-        case "{emaillink}":
-            if ($walk.email !== "") {
-                out = getEmailLink($walk);
-            }
-            break;
-        case "{mediathumbr}":
-            out = '';
-            if ($walk.media.length > 0) {
-                out = "<img class='mediathumbr' src='" + $walk.media[0].url + "' >";
-                out = addWalkLink($walk, out, addlink, "");
-            }
-            break;
-        case "{mediathumbl}":
-            out = '';
-            if ($walk.media.length > 0) {
-                out = "<img class='mediathumbl' src='" + $walk.media[0].url + "' >";
-                out = addWalkLink($walk, out, addlink, "");
-            }
-            break;
-        default:
-            $option = $option.replace("{", "");
-            out = $option.replace("}", "");
-    }
-    if (out !== "") {
-        return  $prefix + out;
-    }
-    return "";
-}
-function shortDoW($day) {
-    switch ($day) {
-        case "Monday":
-            return "Mon";
-            break;
-        case "Tuesday":
-            return "Tues";
-            break;
-        case "Wednesday":
-            return "Wed";
-            break;
-        case "Thursday":
-            return "Thur";
-            break;
-        case "Friday":
-            return "Fri";
-            break;
-        case "Saturday":
-            return "Sat";
-            break;
-        case "Sunday":
-            return "Sun";
-            break;
-    }
-    return "";
-}
-function getPrefix($option) {
-    var $prefix = "";
-    var $loop = true;
-    do {
-        switch ($option.substr(0, 2)) {
-            case "{;":
-                $prefix += "<br/>";
-                $option = $option.replace("{;", "{");
-                break;
-            case "{,":
-                $prefix += ", ";
-                $option = $option.replace("{,", "{");
-                break;
-            case "{[":
-                var $close = $option.indexOf("]");
-                if ($close > 0) {
-                    $prefix += $option.substr(2, close - 2);
-                    $option = "{" + $option.substr(close + 1);
-                } else {
-                    $prefix += $option;
-                    $option = "{}";
-                }
-                break;
-            default:
-                $loop = false;
-        }
-    } while ($loop);
-    return [$prefix, $option];
-}
+            $details = ra.walk.getWalkValues($walk, this.settings.mapFormat);
+            $class = $this.walkClass + $walk.status;
+            $details = "<div class='" + $class + "'>" + $details + "</div>";
+            $popup = $details;
+            $popup = $popup.replace('"', "&quot;");
+            this.cluster.addMarker($popup, $lat, $long, $icon);
+            return;
+        };
+//        this.getWalkMapHref = function ($walk, $desc) {
+//            var $out = "<a href=";
+//            $out += "'javascript:ra.walk.displayWalkID(event," + $walk.id + ");' >";
+//            $out += $desc + "</a>";
+//            return $out;
+//        };
 
-function isCancelled($walk) {
-    return $walk.status.toLowerCase() === "cancelled";
-}
-function addWalkLink($walk, $text, addlink, $class) {
-    if (addlink) {
-        return  "<span class='pointer " + $class + "' onclick=\"javascript:displayWalkID(" + $walk.id + ")\">" + $text + "</span>";
-    }
-    return $text;
-}
-function displayWalkDetails($walk) {
-    var PHP_EOL = "\n";
-    var $html = "";
-    var $link, $out, $text;
-    $html += "<div class='walkstdfulldetails stdfulldetails walk" + $walk.status + "' >" + PHP_EOL;
-    $html += "<div class='group " + gradeCSS($walk) + "'><b>Group</b>: " + $walk.groupName + "</div>" + PHP_EOL;
-    if (isCancelled($walk)) {
-        $html += "<div class='reason'>WALK CANCELLED: " + $walk.cancellationReason + "</div>" + PHP_EOL;
-    }
-    $html += "<div class='basics'>" + PHP_EOL;
-    $html += "<div class='description'><b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + PHP_EOL;
-    $html += "<br/>" + $walk.title + "</b></div>" + PHP_EOL;
-    if ($walk.description !== "") {
-        $html += "<div class='description'> " + $walk.descriptionHtml + "</div>" + PHP_EOL;
-    }
-    if ($walk.additionalNotes !== "") {
-        $html += "<div class='additionalnotes'><b>Additional Notes</b>: " + $walk.additionalNotes + "</div>" + PHP_EOL;
-    }
-    if ($walk.isLinear) {
-        $html += "<b>Linear Walk</b>";
-    } else {
-        $html += "<b>Circular walk</b>";
-    }
-    if ($walk.hasMeetPlace) {
-        $out = "<div><b>Meeting time " + $walk.meetLocation.timeHHMMshort + "</b></div>";
-        $html += $out + PHP_EOL;
-    }
-    if ($walk.startLocation.exact) {
-        $out = "<div><b>Start time " + $walk.startLocation.timeHHMMshort + "</b></div>";
-        $html += $out + PHP_EOL;
-    }
-    if ($walk.finishTime !== null) {
-        $out = "<div>(Estimated finish time " + getShortTime($walk.finishTime) + ")</div>";
-        $html += $out + PHP_EOL;
-    }
-    $html += "</div>";
-    if ($walk.hasMeetPlace) {
-        $html += "<div class='meetplace'>";
-        $out = addLocationInfo("Meeting", $walk.meetLocation, $walk.detailsPageUrl);
-        $html += $out;
-        $html += "</div>" + PHP_EOL;
-    } else {
-//echo "<div class='nomeetplace'><b>No meeting place specified</b>";
-//echo "</div>";
-    }
-    if ($walk.startLocation.exact) {
-        $html += "<div class='startplace'>";
-    } else {
-        $html += "<div class='nostartplace'><b>No start place - Rough location only</b>: ";
-    }
-    $html += addLocationInfo("Start", $walk.startLocation, $walk.detailsPageUrl);
-    $html += "</div>" + PHP_EOL;
-    if ($walk.isLinear) {
-        $html += "<div class='finishplace'>";
-        if ($walk.finishLocation !== null) {
-            $html += addLocationInfo("Finish", $walk.finishLocation, $walk.detailsPageUrl);
-        } else {
-            $html += "<span class='walkerror' >Linear walk but no finish location supplied</span>";
-        }
-        $html += "</div>" + PHP_EOL;
-    }
-    $html += "<div class='difficulty'><b>Difficulty</b>: ";
-    if ($walk.distanceMiles > 0) {
-        $html += RHtmlwithDiv("distance", "<b>Distance</b>: " + $walk.distanceMiles + "mi / " + $walk.distanceKm + "km");
-    }
-    $html += RHtmlwithDiv("nationalgrade", "<b>National Grade</b>: " + $walk.nationalGrade);
-    if ($walk.localGrade !== "") {
-        $link = $walk.localGrade;
-        $html += RHtmlwithDiv("localgrade", "<b>Local Grade</b>: " + $link);
-    }
-    if ($walk.pace !== "") {
-        $html += RHtmlwithDiv("pace", "<b>Pace</b>: " + $walk.pace);
-    }
-    if ($walk.ascentFeet !== null) {
-        $html += RHtmlwithDiv("ascent", "<b>Ascent</b>: " + $walk.ascentFeet + " ft " + $walk.ascentMetres + " ms");
-    }
-    $html += "</div>" + PHP_EOL;
-    if ($walk.isLeader === false) {
-        $html += "<div class='walkcontact'><b>Contact</b>: ";
-    } else {
-        $html += "<div class='walkcontact'><b>Contact Leader</b>: ";
-    }
-    $html += RHtmlwithDiv("contactname", "<b>Name</b>: " + $walk.contactName);
-    if ($walk.email !== "") {
-        $html += getEmailLink($walk);
-    }
-    if ($walk.telephone1 + $walk.telephone2 !== "") {
-        $text = "<b>Telephone</b>: ";
-        if ($walk.telephone1 !== "") {
-            $text += $walk.telephone1;
-            if ($walk.telephone2 !== "") {
-                $text += ", ";
+        this.addPagination = function (no) {
+            if (!ra.isES6()) {
+                return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
             }
-        }
-        if ($walk.telephone2 !== "") {
-            $text += $walk.telephone2;
-        }
-        $html += RHtmlwithDiv("telephone", $text);
-    }
-    if ($walk.isLeader === false) {
-        if ($walk.walkLeader !== "") {
-            $html += "<div class='walkleader'><b>Walk Leader</b>: " + $walk.walkLeader + "</div>" + PHP_EOL;
-        }
-    }
-    $html += "</div>" + PHP_EOL;
-    $html += addItemInfo("strands", "", $walk.strands);
-    $html += addItemInfo("festivals", "Festivals", $walk.festivals);
-    $html += addItemInfo("suitability", "Suitability", $walk.suitability);
-    $html += addItemInfo("surroundings", "Surroundings", $walk.surroundings);
-    $html += addItemInfo("theme", "Theme", $walk.theme);
-    $html += addItemInfo("specialStatus", "Special Status", $walk.specialStatus);
-    $html += addItemInfo("facilities", "Facilities", $walk.facilities);
-    if ($walk.media.length > 0) {
-        if ($walk.media.length > 0) {
-            $html += "<div class='walkmedia'> ";
-            var index, len;
-            for (index = 0, len = $walk.media.length; index < len; ++index) {
-                var item = $walk.media[index];
-                var caption = '';
-                if (item.caption !== '') {
-                    caption = "<div>" + item.caption + "</div>";
-                }
-
-                if (item.copyright !== '') {
-                    caption += "<div><i>&copy; " + item.copyright + "</i></div>";
-                }
-
-                $html += "<div class='walk-image' ><img data-size='1' class='walkmedia' src='" + item.url + "' onclick='mediasize(this)' >" + caption + "</div>";
+            var $class = "";
+            if (no < 11) {
+                $class = " hidden";
             }
-            $html += "</div>" + PHP_EOL;
-        }
-    }
-    $html += "<div class='walkdates'>" + PHP_EOL;
-    $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on Walks Finder</a></div>" + PHP_EOL;
-    $html += "<div class='updated walk" + $walk.status + "'>Last update: " + getDate($walk.dateUpdated.date) + "</div>" + PHP_EOL;
-    $html += "</div>" + PHP_EOL;
-    $html += "</div>" + PHP_EOL;
-    return $html;
-}
-function mediasize(e) {
-    var size = parseInt(e.getAttribute("data-size"));
-    size += 1;
-    if (size === 4) {
-        size = 1;
-    }
-    e.setAttribute("data-size", size);
-}
 
-function addLocationInfo($title, $location, $detailsPageUrl) {
-    var $out, $gr, $note;
-    var $this = ramblerswalksDetails;
-    if ($location.exact) {
-        $note = "Click Google Directions to see map and directions from your current location";
-        $out = "<div class='place'><b>" + $title + " Place</b>:<abbr title='" + $note + "'> " + $location.description + " ";
-        $out += addDirectionsMap($location, "Google directions");
-        $out += "</abbr></div>";
-        if ($location.time !== "") {
-            $out += RHtmlwithDiv("time", "<b>Time</b>: " + $location.timeHHMMshort);
-        }
-
-        $gr = "<abbr title='Click Map to see Ordnance Survey map of location'><b>Grid Ref</b>: " + $location.gridref + " ";
-        $gr += getOSMap($location, "OS Map");
-        $gr += "</abbr>";
-        $out += RHtmlwithDiv("gridref", $gr);
-        $out += RHtmlwithDiv("latlong", "<b>Latitude</b>: " + $location.latitude + " , <b>Longitude</b>: " + $location.longitude);
-        if ($location.postcode !== "") {
-            $out += displayPostcode($location, $detailsPageUrl);
-        }
-//   $out += RHtmlwithDiv('mapcode', getMapCode($location.latitude, $location.longitude, true));
-//   $out += RHtmlwithDiv('olc', getPlusCode($location.latitude, $location.longitude, true));
-        var tagname = "ra-loc=" + $location.type;
-        var tag = document.getElementById(tagname);
-        if (tag !== null) {
-            tag.remove();
-        }
-        $out += '<span id="' + tagname + '"></span>';
-        // getWhat3Words($location.latitude, $location.longitude, tagname,true);
-        setTimeout(function () {
-            getWhat3Words($location.latitude, $location.longitude, tagname, true);
-        }, 500);
-    } else {
-        $out = "<div class='place'>";
-        $out += "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
-        $out += getAreaMap($location, "Map of area");
-        if ($location.type === "Start") {
-            if ($this.displayStartTime) {
-                $out += "<div class='starttime'>Start time: " + $location.timeHHMMshort + "</div>";
-            }
-            if ($this.displayStartDescription) {
-                $out += "<div class='startdescription'>" + $location.description + "</div>";
-            }
-        }
-        $out += "</div>";
-    }
-
-    return $out;
-}
-
-function addItemInfo($class, $title, $value) {
-    var $html = "";
-    var $any = false;
-    var $name;
-    if ($value !== null) {
-        $html += "<div class='" + $class + "'><b>" + $title + "</b>";
-        $html += "<ul>";
-        var $items = $value.items;
-        var index, len;
-        for (index = 0, len = $items.length; index < len; ++index) {
-            $name = $items[index].name;
-            if ($name !== "") {
-                $html += "<li class='item'>" + $name + "</li>";
-                $any = true;
-            }
-        }
-        $html += "</ul></div>";
-    }
-    if (!$any) {
-        $html = "";
-    }
-    return $html;
-}
-function RHtmlwithDiv($class, $text) {
-    var $out = "";
-    $out += "<div class='" + $class + "'>";
-    $out += $text;
-    $out += "</div>";
-    return $out;
-}
-function getShortTime($text) {
-    var d = $text.date;
-    if (d.length > 17) {
-        return d.substr(11, 5);
-    }
-    return "???";
-    //  var d = new Date($text.date);
-    //  return d.toLocaleTimeString();
-}
-function getDate($text) {
-// note Mac does not handle yyyy-mm-dd, change to yyyy/mm/dd    
-    var d = new Date($text.substr(0, 19).replace(/-/g, "/"));
-    return d.toDateString();
-}
-function gradeCSS($walk) {
-    var $class = "";
-    switch ($walk.nationalGrade) {
-        case "Easy Access":
-            $class = "grade-ea";
-            break;
-        case "Easy":
-            $class = "grade-e";
-            break;
-        case "Leisurely":
-            $class = "grade-l";
-            break;
-        case "Moderate":
-            $class = "grade-m";
-            break;
-        case "Strenuous":
-            $class = "grade-s";
-            break;
-        case "Technical":
-            $class = "grade-t";
-            break;
-        default:
-            break;
-    }
-    return $class;
-}
-function displayWalksMap($walks) {
-    removeClusterMarkers();
-    var index, len, $walk;
-    if ($walks.length === 0) {
-        return;
-    }
-    for (index = 0, len = $walks.length; index < len; ++index) {
-        $walk = $walks[index];
-        if ($walk.display) {
-            addWalkMarker($walk);
-        }
-    }
-    addClusterMarkers();
-    return;
-}
-function addWalkMarker($walk) {
-    var $date, $title, $dist, $gr, $long, $lat, $desc, $url, $icon, $class, $grade, $details, $map;
-    var $directions, $popup;
-    var $this = ramblerswalksDetails;
-    // $date = $walk.walkDate.format('l, jS F');
-    $date = "<b>" + $walk.dayofweek + ", " + $walk.day + " " + $walk.month + "</b>";
-    $title = addslashes($walk.title);
-    $dist = $walk.distanceMiles + "mile / " + $walk.distanceKm + "km";
-    $gr = $walk.startLocation.gridref;
-    $long = $walk.startLocation.longitude;
-    $lat = $walk.startLocation.latitude;
-    $desc = "<b>" + $date + "<br/>" + $title + "<br/>" + $dist + " " + $walk.nationalGrade + "</b>";
-    $url = getWalkMapHref($walk, $desc);
-    if ($walk.startLocation.exact) {
-        $icon = ramblersMap.markerStart;
-    } else {
-        $icon = ramblersMap.markerArea;
-    }
-    if (isCancelled($walk)) {
-        $icon = ramblersMap.markerCancelled;
-    }
-    $class = $this.walkClass + $walk.status;
-    $grade = "<span class='pointer' class='pointer' onclick='javascript:dGH()'>";
-    $grade += getGradeSpan($walk, 'right');
-    $grade += "</span>";
-    $details = "<div class='" + $class + "'>" + $grade + $url + "</div>";
-    $map = "<a href=&quot;javascript:streetmap('" + $gr + "')&quot; >[OS Map]</a>";
-    $directions = "<a href=&quot;javascript:directions(" + $lat + "," + $long + ")&quot; >[Directions]</a>";
-    $popup = $details + $map + $directions;
-    // $popup = str_replace('"', "&quot;", $popup);
-    addMarker($popup, $lat, $long, $icon);
-    return;
-}
-function getWalkMapHref($walk, $desc) {
-    var $out = "<a href=";
-    $out += "'javascript:displayWalkID(" + $walk.id + ");' >";
-    $out += $desc + "</a>";
-    return $out;
-}
-function addslashes(str) {
-//  discuss at: http://locutus.io/php/addslashes/
-// original by: Kevin van Zonneveld (http://kvz.io)
-// improved by: Ates Goral (http://magnetiq.com)
-// improved by: marrtins
-// improved by: Nate
-// improved by: Onno Marsman (https://twitter.com/onnomarsman)
-// improved by: Brett Zamir (http://brett-zamir.me)
-// improved by: Oskar Larsson Högfeldt (http://oskar-lh.name/)
-//    input by: Denny Wardhana
-//   example 1: addslashes("kevin's birthday")
-//   returns 1: "kevin\\'s birthday"
-
-    return (str + '')
-            .replace(/[\\"']/g, '\\$&')
-            .replace(/\u0000/g, '\\0');
-}
-function addPagination(no) {
-    if (!ramblerswalksDetails.isES6) {
-        return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
-    }
-    var $class = "";
-    if (no < 11) {
-        $class = " hidden";
-    }
-
-    var $div = "<div data-jplist-control=\"pagination\" \
-            data-group=\"" + ramblerswalksDetails.jplistName + "\" \
-            data-items-per-page=\"" + ramblerswalksDetails.itemsPerPage + "\" \
+            var $div = "<div data-jplist-control=\"pagination\" \
+            data-group=\"" + this.settings.jplistName + "\" \
+            data-items-per-page=\"" + this.settings.itemsPerPage + "\" \
             data-current-page=\"0\" \
             data-id=\"no-items\" \
             data-name=\"pagination1\"> \
             <span data-type=\"info\"> \
-             <a class='link-button small button-p4485' onclick=\"javascript:printTag('rawalks')\">Print</a> \
+             <a class='link-button small button-p4485' onclick=\"javascript:ra.html.ra.html.printTag('rawalks')\">Print</a> \
             {startItem} - {endItem} of {itemsNumber} \
             </span> ";
-    $div += "<span class='center" + $class + "'> \
+            $div += "<span class='center" + $class + "'> \
             <button type=\"button\" data-type=\"first\">First</button> \
             <button type=\"button\" data-type=\"prev\">Previous</button> \
             <span class=\"jplist-holder\" data-type=\"pages\"> \
@@ -1514,145 +732,431 @@ function addPagination(no) {
         <option value=\"30\"> 30 per page </option> \
         <option value=\"0\"> view all </option> \
     </select> ";
-    $div += " </div>";
-    return $div;
-}
-function addDirectionsMap($location, $text) {
-    var $this = $location;
-    var $loc, $out;
-    if ($this.exact) {
-        $loc = "[lat],[long]";
-        $loc = $loc.replace("[lat]", $this.latitude);
-        $loc = $loc.replace("[long]", $this.longitude);
-        $out = "<span class='mappopup' onClick=\"javascript:directions(" + $loc + ")\" >[" + $text + "]</span>";
-        return $out;
-    } else {
-        return "";
-    }
+            $div += " </div>";
+            return $div;
+        };
 
-}
-function getOSMap($location, $text) {
-    var $this = $location;
-    var $code, $out;
-    if ($this.exact) {
-        $code = "http://streetmap.co.uk/loc/[lat],[long]&amp;Z=115";
-        $code = $code.replace("[lat]", $this.latitude);
-        $code = $code.replace("[long]", $this.longitude);
-        $out = "<span class='mappopup' onClick=\"javascript:window.open('" + $code + "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" + $text + "]</span>";
-        return $out;
-    } else {
-        return "";
-    }
-}
-function getAreaMap($location, $text) {
-    var $this = $location;
-    var $code, $out;
-    if (!$this.exact) {
-        $code = "http://maps.google.com/maps?z=13&amp;t=h&amp;ll=[lat],[long]";
-        $code = $code.replace("[lat]", $this.latitude);
-        $code = $code.replace("[long]", $this.longitude);
-        $out = "<span class='mappopup' onClick=\"javascript:window.open('" + $code + "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" + $text + "]</span>";
-        return $out;
-    } else {
-        return "";
-    }
-}
-function displayPostcode($location, $detailsPageUrl) {
-    var $pc, $note2, $note, $link, $distclass, $out;
-    var $this = $location;
-    var $dist = $this.postcodeDistance;
-    var $direction = $this.postcodeDirection;
-    if ($dist <= 100) {
-        $note = "Postcode is within 100m of location";
-        $link = $this.postcode;
-        $distclass = " distclose";
-    } else {
-        if ($dist < 500) {
-            $distclass = " distnear";
-        } else {
-            $distclass = " distfar";
+        this.addFilter = function (tag, title, items, singleOpen, all = true, dates = false) {
+            if (!all) {
+                if (Object.keys(items).length === 1) {
+                    return;
+                }
+            }
+            var div = document.createElement('div');
+            div.setAttribute('class', 'ra-filteritem');
+            tag.appendChild(div);
+            if (!singleOpen) {
+                addOpenClose(div, title);
+            } else {
+                var h3 = document.createElement('h3');
+                h3.textContent = title;
+                div.appendChild(h3);
+            }
+
+            var intDiv = document.createElement('div');
+            intDiv.setAttribute('class', 'ra_filter');
+            if (!singleOpen) {
+                intDiv.style.display = "none";
+            }
+            div.appendChild(intDiv);
+            if (!dates) {
+                var ul = document.createElement('ul');
+                this.addAllNone(intDiv, '[All]', ul);
+                this.addAllNone(intDiv, '[None]', ul);
+                intDiv.appendChild(ul);
+                var _this = this;
+                Object.keys(items).forEach(function (key) {
+                    var item = items[key];
+                    if (item.no > 0) {
+                        _this.addFilterItem(ul, item);
+                    }
+                });
+            } else {
+                var span = document.createElement('div');
+                intDiv.appendChild(span);
+                var start = items.min;
+                var end = items.max;
+                this.addFilterItemDate(span, start.name, start.id, start.no, start.no, end.no);
+                this.addFilterItemDate(span, end.name, end.id, end.no, start.no, end.no);
         }
-        $note2 = $dist + " metres " + $direction + " of " + $this.postcode;
-        $note = "Click to display the locations of the Postcode(P) and " + $this.type + " locations";
-        // $note2 = $dist + " metres " + $this.postcodeDirectionAbbr;
-        $link = getPostcodeMap($location, $note2, $detailsPageUrl);
-    }
-    $pc = "<b>Postcode</b>:<abbr title='" + $note + "'> ";
-    $pc += $link;
-    $pc += "</abbr>";
-    $out = RHtmlwithDiv("postcode " + $distclass, $pc);
-    return $out;
-}
-function getPostcodeMap($location, $text, $detailsPageUrl) {
-    var $this = $location;
-    var $out;
-    if ($this.exact) {
-        $out = "<span class='mappopup' onClick=\"javascript:window.open('" + $detailsPageUrl + "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=900,height=600');\">" + $text + "</span>";
-        return $out;
-    } else {
-        return "";
-    }
-}
-function getEmailLink($walk) {
-    var $link;
-    $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
-    return "<a href='" + $link + $walk.id + "' target='_blank'>Email contact via ramblers.org.uk</a>";
-}
-function getGradeSpan($walk, $class) {
-    var $tag = "";
-    var $img = getGradeImg($walk);
-    switch ($walk.nationalGrade) {
-        case "Easy Access":
-            $tag = "<span data-descr='Easy Access' class='" + $class + "'><span class='grade easy-access " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";
-            break;
-        case "Easy":
-            $tag = "<span data-descr='Easy' class='" + $class + "'><span class='grade easy " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";
-            break;
-        case "Leisurely":
-            $tag = "<span data-descr='Leisurely' class='" + $class + "'><span class='grade leisurely " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";
-            break;
-        case "Moderate":
-            $tag = "<span data-descr='Moderate' class='" + $class + "'><span class='grade moderate " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";
-            break;
-        case "Strenuous":
-            $tag = "<span data-descr='Strenuous' class='" + $class + "'><span class='grade strenuous " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";
-            break;
-        case "Technical":
-            $tag = "<span data-descr='Technical' class='" + $class + "'><span class='grade technical " + $class + "' onclick='javascript:dGH()'>" + $img + "</span></span>";
-            break;
-        default:
-            break;
-    }
-    return $tag;
-}
-function getGradeImg($walk) {
-    var $url;
-    $url = ramblersBase.folderbase + "/libraries/ramblers/images/grades/";
-    switch ($walk.nationalGrade) {
-        case "Easy Access":
-            $url = "<img src='" + $url + "grade-ea.jpg' alt='Easy Access' height='30' width='30'/>";
-            break;
-        case "Easy":
-            $url = "<img src='" + $url + "grade-e.jpg' alt='Easy' height='30' width='30'/>";
-            break;
-        case "Leisurely":
-            $url = "<img src='" + $url + "grade-l.jpg' alt='Leisurely' height='30' width='30'/>";
-            break;
-        case "Moderate":
-            $url = "<img src='" + $url + "grade-m.jpg' alt='Moderate' height='30' width='30'/>";
-            break;
-        case "Strenuous":
-            $url = "<img src='" + $url + "grade-s.jpg' alt='Strenuous' height='30' width='30'/>";
-            break;
-        case "Technical":
-            $url = "<img src='" + $url + "grade-t.jpg' alt='Technical' height='30' width='30'/>";
-            break;
-    }
-    return $url;
-}
-function getCloseImg() {
-    var $url;
-    $url = ramblersBase.folderbase + "/libraries/ramblers/images/close.png";
-    $url = "<img class='ra-detailsimg' src='" + $url + "' alt='Easy Access' height='30' width='30'/>";
-    return $url;
-}
+        };
+        this.addOpenClose = function (div, title) {
+            var h3 = document.createElement('h3');
+            h3.setAttribute('class', 'ra_openclose');
+            h3.textContent = title;
+            div.appendChild(h3);
+            var span = document.createElement('span');
+            span.setAttribute('class', 'ra-closed');
+            h3.appendChild(span);
+            h3.onclick = function (event) {
+                var tag = event.target;
+                if (tag.tagName === "SPAN") {
+                    var tag = tag.parentNode;
+                }
+                var next = tag.nextSibling;
+                if (next.style.display !== "none") {
+                    next.style.display = "none";
+                    span.classList.add('ra-closed');
+                    span.classList.remove('ra-open');
+                } else {
+                    next.style.display = "block";
+                    span.classList.add('ra-open');
+                    span.classList.remove('ra-closed');
+                }
+            };
+
+        };
+        this.addAllNone = function (tag, option, ul) {
+            var span = document.createElement('span');
+            span.setAttribute('class', 'link');
+            span.textContent = option;
+            if (option === "[All]") {
+                span.style.marginLeft = '25px';
+            }
+            tag.appendChild(span);
+            var ul_list = ul;
+            var _this = this;
+            span.addEventListener('click', function (event) {
+                var all = event.target.innerHTML === "[All]";
+                if (ul_list.tagName === "UL") {
+                    var children = ul_list.children;
+                    Object.keys(children).forEach(function (key) {
+                        var node = children[key].childNodes[0];
+                        node.checked = all;
+                        _this.settings.filter[node.id] = all;
+                    });
+                }
+                var $walks = _this.getWalks();
+                _this.displayWalks($walks);
+            });
+
+        };
+        this.addFilterItem = function (tag,item ) {
+            var li = document.createElement('li');
+            tag.appendChild(li);
+            var input = document.createElement('input');
+            input.setAttribute('id', item.id);
+            input.setAttribute('type', 'checkbox');
+            input.checked = true;
+            li.appendChild(input);
+            var _this = this;
+            input.addEventListener("change", function (event) {
+                _this.settings.filter[event.target.id] = event.target.checked;
+                var $walks = _this.getWalks();
+                _this.displayWalks($walks);
+            });
+
+            var label = document.createElement('label');
+            label.textContent = item.name+" ["+item.no+"]";
+            li.appendChild(label);
+        };
+        this.addFilterItemDate = function (tag, name, id, value, min, max) {
+            var li = document.createElement('div');
+            tag.appendChild(li);
+            var label = document.createElement('label');
+            label.style.marginLeft = '25px';
+            label.textContent = name;
+            li.appendChild(label);
+            var input = document.createElement('input');
+            input.setAttribute('id', id);
+            input.setAttribute('type', 'date');
+            input.setAttribute('value', value);
+            input.setAttribute('min', min);
+            input.setAttribute('max', max);
+            input.style.marginLeft = '25px';
+            input.checked = true;
+            li.appendChild(input);
+            var _this = this;
+            input.addEventListener("input", function (event) {
+                var input = event.target;
+                var value = input.value;
+                if (value === '') {
+                    if (input.id === 'RA_DateStart') {
+                        value = input.min;
+                        input.value = min;
+                    } else {
+                        value = input.max;
+                        input.value = max;
+                    }
+                }
+                _this.settings.filter[event.target.id] = value;
+                var $walks = _this.getWalks();
+                _this.displayWalks($walks);
+            });
+        };
+        this.getWalksStats = function (walks) {
+            var result = {groups: {},
+                dates: {min: {no: 0, name: 'Start Date', id: 'RA_DateStart'}, max: {no: 0, name: 'End Date', id: 'RA_DateEnd'}},
+                dow: {Monday: {no: 0, name: 'Monday', id: 'RA_DayOfWeek_0'},
+                    Tuesday: {no: 0, name: 'Tuesday', id: 'RA_DayOfWeek_1'},
+                    Wednesday: {no: 0, name: 'Wednesday', id: 'RA_DayOfWeek_2'},
+                    Thursday: {no: 0, name: 'Thursday', id: 'RA_DayOfWeek_3'},
+                    Friday: {no: 0, name: 'Friday', id: 'RA_DayOfWeek_4'},
+                    Saturday: {no: 0, name: 'Saturday', id: 'RA_DayOfWeek_5'},
+                    Sunday: {no: 0, name: 'Sunday', id: 'RA_DayOfWeek_6'}},
+                distances: {upto3: {no: 0, name: 'Up to 3 miles (5 km)', id: 'RA_Dist_0'},
+                    upto5: {no: 0, name: '3+ to 5 miles (5-8 km)', id: 'RA_Dist_1'},
+                    upto8: {no: 0, name: '5+ to 8 miles (8-13 km)', id: 'RA_Dist_2'},
+                    upto10: {no: 0, name: '8+ to 10 miles (13-16 km)', id: 'RA_Dist_3'},
+                    upto13: {no: 0, name: '10+ to 13 miles (16-21 km)', id: 'RA_Dist_4'},
+                    upto15: {no: 0, name: '13+ to 15 miles (21-24 km)', id: 'RA_Dist_5'},
+                    over15: {no: 0, name: '15+ miles (24 km)', id: 'RA_Dist_6'}},
+                grades: {Easy_Access: {no: 0, name: 'Easy Access', id: 'RA_Diff_ea'},
+                    Easy: {no: 0, name: 'Easy', id: 'RA_Diff_e'},
+                    Leisurely: {no: 0, name: 'Leisurely', id: 'RA_Diff_l'},
+                    Moderate: {no: 0, name: 'Moderate', id: 'RA_Diff_m'},
+                    Strenuous: {no: 0, name: 'Strenuous', id: 'RA_Diff_s'},
+                    Technical: {no: 0, name: 'Technical', id: 'RA_Diff_t'}}};
+            var i, len;
+            var walk;
+            len = walks.length;
+            if (len > 0) {
+                result.dates.min.no = ra.date.YYYYMMDD(walks[0].walkDate);
+                result.dates.max.no = ra.date.YYYYMMDD(walks[walks.length - 1].walkDate);
+            }
+            for (i = 0, len = walks.length; i < len; ++i) {
+                walk = walks[i];
+                if (result.groups.hasOwnProperty(walk.groupCode)) {
+                    result.groups[walk.groupCode].no += 1;
+                } else {
+                    result.groups[walk.groupCode] = {name: walk.groupName, no: 1, id: walk.groupCode};
+                }
+                result.dow[walk.dayofweek].no += 1;
+                result.grades[walk.nationalGrade.replace(" ", "_")].no += 1;
+                var dist = walk.distanceMiles;
+                switch (true) {
+                    case (dist <= 3):
+                        result.distances.upto3.no += 1;
+                        break;
+                    case (dist <= 5):
+                        result.distances.upto5.no += 1;
+                        break;
+                    case (dist <= 8):
+                        result.distances.upto8.no += 1;
+                        break;
+                    case (dist <= 10):
+                        result.distances.upto10.no += 1;
+                        break;
+                    case (dist <= 13):
+                        result.distances.upto13.no += 1;
+                        break;
+                    case (dist <= 15):
+                        result.distances.upto15.no += 1;
+                        break;
+                    default:
+                        result.distances.over15.no += 1;
+                }
+            }
+            return result;
+        };
+        this.setFilters = function (walks) {
+            if (walks.length === 0) {
+                return;
+            }
+            var result = this.getWalksStats(walks);
+            this.setFilterGroup(result.groups);
+            var _this = this;
+            Object.keys(result.dates).forEach(function (key) {
+                var item = result.dates[key];
+                _this.settings.filter[item.id] = item.no;
+            });
+            this.setFilterGroup(result.dow);
+            this.setFilterGroup(result.distances);
+            this.setFilterGroup(result.grades);
+
+            var tag = document.getElementById(this.settings.filterTag);
+            var pos = tag;
+            if (tag !== null) {
+                tag.innerHTML = '';
+                var singleOpen = this.settings.filterTag !== "js-walksFilterPos1";
+                if (singleOpen) {
+                    this.addOpenClose(tag, "Filter");
+                    var div = document.createElement('div');
+                    div.setAttribute('class', 'filter-columns');
+                    div.style.display = "none";
+                    tag.appendChild(div);
+                    pos = div;
+                }
+                this.addFilter(pos, 'Groups', result.groups, singleOpen, false);
+                this.addFilter(pos, 'Dates', result.dates, singleOpen, true, true);
+                this.addFilter(pos, 'Day of the Week', result.dow, singleOpen);
+                this.addFilter(pos, 'Distance', result.distances, singleOpen);
+                this.addFilter(pos, 'Grade', result.grades, singleOpen);
+            }
+
+        };
+        this.setFilterGroup = function (items) {
+            var _this = this;
+            Object.keys(items).forEach(function (key) {
+                var item = items[key];
+                _this.settings.filter[item.id] = item.no !== 0;
+            });
+        };
+
+        this.processOptions = function (options, optionsDiv) {
+
+            var $diag = "<h3>Walks filter diagnostics</h3>";
+            switch (options.filterPosition) {
+                case "In module":
+                case "1":
+                    this.settings.filterTag = 'js-walksFilterPos1';
+                    $diag += "Position - In Module<br/>";
+                    break;
+                case "In Article, above tabs":
+                case "2":
+                    this.settings.filterTag = 'js-walksFilterPos2';
+                    $diag += "Position - In Article, above tabs<br/>";
+                    break;
+                default:
+                    $diag += "Position - In Article, below tabs<br/>";
+            }
+            var table = document.createElement('table');
+            optionsDiv.appendChild(table);
+            var row = document.createElement('tr');
+            table.appendChild(row);
+            //  this.settings.defaultOptions = "<table><tr>";
+            switch (options.defaultView) {
+                case "List":
+                    this.settings.displayDefault = 'List';
+                    this.addDisplayOption("List", true, row);
+                    options.listView = false;
+                    break;
+                case "Table":
+                    this.settings.displayDefault = 'Table';
+                    this.addDisplayOption("Table", true, row);
+                    options.tableView = false;
+                    break;
+                case "Map":
+                    this.settings.displayDefault = 'Map';
+                    this.addDisplayOption("Map", true, row);
+                    options.mapView = false;
+                    break;
+                default:
+                    this.settings.displayDefault = 'Details';
+                    this.addDisplayOption("Details", true, row);
+                    options.detailsView = false;
+            }
+            if (options.detailsView) {
+                this.addDisplayOption("Details", false, row);
+            }
+            if (options.tableView) {
+                this.addDisplayOption("Table", false, row);
+            }
+            if (options.listView) {
+                this.addDisplayOption("List", false, row);
+            }
+            if (options.mapView) {
+                this.addDisplayOption("Map", false, row);
+            }
+            if (options.contactsView) {
+                this.addDisplayOption("Contacts", false, row);
+            }
+
+            this.settings.defaultOptions += "</tr></table>";
+            if (options.listFormat !== null) {
+                $diag += "List Format Specified<br/>";
+                var items = this.parseFields(options.listFormat);
+                this.settings.listFormat = items;
+                $diag += "Items " + items.length + "<ul>";
+                items.forEach(function (item, index, items) {
+                    $diag += "<li>" + item + "</li>";
+                });
+                $diag += "</ul>";
+            }
+            if (options.detailsFormat !== null) {
+                var items = this.parseFields(options.detailsFormat);
+                this.settings.detailsFormat = items;
+                $diag += "Details Format Specified<br/>";
+                $diag += "Items " + items.length + "<ul>";
+                items.forEach(function (item, index, items) {
+                    $diag += "<li>" + item + "</li>";
+                });
+                $diag += "</ul>";
+            }
+            if (options.tableFormat !== null) {
+                $diag += "<br/>Table Format Specified<br/>";
+                var cols = options.tableFormat;
+                var format = [];
+                cols.forEach(function (col, index, cols) {
+                    var fields = {};
+                    fields.title = col.title;
+                    fields.items = this.parseFields(col.items);
+                    format.push(fields);
+                });
+                this.settings.tableFormat = format;
+                $diag += "Columns " + cols.length + "<ol>";
+                format.forEach(function (col, index, format) {
+                    $diag += "<li>" + col.title + "</li><ul>";
+                    items = col.items;
+                    items.forEach(function (item, index, items) {
+                        $diag += "<li>" + item + "</li>";
+                    });
+                    $diag += "</ul>";
+                });
+                $diag += "</ol>";
+            }
+            if (options.diagnostics) {
+                var tag = document.getElementById('js-filterDiagnostics');
+                tag.innerHTML = $diag;
+            }
+
+        };
+        this.addDisplayOption = function (name, active, row) {
+            var col = document.createElement('td');
+            row.appendChild(col);
+            col.setAttribute('class', 'ra-tab');
+            col.setAttribute('data-display-option', name);
+            col.textContent = name;
+            this.optionTag[name] = col;
+            if (active) {
+                col.classList.add('active');
+                //    return "<td class='ra-tab active' id='" + name + "' onclick=\"javascript:ra_format('" + name + "')\">" + name + "</td>";
+            } else {
+                //    return "<td class='ra-tab ' id='" + name + "' onclick=\"javascript:ra_format('" + name + "')\">" + name + "</td>";
+            }
+            var _this = this;
+            col.addEventListener("click", function () {
+                var option = this.getAttribute('data-display-option');
+                var oldOption = _this.settings.filter.RA_Display_Format;
+                _this.optionTag[oldOption].classList.remove('active');
+                //    document.getElementById(_this.settings.filter.RA_Display_Format).classList.remove('active');
+                _this.settings.filter.RA_Display_Format = option;
+                _this.optionTag[option].classList.add('active');
+                //    document.getElementById(_this.settings.filter.RA_Display_Format).classList.add('active');
+                var $walks = _this.getWalks();
+                _this.displayWalks($walks);
+            });
+        };
+        this.parseFields = function ($value) {
+            var $items = [];
+            var $item = "";
+            var $array = $value.split("");
+            var $inBracket = false;
+            $array.forEach(function ($char, index, array) {
+                switch ($char) {
+                    case "{":
+                        if ($item !== "") {
+                            $items.push($item);
+                        }
+                        $item += $char;
+                        $inBracket = true;
+                        break;
+                    case "}":
+                        if ($inBracket) {
+                            $item += $char;
+                            $items.push($item);
+                            $item = "";
+                        } else {
+                            $item += $char;
+                        }
+                        break;
+                    default:
+                        $item += $char;
+                }
+            });
+        };
+    };
+
+    return raDisplay;
+
+})();

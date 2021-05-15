@@ -4,7 +4,7 @@
  * @version		0.0
  * @package		Simple JSON Feed reader
  * @author              Chris Vaughan Ramblers-webs.org.uk
- * @copyright           Copyright (c) 2014 Chris Vaughan. All rights reserved.
+ * @copyright           Copyright (c) 2021 Chris Vaughan. All rights reserved.
  * @license		GNU/GPL license: http://www.gnu.org/copyleft/gpl.html
  */
 // no direct access
@@ -14,7 +14,7 @@ class RJsonwalksFeed {
 
     private $walks;
     private $rafeedurl;
-    private $displayLimit = 0;
+ //   private $displayLimit = 0;
     private $srfr;
 
     public function __construct($rafeedurl) {
@@ -29,6 +29,8 @@ class RJsonwalksFeed {
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(15);
         $this->readFeed($this->rafeedurl);
+         $document = JFactory::getDocument();
+        $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
     }
 
     private function readFeed($rafeedurl) {
@@ -39,7 +41,7 @@ class RJsonwalksFeed {
             "gradeLocal", "attendanceMembers", "attendanceNonMembers", "attendanceChildren", "cancellationReason",
             "dateUpdated", "dateCreated", "media", "points", "groupInvite", "isLinear", "url");
 
-        $result = $this->srfr->getFeed($rafeedurl);
+        $result = $this->srfr->getFeed($rafeedurl,"Group Walks Programme");
         $json = RErrors::checkJsonFeed($rafeedurl, "Walks", $result, $properties);
         If ($json !== null) {
             $this->walks = new RJsonwalksWalks($json);
@@ -52,7 +54,8 @@ class RJsonwalksFeed {
     }
 
     public function setDisplayLimit($no) {
-        $this->displayLimit = $no;
+        echo "setDisplayLimit is no longer supported - please use RJsonwalksStdDisplay";
+      //  $this->displayLimit = $no;
     }
 
     public function filterCancelled() {
@@ -89,6 +92,12 @@ class RJsonwalksFeed {
 
     public function filterFestivals($filter) {
         $this->walks->filterFestivals($filter);
+    } 
+    public function noFestivals() {
+        $this->walks->noFestivals();
+    } 
+    public function allFestivals() {
+        $this->walks->allFestivals();
     }
 
     public function filterDateRange($datefrom, $dateto) {
@@ -137,46 +146,42 @@ class RJsonwalksFeed {
             echo "No walks found";
             return;
         }
-        $document = JFactory::getDocument();
-        $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
-        $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
-        $printOn = JRequest::getVar('print') == 1;
+               $printOn = JRequest::getVar('print') == 1;
         if ($printOn) {
             $style = 'BODY {color: #000000;}';
             $document->addStyleDeclaration($style);
         }
-        $folder = "ramblersBase.folderbase='" . JURI::base(true) . "';";
-        $out = "window.addEventListener('load', function(event) {
-            ramblersBase = new RamblersBase();" . $folder .
-                "  });";
-        $document->addScriptDeclaration($out, "text/javascript");
-        if ($this->displayLimit == 0 OR $printOn) {
+//        $folder = "ra.setBaseDirectory('" . JURI::base(true) . "');";
+//        $out = "window.addEventListener('load', function(event) {
+//            " . $folder ."  });";
+//        $document->addScriptDeclaration($out, "text/javascript");
+      //  if ($this->displayLimit == 0 OR $printOn) {
             $displayclass->DisplayWalks($this->walks);
-        } else {
-            $groups = $this->createGroupsOfWalks();
-            $numItems = count($groups);
-            $i = 1;
-            $blockId = 1;
-            $block = "ra_block" . $blockId;
-            foreach ($groups as $walks) {
-                if ($i == 1) {
-                    echo "<div id='" . $block . "' style='display: block'>" . PHP_EOL;
-                } else {
-                    echo "<div id='" . $block . "' style='display: none'>" . PHP_EOL;
-                }
-                $displayclass->DisplayWalks($walks);
-                if ($i === $numItems) {
-                    echo "<p><b>End of list</b></p>";
-                } else {
-                    $more = "ra_more" . $blockId;
-                    $blockId += 1;
-                    $block = "ra_block" . $blockId;
-                    echo "<div class='ra_walks_more' id='" . $more . "' ><p></p><a " . $this->getTogglePair($block, $more) . " >Display more walks ...</a><p>&nbsp;</p><p>&nbsp;</p></div>";
-                }
-                echo "</div>" . PHP_EOL;
-                $i += 1;
-            }
-        }
+//        } else {
+//            $groups = $this->createGroupsOfWalks();
+//            $numItems = count($groups);
+//            $i = 1;
+//            $blockId = 1;
+//            $block = "ra_block" . $blockId;
+//            foreach ($groups as $walks) {
+//                if ($i == 1) {
+//                    echo "<div id='" . $block . "' style='display: block'>" . PHP_EOL;
+//                } else {
+//                    echo "<div id='" . $block . "' style='display: none'>" . PHP_EOL;
+//                }
+//                $displayclass->DisplayWalks($walks);
+//                if ($i === $numItems) {
+//                    echo "<p><b>End of list</b></p>";
+//                } else {
+//                    $more = "ra_more" . $blockId;
+//                    $blockId += 1;
+//                    $block = "ra_block" . $blockId;
+//                    echo "<div class='ra_walks_more' id='" . $more . "' ><p></p><a " . $this->getTogglePair($block, $more) . " >Display more walks ...</a><p>&nbsp;</p><p>&nbsp;</p></div>";
+//                }
+//                echo "</div>" . PHP_EOL;
+//                $i += 1;
+//            }
+//        }
     }
 
     public function displayIcsDownload($name, $pretext, $linktext, $posttext) {
@@ -190,9 +195,9 @@ class RJsonwalksFeed {
 // is this line correct and is function used
     }
 
-    private function getTogglePair($one, $two) {
-        return ' onclick="ra_toggle_visibilities(\'' . $one . '\',\'' . $two . '\')"';
-    }
+//    private function getTogglePair($one, $two) {
+//        return ' onclick="ra.html.toggleVisibilities(\'' . $one . '\',\'' . $two . '\')"';
+//    }
 
     public function getWalks() {
         return $this->walks;
@@ -211,23 +216,23 @@ class RJsonwalksFeed {
         return 'cache' . DS . 'ra_feed';
     }
 
-    private function createGroupsOfWalks() {
-        $groups = array();
-        $allwalks = $this->walks->allWalks();
-        $no = 0;
-        $walks = new RJsonwalksWalks(null);
-        $groups[] = $walks;
-        foreach ($allwalks as $walk) {
-            $no += 1;
-            $walks->addWalk($walk);
-            if ($no >= $this->displayLimit) {
-                $no = 0;
-                $walks = new RJsonwalksWalks(null);
-                $groups[] = $walks;
-            }
-        }
-        return $groups;
-    }
+//    private function createGroupsOfWalks() {
+//        $groups = array();
+//        $allwalks = $this->walks->allWalks();
+//        $no = 0;
+//        $walks = new RJsonwalksWalks(null);
+//        $groups[] = $walks;
+//        foreach ($allwalks as $walk) {
+//            $no += 1;
+//            $walks->addWalk($walk);
+//            if ($no >= $this->displayLimit) {
+//                $no = 0;
+//                $walks = new RJsonwalksWalks(null);
+//                $groups[] = $walks;
+//            }
+//        }
+//        return $groups;
+//    }
 
     public function filterFeed($filter) { // filter by component filter subform
         if ($filter->titlecontains !== '') {

@@ -1,4 +1,4 @@
-var L, document;
+var L,ra, document;
 L.Control.GpxDownload = L.Control.extend({
     options: {
         title: 'Download your walking routes as a GPX file',
@@ -103,7 +103,7 @@ L.Control.GpxDownload = L.Control.extend({
         this._map.fire('download:cancelled');
         //this.holder.style.display = "none";
         var html = '<form id="js-gpxForm"></form>';
-        displayModal(html, false);
+        ra.modal.display(html, false);
         if (this._map.isFullscreen()) {
             this._map.toggleFullscreen();
             var closeBtn = document.getElementById("btnClose");

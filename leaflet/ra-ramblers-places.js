@@ -6,7 +6,7 @@ L.Control.RamblersPlaces = L.Control.extend({
     },
     onAdd: function (map) {
         this._map = map;
-        _ra_places_this = this;
+       // _ra_places_this = this;
         var container = L.DomUtil.create('div', 'leaflet-control-ramblers-places leaflet-bar leaflet-control');
         this._createIcon(container);
         this._container = container;

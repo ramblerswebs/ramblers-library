@@ -23,8 +23,10 @@ abstract class RJsonwalksDisplaybase {
     // 2 link to ramblers.org.uk form to email contact 
     // 3 do not display
     // 4 display as name (at) domain
-    protected $dispMenu = 0;
-    protected $dispArticle = 0;
+//    protected $dispMenu = 0;
+//    protected $dispArticle = 0;
+    private $script = null;
+    private $options = null;
 
     // 0 display walk via ramblers.org.uk
     // >0 display via local site article
@@ -33,6 +35,14 @@ abstract class RJsonwalksDisplaybase {
 
     public function __construct() {
         $this->printOn = JRequest::getVar('print') == 1;
+        $this->script = new RJsScript();
+        $this->options = new RLeafletMapoptions();
+        $this->script = new RJsScript($this->options);
+        // default map options for display of walk
+        $this->options->mapHeight = "250px";
+        $this->options->rightclick = true;
+        $this->options->copyright = false;
+        $this->script->add($this->options);
     }
 
     public function alwaysDisplayStartTime($value) {
@@ -44,28 +54,15 @@ abstract class RJsonwalksDisplaybase {
     }
 
     public function displayArticle($menu, $article) {
-        $this->dispMenu = $menu;
-        $this->dispArticle = $article;
+//        $this->dispMenu = $menu;
+//        $this->dispArticle = $article;
     }
 
-    public function getWalkHref($walk, $desc) {
+
+    public function getWalkMapHref($walk, $desc) {
         $out = "<a href=";
-        if ($this->dispArticle > 0) {
-            $out .= "\"javascript:gotoURL(" . $this->dispArticle . "," . $this->dispMenu . "," . $walk->id . ");\" >";
-        } else {
-            $out .= "'" . $walk->detailsPageUrl . "' target='_blank'>";
-        }
-        $out.=$desc . "</a>";
-        return $out;
-    }
-       public function getWalkMapHref($walk, $desc) {
-        $out = "<a href=";
-        if ($this->dispArticle > 0) {
-            $out .= "'javascript:gotoURL(" . $this->dispArticle . "," . $this->dispMenu . "," . $walk->id . ");' >";
-        } else {
-            $out .= "'" . $walk->detailsPageUrl . "' target='_blank'>";
-        }
-        $out.=$desc . "</a>";
+        $out .= "'javascript:ra.walk.displayWalkID(" . $walk->id . ");' >";
+        $out .= $desc . "</a>";
         return $out;
     }
 

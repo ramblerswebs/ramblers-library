@@ -43,7 +43,7 @@ class RUsersKunena {
             echo '<table>';
             echo '<thead><tr><th>Category</th><th>User</th><th>Email</th></tr></thead>';
             echo '<tbody>';
-            foreach ($results as $i => $item) {
+            foreach ($results as $item) {
                 echo '<tr class="row<?php echo $i % 2; ?>">';
                 echo '<td>' . $item->catname . '</td>';
                 echo '<td>' . $item->name . '</td>';
@@ -83,7 +83,7 @@ class RUsersKunena {
             } else {
                 echo "<div  class='userkunenalist'>You are subscribed to the following Forum categories </div>";
                 echo "<ul class='userkunenacatorgories'>";
-                foreach ($results as $i => $item) :
+                foreach ($results as $item) :
                     echo '<li>' . $item->catname . '</li>';
                 endforeach;
                 echo '</ul>';

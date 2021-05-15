@@ -1,4 +1,5 @@
-var L;
+var L, document;
+
 L.Control.GpxSimplify = L.Control.extend({
     options: {
         title: 'Simplify - reduce number of points defining walking route',
@@ -8,10 +9,9 @@ L.Control.GpxSimplify = L.Control.extend({
     },
     onAdd: function (map) {
         this._map = map;
-        simplify2D = false;
+        this.simplify2D = false;
         this.factor = 111000; // One degree is 111Km
         this._simplifylayer = null;
-        _simplify_this = this;
         this._simplifylayer = L.featureGroup([]);
         this._simplifylayer.addTo(this._map);
         var containerAll = L.DomUtil.create('div', 'leaflet-control-gpx-simplify  ra-simplify-toolbar-button-disabled');
@@ -48,28 +48,31 @@ L.Control.GpxSimplify = L.Control.extend({
         element = L.DomUtil.create('div', 'cancel', this.holder);
         element.innerHTML = "Cancel";
         L.DomEvent.addListener(element, 'click', this._cancel, this);
-
-
-        this.slider.oninput = function () {
-            _simplify_this._simplify();
-        }
+        var self = this;
+        this.slider.addEventListener("input", processEvent = function (e) {
+            self._simplify();
+        }, false);
+        // this.slider.oninput = function () {
+        //       this._simplify();////change
+        //   };
     },
     _simplify: function () {
-        var tolerance = _simplify_this.slider.value / _simplify_this.factor;
-        _simplify_this._simplifylayer.clearLayers();
+        var tolerance = this.slider.value / this.factor;
+        this._simplifylayer.clearLayers();
         var text = "Pts: ";
         var sub = "";
-        _simplify_this._itemsCollection.eachLayer(function (layer) {
+        var _self = this;
+        this._itemsCollection.eachLayer(function (layer) {
 
             if (layer instanceof L.Polyline) {
                 var points = layer.getLatLngs();
                 var newPoints = simplify(points, tolerance, true);
                 var polyline = L.polyline(newPoints, {color: 'red', opacity: '0.5'});
-                _simplify_this._simplifylayer.addLayer(polyline);
+                _self._simplifylayer.addLayer(polyline);
                 text += sub + newPoints.length;
                 sub = "/";
             }
-            _simplify_this.status.innerHTML = text;
+            _self.status.innerHTML = text;
         });
 
     },
@@ -78,11 +81,13 @@ L.Control.GpxSimplify = L.Control.extend({
             // modern browsers, IE9+
             var e = document.createEvent('HTMLEvents');
             e.initEvent(type, false, true);
+            e._this = this;
             el.dispatchEvent(e);
         } else {
             // IE 8
             var e = document.createEventObject();
             e.eventType = type;
+            e._this = this;
             el.fireEvent('on' + e.eventType, e);
         }
     },
@@ -121,7 +126,7 @@ L.Control.GpxSimplify = L.Control.extend({
         }
     },
     _save: function (evt) {
-        var tolerance = this.slider.value / _simplify_this.factor;
+        var tolerance = this.slider.value / this.factor;
         this._itemsCollection.eachLayer(function (layer) {
             if (layer instanceof L.Polyline) {
                 var points = layer.getLatLngs();
@@ -145,20 +150,20 @@ L.Control.GpxSimplify = L.Control.extend({
     },
     _elevation: function (evt) {
         var element = evt.currentTarget;
-        switch (simplify2D) {
+        switch (this.simplify2D) {
             case "3D":
-                simplify2D = "2D";
+                this.simplify2D = "2D";
                 element.innerHTML = "2D simplify Lat/Long";
                 break;
             case "2D":
-                simplify2D = "elev";
+                this.simplify2D = "elev";
                 element.innerHTML = "Maintain elevation";
                 break;
             default:
-                simplify2D = "3D";
+                this.simplify2D = "3D";
                 element.innerHTML = "3D simplify Lat/long and Alt";
         }
-        _simplify_this._simplify();
+        this._simplify();
     }
 
 

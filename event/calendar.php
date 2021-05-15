@@ -15,6 +15,7 @@ class REventCalendar extends RJsonwalksDisplaybase {
     private $monthFormat = "F 'y";
 
     function __construct($size) {
+        parent::__construct();
         $this->size = $size;
     }
 
@@ -35,8 +36,8 @@ class REventCalendar extends RJsonwalksDisplaybase {
     function Display($events) {
         $document = JFactory::getDocument();
         $document->addStyleSheet('libraries/ramblers/calendar/calendar.css');
-   //     $document->addStyleSheet(JURI::base() . 'libraries/ramblers/calendar/calendar.css');
-        $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
+        $document->addScript("libraries/ramblers/js/ra.js", "text/javascript");
+        //     $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
         $cal = new RCalendar($this->size, $this->mDisplayAll);
         $cal->setMonthFormat($this->monthFormat);
         $cal->show($this, $events);

@@ -4,15 +4,14 @@
  * and open the template in the editor.
  */
 
-var L, ramblersMap, ramblersCsvList, jplist, OsGridRef;
+var L, ra, ramblersMap, ramblersCsvList, jplist, OsGridRef;
 function RamblersCsvList() {
     this.list = null;
     this.paginationDefault = 10;
-    this.isES6 = isES6();
-}
+    }
 
 function displayCsvData() {
-    setTagHtml('ra-pagination1', addPagination());
+    ra.html.setTag('ra-pagination1', addPagination());
     testForMap();
     displayCSVTable();
 
@@ -21,7 +20,7 @@ function displayCsvData() {
         ramblersMap.map.invalidateSize();
         addCSVMarkers();
     }
-    if (ramblersCsvList.isES6) {
+    if (ra.isES6()) {
         jplist.init({
             storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
             storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
@@ -208,7 +207,7 @@ function addCSVMarker(no) {
             iconUrl: ramblersMap.base + "libraries/ramblers/images/marker-route.png",
             iconSize: [33, 50],
             iconAnchor: [16, 47],
-            popupAnchor:  [0, -44]
+            popupAnchor: [0, -44]
         });
         var marker = L.marker([$lat, $long], {icon: icon});
         var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
@@ -278,7 +277,7 @@ function ra_format(option) {
     }
 }
 function addPagination() {
-    if (!ramblersCsvList.isES6) {
+    if (!ra.isES6()) {
         return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
     }
 

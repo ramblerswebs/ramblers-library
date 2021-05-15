@@ -28,7 +28,7 @@ class RJsonwalksWalk extends REvent {
     public $walkLeader = "";        // walk leader if isLeader is false
     public $contactName = "";       // contact name
     public $email = "";             // email address for contact
-   // private $emailAddr = "";             // email address for contact
+    // private $emailAddr = "";             // email address for contact
     public $telephone1 = "";        // first telephone number of contact
     public $telephone2 = "";        // second telephone number of contact
 // meeting place
@@ -51,16 +51,18 @@ class RJsonwalksWalk extends REvent {
     Public $ascentFeet;             // the ascent in feet or null
     Public $strands;                // RJsonwalksItems object or null
     Public $festivals;              // RJsonwalksItems object or null
-    public $suitability;          // RJsonwalksItems object or null
-    public $surroundings;          // RJsonwalksItems object or null
-    public $theme;          // RJsonwalksItems object or null
+    public $suitability;            // RJsonwalksItems object or null
+    public $surroundings;           // RJsonwalksItems object or null
+    public $theme;                  // RJsonwalksItems object or null
     public $specialStatus;          // RJsonwalksItems object or null
-    public $facilities;          // RJsonwalksItems object or null
-    public $media;               //array of image infomation
+    public $facilities;             // RJsonwalksItems object or null
+    public $media;                  //array of image infomation
 // extra derived values
     private $sortTime;
     private $icsDayEvents = false;
-    private static $gradeSidebarDisplayed = false;
+    private static $withMonth = ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"];
+    private static $customValuesClass = null;
+    private static $customValuesMethod = null;
 
     const SORT_DATE = 0;
     const SORT_CONTACT = 1;
@@ -86,10 +88,11 @@ class RJsonwalksWalk extends REvent {
             $this->cancellationReason = $item->cancellationReason;
 // basic walk details
             $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
+
             $this->detailsPageUrl = $item->url;
             $this->title = RHtml::convertToText($item->title);
-            $this->descriptionHtml = $item->description;
-            $this->description = RHtml::convertToText($item->description);
+            $this->descriptionHtml = $this->convert_mails($item->description);
+            $this->description = RHtml::convertToText($this->descriptionHtml);
 
             $this->additionalNotes = $item->additionalNotes;
             $this->isLinear = $item->isLinear == "true";
@@ -117,11 +120,11 @@ class RJsonwalksWalk extends REvent {
             if ($item->walkContact != null) {
                 $this->isLeader = $item->walkContact->isWalkLeader == "true";
                 $this->contactName = trim($item->walkContact->contact->displayName);
-               // $this->emailAddr = $item->walkContact->contact->email;
-                if (strlen($item->walkContact->contact->email)>0){
+                // $this->emailAddr = $item->walkContact->contact->email;
+                if (strlen($item->walkContact->contact->email) > 0) {
                     $this->email = "email available";
                 }
-               // $this->email = str_replace("@", " (at) ", $this->emailAddr);
+                // $this->email = str_replace("@", " (at) ", $this->emailAddr);
                 $this->telephone1 = $item->walkContact->contact->telephone1;
                 $this->telephone2 = $item->walkContact->contact->telephone2;
             }
@@ -163,6 +166,32 @@ class RJsonwalksWalk extends REvent {
         }
     }
 
+    public function addYear() {
+        $walkyear = $this->walkDate->format('Y');
+        $newDate = new DateTime();
+        $newDate->add(new DateInterval('P300D'));
+        //  $walkDate = new Date($this-> walkDate);
+        if ($this->walkDate < $newDate) {
+            return '';
+        } else {
+            return ' ' . $walkyear;
+        }
+    }
+
+    private function convert_mails($text) {
+
+        preg_match_all("/[\._a-zA-Z0-9-]+@[\._a-zA-Z0-9-]+/i", $text, $out);
+        //String that recognizes an e-mail
+        //     $str = '/([a-z0-9_\.\-])+\@(([a-z0-9\-])+\.)+([a-z0-9]{2,4})+/i';
+        //     preg_match_all($str, $text, $out);
+        //return a blank array if not true otherwise insert the email in $out and return
+        foreach ($out as $value) {
+            $email = str_replace("@", " AT ", $value);
+            $text = str_replace($value, $email, $text);
+        }
+        return $text;
+    }
+
     public function getEmail($option = 0, $withtitle = false) {
         switch ($option) {
             case 0:
@@ -177,9 +206,9 @@ class RJsonwalksWalk extends REvent {
                 $printOn = JRequest::getVar('print') == 1;
                 $link = "https://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
                 if ($withtitle) {
-                     return RHtml::withDiv("email", "<b>Email: </b><a href='" . $link . $this->id . "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
-                 } else {
-                     return RHtml::withDiv("email", "<a href='" . $link . $this->id . "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
+                    return RHtml::withDiv("email", "<b>Email: </b><a href='" . $link . $this->id . "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
+                } else {
+                    return RHtml::withDiv("email", "<a href='" . $link . $this->id . "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
                 }
             case 3:
                 return "";
@@ -279,8 +308,7 @@ class RJsonwalksWalk extends REvent {
     }
 
     public function EventLink($display, $text) {
-        return $display->getWalkHref($this, $text);
-        // return $this->detailsPageUrl;
+        return $this->_addWalkLink($this->id, $text);
     }
 
     public function EventLinks() {
@@ -435,22 +463,22 @@ class RJsonwalksWalk extends REvent {
         $img = $this->getGradeImg();
         switch ($this->nationalGrade) {
             case "Easy Access":
-                $tag = "<span data-descr='Easy Access' class='" . $class . "'><span class='grade easy-access " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
+                $tag = "<span data-descr='Easy Access' class='grade " . $class . "'>' onclick='ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Easy":
-                $tag = "<span data-descr='Easy' class='" . $class . "'><span class='grade easy " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
+                $tag = "<span data-descr='Easy' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Leisurely":
-                $tag = "<span data-descr='Leisurely' class='" . $class . "'><span class='grade leisurely " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
+                $tag = "<span data-descr='Leisurely' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Moderate":
-                $tag = "<span data-descr='Moderate' class='" . $class . "'><span class='grade " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
+                $tag = "<span data-descr='Moderate' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Strenuous":
-                $tag = "<span data-descr='Strenuous' class='" . $class . "'><span class='grade strenuous " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
+                $tag = "<span data-descr='Strenuous' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Technical":
-                $tag = "<span data-descr='Technical' class='" . $class . "'><span class='grade technical " . $class . "' onclick='javascript:dGH()'>" . $img . "</span></span>";
+                $tag = "<span data-descr='Technical' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
                 break;
             default:
                 break;
@@ -462,8 +490,6 @@ class RJsonwalksWalk extends REvent {
         $base = JURI::base();
         $folder = JURI::base(true);
         $url = $folder . "/libraries/ramblers/images/grades/";
-        //   if (strpos($base, 'localhost') !== false) {
-        //   }
 
         switch ($this->nationalGrade) {
             case "Easy Access":
@@ -505,6 +531,429 @@ class RJsonwalksWalk extends REvent {
             }
         }
         return $out;
+    }
+
+    public static function groupByMonth($items) {
+        $check = "";
+        foreach ($items as $value) {
+            if (is_array($value)) {
+                $check .= implode(",", $value['items']) . ",";
+            } else {
+                $check .= $value . ",";
+            }
+        }
+        foreach (self::$withMonth as $value) {
+            if (strpos($check, $value) !== false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function getMonthGroup() {
+        return $this->month . $this->addYear();
+    }
+
+    public static function setCustomValues($clss, $method) {
+        self::$customValuesClass = $clss;
+        self::$customValuesMethod = $method;
+    }
+
+    public function getWalkValues($items) {
+        $text = "";
+        foreach ($items as $item) {
+            $text .= $this->getWalkValue($item);
+        }
+        return $this->addWalkLink($this->id, $text, "");
+    }
+
+    public function getWalkValue($options) {
+        $BR = "<br/>";
+        $out = "";
+        $values = $this->getPrefix($options);
+        $prefix = $values[0];
+        $option = $values[1];
+        switch ($option) {
+            case "{lf}":
+                $out = "<br/>";
+                break;
+            case "{group}":
+                $out = $this->groupName;
+                break;
+            case "{dowShortdd}":
+                //       $out = "<b>" . $this->shortDoW($this->dayofweek) . ", " . $this->day . $this->addYear() . "</b>";
+                $out = "<b>" . $this->walkDate->format('D, jS ') . "</b>";
+
+                break;
+            case "{dowShortddmm}":
+                //     $out = "<b>" . $this->shortDoW($this->dayofweek) . ", " . $this->day . " " . $this->month . $this->addYear() . "</b>";
+                $out = "<b>" . $this->walkDate->format('D, jS F') . $this->addYear() . "</b>";
+                break;
+            case "{dowShortddyyyy}": // published in error
+            case "{dowShortddmmyyyy}":
+                //      $out = "<b>" . $this->shortDoW($this->dayofweek) . $this->walkyear . "</b>";
+                $out = "<b>" . $this->walkDate->format('D, jS F Y') . "</b>";
+                break;
+            case "{dowdd}":
+                $out = "<b>" . $this->walkDate->format('l, jS') . "</b>";
+                break;
+            case "{dowddmm}":
+                $out = "<b>" . $this->walkDate->format('l, jS F') . $this->addYear() . "</b>";
+                break;
+            case "{dowddmmyyyy}":
+                $out = "<b>" . $this->walkDate->format('l, jS F Y') . "</b>";
+                break;
+            case "{meet}":
+                if ($this->hasMeetPlace) {
+                    $out = $this->meetLocation->timeHHMMshort;
+                    if ($this->meetLocation->description) {
+                        $out .= " at " . $this->meetLocation->description;
+                    }
+                }
+                break;
+            case "{meetTime}":
+                if ($this->hasMeetPlace) {
+                    $out = $this->meetLocation->timeHHMMshort;
+                }
+                break;
+            case "{meetPlace}":
+                if ($this->hasMeetPlace) {
+                    $out = $this->meetLocation->description;
+                }
+                break;
+            case "{meetGR}":
+                if ($this->hasMeetPlace) {
+                    $out = $this->meetLocation->gridref;
+                }
+                break;
+            case "{meetPC}":
+                if ($this->hasMeetPlace) {
+                    $out = $this->meetLocation->postcode;
+                }
+                break;
+            case "{meetOLC}":
+                break;
+            case "{meetMapCode}":
+                break;
+            case "{start}":
+                if ($this->startLocation->exact) {
+                    $out = $this->startLocation->timeHHMMshort;
+                    if ($this->startLocation->description) {
+                        $out .= " at " . $this->startLocation->description;
+                    }
+                }
+                break;
+            case "{startTime}":
+                if ($this->startLocation->exact) {
+                    $out = $this->startLocation->timeHHMMshort;
+                }
+                break;
+            case "{startPlace}":
+                if ($this->startLocation->exact) {
+                    if ($this->startLocation->description) {
+                        $out .= $this->startLocation->description;
+                    }
+                }
+                break;
+            case "{startGR}":
+                if ($this->startLocation->exact) {
+                    $out = $this->startLocation->gridref;
+                }
+                break;
+            case "{startPC}":
+                if ($this->startLocation->exact) {
+                    $out = $this->startLocation->postcode;
+                }
+                break;
+            case "{startOLC}":
+                break;
+            case "{startMapCode}":
+                break;
+            case "{title}":
+                $out = $this->title;
+                $out = "<b>" . $out . "</b>";
+                break;
+            case "{description}":
+                $out = $this->description;
+                break;
+            case "{difficulty}":
+                $out = $this->getWalkValue("{distance}");
+                $out .= "<br/><span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
+                if ($this->localGrade !== "") {
+                    $out .= "<br/>" . $this->localGrade;
+                }
+                break;
+            case "{difficulty+}":
+                $out = $this->getWalkValue("{distance}");
+                $out .= "<div>" . $this->getGradeSpan("middle") . "</div>";
+                $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
+                if ($this->localGrade !== "") {
+                    $out .= "<br/>" . $this->localGrade;
+                }
+                break;
+            case "{distance}":
+                if ($this->distanceMiles > 0) {
+                    $out = $this->distanceMiles . "mi / " . $this->distanceKm . "km";
+                }
+                break;
+            case "{distanceMi}":
+                if ($this->distanceMiles > 0) {
+                    $out = $this->distanceMiles . "mi";
+                }
+                break;
+            case "{distanceKm}":
+                if ($this->distanceMiles > 0) {
+                    $out = $this->distanceKm . "km";
+                }
+                break;
+            case "{gradeimg}":
+                $out = $this->getGradeSpan('middle');
+                break;
+            case "{gradeimgRight}":
+                $out = $this->getGradeSpan('right');
+                break;
+            case "{grade}":
+                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
+                if ($this->localGrade !== "") {
+                    $out .= "<br/>" . $this->localGrade;
+                }
+                break;
+            case "{grade+}":
+                $out = "<div>" . $this->getGradeSpan("middle") . "</div>";
+                $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
+                if ($this->localGrade !== "") {
+                    $out .= "<br/>" . $this->localGrade;
+                }
+                break;
+            case "{nationalGrade}":
+                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
+                break;
+            case "{nationalGradeAbbr}":
+                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->gradeAbbr() . "</span>";
+                break;
+            case "{localGrade}":
+                $out = $this->localGrade;
+                break;
+            case "{additionalNotes}":
+                $out = $this->additionalNotes;
+                break;
+            case "{type}":
+                if ($this->isLinear) {
+                    $out = "Linear";
+                } else {
+                    $out = "Circular";
+                }
+                break;
+            case "{contact}":
+                $out = "";
+                if ($this->isLeader) {
+                    $out .= "Leader ";
+                } else {
+                    $out .= "Contact: ";
+                }
+                if ($this->contactName !== "") {
+                    $out .= "<b>" . $this->contactName . "</b>";
+                }
+                if ($this->email !== "") {
+                    $out .= $BR . $this->getEmailLink($this);
+                }
+                if ($this->telephone1 !== "") {
+                    $out .= $BR . $this->telephone1;
+                }
+                if ($this->telephone2 !== "") {
+                    $out .= $BR . $this->telephone2;
+                }
+                break;
+            case "{contactname}":
+                if ($this->isLeader) {
+                    $prefix .= "Leader: ";
+                } else {
+                    $prefix .= "Contact: ";
+                }
+                $out = $this->contactName;
+                break;
+            case "{contactperson}":
+                $out = $this->contactName;
+                break;
+            case "{telephone}":
+            case "{telephone1}":
+                if ($this->telephone1 !== "") {
+                    $out .= $this->telephone1;
+                }
+                break;
+            case "{telephone2}":
+                if ($this->telephone2 !== "") {
+                    $out .= $this->telephone2;
+                }
+                break;
+            case "{email}":
+            case "{emailat}":
+                $contact = "";
+                if ($this->email !== "") {
+                    $contact .= $this->email;
+                }
+                $out = $contact;
+                break;
+            case "{emaillink}":
+                if ($this->email !== "") {
+                    $out = $this->getEmailLink($this);
+                }
+                break;
+            case "{mediathumbr}":
+                $out = '';
+                if (count($this->media) > 0) {
+                    $out = "<img class='mediathumbr' src='" . $this->media[0]->url . "' >";
+                }
+                break;
+            case "{mediathumbl}":
+                $out = '';
+                if (count($this->media) > 0) {
+                    $out = "<img class='mediathumbl' src='" . $this->media[0]->url . "' >";
+                }
+                break;
+            case "{meetOSMap}":
+                if ($this->hasMeetPlace) {
+                    $lat = $this->meetLocation->latitude;
+                    $long = $this->meetLocation->longitude;
+                    $out = "<span><a href=&quot;javascript:ra.link.streetmap(" . $lat . "," . $long . ")&quot; >[OS Map]</a></span>";
+                }
+                break;
+            case "{meetDirections}":
+                if ($this->hasMeetPlace) {
+                    $lat = $this->meetLocation->latitude;
+                    $long = $this->meetLocation->longitude;
+                    $out = "<span><a href=&quot;javascript:ra.loc.directions(" . $lat . "," . $long . ")&quot; >[Directions]</a></span>";
+                }
+                break;
+            case "{startOSMap}":
+                if ($this->hasMeetPlace) {
+                    $lat = $this->startLocation->latitude;
+                    $long = $this->startLocation->longitude;
+                    $out = "<span><a href=&quot;javascript:ra.link.streetmap(" . $lat . "," . $long . ")&quot; >[OS Map]</a></span>";
+                }
+                break;
+            case "{startDirections}":
+                if ($this->hasMeetPlace) {
+                    $lat = $this->startLocation->latitude;
+                    $long = $this->startLocation->longitude;
+                    $out = "<span><a href=&quot;javascript:ra.loc.directions(" . $lat . "," . $long . ")&quot; >[Directions]</a></span>";
+                }
+                break;
+            default:
+                $found = false;
+                if (self::$customValuesClass !== null) {
+                    $response = call_user_func(array(self::$customValuesClass, self::$customValuesMethod), $option, $this);
+                    $found = $response->found;
+                }
+                if ($found) {
+                    $out .= $response->out;
+                } else {
+                    $option = str_replace("{", "", $option);
+                    $out = str_replace("}", "", $option);
+                }
+        }
+        if ($out !== "") {
+            return $prefix . $out;
+        }
+        return "";
+    }
+
+    private function gradeAbbr() {
+        switch ($this->nationalGrade) {
+            case "Easy Access":
+                return "EA";
+            case "Easy":
+                return "E";
+            case "Leisurely":
+                return "L";
+            case "Moderate":
+                return "M";
+            case "Strenuous":
+                return "S";
+            case "Technical":
+                return "T";
+            default:
+                return "";
+        }
+    }
+
+// do we need this function?????????????????????????S
+    private function shortDoW($day) {
+        switch ($day) {
+            case "Monday":
+                return "Mon";
+            case "Tuesday":
+                return "Tues";
+            case "Wednesday":
+                return "Wed";
+            case "Thursday":
+                return "Thur";
+            case "Friday":
+                return "Fri";
+            case "Saturday":
+                return "Sat";
+            case "Sunday":
+                return "Sun";
+        }
+        return "";
+    }
+
+    private function getEmailLink() {
+        $link = "http://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
+        return "<a href='" . $link . $this->id . "' target='_blank'>Email contact via ramblers.org.uk</a>";
+    }
+
+    private function getPrefix($option) {
+        $prefix = "";
+        $loop = true;
+//      do            {
+        switch (substr($option, 0, 2)) {
+            case "{;":
+                $prefix .= "<br/>";
+                $option = str_replace("{;", "{", $option);
+                break;
+            case "{,":
+                $prefix = ", ";
+                $option = str_replace("{,", "{", $option);
+                break;
+            case "{[":
+                $close = strpos($option, "]");
+                if ($close > 0) {
+                    $prefix = substr($option, 2, $close - 2);
+                    $option = "{" . substr($option, $close + 1);
+                } else {
+                    $prefix = $option;
+                    $option = "{}";
+                }
+                break;
+            default:
+                $loop = false;
+        }
+//        } while ($loop);
+        return [$prefix, $option];
+    }
+
+    private function _addWalkLink($id, $text, $class = "") {
+        $DisplayWalkFunction = "ra.walk.displayWalkID";
+        return "<span class='pointer " . $class . "' onclick=\"" . $DisplayWalkFunction . "(event," . $id . ")\">" . $text . "</span>";
+    }
+
+    private function addWalkLink($id, $text, $class = "") {
+        // split into text before and after span
+        $start = '';
+        $st = strpos($text, "<span");
+        $en = strpos($text, "/span>") + 6;
+        if ($st > -1 && $en > $st) {
+            if ($st > 0) {
+                $start = $this->_addWalkLink($id, substr($text, 0, $st), $class);
+            }
+            $middle = substr($text, $st, $en - $st);
+//  var _end = $text.substr(en);
+            $end = $this->addWalkLink($id, substr($text, $en), $class);
+            return $start . $middle . $end;
+        } else {
+            return $this->_addWalkLink($id, $text, $class);
+        }
     }
 
     function __destruct() {

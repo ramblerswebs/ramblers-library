@@ -1,13 +1,18 @@
-var L, ramblersMap;
+var L, ra;
 L.Control.SmartRoute = L.Control.extend({
     options: {
         title: 'Turn Smart Routing on/off to follow paths',
-        position: 'bottomright'
+        position: 'bottomright',
+        _routingKey: 'nil'
     },
+    _userOptions: null,
     onAdd: function (map) {
         this._map = map;
         // default is off as relies on Map Tools being loaded first.
+        this.alert = true;
         this.enabled = false;
+        this._saveRoute = false;
+        this._smartRouteLayer = L.featureGroup([]).addTo(map);
         var containerAll = L.DomUtil.create('div', 'leaflet-control-smart-route ra-smart-toolbar-button-disabled');
         this.containerAll = containerAll;
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control', containerAll);
@@ -16,9 +21,20 @@ L.Control.SmartRoute = L.Control.extend({
         L.DomEvent.disableClickPropagation(containerAll);
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(this.link, 'click', this._smart_routes, this);
-        ramblersMap.SmartRoute = this;
         return containerAll;
     },
+    routingKey: function (value) {
+        this.options._routingKey = value;
+    },
+    userOptions: function (value) {
+        this._userOptions = value;
+    },
+    drawControl: function (value) {
+        this._drawControl = value;
+    },
+//    routingOption: function (value) {
+//        this._routingOption = value;
+//    },
     disable: function () {
         this.containerAll.style.display = "none";
     },
@@ -28,6 +44,9 @@ L.Control.SmartRoute = L.Control.extend({
     setRouteItems: function (itemsCollection) {
         this._itemsCollection = itemsCollection;
     },
+    saveRoute: function (value) {
+        this._saveRoute = value;
+    },
     _createIcon: function (container) {
         var icon = L.DomUtil.create('a', '', container);
         this.link = icon;
@@ -36,15 +55,17 @@ L.Control.SmartRoute = L.Control.extend({
         return this.link;
     },
     _smart_routes: function () {
-        ramblersMap.SmartRoute.enabled = !ramblersMap.SmartRoute.enabled;
-
-        if (ramblersMap.SmartRoute.enabled) {
+        this.enabled = !this.enabled;
+        if (this.enabled) {
+            if (this.alert) {
+                this.alert = false;
+                alert('Smart Route follows paths/roads etc defined on the Open Street Map,\nregardless of which map is displayed.');
+            }
             L.DomUtil.removeClass(this._container, 'ra-smart-toolbar-button-disabled');
-            // ramblersMap.DrawControl.options.draw.polyline.shapeOptions.opacity = 0;
-            ramblersMap.SmartRouteControl.setOpacityZero();
+            this.setOpacityZero();
         } else {
             L.DomUtil.addClass(this._container, 'ra-smart-toolbar-button-disabled');
-            ramblersMap.SmartRouteControl.resetOpacity();
+            this.resetOpacity();
         }
     },
     displaySmartPoints: function (layers) {
@@ -56,67 +77,71 @@ L.Control.SmartRoute = L.Control.extend({
             no += 1;
         }
         if (latlngs.length <= 1) {
-            ramblersMap.map.SmartRouteLayer.clearLayers();
+            this._smartRouteLayer.clearLayers();
             return;
         }
-        ramblersMap.SmartRoute.pending = true;
+        this.pending = true;
+        var self = this;
         let request = new XMLHttpRequest();
         request.open('POST', "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson");
         request.setRequestHeader('Accept', 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8');
         request.setRequestHeader('Content-Type', 'application/json');
-        request.setRequestHeader('Authorization', ramblersMap.ORSkey);
+        request.setRequestHeader('Authorization', this.options._routingKey);
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
                 //console.log('Status:', this.status);
                 //console.log('Headers:', this.getAllResponseHeaders());
                 //console.log('Body:', this.responseText);
                 var data = JSON.parse(this.responseText);
+
+                // check for '' response
+
                 if (this.status === 200) {
                     //console.log('Data retrieved');
                     var headers = this.getAllResponseHeaders();
-                    if (!ramblersMap.SmartRoute.checkLimits(headers)) {
+                    if (!self.checkLimits(headers)) {
                         return;
                     }
-                    ramblersMap.SmartRouteControl.drawSmartRoute(data); // also saves latlngs
-                    if (ramblersMap.SmartRoute.saveroute) {
-                        ramblersMap.SmartRouteControl.saveSmartRoute();
-                        ramblersMap.SmartRoute.saveroute = false;
+                    self.drawSmartRoute(data); // also saves latlngs
+                    if (self._saveRoute) {
+                        self.saveSmartRoute(self);
+                        self._saveRoute = false;
                     }
                 } else {
                     alert("Unable to fetch route, status " + this.status);
                 }
-                ramblersMap.SmartRoute.pending = false;
+                self.pending = false;
             }
         };
         var body = {};
         body.instructions = false;
         body.geometry_simplify = true;
-        body.coordinates = getLngLats(latlngs);
+        body.coordinates = ra.map.getLngLats(latlngs);
         var search = JSON.stringify(body);
         request.send(search);
     },
     drawSmartRoute: function (data) {
         var geometry = data.features[0].geometry;
-        ramblersMap.map.SmartRouteLayer.clearLayers();
-        var latlngs = ragetLatlngs(geometry.coordinates);
-        ramblersMap.SmartRoute.latlngs = latlngs; // latlngs for when we save route.
-        var style = ramblersMap.DrawStyle;
-        ramblersMap.map.SmartRouteLayer.addLayer(L.polyline(latlngs, style));
+        this._smartRouteLayer.clearLayers();
+        var latlngs = ra.map.ragetLatlngs(geometry.coordinates);
+        this.latlngs = latlngs; // latlngs for when we save route.
+        var style = this._userOptions.style;
+        this._smartRouteLayer.addLayer(L.polyline(latlngs, style));
 
     },
     setOpacityZero: function () {
         //console.log("Opacity set to ZERO");
         var style = {};
-        style.color = ramblersMap.DrawStyle.color;
-        style.weight = ramblersMap.DrawStyle.weight;
+        style.color = this._userOptions.style.color;
+        style.weight = this._userOptions.style.weight;
         style.opacity = 0;
-        ramblersMap.DrawControl.setDrawingOptions({
+        this._drawControl.setDrawingOptions({
             polyline: {shapeOptions: style}});
     },
     resetOpacity: function () {
         // console.log("Opacity reset");
-        var style = ramblersMap.DrawStyle;
-        ramblersMap.DrawControl.setDrawingOptions({
+        var style = this._userOptions.style;
+        this._drawControl.setDrawingOptions({
             polyline: {shapeOptions: style}});
     },
     checkLimits: function (headers) {
@@ -135,43 +160,43 @@ L.Control.SmartRoute = L.Control.extend({
         }
         if (available < 20) {
             alert('Our usage of the Open Routing Service has reached the limit for today.\n\rPlease try again tomorrow or continue with straight line segments.');
-            ramblersMap.SmartRoute.turnOffSmartRouting();
+            this.turnOffSmartRouting();
             return false;
         }
 
         return true;
     },
     turnOffSmartRouting: function () {
-        ramblersMap.SmartRoute.enabled = false;
-        ramblersMap.SmartRouteControl.resetOpacity();
-        ramblersMap.map.removeControl(ramblersMap.SmartRouteControl);
+        this.enabled = false;
+        this.resetOpacity();
+        this._map.removeControl(this);
     },
 
-    saveSmartRoute: function () {
-        if (ramblersMap.SmartRoute.latlngs !== null) {
+    saveSmartRoute: function (self) {
+        if (this.latlngs !== null) {
             //console.log("Save");
             var layer;
-            var layers = ramblersMap.drawnItems.getLayers();
+            var layers = self._itemsCollection.getLayers();
 
             // only save if route has not been cancelled
-            if (layers.length > ramblersMap.SmartRoute.NoLayers) {
+            if (layers.length > this.NoLayers) {
                 // delete the draw layer and replace
                 layer = layers[layers.length - 1];
-                ramblersMap.drawnItems.removeLayer(layer);
-                ramblersMap.SmartRouteControl.resetOpacity();
-                var latlngs=removeShortSegments(ramblersMap.SmartRoute.latlngs);
-                var line = new L.Polyline(latlngs, ramblersMap.DrawStyle);
-                ramblersMap.SmartRoute.latlngs = null;
-                ramblersMap.drawnItems.addLayer(line);
-               
-                if (ramblersMap.RoutingOption.joinSegments){
-                     ramblersMap.map.fire('join:attach',null);
-                }else {
-                     ramblersMap.drawnItems.fire('upload:addline', {line: line});
+                self._itemsCollection.removeLayer(layer);
+                this.resetOpacity();
+                var latlngs = ra.map.removeShortSegments(this.latlngs);
+                var line = new L.Polyline(latlngs, this._userOptions.style);
+                this.latlngs = null;
+                self._itemsCollection.addLayer(line);
+
+                if (this._userOptions.draw.joinSegments) {
+                    this._map.fire('join:attach', null);
+                } else {
+                    self._itemsCollection.fire('upload:addline', {line: line});
                 }
-                ramblersMap.SmartRouteControl.setOpacityZero();
+                this.setOpacityZero();
             }
-            ramblersMap.map.SmartRouteLayer.clearLayers();
+            this._smartRouteLayer.clearLayers();
         }
     }
 });

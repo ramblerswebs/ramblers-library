@@ -181,7 +181,7 @@ class RCalendar {
     private function getTogglePair($one, $two) {
         $idone = $this->getDivId($this->baseno + $one);
         $idtwo = $this->getDivId($this->baseno + $two);
-        return ' onclick="ra_toggle_visibilities(' . $idone . ',' . $idtwo . ')"';
+        return ' onclick="ra.html.toggleVisibilities(' . $idone . ',' . $idtwo . ')"';
     }
 
     private function getDivId($no) {

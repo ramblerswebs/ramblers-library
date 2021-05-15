@@ -17,10 +17,11 @@ class RJsonwalksStdAreawalks {
 
         $app = JFactory::getApplication();
         $document = JFactory::getDocument();
+        $document->addScript("libraries/ramblers/js/ra.js", "text/javascript");
         $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
 
         // Set the cookie
-        $time = time() + 604800; // 1 week
+        //   $time = time() + 604800; // 1 week
         // Get the cookie
         $area = $app->input->cookie->get('AreaCode', null);
         //    $ok = $app->input->cookie->set('AreaCode', '',time() - 1);
@@ -50,7 +51,7 @@ class RJsonwalksStdAreawalks {
         }
         $cacheLocation = $this->CacheLocation();
         $groupfeed = new RFeedhelper($cacheLocation, $CacheTime);
-        $result = $groupfeed->getFeed($groupsurl);
+        $result = $groupfeed->getFeed($groupsurl, "Area/Group Walks");
         //$status = $result["status"];
         $contents = $result["contents"];
         $feedTitle = 'Walks';

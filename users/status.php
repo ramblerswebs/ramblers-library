@@ -129,7 +129,7 @@ class RUsersStatus {
         if (isset($ClearCache)) {
             $srfr->clearCache($cacheLocation); // clear cache
         }
-        $contents = $srfr->getFeed($rafeedurl);
+        $contents = $srfr->getFeed($rafeedurl,"Delete this");
         $this->membership = NULL;
 
         switch ($contents) {

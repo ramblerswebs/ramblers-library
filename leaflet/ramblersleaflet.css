@@ -9,7 +9,8 @@
 /* pantone7474 '#007A87';           */
 
 p.mapcopyright {
-    font-size:9px;
+    font-size:10px;
+    line-height: 14px;
     text-align: right;
     margin-bottom:0px;
 }
@@ -204,8 +205,6 @@ span.placelocation{
 }
 
 
-
-
 .placebutton-green{
     background-color: #206C49;
 
@@ -395,7 +394,7 @@ input.map-select {
 div#search >  div > button {
     margin-bottom:10px;
 }
-div#ra-map-container{
+div.ra-map-container{
     background-color: #bbbbbb;
     border-radius: 10px;
     padding: 10px;
@@ -439,3 +438,7 @@ div.ra-inline label{
 .area-icon a {
  color:white;   
 }    
+div[data-route-id]{
+    cursor:pointer;
+    color:blue;
+}

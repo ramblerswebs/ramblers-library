@@ -7,6 +7,12 @@
  */
 class RLeafletMapoptions {
 
+    public $divId = "";
+    public $mapDivId = '';
+    public $base = "";
+    public $mapHeight = "500px";
+    public $mapWidth = "100%";
+    public $helpPage = "";
     public $cluster = false;
     public $fullscreen = false;
     public $google = false;
@@ -14,84 +20,45 @@ class RLeafletMapoptions {
     public $locationsearch = false;
     public $osgrid = false;
     public $mouseposition = false;
-    public $postcodes = false;
+    public $rightclick = false;
+    public $maptools = false;
+    public $mylocation = false;
     public $fitbounds = false;
     public $draw = false;
     public $print = false;
     public $displayElevation = false;
-    public $smartRoute = true;
+    public $smartRoute = false;
     public $bing = false;
+    public $bingkey = null;
+    public $ORSkey = null;
     public $ramblersPlaces = false;
     public $topoMapDefault = false;
-    public $controlcontainer=false;
+    public $controlcontainer = false;
+    public $copyright = true;
+    public $initialview = null;
 
     public function __construct() {
-        
+        $this->divId = uniqid(rand());
+        $this->mapDivId = 'Map-' . $this->divId;
+        $this->base = JURI::base();
     }
 
-    public function text() {
-        $options = "";
-        //   $this->print = false;
-       if (RLicense::isBingKeyMapSet()) {
-            $options .= "ramblersMap.bingkey='" . RLicense::getBingMapKey() . "';" . PHP_EOL;
-            $options .= "ramblersMap.options.bing = true;" . PHP_EOL;
-        }
-        if (RLicense::isGoogleKeyMapSet()) {
-            $options .= "ramblersMap.googlekey='" . RLicense::getGoogleMapKey() . "';" . PHP_EOL;
-            $options .= "ramblersMap.options.google = true;" . PHP_EOL;
-        }
-         if (RLicense::isOpenRoutingServiceKeySet()) {
-            $options .= "ramblersMap.ORSkey='" . RLicense::getOpenRoutingServiceKey() . "';" . PHP_EOL;
-        }
-        if ($this->cluster) {
-            $options .= "ramblersMap.options.cluster = true;" . PHP_EOL;
-        }
-        if ($this->fullscreen) {
-            $options .= "ramblersMap.options.fullscreen = true;" . PHP_EOL;
-        }
-        if ($this->google) {
-            $options .= "ramblersMap.options.google = true;" . PHP_EOL;
-        }
-        if ($this->search) {
-            $options .= "ramblersMap.options.search = true;" . PHP_EOL;
-        }
-        if ($this->locationsearch) {
-            $options .= "ramblersMap.options.locationsearch = true;" . PHP_EOL;
-        }
-        if ($this->osgrid) {
-            $options .= "ramblersMap.options.osgrid = true;" . PHP_EOL;
-        }
-        if ($this->mouseposition) {
-            $options .= "ramblersMap.options.mouseposition = true;" . PHP_EOL;
-        }
-        if ($this->postcodes) {
-            $options .= "ramblersMap.options.postcodes = true;" . PHP_EOL;
-        }
-        if ($this->fitbounds) {
-            $options .= "ramblersMap.options.fitbounds = true;" . PHP_EOL;
-        }
-        if ($this->draw) {
-            $options .= "ramblersMap.options.draw = true;" . PHP_EOL;
-        }
-        if ($this->print) {
-            $options .= "ramblersMap.options.print = true;" . PHP_EOL;
-        }
-        if ($this->displayElevation) {
-            $options .= "ramblersMap.options.displayElevation = true;" . PHP_EOL;
-        }
-        if ($this->smartRoute) {
-            $options .= "ramblersMap.options.smartRoute = true;" . PHP_EOL;
-        }
-        if ($this->ramblersPlaces) {
-            $options .= "ramblersMap.options.ramblersPlaces = true;" . PHP_EOL;
-        }
-        if ($this->topoMapDefault) {
-            $options .= "ramblersMap.options.topoMapDefault = true;" . PHP_EOL;
-        }
-           if ($this->controlcontainer) {
-            $options .= "ramblersMap.options.controlcontainer = true;" . PHP_EOL;
-        }
-       
-        return $options;
+    public function setinitialviewView($latitude, $longitude, $zoom) {
+        $this->initialview = (object) [
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'zoom' => $zoom
+        ];
     }
+
+    public function setLicenses() {
+        if (RLicense::isBingKeyMapSet()) {
+            $this->bing = true;
+            $this->bingkey = RLicense::getBingMapKey();
+        }
+        if (RLicense::isOpenRoutingServiceKeySet()) {
+            $this->ORSkey = RLicense::getOpenRoutingServiceKey();
+        }
+    }
+
 }

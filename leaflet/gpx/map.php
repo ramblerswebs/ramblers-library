@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Description of mapmarker
+ * Description of RLeafletGpxMap
  *
  * @author Chris Vaughan
  */
@@ -10,10 +10,7 @@ class RLeafletGpxMap extends RLeafletMap {
     public $linecolour = "#782327";
     public $imperial = false;
     public $addDownloadLink = "Users"; // "None" - no link, "Users" - users link, "Public" - guest link
-
-    public function __construct() {
-        parent::__construct();
-    }
+    private $data = null;
 
     public function displayPath($gpx) {
         $document = JFactory::getDocument();
@@ -25,35 +22,41 @@ class RLeafletGpxMap extends RLeafletMap {
         $this->options->locationsearch = true;
         $this->options->osgrid = true;
         $this->options->mouseposition = true;
-        $this->options->postcodes = true;
+        $this->options->maptools=true;
+        $this->options->mylocation=true;
+        $this->options->rightclick = true;
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
         $this->options->print = true;
-        //    RLicense::BingMapKey(false);
 
+        $this->data = new class {};
         if ($this->imperial) {
-            $imperial = "true";
+            $this->data->imperial = "true";
         } else {
-            $imperial = "false";
+            $this->data->imperial = "false";
         }
+        $this->data->linecolour = $this->linecolour;
         $file = JURI::root() . $gpx;
 //   echo $file;
-
+        $this->data->gpxfile = null;
         if (file_exists($gpx)) {
             $path_parts = pathinfo($gpx);
             if (strtolower($path_parts['extension']) != "gpx") {
-                $ $app = JApplicationCms::getInstance('site');
+                $app = JApplicationCms::getInstance('site');
                 $app->enqueueMessage(JText::_('GPX: Route file is not a gpx file: ' . $file), 'error');
                 echo "<p><b>Unable to display gpx file</b></p>";
+            } else {
+                $this->data->gpxfile = $gpx;
             }
         } else {
             $app = JApplicationCms::getInstance('site');
             $app->enqueueMessage(JText::_('GPX: Route file not found: ' . $file), 'error');
             echo "<p><b>Unable to display gpx file</b></p>";
         }
-
+        $detailsDivId = "details-" . $this->options->divId;
+        $this->data->detailsDivId=$detailsDivId;
         if (file_exists($gpx)) {
-            echo "<div id='gpxsingleheader'></div>";
+            echo "<div id='" . $detailsDivId . "'></div>";
             $link = false;
             switch ($this->addDownloadLink) {
                 case "Users":
@@ -61,7 +64,7 @@ class RLeafletGpxMap extends RLeafletMap {
                     If ($this->loggedon()) {
                         $link = true;
                     } else {
-                        echo "<br/>Please log on to this site to be able to download GPX file of this walk";
+                        echo "Please log on to this site to be able to download GPX file of this walk<p></p>";
                     }
                     break;
                 case "Public" :
@@ -73,13 +76,10 @@ class RLeafletGpxMap extends RLeafletMap {
             if ($link) {
                 echo '<b>Download route:</b> <a href="' . $gpx . '"><img alt="gpx" src="libraries/ramblers/images/orange-gpx-32.png" width="20" height="20"></a><br/><br/>';
             }
-
-            $text = "  ramblersGpx=new RamblersLeafletGpx();"
-                    . "displayGPX( '$gpx', '$this->linecolour', $imperial)";
-            parent::addContent($text);
-        } else {
-            parent::addContent("");
         }
+       
+        parent::setCommand('singleGpxRoute');
+        parent::setDataObject($this->data);
         parent::display();
     }
 

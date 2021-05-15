@@ -83,6 +83,9 @@ class RJsonwalksLocation {
                 $textdescription .= $this->timeHHMMshort . " @ ";
             }
         }
+        // CHANGE REQUIRED , remove postcode and reduce GR to two figures if not exact
+        // CHANGE REQUIRED , remove postcode and reduce GR to two figures if not exact
+        // CHANGE REQUIRED , remove postcode and reduce GR to two figures if not exact
         $place = $this->gridref;
         if ($this->postcode <> null) {
             $place .= ", " . $this->postcode;
@@ -200,7 +203,7 @@ class RJsonwalksLocation {
 
     public function getOSMap($text) {
         if ($this->exact) {
-            $code = "http://streetmap.co.uk/loc/[lat],[long]&amp;Z=115";
+            $code = "https://streetmap.co.uk/loc/[lat],[long]&amp;Z=115";
             $code = str_replace("[lat]", $this->latitude, $code);
             $code = str_replace("[long]", $this->longitude, $code);
             $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" . $text . "]</span>";

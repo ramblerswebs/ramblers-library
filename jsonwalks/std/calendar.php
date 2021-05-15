@@ -8,13 +8,16 @@
 // no direct access
 defined("_JEXEC") or die("Restricted access");
 
-class RJsonwalksStdCalendar extends RJsonwalksDisplaybase {
+class RJsonwalksStdCalendarDEL extends RJsonwalksDisplaybase {
 
     public $tag = "p";
     public $startText = "Number of walks: ";
     public $endText = "";
+    public function __construct() {
+        parent::__construct();
+    }
 
-    function DisplayWalks($walks) {
+   public function DisplayWalks($walks) {
         define('CR', ' - ');
 
 //set error handler
@@ -38,7 +41,7 @@ class RJsonwalksStdCalendar extends RJsonwalksDisplaybase {
                 $description = $description . " - " . strip_tags($walk->additionalNotes);
             }
             if ($walk->startLocation->exact) {
-                if ($walk->startLocation->description != '') {
+                if ($walk->startLocation->description !== '') {
                     $startLocation = $walk->startLocation->description . ' (' . $walk->startLocation->gridref . ')';
                 } else {
                     $startLocation = $walk->startLocation->gridref;

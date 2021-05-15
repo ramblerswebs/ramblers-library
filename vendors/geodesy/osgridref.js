@@ -264,9 +264,9 @@ OsGridRef.parse = function (gridref) {
  * @returns {string} This grid reference in standard format.
  */
 OsGridRef.prototype.toString = function (digits) {
- //   digits = (digits === undefined) ? 10 : Number(digits);
-  //  if (isNaN(digits))
-  //      throw new Error('Invalid precision');
+    //   digits = (digits === undefined) ? 10 : Number(digits);
+    //  if (isNaN(digits))
+    //      throw new Error('Invalid precision');
 
     var e = this.easting;
     var n = this.northing;
@@ -298,7 +298,8 @@ OsGridRef.prototype.toString = function (digits) {
     e = Math.floor((e % 100000) / Math.pow(10, 5 - digits / 2));
     n = Math.floor((n % 100000) / Math.pow(10, 5 - digits / 2));
 
-    var gridRef = letPair + ' ' + e.pad(digits / 2) + ' ' + n.pad(digits / 2);
+    //   var gridRef = letPair + ' ' + e.pad(digits / 2) + ' ' + n.pad(digits / 2);
+    var gridRef = letPair + e.pad(digits / 2) + n.pad(digits / 2);
 
     return gridRef;
 };

@@ -1,4 +1,4 @@
-var L;
+var L,document;
 L.Control.GpxUpload = L.Control.extend({
     options: {
         title: 'Up load a walking route from a GPX file',
@@ -23,8 +23,7 @@ L.Control.GpxUpload = L.Control.extend({
         container.title = this.options.title;
         this._container = container;
         // container.that = this;
-        this.input.addEventListener('change', function (evt) {
-            //     var a = that;
+        this.input.addEventListener('input', function (evt) {
             var files = evt.target.files; // FileList object
             var file = files[0];
             var reader = new FileReader();

@@ -37,7 +37,7 @@ class RFeedhelper {
         $this->timeout = $value;
     }
 
-    public function getFeed($feedurl) {
+    public function getFeed($feedurl,$title) {
 
         $url = trim($feedurl);
         if ($this->startsWith($url, "http://www.ramblers.org.uk")) {
@@ -46,16 +46,16 @@ class RFeedhelper {
         $contents = '';
         $this->status = self::OK;
         if (ini_get('allow_url_fopen') == false) {
-            RErrors::notifyError('FETCH: Not able to read feed using fopen', $feed, 'error');
+            RErrors::notifyError('FETCH: Not able to read feed using fopen', $feedurl, 'error');
             $this->status = self::FEEDFOPEN;
         }
         if (substr($url, 0, 4) != "http") {
-            RErrors::notifyError('FETCH: Feed must use HTTP protocol', $feed, 'error');
+            RErrors::notifyError('FETCH: Feed must use HTTP protocol', $feedurl, 'error');
             $this->status = self::FEEDERROR;
         }
 
         if ($this->status == self::OK) {
-            $cachedFile = $this->createCachedFileFromUrl($url);
+            $cachedFile = $this->createCachedFileFromUrl($url,$title);
             if ($cachedFile != '') {
                 $contents = file_get_contents($cachedFile);
                 if ($contents === false) {
@@ -70,7 +70,7 @@ class RFeedhelper {
     }
 
     // Get remote file
-    private function createCachedFileFromUrl($url) {
+    private function createCachedFileFromUrl($url,$title) {
         jimport('joomla.filesystem.file');
         $result = '';
         $tmpFile = $this->getCacheName($url);
@@ -87,6 +87,7 @@ class RFeedhelper {
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // do not follow redirects
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // do not output result
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);  // allow xx seconds for timeout
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);  // allow xx seconds for timeout
         curl_setopt($ch, CURLOPT_REFERER, JURI::base()); // say who wants the feed
   
         $fgcOutput = curl_exec($ch);
@@ -97,7 +98,7 @@ class RFeedhelper {
         if ($httpCode !== 200) {
             $this->status = self::READFAILED;
             $response = "Return code " . $httpCode . " Error " . $error;
-            RErrors::notifyError('FETCH: Unable to fetch ' . $feedTitle . ', data may be out of date', $feed, 'warning', $response);
+            RErrors::notifyError('FETCH: Unable to fetch ' . $title . ', data may be out of date', $url, 'warning', $response);
         } else {
             JFile::write($tmpFile, $fgcOutput);
         }

@@ -1,0 +1,48 @@
+table.sr02prog {
+	border-width: 1px ;
+	border-color: #333333;
+	border-style: solid ;
+}
+table.sr02prog tr.easy {  
+    background-color: #81BEF7 ;  /* Easy: ambles */
+}
+table.sr02prog tr.leisurely {   
+    background-color: #FFFFFF ;   /* Leisurely */
+}
+table.sr02prog tr.moderate {   
+    background-color: #CCFFCC ;   /* Moderate: long/all day */
+}
+table.sr02prog tr.strenuous {   
+    background-color: #EDB1F3 ;  /* mainly fast-fitness */
+}
+table.sr02prog tr.linear {  
+    background-color: yellow ;  /* linear walks */
+}
+table.sr02prog tr.krew {  
+    background-color: #66FFFF ;  /* ken's krew */
+	padding-left: 10px;
+}
+table {
+	border-width: 1px ;
+	border-color: #333333;
+	border-style: solid ;
+}
+table tr.sr02easy {  
+    background-color: #81BEF7 ;  /* Easy: ambles */
+}
+table tr.sr02leisurely {   
+    background-color: #FFFFFF ;   /* Leisurely */
+}
+table tr.sr02moderate {   
+    background-color: #CCFFCC ;   /* Moderate: long/all day */
+}
+table tr.sr02strenuous {   
+    background-color: #EDB1F3 ;  /* mainly fast-fitness */
+}
+table tr.sr02linear {  
+    background-color: yellow ;  /* linear walks */
+}
+table tr.sr02krew {  
+    background-color: #66FFFF ;  /* ken's krew */
+	padding-left: 10px;
+}

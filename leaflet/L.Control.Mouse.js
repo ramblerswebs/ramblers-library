@@ -1,4 +1,4 @@
-var L, ramblersMap, OsGridRef;
+var L, ra, OsGridRef;
 L.Control.Mouse = L.Control.extend({
     options: {
         position: 'bottomleft',
@@ -7,19 +7,99 @@ L.Control.Mouse = L.Control.extend({
         lngFirst: false,
         numDigits: 5
     },
+    _userOptions : {
+            displayMouseGridSquare: true
+        },
     onAdd: function (map) {
+        this._map = map;
         this._container = L.DomUtil.create('div', 'leaflet-control-mouseposition');
         L.DomEvent.disableClickPropagation(this._container);
         map.on('mousemove', this._update, this);
         this._container.innerHTML = this.options.emptyString;
+        this.gridsquare100 = L.rectangle([[84, -89], [84.00001, -89.000001]],
+                {color: "#ff7800", weight: 1}).addTo(map);
+        this.gridsquare10 = L.rectangle([[84, -89], [84.00001, -89.000001]],
+                {color: "#884000", weight: 1}).addTo(map);
         return this._container;
     },
     onRemove: function (map) {
         map.off('mousemove', this._update);
     },
+    userOptions: function () {
+        return this._userOptions;
+    },
+    gridSquarePause:function(){
+        this.SAVEdisplayMouseGridSquare=this._userOptions.displayMouseGridSquare;
+        this._userOptions.displayMouseGridSquare=false;
+    },
+    gridSquareResume:function(){
+         this._userOptions.displayMouseGridSquare=this.SAVEdisplayMouseGridSquares;
+    },
     _update: function (e) {
-        var text = getMouseMoveAction(e);
+        var text = this._getMouseMoveAction(this._map, e.latlng);
         this._container.innerHTML = text;
+    },
+    _osGridToLatLongSquare: function (gridref, size) {
+//  if (!(gridref instanceof OsGridRef))
+//      throw new TypeError('gridref is not OsGridRef object');
+
+        var E1 = Math.floor(gridref.easting / size) * size;
+        var N1 = Math.floor(gridref.northing / size) * size;
+        var E2 = E1 + size;
+        var N2 = N1 + size;
+        var g1 = new OsGridRef(E1, N1);
+        var g2 = new OsGridRef(E1, N2);
+        var g3 = new OsGridRef(E2, N2);
+        var g4 = new OsGridRef(E2, N1);
+        var ll1 = OsGridRef.osGridToLatLon(g1);
+        var ll2 = OsGridRef.osGridToLatLon(g2);
+        var ll3 = OsGridRef.osGridToLatLon(g3);
+        var ll4 = OsGridRef.osGridToLatLon(g4);
+        var bounds = [[ll1.lat, ll1.lon],
+            [ll2.lat, ll2.lon],
+            [ll3.lat, ll3.lon],
+            [ll4.lat, ll4.lon],
+            [ll1.lat, ll1.lon]];
+        return bounds;
+    },
+    _getMouseMoveAction: function (map, latlng) {
+        var gr, gridref;
+        var zoom = map.getZoom();
+        // console.log(zoom);
+        var p = new LatLon(latlng.lat, latlng.lng);
+        var grid = OsGridRef.latLonToOsGrid(p);
+        if (zoom > 16) {
+            gr = grid.toString(8);
+            gridref = '8 figure grid reference [10m<sup>2</sup>]<br/><span class="osgridref">' + gr + "</span><br/>";
+        } else {
+            gr = grid.toString(6);
+            gridref = '6 figure grid reference [100m<sup>2</sup>]<br/><span class="osgridref">' + gr + "</span><br/>";
+        }
+        if (gr === "") {
+            gridref = "Outside OS Grid<br/>";
+        } else {
+            if (this._userOptions.displayMouseGridSquare) {
+                if (zoom > 12) {
+                    var bounds = this._osGridToLatLongSquare(grid, 100);
+                    // change rectangle
+                    this.gridsquare100.setLatLngs(bounds);
+                }
+                if (zoom > 16) {
+                    var bounds2 = this._osGridToLatLongSquare(grid, 10);
+                    // change rectangle
+                    this.gridsquare10.setLatLngs(bounds2);
+                } else {
+                    this.gridsquare10.setLatLngs([[84, -89], [84.00001, -89.000001]]);
+                }
+            } else {
+                this.gridsquare10.setLatLngs([[84, -89], [84.00001, -89.000001]]);
+                this.gridsquare100.setLatLngs([[84, -89], [84.00001, -89.000001]]);
+            }
+        }
+        var lng = latlng.lng.toFixed(5);
+        var lat = latlng.lat.toFixed(5);
+        var value = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
+        return  gridref + value;
     }
 });
 L.Map.mergeOptions({
@@ -34,22 +114,14 @@ L.Map.addInitHook(function () {
 L.control.mouse = function (options) {
     return new L.Control.Mouse(options);
 };
-L.Control.PostcodeStatus = L.Control.extend({
+L.Control.Rightclick = L.Control.extend({
     options: {
         position: 'bottomleft'
     },
     displaymap: null,
     apiUrl2: "http://overpass-api.de/api/interpreter?data=",
     apiUrl: "https://overpass.kumi.systems/api/interpreter?data=",
-    onAdd: function (map) {
-        this._map = map;
-        this._first = true;
-        this._placeslayer = null;
-        ramblersMap.PostcodeStatus = this;
-        this._map.mouseLayer = L.featureGroup([]);
-        this._map.mouseLayer.addTo(this._map);
-        this.enabled = true;
-        this.displayOptions = {
+    _userOptions : {
             postcodes: {
                 number: 20,
                 distance: 10
@@ -65,7 +137,14 @@ L.Control.PostcodeStatus = L.Control.extend({
             osm: {
                 distance: 2
             }
-        };
+        },
+    onAdd: function (map) {
+        this._map = map;
+        this._first = true;
+        this._placeslayer = null;
+        this._map.mouseLayer = L.featureGroup([]);
+        this._map.mouseLayer.addTo(this._map);
+        this.enabled = true;
         this._container = L.DomUtil.create('div', 'leaflet-control-postcodeposition');
         L.DomEvent.disableClickPropagation(this._container);
         this._map.on('zoomend', this._onZoomEnd, this);
@@ -106,12 +185,23 @@ L.Control.PostcodeStatus = L.Control.extend({
     Enabled: function (status) {
         this.enabled = status === true;
     },
+    mapControl: function (value) {
+        this._mapControl = value;
+    },
+    userOptions: function () {
+        return this._userOptions;
+    },
     _onRightClick: function (e) {
+        var self = this;
         if (this._first) {
             this._first = false;
-            document.getElementById("ra-mouse-options").addEventListener("focus", this._clearBoth);
+            document.getElementById("ra-mouse-options").addEventListener("focus", function () {
+                self._map.mouseLayer.clearLayers();
+                self._clearPlacesLayers();
+            });
         }
-        this._clearBoth();
+        this._map.mouseLayer.clearLayers();
+        this._clearPlacesLayers();
         var ele = document.getElementById("ra-mouse-options");
         var option = ele.options[ele.selectedIndex].value;
         if (this.enabled) {
@@ -174,11 +264,11 @@ L.Control.PostcodeStatus = L.Control.extend({
         }
         desc += '<br/><span id="ra-w3w"></span>';
         if (gr !== "") {
-            desc += '<a href="javascript:photos(\'' + gr10 + '\')">[Photos]</a>';
-            desc += '<a href="javascript:streetmap(\'' + gr10 + '\')">[OS Map]</a>';
+            desc += '<a href="javascript:ra.link.photos(\'' + gr10 + '\')">[Photos]</a>';
+            desc += '<a href="javascript:ra.link.streetmap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[OS Map]</a>';
         }
-        desc += '<a href="javascript:googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
-        desc += '<a href="javascript:directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
+        desc += '<a href="javascript:ra.link.googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
+        desc += '<a href="javascript:ra.loc.directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
         this._map.mouseLayer.clearLayers();
         var msg = "   ";
         var point = L.marker(p).bindPopup(msg);
@@ -191,7 +281,7 @@ L.Control.PostcodeStatus = L.Control.extend({
             point.getPopup().setContent(desc);
             point.openPopup();
         }
-        getWhat3Words(e.latlng.lat, e.latlng.lng, "ra-w3w", true);
+        ra.w3w.get(e.latlng.lat, e.latlng.lng, "ra-w3w", true);
     },
     _displayPostcodes: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
@@ -200,6 +290,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         var i;
         var marker;
         var desc = " ";
+        var self = this;
         this._map.mouseLayer.clearLayers();
         var msg = "   ";
         var point = L.marker(p).bindPopup(msg);
@@ -210,9 +301,9 @@ L.Control.PostcodeStatus = L.Control.extend({
             // get postcodes around this point       
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
-            var options = "&dist=" + this.displayOptions.postcodes.distance + "&maxpoints=" + this.displayOptions.postcodes.number;
+            var options = "&dist=" + this._userOptions.postcodes.distance + "&maxpoints=" + this._userOptions.postcodes.number;
             var url = "https://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + options;
-            getJSON(url, function (err, items) {
+            ra.ajax.getJSON(url, function (err, items) {
                 if (err !== null) {
                     var msg = "Error: Something went wrong: " + err;
                     point.getPopup().setContent(msg);
@@ -224,7 +315,7 @@ L.Control.PostcodeStatus = L.Control.extend({
                         for (i = 0; i < items.length; i++) {
 
                             var item = items[i];
-                            var popup = item.Postcode + "<br />     Distance: " + kFormatter(Math.round(item.Distance)) + "m";
+                            var popup = item.Postcode + "<br />     Distance: " + self._kFormatter(Math.round(item.Distance)) + "m";
                             var easting = item.Easting;
                             var northing = item.Northing;
                             var gr = new OsGridRef(easting, northing);
@@ -232,23 +323,23 @@ L.Control.PostcodeStatus = L.Control.extend({
                             var pt = new L.latLng(latlong.lat, latlong.lon);
                             var style;
                             if (i === 0) {
-                                marker = L.marker(pt, {icon: ramblersMap.postcodeIconClosest}).bindPopup(popup);
+                                marker = L.marker(pt, {icon: ra.map.icon.postcodeClosest}).bindPopup(popup);
                                 style = {color: 'green', weight: 3, opacity: 0.2};
                             } else {
-                                marker = L.marker(pt, {icon: ramblersMap.postcodeIcon}).bindPopup(popup);
+                                marker = L.marker(pt, {icon: ra.map.icon.postcode}).bindPopup(popup);
                                 style = {color: 'blue', weight: 3, opacity: 0.2};
                             }
-                            ramblersMap.PostcodeStatus._map.mouseLayer.addLayer(marker);
-                            ramblersMap.PostcodeStatus._map.mouseLayer.addLayer(L.polyline([pt, p], style));
+                            self._map.mouseLayer.addLayer(marker);
+                            self._map.mouseLayer.addLayer(L.polyline([pt, p], style));
                         }
                     }
                     point.getPopup().setContent("<b>" + items.length + " Postcodes found</b>");
                     point.openPopup();
-                    var bounds = ramblersMap.PostcodeStatus._map.mouseLayer.getBounds();
-                    ramblersMap.PostcodeStatus._map.fitBounds(bounds, {padding: [150, 150]});
+                    var bounds = self._map.mouseLayer.getBounds();
+                    self._map.fitBounds(bounds, {padding: [150, 150]});
                 }
                 setTimeout(function (point) {
-                    ramblersMap.PostcodeStatus._map.removeLayer(point);
+                    self._map.removeLayer(point);
                 }, 3000, point);
             });
         } else {
@@ -258,13 +349,8 @@ L.Control.PostcodeStatus = L.Control.extend({
         }
 
     },
-    _getPointInfo: function (east, north) {
-        var value = {};
-        var os = new OsGridRef(east, north);
-        var pt = OsGridRef.osGridToLatLon(os);
-        value.latlng = L.latLng(pt.lat, pt.lon);
-        value.gr = os.toString(6);
-        return value;
+    _kFormatter: function (num) {
+        return num > 999 ? (num / 1000).toFixed(1) + 'K' : num;
     },
     _displayOsMaps: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
@@ -272,6 +358,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         var gr = grid.toString(6);
         var i;
         var desc = " ";
+        var self = this;
         this._map.mouseLayer.clearLayers();
         var msg = "   ";
         var point = L.marker(p).bindPopup(msg);
@@ -283,7 +370,7 @@ L.Control.PostcodeStatus = L.Control.extend({
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
             var url = "https://osmaps.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north;
-            getJSON(url, function (err, items) {
+            ra.ajax.getJSON(url, function (err, items) {
                 if (err !== null) {
                     var msg = "Error: Something went wrong: " + err;
                     point.getPopup().setContent(msg);
@@ -295,18 +382,15 @@ L.Control.PostcodeStatus = L.Control.extend({
                             var item = items[i];
                             content += "<h4>" + item.type + " " + item.number + "</h4>";
                             content += "<p>" + item.title + "</p>";
-                            ramblersMap.PostcodeStatus.displayOSMap(item, ramblersMap.map.mouseLayer);
+                            ra.map.os.display(item, self._map.mouseLayer);
                         }
                     }
 
                     point.getPopup().setContent(content);
                     point.openPopup();
-                    var bounds = ramblersMap.PostcodeStatus._map.mouseLayer.getBounds();
-                    ramblersMap.PostcodeStatus._map.fitBounds(bounds, {padding: [150, 150]});
+                    var bounds = self._map.mouseLayer.getBounds();
+                    self._map.fitBounds(bounds, {padding: [150, 150]});
                 }
-                // setTimeout(function (point) {
-                //      ramblersMap.PostcodeStatus._map.removeLayer(point);
-                //  }, 5000, point);
             });
         } else {
             desc += "<br/>Outside OS Grid";
@@ -322,24 +406,25 @@ L.Control.PostcodeStatus = L.Control.extend({
         var msg = "<b>Searching for Ramblers Groups ...</b>";
         this._map.mouseLayer.clearLayers();
         var point = L.marker(p).bindPopup(msg);
+        var self = this;
         this._map.mouseLayer.addLayer(point);
         //  point.getPopup().setContent(msg);
         point.openPopup();
         var $latitude = e.latlng.lat;
         var $longitude = e.latlng.lng;
-        var options = "&dist=" + this.displayOptions.groups.distance + "&maxpoints=" + this.displayOptions.groups.number;
+        var options = "&dist=" + this._userOptions.groups.distance + "&maxpoints=" + this._userOptions.groups.number;
         var url = "https://groups.theramblers.org.uk/index.php?latitude=" + $latitude + "&longitude=" + $longitude + options;
-        getJSON(url, function (err, items) {
+        ra.ajax.getJSON(url, function (err, items) {
             if (err !== null) {
                 var msg = "Error: Something went wrong: " + err;
                 point.getPopup().setContent(msg);
             } else {
-                var self = ramblersMap.PostcodeStatus;
+
                 if (items.length === 0) {
-                    var closest = "No Ramblers Groups found within " + self.displayOptions.groups.distance + "km";
+                    var closest = "No Ramblers Groups found within " + self._userOptions.groups.distance + "km";
                     point.getPopup().setContent(closest);
                 } else {
-                    msg = items.length + " Ramblers Groups found within " + self.displayOptions.groups.distance + "km";
+                    msg = items.length + " Ramblers Groups found within " + self._userOptions.groups.distance + "km";
                     point.getPopup().setContent(msg);
                     point.openPopup();
                     for (i = 0; i < items.length; i++) {
@@ -375,19 +460,19 @@ L.Control.PostcodeStatus = L.Control.extend({
                         marker = L.marker(pt, {icon: icon}).bindPopup(popup);
                         //   style = {color: 'blue', weight: 3, opacity: 0.2};
 
-                        ramblersMap.PostcodeStatus._map.mouseLayer.addLayer(marker);
+                        self._map.mouseLayer.addLayer(marker);
                     }
-                    var bounds = ramblersMap.PostcodeStatus._map.mouseLayer.getBounds();
-                    ramblersMap.PostcodeStatus._map.fitBounds(bounds, {padding: [150, 150]});
+                    var bounds = self._map.mouseLayer.getBounds();
+                    self._map.fitBounds(bounds, {padding: [150, 150]});
                 }
             }
             setTimeout(function (point) {
-                ramblersMap.PostcodeStatus._map.removeLayer(point);
+                self._map.removeLayer(point);
             }, 3000, point);
         });
     },
     _displayOSM: function (e, option) {
-        var self = ramblersMap.PostcodeStatus;
+        var self = this;
         var osmOption = this.osmOptions[option];
         var tag = osmOption.tag;
         var type = osmOption.type;
@@ -407,16 +492,16 @@ L.Control.PostcodeStatus = L.Control.extend({
         //console.log("Query: " + query);
         var url = this.getUrl(query);
         //console.log("Query: " + url);
-        getJSON(url, function (err, items) {
+        ra.ajax.getJSON(url, function (err, items) {
             if (err !== null) {
                 var msg = "Error: Something went wrong: " + err;
                 point.getPopup().setContent(msg);
             } else {
                 if (items.elements.length === 0) {
-                    var closest = "No " + title + " found within " + self.displayOptions.osm.distance + "Km";
+                    var closest = "No " + title + " found within " + self._userOptions.osm.distance + "Km";
                     point.getPopup().setContent(closest);
                 } else {
-                    msg = "<b>" + items.elements.length + " " + title + " found within " + self.displayOptions.osm.distance + "Km</b>";
+                    msg = "<b>" + items.elements.length + " " + title + " found within " + self._userOptions.osm.distance + "Km</b>";
                     msg += "<p>" + items.osm3s.copyright + "</p>";
                     point.getPopup().setContent(msg);
                     point.openPopup();
@@ -436,55 +521,55 @@ L.Control.PostcodeStatus = L.Control.extend({
     _displayAllTags: function (e) {
         alert('This option not available yet');
         return;
-        var self = ramblersMap.PostcodeStatus;
-        var title = "All items";
-        var single = "Item";
-        var type = "Items";
-        var p = new LatLon(e.latlng.lat, e.latlng.lng);
-        var i;
-        var msg = "<b>Searching for " + type + " ...</b>";
-        this._map.mouseLayer.clearLayers();
-        var point = L.marker(p).bindPopup(msg);
-        this._map.mouseLayer.addLayer(point);
-        //  point.getPopup().setContent(msg);
-        point.openPopup();
-        this._latlng = e.latlng;
-        // var queryTemplate = '[out:json]; (node({{bbox}});way({{bbox}});relation({{bbox}});';
-        var queryTemplate = '[out:json];(way(around:200,52.71017,-1.3480224););out body;';
-        //   node({{bbox}})(if:count_tags() > 0);
-        //  var query = this.getQuery(queryTemplate, null, null);
-        var lat = this._latlng.lat;
-        var lng = this._latlng.lng;
-        var kwargs = {bbox: this.getBox()};
-        var query = L.Util.template(queryTemplate, kwargs);
-        //console.log("Query: " + query);
-        var url = this.getUrl(query);
-        //console.log("Query: " + url);
-        getJSON(url, function (err, items) {
-            if (err !== null) {
-                var msg = "Error: Something went wrong: " + err;
-                point.getPopup().setContent(msg);
-            } else {
-                if (items.elements.length === 0) {
-                    var closest = "No " + title + " found within " + self.displayOptions.osm.distance + "Km";
-                    point.getPopup().setContent(closest);
-                } else {
-                    msg = "<b>" + items.elements.length + " " + title + " found within " + self.displayOptions.osm.distance + "Km</b>";
-                    msg += "<p>" + items.osm3s.copyright + "</p>";
-                    point.getPopup().setContent(msg);
-                    point.openPopup();
-                    for (i = 0; i < items.elements.length; i++) {
-                        var item = items.elements[i];
-                        self.displayElement(item, single);
-                    }
-                    var bounds = self._map.mouseLayer.getBounds();
-                    self._map.fitBounds(bounds, {padding: [150, 150]});
-                }
-            }
-            setTimeout(function (point) {
-                self._map.removeLayer(point);
-            }, 6000, point);
-        });
+//        var self =this;
+//        var title = "All items";
+//        var single = "Item";
+//        var type = "Items";
+//        var p = new LatLon(e.latlng.lat, e.latlng.lng);
+//        var i;
+//        var msg = "<b>Searching for " + type + " ...</b>";
+//        var point = L.marker(p).bindPopup(msg);
+//        this._map.mouseLayer.clearLayers();
+//        this._map.mouseLayer.addLayer(point);
+//        //  point.getPopup().setContent(msg);
+//        point.openPopup();
+//        this._latlng = e.latlng;
+//        // var queryTemplate = '[out:json]; (node({{bbox}});way({{bbox}});relation({{bbox}});';
+//        var queryTemplate = '[out:json];(way(around:200,52.71017,-1.3480224););out body;';
+//        //   node({{bbox}})(if:count_tags() > 0);
+//        //  var query = this.getQuery(queryTemplate, null, null);
+//        var lat = this._latlng.lat;
+//        var lng = this._latlng.lng;
+//        var kwargs = {bbox: this.getBox()};
+//        var query = L.Util.template(queryTemplate, kwargs);
+//        //console.log("Query: " + query);
+//        var url = this.getUrl(query);
+//        //console.log("Query: " + url);
+//        ra.ajax.getJSON(url, function (err, items) {
+//            if (err !== null) {
+//                var msg = "Error: Something went wrong: " + err;
+//                point.getPopup().setContent(msg);
+//            } else {
+//                if (items.elements.length === 0) {
+//                    var closest = "No " + title + " found within " + self._userOptions.osm.distance + "Km";
+//                    point.getPopup().setContent(closest);
+//                } else {
+//                    msg = "<b>" + items.elements.length + " " + title + " found within " + self._userOptions.osm.distance + "Km</b>";
+//                    msg += "<p>" + items.osm3s.copyright + "</p>";
+//                    point.getPopup().setContent(msg);
+//                    point.openPopup();
+//                    for (i = 0; i < items.elements.length; i++) {
+//                        var item = items.elements[i];
+//                        self.displayElement(item, single);
+//                    }
+//                    var bounds = self._map.mouseLayer.getBounds();
+//                    self._map.fitBounds(bounds, {padding: [150, 150]});
+//                }
+//            }
+//            setTimeout(function (point) {
+//                self._map.removeLayer(point);
+//            }, 6000, point);
+//        });
     },
     displayElement: function (node, title) {
         switch (node.type) {
@@ -549,7 +634,7 @@ L.Control.PostcodeStatus = L.Control.extend({
     displayProperty: function (prop) {
         prop = prop.replace(/:/g, " ");
         prop = prop.replace(/_/g, " ");
-        return this.titleCase(prop);
+        return ra.titleCase(prop);
     },
     displayPropertyValue: function (value) {
         var link = false;
@@ -565,11 +650,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         value = value.replace(/_/g, " ");
         return value;
     },
-    titleCase: function (str) {
-        return str.replace(/(^|\s)\S/g, function (t) {
-            return t.toUpperCase();
-        });
-    },
+
     getAddr: function (tags) {
         var out = "";
         out += this.getProperty(tags, "addr:housenumber");
@@ -610,24 +691,20 @@ L.Control.PostcodeStatus = L.Control.extend({
         return bounds.getSouth().toPrecision(8) + "," + bounds.getWest().toPrecision(8) + "," + bounds.getNorth().toPrecision(8) + "," + bounds.getEast().toPrecision(8);
     },
     getRadius: function () {
-        return this.displayOptions.osm.distance * 1000;
-    },
-    _clearBoth: function () {
-        ramblersMap.PostcodeStatus._map.mouseLayer.clearLayers();
-        ramblersMap.PostcodeStatus._clearPlacesLayers();
+        return this._userOptions.osm.distance * 1000;
     },
     _addPlacesLayers: function () {
         this._placeslayer = [];
         for (var i = 1; i < 6; i++) {
             this._placeslayer[i] = L.featureGroup([]);
             this._placeslayer[i].addTo(this._map);
-            ramblersMap.mapControl.addOverlay(this._placeslayer[i], "<span class='ramblers-places-icon'><img src='libraries/ramblers/leaflet/images/" + i + "star.png' alt='" + i + " Star'> places</span>");
+            this._mapControl.addOverlay(this._placeslayer[i], "<span class='ramblers-places-icon'><img src='libraries/ramblers/leaflet/images/" + i + "star.png' alt='" + i + " Star'> places</span>");
         }
     },
     _clearPlacesLayers: function () {
-        if (ramblersMap.PostcodeStatus._placeslayer !== null) {
+        if (this._placeslayer !== null) {
             for (i = 1; i < 6; i++) {
-                ramblersMap.PostcodeStatus._placeslayer[i].clearLayers();
+                this._placeslayer[i].clearLayers();
             }
         }
     },
@@ -642,7 +719,7 @@ L.Control.PostcodeStatus = L.Control.extend({
         return bounds;
     },
     _displayPlaces: function (e) {
-        var self = ramblersMap.PostcodeStatus;
+        var self = this;
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
@@ -659,9 +736,9 @@ L.Control.PostcodeStatus = L.Control.extend({
             point.openPopup();
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
-            var limit = "&dist=" + self.displayOptions.starting.distance + "&maxpoints=" + self.displayOptions.starting.number;
+            var limit = "&dist=" + self._userOptions.starting.distance + "&maxpoints=" + self._userOptions.starting.number;
             var url = "https://places.walkinginfo.co.uk/get.php?easting=" + east + "&northing=" + north + limit;
-            getJSON(url, function (err, items) {
+            ra.ajax.getJSON(url, function (err, items) {
                 if (err !== null) {
                     desc += "<br/>Error: Something went wrong: " + err;
                 } else {
@@ -670,28 +747,28 @@ L.Control.PostcodeStatus = L.Control.extend({
                         var item = items[i];
                         if (item.S > 0 && item.S < 6) {
                             var marker;
-                            marker = addPlaceMarker(item.GR, item.S, item.Lat, item.Lng);
-                            ramblersMap.PostcodeStatus._placeslayer[item.S].addLayer(marker);
+                            marker = ra.map.places.addMarker(item.GR, item.S, item.Lat, item.Lng);
+                            self._placeslayer[item.S].addLayer(marker);
                             no += 1;
                         }
                     }
                     if (no === 0) {
-                        desc += "<br/>No meeting/starting places found within " + self.displayOptions.starting.distance + "km";
+                        desc += "<br/>No meeting/starting places found within " + self._userOptions.starting.distance + "km";
                     } else {
                         if (no === 100) {
                             desc += "<br/>100+ locations found within 10Km";
                         } else {
-                            desc += "<br/>" + no + " locations found within " + self.displayOptions.starting.distance + "km";
+                            desc += "<br/>" + no + " locations found within " + self._userOptions.starting.distance + "km";
                         }
-                        var bounds = ramblersMap.PostcodeStatus._getPlacesBounds();
-                        ramblersMap.PostcodeStatus._map.fitBounds(bounds, {padding: [150, 150]});
+                        var bounds = self._getPlacesBounds();
+                        self._map.fitBounds(bounds, {padding: [150, 150]});
                     }
                     point.getPopup().setContent(desc);
                     // point.openPopup();
 
                 }
                 setTimeout(function (point) {
-                    ramblersMap.PostcodeStatus._map.removeLayer(point);
+                    self._map.removeLayer(point);
                 }, 10000, point);
             });
         } else {
@@ -700,42 +777,43 @@ L.Control.PostcodeStatus = L.Control.extend({
             point.openPopup();
         }
     },
-    displayOSMap: function (map, layer) {
-        var boundstr = "Bounds: <br/>";
-        for (j = 0; j < map.bounds.length; j++) {
-            var rect;
-            var bounds = map.bounds[j];
-            var pt1 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmin, bounds.northingmin);
-            var pt2 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmax, bounds.northingmax);
-            var area = [pt1.latlng, pt2.latlng];
-            boundstr += pt1.gr + " to " + pt2.gr + "<br/>";
-        }
-        //  console.log(map.type + " " + map.number);
-        //  console.log(boundstr);
-        for (j = 0; j < map.bounds.length; j++) {
-            var rect;
-            var bounds = map.bounds[j];
-            var pt1 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmin, bounds.northingmin);
-            var pt2 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmin, bounds.northingmax);
-            var pt3 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmax, bounds.northingmax);
-            var pt4 = ramblersMap.PostcodeStatus._getPointInfo(bounds.eastingmax, bounds.northingmin);
-            var area = [pt1.latlng, pt2.latlng, pt3.latlng, pt4.latlng];
-            if (map.scale === "50000") {
-                rect = L.polygon(area, {color: "#ff0000", weight: 1});
-            } else {
-                rect = L.polygon(area, {color: "#ff7800", weight: 1});
-            }
-            var msg = "<h4>" + map.type + " " + map.number + "</h4>";
-            msg += "<p>" + map.title + "</p>";
-            msg += "<p>Scale: 1:" + map.scale.substr(0, 2) + "k</p>";
-            msg += boundstr;
-            rect.bindPopup(msg);
-            layer.addLayer(rect);
-        }
-    }
+//    displayOSMap: function (map, layer) {
+//        var boundstr = "Bounds: <br/>";
+//        for (j = 0; j < map.bounds.length; j++) {
+//            var rect;
+//            var bounds = map.bounds[j];
+//            var pt1 = this._getPointInfo(bounds.eastingmin, bounds.northingmin);
+//            var pt2 = this._getPointInfo(bounds.eastingmax, bounds.northingmax);
+//            var area = [pt1.latlng, pt2.latlng];
+//            boundstr += pt1.gr + " to " + pt2.gr + "<br/>";
+//        }
+//        //  console.log(map.type + " " + map.number);
+//        //  console.log(boundstr);
+//        for (j = 0; j < map.bounds.length; j++) {
+//            var rect;
+//            var bounds = map.bounds[j];
+//            var pt1 = this._getPointInfo(bounds.eastingmin, bounds.northingmin);
+//            var pt2 = this._getPointInfo(bounds.eastingmin, bounds.northingmax);
+//            var pt3 = this._getPointInfo(bounds.eastingmax, bounds.northingmax);
+//            var pt4 = this._getPointInfo(bounds.eastingmax, bounds.northingmin);
+//            var area = [pt1.latlng, pt2.latlng, pt3.latlng, pt4.latlng];
+//            if (map.scale === "50000") {
+//                rect = L.polygon(area, {color: "#ff0000", weight: 1});
+//            } else {
+//                rect = L.polygon(area, {color: "#ff7800", weight: 1});
+//            }
+//            var msg = "<h4>" + map.type + " " + map.number + "</h4>";
+//            msg += "<p>" + map.title + "</p>";
+//            msg += "<p>Scale: 1:" + map.scale.substr(0, 2) + "k</p>";
+//            msg += boundstr;
+//            rect.bindPopup(msg);
+//            layer.addLayer(rect);
+//        }
+//    },
+
 });
-L.control.postcodeStatus = function (options) {
-    return new L.Control.PostcodeStatus(options);
+L.control.rightclick = function (options) {
+    return new L.Control.Rightclick(options);
 };
 L.Control.UsageAgreement = L.Control.extend({
     options: {
@@ -751,7 +829,7 @@ L.Control.UsageAgreement = L.Control.extend({
     onRemove: function (map) {
         map.off('zoomend', this._onZoomEnd);
         map.off('contextmenu', this._onClick);
-    },
+    }
 
 });
 L.control.usageAgreement = function (options) {

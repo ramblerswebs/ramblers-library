@@ -23,6 +23,7 @@ class RLeafletMapdraw extends RLeafletMap {
     }
 
     public function display() {
+        parent::setCommand('plotWalkingRoute');
         if ($this->displayDescription) {
             echo "<div id='ra-description' class='clearfix'>";
             if (RLicense::isOpenRoutingServiceKeySet()) {
@@ -32,26 +33,28 @@ class RLeafletMapdraw extends RLeafletMap {
             }
             echo "</div>";
         }
-        echo "<div id='ra-map-container'>";
-        echo "<div id='ra-map-details'><p></div>";
+
         $this->help_page = "draw-walking-route.html";
         $this->options->fullscreen = true;
         $this->options->search = true;
         $this->options->locationsearch = true;
         $this->options->osgrid = true;
         $this->options->mouseposition = true;
-        $this->options->postcodes = true;
+        $this->options->rightclick = true;
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
         $this->options->cluster = false;
+        $this->options->mylocation = true;
+        $this->options->maptools = true;
         $this->options->draw = true;
         $this->options->print = true;
         $this->options->ramblersPlaces = true;
-        $text = "addDrawControl($this->lat,$this->long,$this->zoom)";
-        parent::addContent($text);
+        $this->options->latitude = $this->lat;
+        $this->options->longitude = $this->long;
+        $this->options->zoom = $this->zoom;
+
         parent::display();
-        echo "</div>";
-        echo "<br/>";
+
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/leaflet/ra-gpx-drawcontrol.js", "text/javascript");
         $path = "libraries/ramblers/vendors/Leaflet.draw-1.0.4/dist/";

@@ -1,3 +1,4 @@
+var L;
 L.Control.ReverseRoute = L.Control.extend({
     options: {
         title: 'Reverse the direction of walking route',
@@ -16,26 +17,26 @@ L.Control.ReverseRoute = L.Control.extend({
         L.DomEvent.on(this.link, 'click', this._reverse_routes, this);
         this._appendButtons(containerAll);
         this.holder.style.display = "none";
-        ra_gpx_reverse_this = this;
         return containerAll;
     },
     setRouteItems: function (itemsCollection) {
         this._itemsCollection = itemsCollection;
     },
     setStatus: function (status) {
-        ra_gpx_reverse_this.enabled = true;
+        this.enabled = true;
         if (status == "off") {
-            ra_gpx_reverse_this.enabled = false;
+            this.enabled = false;
         }
         if (status == "auto") {
-            ra_gpx_reverse_this.enabled = false;
+            this.enabled = false;
+            var self = this;
             this._itemsCollection.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
-                    ra_gpx_reverse_this.enabled = true;
+                    self.enabled = true;
                 }
             });
         }
-        if (ra_gpx_reverse_this.enabled) {
+        if (this.enabled) {
             L.DomUtil.removeClass(this._container, 'ra-reverse-toolbar-button-disabled');
             this.link.title = this.options.title;
         } else {
@@ -56,7 +57,7 @@ L.Control.ReverseRoute = L.Control.extend({
         this.status.innerHTML = "Route reversed";
     },
     _reverse_routes: function (evt) {
-        if (ra_gpx_reverse_this.enabled) {
+        if (this.enabled) {
             this._itemsCollection.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
                     var points = layer.getLatLngs();
@@ -68,8 +69,9 @@ L.Control.ReverseRoute = L.Control.extend({
             });
             this._itemsCollection.fire('reverse:reversed');
             this.holder.style.display = "inline-block";
+            var self = this;
             setTimeout(function () {
-                ra_gpx_reverse_this.holder.style.display = "none";
+                self.holder.style.display = "none";
             }, 2000);
         }
     }

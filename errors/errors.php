@@ -17,7 +17,7 @@ class RErrors {
 
     private static $ERROR_STORE_URL = "https://cache.ramblers-webs.org.uk/store_errors.php";
 
-    public static function notifyError($errorText, $action, $level, $returncodes = null) {
+    public static function notifyError($errorText, $action, $level, $returncode = null) {
 
         $url = self::$ERROR_STORE_URL;
 
@@ -26,14 +26,17 @@ class RErrors {
         $data['domain'] = $uri->toString();
         $data['action'] = $action;
         $data['error'] = $errorText;
-        if ($returncodes !== null) {
-            $data['action'] = $action . " [" . $returncode[0] . "]";
+        if ($returncode !== null) {
+            $data['action'] = $action . " [" . $returncode . "]";
         }
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);  // allow xx seconds for timeout
+        curl_setopt($curl, CURLOPT_TIMEOUT, 20);  // allow xx seconds for timeout
+
         curl_setopt($curl, CURLOPT_HEADER, 1);
         curl_setopt($curl, CURLINFO_HEADER_OUT, true);
 
