@@ -11,7 +11,7 @@ ra.baseDirectory = function () {
 ra.decodeOptions = function (value) {
     var options = JSON.parse(value);
     ra._baseDirectory = options.base + "/";
-    value="";
+    value = "";
     return options;
 };
 ra.decodeData = function (value) {
@@ -19,7 +19,7 @@ ra.decodeData = function (value) {
         return null;
     }
     var data = JSON.parse(value);
-    value="";
+    value = "";
     return data;
 };
 // convert string to title case
@@ -129,7 +129,7 @@ ra.ajax = (function () {
             if (xmlhttp.readyState === 4 && xmlhttp.status === 200)
             {
                 displayFunc(target, xmlhttp.responseText);
-                           }
+            }
         };
         xmlhttp.open("GET", $url, true);
         //Send the proper header information along with the request
@@ -375,8 +375,8 @@ ra.time = (function () {
         if (typeof datetime === "string") {
             value = new Date(datetime);
         }
-        var tim= value.toLocaleString('default', {timeStyle: 'short', hour12: true});
-        tim=tim.replace(/^0+/i, '');
+        var tim = value.toLocaleString('default', {timeStyle: 'short', hour12: true});
+        tim = tim.replace(/^0+/i, '');
         return tim.replace(":00", "");
     };
     time.secsToHrsMins = function (seconds) {
@@ -446,6 +446,7 @@ ra.html = (function () {
 
             });
         }
+        // put tags into structure
         for (index = 0; index < items.length; ++index) {
             var item = items[index];
             if (item.hasOwnProperty('parent')) {
@@ -615,10 +616,16 @@ ra.link = (function () {
 ra.w3w = (function () {
     var w3w = {};
     w3w.get = function (lat, lng, id, place) {
+        var tag;
+        if (typeof id === 'string') {
+            tag = document.getElementById(id);
+        } else {
+            tag = id;
+        }
         var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
         var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
         ra.ajax.getJSON(url, function (err, items) {
-            var tag = document.getElementById(id);
+
             if (err !== null || tag === null) {
                 tag.innerHTML = "Error accessing What3Words: " + err + "<br/>";
             } else {
