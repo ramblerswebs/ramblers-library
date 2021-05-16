@@ -137,7 +137,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
             var result = raData.item;
             _this.searchLayer.clearLayers();
             result.center = new L.LatLng(result.lat, result.lon);
-            new L.Marker(result.center, {icon: ra.map.icon.redmarker})
+            new L.Marker(result.center, {icon: ra.map.icon.redmarker()})
                     .bindPopup("<b>" + result.class + ": " + result.type + "</b><br/>" + result.display_name)
                     .addTo(_this.searchLayer)
                     .openPopup();

@@ -72,12 +72,12 @@ var raWalksMap = (function () {
             $lat = $walk.startLocation.latitude;
 
             if ($walk.startLocation.exact) {
-                $icon = ra.map.icon.markerStart;
+                $icon = ra.map.icon.markerStart();
             } else {
-                $icon = ra.map.icon.markerArea;
+                $icon = ra.map.icon.markerArea();
             }
             if (ra.walk.isCancelled($walk)) {
-                $icon = ra.map.icon.markerCancelled;
+                $icon = ra.map.icon.markerCancelled();
             }
             $details = ra.walk.getWalkValues($walk, this.settings.mapFormat);
             $class = $this.walkClass + $walk.status;

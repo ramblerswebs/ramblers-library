@@ -323,10 +323,10 @@ L.Control.Rightclick = L.Control.extend({
                             var pt = new L.latLng(latlong.lat, latlong.lon);
                             var style;
                             if (i === 0) {
-                                marker = L.marker(pt, {icon: ra.map.icon.postcodeClosest}).bindPopup(popup);
+                                marker = L.marker(pt, {icon: ra.map.icon.postcodeClosest()}).bindPopup(popup);
                                 style = {color: 'green', weight: 3, opacity: 0.2};
                             } else {
-                                marker = L.marker(pt, {icon: ra.map.icon.postcode}).bindPopup(popup);
+                                marker = L.marker(pt, {icon: ra.map.icon.postcode()}).bindPopup(popup);
                                 style = {color: 'blue', weight: 3, opacity: 0.2};
                             }
                             self._map.mouseLayer.addLayer(marker);

@@ -14,83 +14,164 @@ ra.map = (function () {
     my.icon = (function () {
         var icon = {};
 
-        icon.postcode = L.icon({
-            iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/postcode-icon.png',
-            iconSize: [24, 18], // size of the icon
-            shadowSize: [26, 20], // size of the shadow
-            iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
-            shadowAnchor: [0, 0], // the same for the shadow
-            popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
-        });
-        icon.postcodeClosest = L.icon({
-            iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/postcode-icon-closest.png',
-            iconSize: [24, 18], // size of the icon
-            shadowSize: [26, 20], // size of the shadow
-            iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
-            shadowAnchor: [0, 0], // the same for the shadow
-            popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
-        });
-        icon.redmarker = L.icon({
-            iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/redmarker.png',
-            iconSize: [32, 32], // size of the icon
-            shadowSize: [26, 20], // size of the shadow
-            iconAnchor: [16, 32], // point of the icon which will correspond to marker's location
-            shadowAnchor: [0, 0], // the same for the shadow
-            popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
-        });
-        icon.s0 = L.icon({
-            iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/rejected.png',
-            iconSize: [15, 15]
-        });
-        icon.s1 = L.icon({
-            iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/1star.png',
-            iconSize: [19, 19]
-        });
-        icon.s2 = L.icon({
-            iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/2star.png',
-            iconSize: [21, 21]
-        });
-        icon.s3 = L.icon({
-            iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/3star.png',
-            iconSize: [23, 23]
-        });
-        icon.s4 = L.icon({
-            iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/4star.png',
-            iconSize: [25, 25]
-        });
-        icon.s5 = L.icon({
-            iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/5star.png',
-            iconSize: [27, 27]
-        });
-        icon.markerRoute = L.icon({
-            iconUrl: ra.baseDirectory() + "libraries/ramblers/images/marker-route.png",
-            iconSize: [30, 40],
-            iconAnchor: [15, 36]
-        });
-        icon.markerStart = L.icon({
-            iconUrl: ra.baseDirectory() + "libraries/ramblers/images/marker-start.png",
-            iconSize: [35, 35]
-        });
-        icon.markerArea = L.icon({
-            iconUrl: ra.baseDirectory() + "libraries/ramblers/images/marker-area.png",
-            iconSize: [35, 35]
-        });
-        icon.markerCancelled = L.icon({
-            iconUrl: ra.baseDirectory() + "libraries/ramblers/images/marker-cancelled.png",
-            iconSize: [35, 35]
-        });
-        icon.walkingarea = L.icon({
-            iconUrl: ra.baseDirectory() + "libraries/ramblers/images/area.png",
-            iconSize: [40, 35]
-        });
-        icon.walkinggroup = L.icon({
-            iconUrl: ra.baseDirectory() + "libraries/ramblers/images/group.png",
-            iconSize: [40, 35]
-        });
-        icon.walkingspecial = L.icon({
-            iconUrl: ra.baseDirectory() + "libraries/ramblers/images/specialgroup.png",
-            iconSize: [40, 35]
-        });
+        icon.postcode = function () {
+            if (typeof (icon._postcode) === "undefined") {
+                icon._postcode = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/postcode-icon.png',
+                    iconSize: [24, 18], // size of the icon
+                    shadowSize: [26, 20], // size of the shadow
+                    iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
+                    shadowAnchor: [0, 0], // the same for the shadow
+                    popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
+                });
+            }
+            return icon._postcode;
+        };
+        icon.postcodeClosest = function () {
+            if (typeof (icon._postcodeClosest) === "undefined") {
+                icon._postcodeClosest = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/postcode-icon-closest.png',
+                    iconSize: [24, 18], // size of the icon
+                    shadowSize: [26, 20], // size of the shadow
+                    iconAnchor: [12, 9], // point of the icon which will correspond to marker's location
+                    shadowAnchor: [0, 0], // the same for the shadow
+                    popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
+                });
+            }
+            return icon._postcodeClosest;
+        };
+        icon.redmarker = function () {
+            if (typeof (icon._redmarker) === "undefined") {
+                icon._redmarker = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/redmarker.png',
+                    iconSize: [32, 32], // size of the icon
+                    shadowSize: [26, 20], // size of the shadow
+                    iconAnchor: [16, 32], // point of the icon which will correspond to marker's location
+                    shadowAnchor: [0, 0], // the same for the shadow
+                    popupAnchor: [0, -12] // point from which the popup should open relative to the iconAnchor
+                });
+            }
+            return icon._redmarker;
+        };
+        icon.s0 = function () {
+            if (typeof (icon._s0) === "undefined") {
+                icon._s0 = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/rejected.png',
+                    iconSize: [15, 15]
+                });
+            }
+            return icon._s0;
+        };
+        icon.s1 = function () {
+            if (typeof (icon._s1) === "undefined") {
+                icon._s1 = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/1star.png',
+                    iconSize: [19, 19]
+                });
+            }
+            return icon._s1;
+        };
+        icon.s2 = function () {
+            if (typeof (icon._s2) === "undefined") {
+                icon._s2 = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/2star.png',
+                    iconSize: [21, 21]
+                });
+            }
+            return icon._s2;
+        };
+        icon.s3 = function () {
+            if (typeof (icon._s3) === "undefined") {
+                icon._s3 = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/3star.png',
+                    iconSize: [23, 23]
+                });
+            }
+            return icon._s3;
+        };
+        icon.s4 = function () {
+            if (typeof (icon._s4) === "undefined") {
+                icon._s4 = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/4star.png',
+                    iconSize: [25, 25]
+                });
+            }
+            return icon._s4;
+        };
+        icon.s5 = function () {
+            if (typeof (icon._s5) === "undefined") {
+                icon._s5 = L.icon({
+                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/5star.png',
+                    iconSize: [27, 27]
+                });
+            }
+            return icon._s5;
+        };
+        icon.markerRoute = function () {
+            if (typeof (icon._markerRoute) === "undefined") {
+                icon._markerRoute = L.icon({
+                    iconUrl: ra.baseDirectory() + "libraries/ramblers/images/marker-route.png",
+                    iconSize: [30, 40],
+                    iconAnchor: [15, 36]
+                });
+            }
+            return icon._markerRoute;
+        };
+        icon.markerStart = function () {
+            if (typeof (icon._markerStart) === "undefined") {
+                icon._markerStart = L.icon({
+                    iconUrl: ra.baseDirectory() + "libraries/ramblers/images/marker-start.png",
+                    iconSize: [35, 35]
+                });
+            }
+            return icon._markerStart;
+        };
+        icon.markerArea = function () {
+            if (typeof (icon._markerArea) === "undefined") {
+                icon._markerArea = L.icon({
+                    iconUrl: ra.baseDirectory() + "libraries/ramblers/images/marker-area.png",
+                    iconSize: [35, 35]
+                });
+            }
+            return icon._markerArea;
+        };
+        icon.markerCancelled = function () {
+            if (typeof (icon._markerCancelled) === "undefined") {
+                icon._markerCancelled = L.icon({
+                    iconUrl: ra.baseDirectory() + "libraries/ramblers/images/marker-cancelled.png",
+                    iconSize: [35, 35]
+                });
+            }
+            return icon._markerCancelled;
+        };
+        icon.walkingarea = function () {
+            if (typeof (icon._walkingarea) === "undefined") {
+                icon._walkingarea = L.icon({
+                    iconUrl: ra.baseDirectory() + "libraries/ramblers/images/area.png",
+                    iconSize: [40, 35]
+                });
+            }
+            return icon._walkingarea;
+        };
+        icon.walkinggroup = function () {
+            if (typeof (icon._walkinggroup) === "undefined") {
+                icon._walkinggroup = L.icon({
+                    iconUrl: ra.baseDirectory() + "libraries/ramblers/images/group.png",
+                    iconSize: [40, 35]
+                });
+            }
+            return icon._walkinggroup;
+        };
+        icon.walkingspecial = function () {
+            if (typeof (icon._walkingspecial) === "undefined") {
+                icon._walkingspecial = L.icon({
+                    iconUrl: ra.baseDirectory() + "libraries/ramblers/images/specialgroup.png",
+                    iconSize: [40, 35]
+                });
+            }
+            return icon._walkingspecial;
+        };
+
         icon.grade = function (nationalGrade) {
             var icon = null;
             switch (nationalGrade) {
@@ -229,22 +310,22 @@ ra.map = (function () {
             var $icon;
             switch ($no) {
                 case 0:
-                    $icon = ra.map.icon.s0;
+                    $icon = ra.map.icon.s0();
                     break;
                 case 1:
-                    $icon = ra.map.icon.s1;
+                    $icon = ra.map.icon.s1();
                     break;
                 case 2:
-                    $icon = ra.map.icon.s2;
+                    $icon = ra.map.icon.s2();
                     break;
                 case 3:
-                    $icon = ra.map.icon.s3;
+                    $icon = ra.map.icon.s3();
                     break;
                 case 4:
-                    $icon = ra.map.icon.s4;
+                    $icon = ra.map.icon.s4();
                     break;
                 case 5:
-                    $icon = ra.map.icon.s5;
+                    $icon = ra.map.icon.s5();
                     break;
             }
 

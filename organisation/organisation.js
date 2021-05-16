@@ -41,7 +41,7 @@ var raOrganisationMap = (function () {
         $popup += this.formatAltitude(route);
         $lat = item.latitude;
         $long = item.longitude;
-        this.cluster.addMarker($popup, $lat, $long, ra.map.icon.markerRoute);
+        this.cluster.addMarker($popup, $lat, $long, ra.map.icon.markerRoute());
     };
     }
     ;

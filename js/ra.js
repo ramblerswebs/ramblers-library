@@ -4,6 +4,24 @@ if (typeof (ra) === "undefined") {
 }
 ra._isES6 = null;
 ra._baseDirectory = '';
+// return base directory
+ra.baseDirectory = function () {
+    return ra._baseDirectory;
+};
+ra.decodeOptions = function (value) {
+    var options = JSON.parse(value);
+    ra._baseDirectory = options.base + "/";
+    value="";
+    return options;
+};
+ra.decodeData = function (value) {
+    if (value === null) {
+        return null;
+    }
+    var data = JSON.parse(value);
+    value="";
+    return data;
+};
 // convert string to title case
 ra.titleCase = function (str) {
     return str.replace(/(^|\s)\S/g, function (t) {
@@ -67,24 +85,7 @@ ra.isES6 = function () {
     }
 };
 
-// return base directory
-ra.baseDirectory = function () {
-    return ra._baseDirectory;
-};
-ra.decodeOptions = function (value) {
-    var options = JSON.parse(value);
-    ra._baseDirectory = options.base + "/";
-    value="";
-    return options;
-};
-ra.decodeData = function (value) {
-    if (value === null) {
-        return null;
-    }
-    var data = JSON.parse(value);
-    value="";
-    return data;
-};
+
 
 //    return ra;
 //}
@@ -128,8 +129,7 @@ ra.ajax = (function () {
             if (xmlhttp.readyState === 4 && xmlhttp.status === 200)
             {
                 displayFunc(target, xmlhttp.responseText);
-                // document.getElementById($div).innerHTML = xmlhttp.responseText;
-            }
+                           }
         };
         xmlhttp.open("GET", $url, true);
         //Send the proper header information along with the request

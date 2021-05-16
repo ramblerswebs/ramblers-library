@@ -151,6 +151,23 @@ function leafletMap(tag, options) {
     if (options.mylocation) {
         this.controls.mylocation = L.control.mylocation().addTo(this.map);
     }
+     // top right controls
+    this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
+    if (options.topoMapDefault) {
+        this.map.addLayer(this.mapLayers["Open Topo Map"]);
+    } else {
+        this.map.addLayer(this.mapLayers["Open Street Map"]);
+    }
+    if (options.maptools) {
+        try {
+            this.controls.tools = L.control.ra_map_tools();
+            this.controls.tools.userOptions(this.userOptions);
+            this.controls.tools.helpPage(options.helpPage);
+            this.controls.tools.addTo(this.map);
+        } catch (err) {
+            document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
+        }
+    }
     // bottom left controls
     if (options.startingplaces) {
         L.control.usageAgreement().addTo(this.map);
@@ -158,6 +175,9 @@ function leafletMap(tag, options) {
     if (options.rightclick) {
         try {
             this.controls.rightclick = L.control.rightclick().addTo(this.map);
+            if (this.controls.layers===null){
+                alert('Program error in rambler leaflet map');
+            }
             this.controls.rightclick.mapControl(this.controls.layers);
             this.userOptions.rightclick = this.controls.rightclick.userOptions();
         } catch (err) {
@@ -189,23 +209,6 @@ function leafletMap(tag, options) {
         L.control.racontainer({id: 'js-gewmapButtons'}).addTo(this.map);
     }
 
-    // top right controls
-    this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
-    if (options.topoMapDefault) {
-        this.map.addLayer(this.mapLayers["Open Topo Map"]);
-    } else {
-        this.map.addLayer(this.mapLayers["Open Street Map"]);
-    }
-    if (options.maptools) {
-        try {
-            this.controls.tools = L.control.ra_map_tools();
-            this.controls.tools.userOptions(this.userOptions);
-            this.controls.tools.helpPage(options.helpPage);
-            this.controls.tools.addTo(this.map);
-        } catch (err) {
-            document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
-        }
-    }
 
     if (options.initialview) {
         var pt = L.latLng(options.initialview.latitude, options.initialview.longitude);

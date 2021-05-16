@@ -52,14 +52,14 @@ var raDisplay = (function () {
 
             var tags = [
                 {name: 'outer', parent: 'root', tag: 'div', attrs: {id: 'raouter'}},
-                {parent: 'outer', tag: 'div', attrs: {id: 'js-filterDiagnostics'}},
-                {parent: 'outer', tag: 'div', attrs: {id: 'js-walksFilterPos2'}},
+                {name:'js-filterDiagnostics',parent: 'outer', tag: 'div', attrs: {id: 'js-filterDiagnostics'}},
+                {name:'js-walksFilterPos2',parent: 'outer', tag: 'div', attrs: {id: 'js-walksFilterPos2'}},
                 {name: 'raoptions', parent: 'outer', tag: 'div', attrs: {id: 'raoptions'}},
                 {name: 'inner', parent: 'outer', tag: 'div', attrs: {id: 'rainner'}},
-                {parent: 'inner', tag: 'div', attrs: {id: 'js-walksFilterPos3'}},
-                {name: 'pagTop', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-1'}},
+                {name: 'js-walksFilterPos3',parent: 'inner', tag: 'div', attrs: {id: 'js-walksFilterPos3'}},
+                {name: 'rapagination1', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-1'}},
                 {parent: 'inner', tag: 'div', attrs: {id: 'rawalks'}, textContent: 'Processing data - this should be replaced shortly.'},
-                {name: 'pagBottom', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-2'}},
+                {name: 'rapagination2', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-2'}},
                 {name: 'map', parent: 'inner', tag: 'div', attrs: {id: 'ra-map'}}
             ];
 
@@ -67,10 +67,10 @@ var raDisplay = (function () {
 
             this.elements = ra.html.generateTags(this.masterdiv, tags);
             if (!mapOptions.paginationTop) {
-                this.elements.pagTop.style.diaplay = 'none';
+                this.elements.rapagination1.style.diaplay = 'none';
             }
             if (!mapOptions.paginationBottom) {
-                this.elements.pagBottom.style.diaplay = 'none';
+                this.elements.rapagination2.style.diaplay = 'none';
             }
             var $legend1 = '<strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.';
             var $legend2 = '<img src="libraries/ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="libraries/ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="libraries/ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.';
@@ -676,12 +676,12 @@ var raDisplay = (function () {
             $lat = $walk.startLocation.latitude;
 
             if ($walk.startLocation.exact) {
-                $icon = ra.map.icon.markerStart;
+                $icon = ra.map.icon.markerStart();
             } else {
-                $icon = ra.map.icon.markerArea;
+                $icon = ra.map.icon.markerArea();
             }
             if (ra.walk.isCancelled($walk)) {
-                $icon = ra.map.icon.markerCancelled;
+                $icon = ra.map.icon.markerCancelled();
             }
             $details = ra.walk.getWalkValues($walk, this.settings.mapFormat);
             $class = $this.walkClass + $walk.status;

@@ -33,7 +33,7 @@ ra.walk = (function () {
         var walk = my.getWalk(id);
         if (walk !== null) {
             var html;
-            if (event.ctrlKey) {
+            if (event.ctrlKey && event.altKey) {
                 html = my.walkDiagnostics(walk);
             } else {
                 html = my.walkDetails(walk);
@@ -52,7 +52,7 @@ ra.walk = (function () {
             var gwem1walk = JSON.parse(result);
             var walk = my.convGWEM1toWalk(gwem1walk);
             var html;
-            if (event.ctrlKey) {
+            if (event.ctrlKey && event.altKey) {
                 html = my.walkDiagnostics(walk);
             } else {
                 html = my.walkDetails(walk);
@@ -82,12 +82,12 @@ ra.walk = (function () {
         map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
     };
     my._addLocation = function (layer, location) {
-        var icon = ra.map.icon.markerStart;
+        var icon = ra.map.icon.markerStart();
         var popup = "";
         if (location.exact) {
             var pcpop = "<b>" + location.postcode + "</b>";
             pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
-            var pcIcon = ra.map.icon.postcode;
+            var pcIcon = ra.map.icon.postcode();
             var marker = L.marker([location.postcodeLatitude, location.postcodeLongitude], {icon: pcIcon}).addTo(layer);
             marker.bindPopup(pcpop).openPopup();
         }
