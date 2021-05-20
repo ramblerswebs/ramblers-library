@@ -92,14 +92,6 @@ div.leaflet-container{
     }
 }
 
-#gpxheader {
-    margin-top:20px;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
-    padding:5px;
-    border-radius: 10px 10px 0px 0px;
-}
-
 div.gpxlist  ul li{
     list-style-type:circle;
 }
@@ -441,4 +433,20 @@ div.ra-inline label{
 div[data-route-id]{
     cursor:pointer;
     color:blue;
+}
+
+button.jplistsortbuttonasc,
+button.jplistsortbuttondesc {
+    font-size:12px;
+    line-height:10px;
+    border: none;
+    background-color: inherit;
+    padding: 0px 0px;
+    margin-left: 5px;
+    cursor: pointer;
+    display: inline;
+    float:right;
+}
+button.jplistsortbuttondesc {
+    clear:both;
 }

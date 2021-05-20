@@ -7,40 +7,29 @@
     justify-content: space-between;
 }
 
-button.csvlistsortbuttonasc,
-button.csvlistsortbuttondesc {
-    font-size:15px;
-    line-height:10px;
-    border: none;
-    background-color: inherit;
-    padding: 0px 0px;
-    cursor: pointer;
-    display: inline;
-}
-
-#csvdetails th{
+.csvdetails th{
     vertical-align: middle;
 }
-#csvdetails {
+.csvdetails {
     width: 100%;
 
 }
-#csvdetails th.right,
-#csvdetails td.right{
+.csvdetails th.right,
+.csvdetails td.right{
     text-align: right;
 }
-#csvdetails th.left,
-#csvdetails td.left{
+.csvdetails th.left,
+.csvdetails td.left{
     text-align: left;
 }
-#csvdetails th.center,
-#csvdetails td.center{
+.csvdetails th.center,
+.csvdetails td.center{
     text-align: center;
 }
-#csvdetails th{
+.csvdetails th{
     line-height:30px;
 }
-#dataTab input{
+div.csvFilter input{
     display: block;
 }
 /**

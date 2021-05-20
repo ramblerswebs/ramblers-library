@@ -1,4 +1,4 @@
-var ra;
+var ra, displayCustomValues;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -82,8 +82,9 @@ ra.walk = (function () {
         map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
     };
     my._addLocation = function (layer, location) {
-        var icon = ra.map.icon.markerStart();
-        var popup = "";
+        var icon = ra.map.icon.markerRoute();
+        var popup = "", title='';
+        var popupoffset=[0, -30];
         if (location.exact) {
             var pcpop = "<b>" + location.postcode + "</b>";
             pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
@@ -96,11 +97,16 @@ ra.walk = (function () {
                 case "Meeting":
                     popup = "<b>Meeting place</b><br/>" + location.timeHHMMshort + " " + location.description;
                     popup += "<br/>" + location.gridref;
-
+                    icon = ra.map.icon.markerRoute();
+                    title='Meeting place';
+                    popupoffset=[0, -30];
                     break;
                 case "Start":
                     popup = "<b>Walk start</b><br/>" + location.timeHHMMshort + " " + location.description;
                     popup += "<br/>" + location.gridref;
+                    icon = ra.map.icon.markerStart();
+                    title='Start of walk';
+                    popupoffset=[0, -10];
                     break;
                 case "Finishing":
                     popup = "<b>Walk Fininsh</b><br/>" + location.description;
@@ -115,20 +121,14 @@ ra.walk = (function () {
                 case "Start":
                     var popup = "<b>General area for walk only</b><br/>" + location.description;
                     popup += "<br/>Contact group if you wish to join the walk at the start";
-                    var latLng = L.latLng([location.latitude, location.longitude]);
-                    var xdifference = .03;
-                    var ydifference = .05;
-                    var southWest = L.latLng((latLng.lat - xdifference), (latLng.lng - ydifference));
-                    var northEast = L.latLng((latLng.lat + xdifference), (latLng.lng + ydifference));
-                    var bounds = L.latLngBounds(southWest, northEast);
-                    var rect = L.rectangle(bounds, {color: '#aa0000', fill: true, fillColor: '#aa0000'});
-                    layer.addLayer(rect);
-                    rect.bindPopup(popup, {autoClose: false}).openPopup();
-                    return;
+                    icon = ra.map.icon.markerArea();
+                    title='General area of walk';
+                    popupoffset=[0, -10];
+                    break;
             }
         }
-        var marker = L.marker([location.latitude, location.longitude]).addTo(layer);
-        marker.bindPopup(popup, {autoClose: false}).openPopup();
+        var marker = L.marker([location.latitude, location.longitude], {icon: icon,title:title,riseOnHover:true}).addTo(layer);
+        marker.bindPopup(popup, {offset: popupoffset,autoClose: false}).openPopup();
     };
     my.displayWalkURL = function (url) {
         window.open(url);
@@ -249,15 +249,18 @@ ra.walk = (function () {
                 var index, len;
                 for (index = 0, len = $walk.media.length; index < len; ++index) {
                     var item = $walk.media[index];
-                    var caption = '';
-                    if (item.caption !== '') {
-                        caption = "<div>" + item.caption + "</div>";
+                    var caption = "<div>";
+                    if (item.caption !== "") {
+                        caption += item.caption;
+                    } else {
+                        caption += "<br/>";
                     }
-
-                    if (item.copyright !== '') {
-                        caption += "<div><i>&copy; " + item.copyright + "</i></div>";
+                    if (item.copyright !== "") {
+                        caption += "<br/><i>&copy; " + item.copyright + "</i>";
+                    } else {
+                        caption += "<br/>";
                     }
-
+                    caption += "</div>";
                     $html += "<div class='walk-image' ><img data-size='1' class='walkmedia' src='" + item.url + "' onclick='ra.walk.mediasize(this)' >" + caption + "</div>";
                 }
                 $html += "</div>" + PHP_EOL;
@@ -290,7 +293,7 @@ ra.walk = (function () {
             var $items = $value.items;
             var index, len;
             for (index = 0, len = $items.length; index < len; ++index) {
-                $name = $items[index].name;
+                $name = $items[index].text;
                 if ($name !== "") {
                     $html += "<li class='item'>" + $name + "</li>";
                     $any = true;
@@ -708,7 +711,7 @@ ra.walk = (function () {
             if ($location.time !== "") {
                 $out += ra.html.addDiv("time", "<b>Time</b>: " + $location.timeHHMMshort);
             }
-            if ($location.exact !== "") {
+            if ($location.exact) {
                 $gr = "<b>Grid Ref</b>: " + $location.gridref + " ";
                 $gr += ra.link.getOSMap($location.latitude, $location.longitude, "OS Map");
                 $out += ra.html.addDiv("gridref", $gr);
@@ -808,19 +811,6 @@ ra.walk = (function () {
     };
     my.convertPHPLocation = function (location) {
         location.time = new Date(location.time.date);
-//        if (location.time === false) {
-//            location.time = "";
-//            location.timeHHMM = "No time";
-//            location.timeHHMMshort = "No time";
-//        } else {
-//            location.timeHHMM = ra.time.HHMM(location.time);
-//            location.timeHHMMshort = ra.time.HHMMshort(location.time);
-//            if (location.timeHHMMshort === "12am") {
-//                location.time = "";
-//                location.timeHHMM = "No time";
-//                location.timeHHMMshort = "No time";
-//            }
-//        }
     };
     my.convGWEM1toWalk = function ($item) {
         var nWalk = {};
@@ -876,40 +866,14 @@ ra.walk = (function () {
         }
         nWalk.walkLeader = $item.walkLeader;
 // read strands
-        nWalk.strands = null;
-        nWalk.festivals = null;
-        nWalk.suitability = null;
-        nWalk.surroundings = null;
-        nWalk.theme = null;
-        nWalk.specialStatus = null;
-        nWalk.facilities = null;
-        if ($item.strands.items.length > 0) {
-//            nWalk.strands = new RJsonwalksItems($item.strands);
-        }
-// read festivals
-        if ($item.festivals.items.length > 0) {
-            //           nWalk.festivals = new RJsonwalksItems($item.festivals);
-        }
-// read suitability
-        if ($item.suitability.items.length > 0) {
-            //           nWalk.suitability = new RJsonwalksItems($item.suitability);
-        }
-// read surroundings
-        if ($item.surroundings.items.length > 0) {
-//            nWalk.surroundings = new RJsonwalksItems($item.surroundings);
-        }
-// read theme
-        if ($item.theme.items.length > 0) {
-            //           nWalk.theme = new RJsonwalksItems($item.theme);
-        }
-// read specialStatus
-        if ($item.specialStatus.items.length > 0) {
-            //          nWalk.specialStatus = new RJsonwalksItems($item.specialStatus);
-        }
-        // read facilities
-        if ($item.facilities.items.length > 0) {
-            //           nWalk.facilities = new RJsonwalksItems($item.facilities);
-        }
+        nWalk.strands = $item.strands;
+        nWalk.festivals = $item.festivals;
+        nWalk.suitability = $item.suitability;
+        nWalk.surroundings = $item.surroundings;
+        nWalk.theme = $item.theme;
+        nWalk.specialStatus = $item.specialStatus;
+        nWalk.facilities = $item.facilities;
+
 // pocess meeting and starting locations
         nWalk.hasMeetPlace = false;
         nWalk.meetLocation = null;
@@ -928,8 +892,8 @@ ra.walk = (function () {
             }
         });
 //        nWalk.createExtraData();
-        nWalk.media = [];
-//        nWalk.media = nWalk.getMedia($item);
+        nWalk.media = $item.media;
+
         return nWalk;
     };
     my.convertGWEM1location = function ($value) {

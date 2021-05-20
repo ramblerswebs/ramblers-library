@@ -28,7 +28,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
     private $id;
     private $customListFormat = null;
     private $customTableFormat = null;
-    private $customDetailsFormat = null;
+    private $customGradesFormat = null;
 
     public function DisplayWalks($walks) {
         $this->id = uniqid(rand());
@@ -93,7 +93,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $data->legendposition = $this->legendposition;
         $data->customListFormat = $this->customListFormat;
         $data->customTableFormat = $this->customTableFormat;
-        $data->customDetailsFormat = $this->customDetailsFormat;
+        $data->customGradesFormat = $this->customGradesFormat;
 
         $this->map->setDataObject($data);
         $this->map->display();
@@ -109,8 +109,8 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $this->customTableFormat = $value;
     }
 
-    public function setCustomDetailFormat($value) {
-        $this->customDetailsFormat = $value;
+    public function setCustomGradesFormat($value) {
+        $this->customGradesFormat = $value;
     }
 
     private function addGotoWalk() {

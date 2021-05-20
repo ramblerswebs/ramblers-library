@@ -468,15 +468,15 @@ ra.html = (function () {
         }
         return tags;
     };
-    html.setTag = function (id, html) {
-        var tag = document.getElementById(id);
+    html.setTag = function (id, innerhtml) {
+       var tag=html.getTab(id);
         if (tag) {
-            tag.innerHTML = html;
+            tag.innerHTML = innerhtml;
         }
     };
     // toggle element visibility on/off 
     html.toggleVisibility = function (id) {
-        var e = document.getElementById(id);
+         var e=html.getTab(id);
         if (e.style.display !== 'none')
             e.style.display = 'none';
         else
@@ -488,8 +488,9 @@ ra.html = (function () {
         html.toggleVisibility(id2);
     };
     // open window with tag content for printing
-    html.printTag = function (divId) {
-        var content = document.getElementById(divId).innerHTML;
+    html.printTag = function (id) {
+         var tag=html.getTab(id);
+        var content = tag.innerHTML;
         var mywindow = window.open('', 'Print', 'height=600,width=800');
         mywindow.document.write('<html><head><title>Print</title>');
         var index, len;
@@ -572,6 +573,13 @@ ra.html = (function () {
             x.style.display = "none";
         }
     };
+    html.getTab=function(id){
+        if (typeof id === 'string') {
+            return document.getElementById(id);
+        } else {
+            return id;
+        }
+    };
     return html;
 }
 ());
@@ -613,15 +621,30 @@ ra.link = (function () {
     return link;
 }
 ());
+ra.jplist = (function () {
+    var jplist = {};
+    jplist.sortButton = function (tag, group, varclass, type, order, text) {
+            var button = document.createElement('button');
+            tag.appendChild(button);
+            button.setAttribute('class', "jplistsortbutton" + order);
+            button.setAttribute('data-jplist-control', "sort-buttons");
+            button.setAttribute('data-path', "." + varclass);
+            button.setAttribute('data-group', group);
+            button.setAttribute('data-order', order);
+            button.setAttribute('data-type', type);
+            button.setAttribute('data-name', "sortbutton");
+            button.setAttribute('data-selected', "false");
+            button.setAttribute('data-mode', "radio");
+            button.textContent = text;
+    };
+  
+    return jplist;
+}
+());
 ra.w3w = (function () {
     var w3w = {};
     w3w.get = function (lat, lng, id, place) {
-        var tag;
-        if (typeof id === 'string') {
-            tag = document.getElementById(id);
-        } else {
-            tag = id;
-        }
+        var tag=ra.html.getTab(id);
         var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
         var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
         ra.ajax.getJSON(url, function (err, items) {

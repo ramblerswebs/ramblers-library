@@ -4,8 +4,6 @@
  * and open the template in the editor.
  */
 var L, ra, jplist;
-
-
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -22,9 +20,11 @@ ra.gpx = (function () {
         var g = new L.GPX(ra.baseDirectory() + file, {async: true,
             polyline_options: {color: linecolour},
             marker_options: {
-                startIconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/pin-icon-start.png',
-                endIconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/pin-icon-end.png',
-                shadowUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/pin-shadow.png'
+             startIconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/route-start.png',
+                endIconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/route-end.png',
+                shadowUrl: null,
+                iconSize: [20, 20], // size of the icon
+                iconAnchor: [10, 10]
             }});
         g.on('addline', function (e) {
             el.addData(e.line);
@@ -48,9 +48,7 @@ ra.gpx = (function () {
             gpx.displayGpxdetails(g, detailsDivId);
         });
         g.addTo(_map);
-
     };
-
     gpx.displayGpxdetails = function (g, divId) {
         if (document.getElementById(divId) !== null) {
             var info = g._info;
@@ -79,7 +77,6 @@ ra.gpx = (function () {
     return gpx;
 }
 ());
-
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -104,23 +101,21 @@ function gpxFolderDisplay(options) {
         searchtext: ''
     };
     var tags1 = [
-        {name: 'table', parent: 'root', tag: 'table', attrs: {id: 'gpxoptions'}},
+        {name: 'table', parent: 'root', tag: 'table', attrs: {class: 'ra-tab-options'}},
         {name: 'row', parent: 'table', tag: 'tr'},
         {name: 'map', parent: 'row', tag: 'td', attrs: {class: 'ra-tab active', id: 'Map'}, textContent: 'Map'},
         {name: 'list', parent: 'row', tag: 'td', attrs: {class: 'ra-tab', id: 'List'}, textContent: 'List'},
         {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {id: 'gpxouter'}},
         {name: 'gpxmap', parent: 'gpxouter', tag: 'div', attrs: {id: 'gpxmap'}},
         {parent: 'gpxmap', tag: 'p'},
-        {parent: 'gpxmap', tag: 'div', attrs: {id: 'gpxheader'}},
+        {name: 'gpxheader', parent: 'gpxmap', tag: 'div'},
         {parent: 'gpxmap', tag: 'h4', textContent: 'Click on any walk to see summary, click on title to display route'},
         {name: 'gpxlist', parent: 'gpxouter', tag: 'div', attrs: {id: 'gpxlist'}, style: {display: 'none'}},
         {parent: 'gpxlist', tag: 'div', attrs: {id: 'ra-pagination1'}},
-        {name: 'tableTab', parent: 'gpxlist', tag: 'div', attrs: {textContent: 'Program loading: please give this a minute or so. If this does not vanish then please contact the web master!'}}
+        {name: 'tableDiv', parent: 'gpxlist', tag: 'div', attrs: {textContent: 'Program loading: please give this a minute or so. If this does not vanish then please contact the web master!'}}
     ];
     this.routes = null;
-
     this.masterdiv = document.getElementById(options.divId);
-
     this.elements = ra.html.generateTags(this.masterdiv, tags1);
     var _this = this;
     this.elements.map.addEventListener("click", function () {
@@ -143,8 +138,6 @@ function gpxFolderDisplay(options) {
             });
         }
     });
-
-
     this.displayData = function (data) {
         this.setData(data);
         ra.html.setTag('ra-pagination1', this.addPagination());
@@ -199,38 +192,55 @@ function gpxFolderDisplay(options) {
     this.displayGPXTable = function () {
         var out, index;
         var tag;
-        var extra = "";
-        tag = this.elements.tableTab;
+        //  var extra = "";
+        tag = this.elements.tableDiv;
         if (tag !== null) {
-            out = '<table id="gpxdetails"><thead>';
+            var tags = [
+                {name: 'table', parent: 'root', tag: 'table', attrs: {id: 'gpxdetails'}},
+                {name: 'thead', parent: 'table', tag: 'thead'},
+                {name: 'headings', parent: 'thead', tag: 'tr'}];
             if (this.controls.displayAsPreviousWalks) {
-                extra = "<th class=\"alignleft\">Date</th><th class=\"alignleft\">Leader</th>";
+                tags.push({parent: 'headings', tag: 'tr', attrs: {class: 'alignleft'}, textContent: 'Date'});
+                tags.push({parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Leader'});
             }
-            out += "<tr>" + extra + "<th class=\"alignleft\">Title</th><th>Distance Km</th><th>Miles</th><th>min Altitude</th><th>max Altitude</th><th>Elevation Gain</th>";
+            tags.push(
+                    {name: 'title', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Title'},
+                    {name: 'distance', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Distance Km'},
+                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Miles'},
+                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'min Altitude'},
+                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'max Altitude'},
+                    {name: 'elevation', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Elevation Gain'},
+                    );
             if (this.controls.download === 0) {
-                out += "</tr>";
-            } else {
-                out += "<th>GPX</th></tr>";
+                tags.push({parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'GPX'});
             }
-            out += "</thead>";
-            out += '<tbody data-jplist-group=\"group1\">';
+            tags.push({name: 'tbody', parent: 'table', tag: 'tbody'});
+            var eles = ra.html.generateTags(tag, tags);
+            ra.jplist.sortButton(eles.title, "group1", 'wTitle', 'text', "asc", "▲");
+            ra.jplist.sortButton(eles.title, "group1", 'wTitle', 'text', "desc", "▼");
+            ra.jplist.sortButton(eles.distance, "group1", 'wDistance', 'number', "asc", "▲");
+            ra.jplist.sortButton(eles.distance, "group1", 'wDistance', 'number', "desc", "▼");
+            ra.jplist.sortButton(eles.elevation, "group1", 'wElevation', 'number', "asc", "▲");
+            ra.jplist.sortButton(eles.elevation, "group1", 'wElevation', 'number', "desc", "▼");
+            out = "";
+            eles.tbody.setAttribute('data-jplist-group', 'group1');
             for (index = 0; index < this.routes.length; ++index) {
                 var route = this.routes[index];
                 if (this.displayRoute(route)) {
-                    out += '<tr data-jplist-item>';
                     out += this.displayGPXRow(route);
-                    out += '</tr>';
                 }
             }
-            out += '</tbody></table>';
+
             if (this.controls.download === 1) {
-                out += "<p>* To be able to download GPX Routes, you need to log on to our web site.</p>";
+                var ele = document.createElement('p');
+                tag.appendChild(ele);
+                ele.textContent = "* To be able to download GPX Routes, you need to log on to our web site.";
             }
-            tag.innerHTML = out;
+            eles.tbody.innerHTML = out;
         }
     };
     this.displayGPXRow = function (route) {
-        var link = "";
+        var link = '<tr data-jplist-item>';
         if (this.controls.displayAsPreviousWalks) {
             link += '<td class="wDate"><b>' + route.date + '</b></td>';
             link += '<td class="wAuthor alignleft">' + route.author + '</td>';
@@ -247,10 +257,12 @@ function gpxFolderDisplay(options) {
             link += '<td>' + route.maxAltitude.toFixed(0) + '</td>';
             link += '<td class="wElevation">' + route.cumulativeElevationGain.toFixed(0) + '</td>';
         }
-        link += '<td>' + this.getGPXdownloadLink(route) + '</td>';
+        if (this.controls.download === 1) {
+            link += '<td>' + this.getGPXdownloadLink(route) + '</td>';
+        }
+        link += '</tr>';
         return link;
     };
-
     this.updateGPXid = function (sid) {
         var id = parseInt(sid);
         this.ra_format("Map");
@@ -297,13 +309,13 @@ function gpxFolderDisplay(options) {
         }
         header += "</div>";
         path = this.controls.folder + "/" + route.filename;
-        document.getElementById('gpxheader').innerHTML = header;
+        this.elements.gpxheader.innerHTML = header;
         var data = {};
         data.gpxfile = path;
         data.linecolour = this.controls.linecolour;
         data.imperial = 0;
         this.displayGPX(data);
-        location.hash = '#gpxheader';
+        this.elements.gpxheader.scrollIntoView();
     };
     this.displayGPX = function (data) {
         var file = data.gpxfile;
@@ -359,7 +371,6 @@ function gpxFolderDisplay(options) {
         }
         return null;
     };
-
     this.addGPXMarkers = function () {
         for (var index = 0; index < this.routes.length; ++index) {
             var route = this.routes[index];
@@ -376,7 +387,7 @@ function gpxFolderDisplay(options) {
         $popup += this.formatAltitude(route);
         $lat = route.latitude;
         $long = route.longitude;
-        this.cluster.addMarker($popup, $lat, $long, ra.map.icon.markerRoute);
+        this.cluster.addMarker($popup, $lat, $long, ra.map.icon.markerRoute());
     };
     this.formatAltitude = function (route) {
         var text;
@@ -402,7 +413,6 @@ function gpxFolderDisplay(options) {
         }
         return link;
     };
-
     this.displayRoute = function (route) {
         if (this.controls.searchtext === '') {
             return true;
@@ -427,54 +437,11 @@ function gpxFolderDisplay(options) {
         this.cluster.addClusterMarkers();
         return false;
     };
-
     this.addPagination = function () {
         if (!ra.isES6()) {
             return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
         }
-
-//  var $div = '<div class="ra-route-filter"><span><button>Sort By:</button> ';
-        var $div = '<div class="ra-route-filter">';
-        $div += ' <span class="dropdown mr-3" \
-       data-jplist-control="dropdown-sort" \
-       data-opened-class="show" \
-       data-group="group1" \
-       data-name="sort1"> \
-    \
-    <button \
-            data-type="panel" \
-            class="btn btn-sort dropdown-toggle" \
-            type="button"> \
-        Sort by \
-    </button> \
-     \
-    <span \
-            data-type="content" \
-            class="dropdown-menu" \
-            aria-labelledby="dropdownMenuButton"> \
-            <a class="dropdown-item" \
-           href="#" \
-           data-path="default">Sort By</a>';
-        if (this.controls.displayAsPreviousWalks) {
-            $div += this.addJPlistSortItem('.wDate', 'Date ▲', 'text', 'asc', true);
-            $div += this.addJPlistSortItem('.wDate', 'Date ▼', 'text', 'desc', false);
-            $div += this.addJPlistSortItem('.wAuthor', 'Leader ▲', 'text', 'asc', false);
-            $div += this.addJPlistSortItem('.wAuthor', 'Leader ▼', 'text', 'desc', false);
-            $div += this.addJPlistSortItem('.wTitle', 'Title ▲', 'text', 'asc', false);
-            $div += this.addJPlistSortItem('.wTitle', 'Title ▼', 'text', 'desc', false);
-            $div += this.addJPlistSortItem('.wDistance', 'Distance ▲', 'number', 'asc', false);
-            $div += this.addJPlistSortItem('.wDistance', 'Distance ▼', 'number', 'desc', false);
-            $div += this.addJPlistSortItem('.wElevation', 'Elevation ▲', 'number', 'asc', false);
-            $div += this.addJPlistSortItem('.wElevation', 'Elevation ▼', 'number', 'desc', false);
-        } else {
-            $div += this.addJPlistSortItem('.wTitle', 'Title ▲', 'text', 'asc', true);
-            $div += this.addJPlistSortItem('.wTitle', 'Title ▼', 'text', 'desc', false);
-            $div += this.addJPlistSortItem('.wDistance', 'Distance ▲', 'number', 'asc', false);
-            $div += this.addJPlistSortItem('.wDistance', 'Distance ▼', 'number', 'desc', false);
-            $div += this.addJPlistSortItem('.wElevation', 'Elevation ▲', 'number', 'asc', false);
-            $div += this.addJPlistSortItem('.wElevation', 'Elevation ▼', 'number', 'desc', false);
-        }
-        $div += '</span> \
+        var $div = '</span> \
 <input class="ra-route-search" \
      data-jplist-control="textbox-filter" \
      data-group="group1" \
@@ -518,15 +485,4 @@ function gpxFolderDisplay(options) {
         $div += '</div> ';
         return $div;
     };
-
-    this.addJPlistSortItem = function (col, title, type, order, selected) {
-        var sel = '';
-        if (selected) {
-            sel = ' data-selected="true"';
-        }
-        var out = '<a class="dropdown-item"href="#" data-path="' + col +
-                '" data-order="' + order + '" data-type="' + type + '"' + sel + ' >' + title + '</a> ';
-        return out;
-    };
-
 }

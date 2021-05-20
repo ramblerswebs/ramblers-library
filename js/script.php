@@ -133,3 +133,34 @@ class RJsScript {
     }
 
 }
+
+// need to add json error handling when converting options and data to JSON
+
+//       $list = json_encode($this->list);
+//        if ($list === false) {
+//            $err = "CSV FILE ERROR";
+//            switch (json_last_error()) {
+//                case JSON_ERROR_NONE:
+//                    $err.= ' - No errors';
+//                    break;
+//                case JSON_ERROR_DEPTH:
+//                    $err.= ' - Maximum stack depth exceeded';
+//                    break;
+//                case JSON_ERROR_STATE_MISMATCH:
+//                    $err.= ' - Underflow or the modes mismatch';
+//                    break;
+//                case JSON_ERROR_CTRL_CHAR:
+//                    $err.= ' - Unexpected control character found';
+//                    break;
+//                case JSON_ERROR_SYNTAX:
+//                    $err.= ' - Syntax error, malformed JSON';
+//                    break;
+//                case JSON_ERROR_UTF8:
+//                    $err.= ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+//                    break;
+//                default:
+//                    $err.= ' - Unknown error';
+//                    break;
+//            }
+//            $app = JApplicationCms::getInstance('site');
+//            $app->enqueueMessage(JText::_($err), 'error');

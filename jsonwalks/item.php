@@ -16,7 +16,7 @@ class RJsonwalksItem {
     function __construct($value) {
         if (isset($value)) {
             if (property_exists($value, "text")) {
-                $this->name = $value->text;
+                $this->text = $value->text;
             }
         }
     }

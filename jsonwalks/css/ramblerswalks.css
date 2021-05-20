@@ -464,13 +464,15 @@ div#gpxouter {
     border-radius: 0px 10px 10px 10px;
     padding:25px;
 }
-div#raoptions table, table#gpxoptions{
+/*div#raoptions table, table.ra-tab-options{
+*/
+table.ra-tab-options{
     table-layout: auto;
-    border-width: 0px;
-    margin-bottom:0px; 
-    background-color:rgba(0, 0, 0, 0);
+    border-width: 0px !important; 
+    margin-bottom:0px !important; 
+    background-color:rgba(0, 0, 0, 0) !important;
 }
-table#gpxoptions{
+table.ra-tab-options{
     background-color:transparent;
     margin-bottom:0px;;
     border-width: 0px;
@@ -500,6 +502,14 @@ table tr td.ra-tab:hover {
 
 .pointer {
     cursor: pointer;
+}
+.pointer.link {
+    cursor: pointer;
+    color: #782327;
+}
+.pointer.link:hover {
+    cursor: pointer;
+    color:#206C49;
 }
 span.ra-details {
     width:100%;

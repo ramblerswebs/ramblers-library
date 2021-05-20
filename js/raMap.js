@@ -472,9 +472,18 @@ function cluster(map) {
     this.addClusterMarkers = function () {
         this.markersCG.addLayers(this.markerList);
         if (this.markerList.length > 0) {
-            var bounds = getBounds(this.markerList);
+            var bounds = this._getBounds(this.markerList);
             this._map.fitBounds(bounds);
         }
+    };
+    this._getBounds = function (list) {
+        var bounds = new L.LatLngBounds();
+        var marker, i;
+        for (i = 0; i < list.length; i++) {
+            marker = list[i];
+            bounds.extend(marker.getLatLng());
+        }
+        return bounds;
     };
     this.addMarker = function ($popup, $lat, $long, $icon) {
         var marker = L.marker([$lat, $long], {icon: $icon});

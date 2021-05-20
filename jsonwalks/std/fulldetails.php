@@ -17,7 +17,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksStdSimplelist {
     public $popupLink = true; // not used now!
     public $addContacttoHeader = false;
     public $displayGroup = null;  // not used now
-    private $listFormat = ["{gradeimg}", "{dowdd}",
+    private $listFormat = ["{gradeimg}", "{dowddmm}",
         "{,title}",
         "{,distance}",
         "{,contactname}",

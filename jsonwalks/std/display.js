@@ -12,7 +12,6 @@ if (typeof (ra) === "undefined") {
 var raDisplay = (function () {
 
     var raDisplay = function () {
-        // var display = {};
         this._allwalks = null;
         this.map = null;
 
@@ -20,14 +19,13 @@ var raDisplay = (function () {
         this.settings = {
             walkClass: "walk",
             displayClass: "",
-            displayDefault: "Details",
+            displayDefault: "Grades",
             displayStartTime: true,
             displayStartDescription: true,
             tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{mediathumbr}", "{title}"]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
             listFormat: ["{dowdd}", "{,meet}", "{,start}", "{,title}", "{,distance}", "{,contactname}", "{,telephone}"],
-            detailsFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
+            gradesFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
             mapFormat: ["{gradeimgRight}", "{dowddmm}", "{lf}", "{title}", "{lf}", "{distance}", "{,grade}", "{lf}", "{startOSMap}", "{startDirections}"],
-            //  defaultOptions: "<table><tr><td class='ra-tab active' id='Details' onclick=\"javascript:ra_format('Details')\">Grades</td><td class='ra-tab' id='Table' onclick=\"javascript:ra_format('Table')\">Table</td><td class='ra-tab' id='List' onclick=\"javascript:ra_format('List')\">List</td><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td></tr></table>",
             withMonth: ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"],
             jplistName: "group1",
             filterTag: "js-walksFilterPos2",
@@ -35,8 +33,8 @@ var raDisplay = (function () {
             options: null
         };
         this.options = {filterPosition: 3,
-            defaultView: "Details",
-            detailsView: true,
+            defaultView: "Grades",
+            gradesView: true,
             tableView: true,
             listView: true,
             mapView: true,
@@ -44,7 +42,7 @@ var raDisplay = (function () {
             diagnostics: false,
             listFormat: null,
             tableFormat: null,
-            detailsFormat: null};
+            gradesFormat: null};
         this.optionTag = {};
         this.load = function (mapOptions, data) {
 
@@ -91,8 +89,8 @@ var raDisplay = (function () {
             if (data.customTableFormat !== null) {
                 this.settings.tableFormat = data.customTableFormat;
             }
-            if (data.customDetailsFormat !== null) {
-                this.settings.detailsFormat = data.customDetailsFormat;
+            if (data.customGradesFormat !== null) {
+                this.settings.gradesFormat = data.customGradesFormat;
             }
             this.settings.displayClass = data.displayClass;
             if (typeof addFilterFormats === 'function') {
@@ -119,14 +117,8 @@ var raDisplay = (function () {
                 var $text = $tag.innerHTML;
                 this.settings.options = $text;
                 document.getElementById("raDisplayOptions").innerHTML = "";
-                // this.elements.raoptions.innerHTML = this.settings.options;
-                //document.getElementById(display.settings.filter.RA_Display_Format).style.backgroundColor = '#AAAAAA';
                 document.getElementById(this.settings.filter.RA_Display_Format).classList.add('active');
-            } else {
-                //    alert("we are here");
-
-                //   this.elements.raoptions.innerHTML = this.settings.defaultOptions;
-            }
+            } 
         };
 
         this.getAllWalks = function () {
@@ -160,7 +152,7 @@ var raDisplay = (function () {
             }
 
             switch (this.settings.filter.RA_Display_Format) {
-                case "Details":
+                case "Grades":
                 case "List":
                 case "Table":
                     this.displayMap("hidden");
@@ -260,8 +252,8 @@ var raDisplay = (function () {
                     }
                     var displayMonth = month !== $walk.month && should;
                     switch (this.settings.filter.RA_Display_Format) {
-                        case "Details":
-                            $out += this.displayWalk_Details($walk, $class, displayMonth);
+                        case "Grades":
+                            $out += this.displayWalk_Grades($walk, $class, displayMonth);
                             break;
                         case "List":
                             $out += this.displayWalk_List($walk, $class, displayMonth);
@@ -290,8 +282,8 @@ var raDisplay = (function () {
         this.shouldDisplayMonth = function () {
             var index, len, $item;
             switch (this.settings.filter.RA_Display_Format) {
-                case "Details":
-                    var $items = this.settings.detailsFormat;
+                case "Grades":
+                    var $items = this.settings.gradesFormat;
                     for (var index = 0, len = $items.length; index < len; ++index) {
                         $item = $items[index];
                         if (this.settings.withMonth.includes($item)) {
@@ -328,7 +320,7 @@ var raDisplay = (function () {
         this.displayWalksHeader = function ($walks) {
             var $out = "";
             switch (this.settings.filter.RA_Display_Format) {
-                case "Details":
+                case "Grades":
                     if (this.settings.displayDetailsPrompt) {
                         $out += "<p class='noprint'>Click on item to display full details of walk</p>";
                     }
@@ -367,7 +359,7 @@ var raDisplay = (function () {
         this.displayWalksFooter = function () {
             var $out = "";
             switch (this.settings.filter.RA_Display_Format) {
-                case "Details":
+                case "Grades":
                     $out += "</div>";
                     $out += "<div style='height:20px;'>  </div>";
                     break;
@@ -387,14 +379,6 @@ var raDisplay = (function () {
                 htmltag.parentElement.style.display = "list-item";
             }
         };
-
-//        this.ra_format = function (option) {
-//            document.getElementById(this.settings.filter.RA_Display_Format).classList.remove('active');
-//            this.settings.filter.RA_Display_Format = option;
-//            document.getElementById(this.settings.filter.RA_Display_Format).classList.add('active');
-//            var $walks = this.getWalks();
-//            this.displayWalks($walks);
-//        };
 
         this.displayWalk = function ($walk) {
             var $display = true;
@@ -530,7 +514,7 @@ var raDisplay = (function () {
 
             return $display;
         };
-        this.displayWalk_Details = function ($walk, $class, $displayMonth) {
+        this.displayWalk_Grades = function ($walk, $class, $displayMonth) {
             var $text, $image;
             var $out = "", $out1 = "";
 
@@ -542,7 +526,7 @@ var raDisplay = (function () {
                 $out1 += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
             }
             $image = '<span class="walkdetail" >';
-            $out += ra.walk.getWalkValues($walk, this.settings.detailsFormat);
+            $out += ra.walk.getWalkValues($walk, this.settings.gradesFormat);
 
 //   $out += "<span class='ra-detailsimg'></span>";
             // $out += getCloseImg();
@@ -691,12 +675,6 @@ var raDisplay = (function () {
             this.cluster.addMarker($popup, $lat, $long, $icon);
             return;
         };
-//        this.getWalkMapHref = function ($walk, $desc) {
-//            var $out = "<a href=";
-//            $out += "'javascript:ra.walk.displayWalkID(event," + $walk.id + ");' >";
-//            $out += $desc + "</a>";
-//            return $out;
-//        };
 
         this.addPagination = function (no) {
             if (!ra.isES6()) {
@@ -1032,12 +1010,12 @@ var raDisplay = (function () {
                     options.mapView = false;
                     break;
                 default:
-                    this.settings.displayDefault = 'Details';
-                    this.addDisplayOption("Details", true, row);
-                    options.detailsView = false;
+                    this.settings.displayDefault = 'Grades';
+                    this.addDisplayOption("Grades", true, row);
+                    options.gradesView = false;
             }
-            if (options.detailsView) {
-                this.addDisplayOption("Details", false, row);
+            if (options.gradesView) {
+                this.addDisplayOption("Grades", false, row);
             }
             if (options.tableView) {
                 this.addDisplayOption("Table", false, row);
@@ -1063,10 +1041,10 @@ var raDisplay = (function () {
                 });
                 $diag += "</ul>";
             }
-            if (options.detailsFormat !== null) {
-                var items = this.parseFields(options.detailsFormat);
-                this.settings.detailsFormat = items;
-                $diag += "Details Format Specified<br/>";
+            if (options.gradesFormat !== null) {
+                var items = this.parseFields(options.gradesFormat);
+                this.settings.gradesFormat = items;
+                $diag += "Grades Format Specified<br/>";
                 $diag += "Items " + items.length + "<ul>";
                 items.forEach(function (item, index, items) {
                     $diag += "<li>" + item + "</li>";

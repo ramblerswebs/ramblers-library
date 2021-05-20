@@ -177,13 +177,13 @@ class RJsonwalksLocation {
                 $distclass = " distfar";
             }
             $note = $this->type . " place is " . $dist . " metres " . $direction . " of postcode. ";
-            $note.= "Click to display the locations of the Postcode(P) and " . $this->type . " locations";
+            $note .= "Click to display the locations of the Postcode(P) and " . $this->type . " locations";
             $note2 = $dist . " metres " . RGeometryGreatcircle::directionAbbr($direction);
             $link = $this->getPostcodeMap($note2, $detailsPageUrl);
         }
         $pc = "<abbr title='" . $note . "'><b>Postcode</b>: " . $this->postcode . " ";
-        $pc.=$link;
-        $pc.= "</abbr>";
+        $pc .= $link;
+        $pc .= "</abbr>";
         $out = RHtml::withDiv("postcode " . $distclass, $pc, JRequest::getVar('print') == 1);
         return $out;
     }
@@ -203,11 +203,7 @@ class RJsonwalksLocation {
 
     public function getOSMap($text) {
         if ($this->exact) {
-            $code = "https://streetmap.co.uk/loc/[lat],[long]&amp;Z=115";
-            $code = str_replace("[lat]", $this->latitude, $code);
-            $code = str_replace("[long]", $this->longitude, $code);
-            $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" . $text . "]</span>";
-            return $out;
+            return "<span class='mappopup' onclick='javascript:ra.link.streetmap(" . $this->latitude . "," . $this->longitude . ")' >[" . $text . "]</span>";
         } else {
             return "";
         }
@@ -216,9 +212,9 @@ class RJsonwalksLocation {
     public function getMap($text1, $text2) {
         $out = "";
         If ($this->exact) {
-            $out.=" " . $this->getDirectionsMap($text1);
+            $out .= " " . $this->getDirectionsMap($text1);
         } else {
-            $out.=" " . $this->getAreaMap($text2);
+            $out .= " " . $this->getAreaMap($text2);
         }
         return $out;
     }

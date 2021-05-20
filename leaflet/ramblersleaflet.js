@@ -1,32 +1,5 @@
 var L, ra, OsGridRef, Element;
 
-
-
-
-function addMarkerToLayer($layer, $popup, $lat, $long, $icon) {
-    var marker = L.marker([$lat, $long], {icon: $icon});
-    var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text 
-    marker.bindPopup($pop);
-    $layer.add.push(marker);
-}
-//function addPlace($gr, $no, $lat, $long, $icon) {
-//    var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long});
-//    marker.bindPopup("<b>Grid Ref " + $gr + "</b><br/>Lat/Long " + $lat + " " + $long);
-//    marker.on('click', onClickPlaceMarker);
-//    ramblersMap.markerList.push(marker);
-//}
-
-function getBounds(list) {
-    var bounds = new L.LatLngBounds();
-    var marker, i;
-    for (i = 0; i < list.length; i++) {
-        marker = list[i];
-        bounds.extend(marker.getLatLng());
-    }
-    return bounds;
-}
-
-
 function leafletMap(tag, options) {
 
     this.options = options;
@@ -151,7 +124,7 @@ function leafletMap(tag, options) {
     if (options.mylocation) {
         this.controls.mylocation = L.control.mylocation().addTo(this.map);
     }
-     // top right controls
+    // top right controls
     this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
     if (options.topoMapDefault) {
         this.map.addLayer(this.mapLayers["Open Topo Map"]);
@@ -175,7 +148,7 @@ function leafletMap(tag, options) {
     if (options.rightclick) {
         try {
             this.controls.rightclick = L.control.rightclick().addTo(this.map);
-            if (this.controls.layers===null){
+            if (this.controls.layers === null) {
                 alert('Program error in rambler leaflet map');
             }
             this.controls.rightclick.mapControl(this.controls.layers);
@@ -270,6 +243,13 @@ function folderGpxRoutes(mapOptions, _data) {
     display.displayData(data);
 
 }
+function csvTable(mapOptions, _data) {
+    var options = ra.decodeOptions(mapOptions);
+    var data = ra.decodeData(_data);
+    var display = new ra.csvList.display();
+    display.load(options, data);
+
+}
 function walksMap(mapOptions, _data = null) {
     var options = ra.decodeOptions(mapOptions);
     var data = ra.decodeData(_data);
@@ -280,8 +260,8 @@ function walksMap(mapOptions, _data = null) {
 function organisationMap(mapOptions, _data) {
     var options = ra.decodeOptions(mapOptions);
     var data = ra.decodeData(_data);
-    
-   
+
+
     var org = new raOrganisationMap(options);
     org.load(data);
 }
