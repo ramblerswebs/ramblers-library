@@ -29,10 +29,7 @@ var raDisplay = (function () {
             withMonth: ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"],
             jplistName: "group1",
             filterTag: "js-walksFilterPos2",
-            filter: {},
-            options: null
-        };
-        this.options = {filterPosition: 3,
+            filterPosition: 3,
             defaultView: "Grades",
             gradesView: true,
             tableView: true,
@@ -40,25 +37,25 @@ var raDisplay = (function () {
             mapView: true,
             contactsView: false,
             diagnostics: false,
-            listFormat: null,
-            tableFormat: null,
-            gradesFormat: null};
+            filter: {},
+            options: null
+        };
         this.optionTag = {};
         this.load = function (mapOptions, data) {
 
             this.mapOptions = mapOptions;
 
             var tags = [
-                {name: 'outer', parent: 'root', tag: 'div', attrs: {id: 'raouter'}},
-                {name:'js-filterDiagnostics',parent: 'outer', tag: 'div', attrs: {id: 'js-filterDiagnostics'}},
-                {name:'js-walksFilterPos2',parent: 'outer', tag: 'div', attrs: {id: 'js-walksFilterPos2'}},
-                {name: 'raoptions', parent: 'outer', tag: 'div', attrs: {id: 'raoptions'}},
+                {name: 'outer', parent: 'root', tag: 'div'},
+                {name: 'filterDiagnostics', parent: 'outer', tag: 'div'},
+                {name: 'js-walksFilterPos2', parent: 'outer', tag: 'div', attrs: {id: 'js-walksFilterPos2'}},
+                {name: 'raoptions', parent: 'outer', tag: 'div'},
                 {name: 'inner', parent: 'outer', tag: 'div', attrs: {id: 'rainner'}},
-                {name: 'js-walksFilterPos3',parent: 'inner', tag: 'div', attrs: {id: 'js-walksFilterPos3'}},
+                {name: 'js-walksFilterPos3', parent: 'inner', tag: 'div', attrs: {id: 'js-walksFilterPos3'}},
                 {name: 'rapagination1', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-1'}},
                 {parent: 'inner', tag: 'div', attrs: {id: 'rawalks'}, textContent: 'Processing data - this should be replaced shortly.'},
                 {name: 'rapagination2', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-2'}},
-                {name: 'map', parent: 'inner', tag: 'div', attrs: {id: 'ra-map'}}
+                {name: 'map', parent: 'inner', tag: 'div'}
             ];
 
             this.masterdiv = document.getElementById(mapOptions.divId);
@@ -94,32 +91,82 @@ var raDisplay = (function () {
             }
             this.settings.displayClass = data.displayClass;
             if (typeof addFilterFormats === 'function') {
-                this.options = JSON.parse(addFilterFormats());
+                this.processWalksFilter();
             }
-            this.processOptions(this.options, this.elements.raoptions);
-            this.getOptions();
+            this.processOptions(this.elements.raoptions);
             this._allwalks = ra.walk.convertPHPWalks(data.walks);
             ra.walk.registerWalks(this._allwalks);
             var $walks = this.getAllWalks();
-//            if (document.getElementById("leafletmap") !== null) {
-//                raLoadLeaflet();
-//            }
             this.setFilters($walks);
             this.displayWalks($walks);
             // to support Area walks display
             document.cookie = "AreaCode=;expires=Thu, 01 Jan 1970; path=/;samesite=Strict";
         };
+        this.processWalksFilter = function () {
 
-        this.getOptions = function () {
-            this.settings.filter.RA_Display_Format = this.settings.displayDefault;
-            var $tag = document.getElementById("raDisplayOptions");
-            if ($tag) {
-                var $text = $tag.innerHTML;
-                this.settings.options = $text;
-                document.getElementById("raDisplayOptions").innerHTML = "";
-                document.getElementById(this.settings.filter.RA_Display_Format).classList.add('active');
-            } 
+            var wfOptions = JSON.parse(addFilterFormats());
+            this.settings.filterPosition = wfOptions.filterPosition;
+            this.settings.defaultView = wfOptions.defaultView;
+            this.settings.gradesView = wfOptions.detailsView;
+            this.settings.tableView = wfOptions.tableView;
+            this.settings.listView = wfOptions.listView;
+            this.settings.mapView = wfOptions.mapView;
+            this.settings.contactsView = wfOptions.contactsView;
+
+            var $diag = "<h3>Walks filter diagnostics</h3>";
+            if (wfOptions.listFormat !== null) {
+                $diag += "List Format Specified<br/>";
+                var items = this.parseFields(wfOptions.listFormat);
+                this.settings.listFormat = items;
+                $diag += "Items " + items.length + "<ul>";
+                items.forEach(function (item, index, items) {
+                    $diag += "<li>" + item + "</li>";
+                });
+                $diag += "</ul>";
+            }
+            if (wfOptions.detailsFormat !== null) {
+                var items = this.parseFields(wfOptions.detailsFormat);
+                this.settings.gradesFormat = items;
+                $diag += "Grades Format Specified<br/>";
+                $diag += "Items " + items.length + "<ul>";
+                items.forEach(function (item, index, items) {
+                    $diag += "<li>" + item + "</li>";
+                });
+                $diag += "</ul>";
+            }
+            if (wfOptions.tableFormat !== null) {
+                $diag += "<br/>Table Format Specified<br/>";
+                var cols = wfOptions.tableFormat;
+                var format = [];
+                var self = this;
+                cols.forEach(function (col, index, cols) {
+                    var fields = {};
+                    fields.title = col.title;
+                    fields.items = self.parseFields(col.items);
+                    format.push(fields);
+                });
+                this.settings.tableFormat = format;
+                $diag += "Columns " + cols.length + "<ol>";
+                format.forEach(function (col, index, format) {
+                    $diag += "<li>" + col.title + "</li><ul>";
+                    items = col.items;
+                    items.forEach(function (item, index, items) {
+                        $diag += "<li>" + item + "</li>";
+                    });
+                    $diag += "</ul>";
+                });
+                $diag += "</ol>";
+            }
+            if (wfOptions.diagnostics) {
+                var tag = this.elements.filterDiagnostics;
+                tag.innerHTML = $diag;
+            }
         };
+
+//        this.getOptions = function () {
+//            this.settings.filter.RA_Display_Format = this.settings.displayDefault;
+//
+//        };
 
         this.getAllWalks = function () {
             var $walks = this._allwalks;
@@ -809,7 +856,7 @@ var raDisplay = (function () {
             });
 
         };
-        this.addFilterItem = function (tag,item ) {
+        this.addFilterItem = function (tag, item) {
             var li = document.createElement('li');
             tag.appendChild(li);
             var input = document.createElement('input');
@@ -825,7 +872,7 @@ var raDisplay = (function () {
             });
 
             var label = document.createElement('label');
-            label.textContent = item.name+" ["+item.no+"]";
+            label.textContent = item.name + " [" + item.no + "]";
             li.appendChild(label);
         };
         this.addFilterItemDate = function (tag, name, id, value, min, max) {
@@ -971,10 +1018,10 @@ var raDisplay = (function () {
             });
         };
 
-        this.processOptions = function (options, optionsDiv) {
-
+        this.processOptions = function (optionsDiv) {
+            this.settings.filter.RA_Display_Format = this.settings.displayDefault;
             var $diag = "<h3>Walks filter diagnostics</h3>";
-            switch (options.filterPosition) {
+            switch (this.settings.filterPosition) {
                 case "In module":
                 case "1":
                     this.settings.filterTag = 'js-walksFilterPos1';
@@ -989,95 +1036,47 @@ var raDisplay = (function () {
                     $diag += "Position - In Article, below tabs<br/>";
             }
             var table = document.createElement('table');
+            table.setAttribute('class', 'ra-tab-options');
             optionsDiv.appendChild(table);
             var row = document.createElement('tr');
             table.appendChild(row);
-            //  this.settings.defaultOptions = "<table><tr>";
-            switch (options.defaultView) {
+            switch (this.settings.displayDefault) {
                 case "List":
                     this.settings.displayDefault = 'List';
                     this.addDisplayOption("List", true, row);
-                    options.listView = false;
+                    this.settings.listView = false;
                     break;
                 case "Table":
                     this.settings.displayDefault = 'Table';
                     this.addDisplayOption("Table", true, row);
-                    options.tableView = false;
+                    this.settings.tableView = false;
                     break;
                 case "Map":
                     this.settings.displayDefault = 'Map';
                     this.addDisplayOption("Map", true, row);
-                    options.mapView = false;
+                    this.settings.mapView = false;
                     break;
                 default:
                     this.settings.displayDefault = 'Grades';
                     this.addDisplayOption("Grades", true, row);
-                    options.gradesView = false;
+                    this.settings.gradesView = false;
             }
-            if (options.gradesView) {
+            if (this.settings.gradesView) {
                 this.addDisplayOption("Grades", false, row);
             }
-            if (options.tableView) {
+            if (this.settings.tableView) {
                 this.addDisplayOption("Table", false, row);
             }
-            if (options.listView) {
+            if (this.settings.listView) {
                 this.addDisplayOption("List", false, row);
             }
-            if (options.mapView) {
+            if (this.settings.mapView) {
                 this.addDisplayOption("Map", false, row);
             }
-            if (options.contactsView) {
+            if (this.settings.contactsView) {
                 this.addDisplayOption("Contacts", false, row);
             }
-
             this.settings.defaultOptions += "</tr></table>";
-            if (options.listFormat !== null) {
-                $diag += "List Format Specified<br/>";
-                var items = this.parseFields(options.listFormat);
-                this.settings.listFormat = items;
-                $diag += "Items " + items.length + "<ul>";
-                items.forEach(function (item, index, items) {
-                    $diag += "<li>" + item + "</li>";
-                });
-                $diag += "</ul>";
-            }
-            if (options.gradesFormat !== null) {
-                var items = this.parseFields(options.gradesFormat);
-                this.settings.gradesFormat = items;
-                $diag += "Grades Format Specified<br/>";
-                $diag += "Items " + items.length + "<ul>";
-                items.forEach(function (item, index, items) {
-                    $diag += "<li>" + item + "</li>";
-                });
-                $diag += "</ul>";
-            }
-            if (options.tableFormat !== null) {
-                $diag += "<br/>Table Format Specified<br/>";
-                var cols = options.tableFormat;
-                var format = [];
-                cols.forEach(function (col, index, cols) {
-                    var fields = {};
-                    fields.title = col.title;
-                    fields.items = this.parseFields(col.items);
-                    format.push(fields);
-                });
-                this.settings.tableFormat = format;
-                $diag += "Columns " + cols.length + "<ol>";
-                format.forEach(function (col, index, format) {
-                    $diag += "<li>" + col.title + "</li><ul>";
-                    items = col.items;
-                    items.forEach(function (item, index, items) {
-                        $diag += "<li>" + item + "</li>";
-                    });
-                    $diag += "</ul>";
-                });
-                $diag += "</ol>";
-            }
-            if (options.diagnostics) {
-                var tag = document.getElementById('js-filterDiagnostics');
-                tag.innerHTML = $diag;
-            }
-
         };
         this.addDisplayOption = function (name, active, row) {
             var col = document.createElement('td');
@@ -1088,19 +1087,14 @@ var raDisplay = (function () {
             this.optionTag[name] = col;
             if (active) {
                 col.classList.add('active');
-                //    return "<td class='ra-tab active' id='" + name + "' onclick=\"javascript:ra_format('" + name + "')\">" + name + "</td>";
-            } else {
-                //    return "<td class='ra-tab ' id='" + name + "' onclick=\"javascript:ra_format('" + name + "')\">" + name + "</td>";
             }
             var _this = this;
             col.addEventListener("click", function () {
                 var option = this.getAttribute('data-display-option');
                 var oldOption = _this.settings.filter.RA_Display_Format;
                 _this.optionTag[oldOption].classList.remove('active');
-                //    document.getElementById(_this.settings.filter.RA_Display_Format).classList.remove('active');
                 _this.settings.filter.RA_Display_Format = option;
                 _this.optionTag[option].classList.add('active');
-                //    document.getElementById(_this.settings.filter.RA_Display_Format).classList.add('active');
                 var $walks = _this.getWalks();
                 _this.displayWalks($walks);
             });
@@ -1132,6 +1126,7 @@ var raDisplay = (function () {
                         $item += $char;
                 }
             });
+            return $items;
         };
     };
 
