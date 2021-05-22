@@ -55,44 +55,41 @@ L.Control.RA_Map_Tools = L.Control.extend({
             container.appendChild(tabs);
             var list = document.createElement('div');
             tabs.appendChild(list);
-            if (_this._userOptions.plotroute !== null) {
-                _this.addTabItem(container, list, 'Plot Walking Route', 'route', true);
-                _this.addTabItem(container, list, 'Search', 'search', false);
-            } else {
-                _this.addTabItem(container, list, 'Search', 'search', true);
-            }
-            _this.addTabItem(container, list, 'Ordnance Survey', 'osmaps', false);
-            if (_this._userOptions.rightclick !== null) {
-                _this.addTabItem(container, list, 'Mouse Right Click', 'mouse', false);
-            }
-            _this.addTabItem(container, list, 'Feedback', 'help', false);
             // tab content 
             var content = document.createElement('div');
             content.setAttribute('class', 'tab-content');
             container.appendChild(content);
-            var searchDiv;
-            if (_this._userOptions.plotroute!==null) {
+            var first = true;
+
+            if (_this._userOptions.plotroute !== null) {
+                _this.addTabItem(container, list, 'Plot Walking Route', 'route', true);
                 var drawDiv = _this.addTabContentItem(content, "route", true);
-                searchDiv = _this.addTabContentItem(content, "search", false);
-            } else {
-                searchDiv = _this.addTabContentItem(content, "search", true);
-            }
-            var osmapsDiv = _this.addTabContentItem(content, "osmaps", false);
-            if (_this._userOptions.rightclick !== null) {
-                var mouseDiv = _this.addTabContentItem(content, "mouse", false);
-            }
-            var helpDiv = _this.addTabContentItem(content, "help", false);
-            if (_this._userOptions.plotroute!==null) {
                 _this.addDrawOptions(drawDiv);
+                _this.saveDrawOptions = false;
+                _this.getDrawSettings();
+                first = false;
             }
+
+            var searchDiv;
+            _this.addTabItem(container, list, 'Search', 'search', true);
+            searchDiv = _this.addTabContentItem(content, "search", first);
             _this.addSearch(searchDiv);
+
+            var osmapsDiv = _this.addTabContentItem(content, "osmaps", false);
+            _this.addTabItem(container, list, 'Ordnance Survey', 'osmaps', false);
             _this.addOSMaps(osmapsDiv);
+
             if (_this._userOptions.rightclick !== null) {
+                _this.addTabItem(container, list, 'Mouse Right Click', 'mouse', false);
+                var mouseDiv = _this.addTabContentItem(content, "mouse", false);
                 _this.addMouse(mouseDiv);
             }
+
+            _this.addTabItem(container, list, 'Feedback', 'help', false);
+
+            var helpDiv = _this.addTabContentItem(content, "help", false);
             _this.addHelp(helpDiv);
-            var padding = document.createElement('p');
-            container.appendChild(padding);
+
             if (_this._helpPage !== '') {
                 var help = document.createElement('a');
                 help.setAttribute('class', 'link-button button-p1815');
@@ -111,12 +108,9 @@ L.Control.RA_Map_Tools = L.Control.extend({
                     self._returnToFullScreen();
                 });
             }
+            var padding = document.createElement('p');
+            container.appendChild(padding);
         });
-        if (_this._userOptions.plotroute!==null) {
-            _this.saveDrawOptions = false;
-            _this.getDrawSettings();
-            //       }
-        }
         return container;
     },
     userOptions: function (value) {

@@ -83,8 +83,8 @@ ra.walk = (function () {
     };
     my._addLocation = function (layer, location) {
         var icon = ra.map.icon.markerRoute();
-        var popup = "", title='';
-        var popupoffset=[0, -30];
+        var popup = "", title = '';
+        var popupoffset = [0, -30];
         if (location.exact) {
             var pcpop = "<b>" + location.postcode + "</b>";
             pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
@@ -98,15 +98,15 @@ ra.walk = (function () {
                     popup = "<b>Meeting place</b><br/>" + location.timeHHMMshort + " " + location.description;
                     popup += "<br/>" + location.gridref;
                     icon = ra.map.icon.markerRoute();
-                    title='Meeting place';
-                    popupoffset=[0, -30];
+                    title = 'Meeting place';
+                    popupoffset = [0, -30];
                     break;
                 case "Start":
                     popup = "<b>Walk start</b><br/>" + location.timeHHMMshort + " " + location.description;
                     popup += "<br/>" + location.gridref;
                     icon = ra.map.icon.markerStart();
-                    title='Start of walk';
-                    popupoffset=[0, -10];
+                    title = 'Start of walk';
+                    popupoffset = [0, -10];
                     break;
                 case "Finishing":
                     popup = "<b>Walk Fininsh</b><br/>" + location.description;
@@ -122,13 +122,13 @@ ra.walk = (function () {
                     var popup = "<b>General area for walk only</b><br/>" + location.description;
                     popup += "<br/>Contact group if you wish to join the walk at the start";
                     icon = ra.map.icon.markerArea();
-                    title='General area of walk';
-                    popupoffset=[0, -10];
+                    title = 'General area of walk';
+                    popupoffset = [0, -10];
                     break;
             }
         }
-        var marker = L.marker([location.latitude, location.longitude], {icon: icon,title:title,riseOnHover:true}).addTo(layer);
-        marker.bindPopup(popup, {offset: popupoffset,autoClose: false}).openPopup();
+        var marker = L.marker([location.latitude, location.longitude], {icon: icon, title: title, riseOnHover: true}).addTo(layer);
+        marker.bindPopup(popup, {offset: popupoffset, autoClose: false}).openPopup();
     };
     my.displayWalkURL = function (url) {
         window.open(url);
@@ -802,12 +802,12 @@ ra.walk = (function () {
                 my.convertPHPLocation($walk.meetLocation);
             }
             my.convertPHPLocation($walk.startLocation);
-//                $walk.finishLocation;
-//                $walk.finishTime;
+            if ($walk.hasOwnProperty('finishTime')) {
+          //      $walk.finishTime.time = new Date(location.time.date);
+            }
 
         }
         return $walks;
-        //     return JSON.stringify($walks);
     };
     my.convertPHPLocation = function (location) {
         location.time = new Date(location.time.date);

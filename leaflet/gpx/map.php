@@ -15,6 +15,7 @@ class RLeafletGpxMap extends RLeafletMap {
     public function displayPath($gpx) {
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/leaflet/gpx/maplist.js", "text/javascript");
+        $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
         $this->help_page = "singleroute.html";
         $this->options->fullscreen = true;
         $this->options->cluster = false;
@@ -22,14 +23,16 @@ class RLeafletGpxMap extends RLeafletMap {
         $this->options->locationsearch = true;
         $this->options->osgrid = true;
         $this->options->mouseposition = true;
-        $this->options->maptools=true;
-        $this->options->mylocation=true;
+        $this->options->maptools = true;
+        $this->options->mylocation = true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
         $this->options->print = true;
 
-        $this->data = new class {};
+        $this->data = new class {
+            
+        };
         if ($this->imperial) {
             $this->data->imperial = "true";
         } else {
@@ -54,7 +57,7 @@ class RLeafletGpxMap extends RLeafletMap {
             echo "<p><b>Unable to display gpx file</b></p>";
         }
         $detailsDivId = "details-" . $this->options->divId;
-        $this->data->detailsDivId=$detailsDivId;
+        $this->data->detailsDivId = $detailsDivId;
         if (file_exists($gpx)) {
             echo "<div id='" . $detailsDivId . "'></div>";
             $link = false;
@@ -77,7 +80,7 @@ class RLeafletGpxMap extends RLeafletMap {
                 echo '<b>Download route:</b> <a href="' . $gpx . '"><img alt="gpx" src="libraries/ramblers/images/orange-gpx-32.png" width="20" height="20"></a><br/><br/>';
             }
         }
-       
+
         parent::setCommand('singleGpxRoute');
         parent::setDataObject($this->data);
         parent::display();
