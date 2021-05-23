@@ -42,6 +42,12 @@ ra.gpx = (function () {
                 var sSymbol = marker.options.iconkey;
                 ra.map.icon.setMarker(marker, sSymbol);
             }
+            if (e.point_type === "start") {
+               e.point.options.title="Start location";
+            }
+            if (e.point_type === "end") {
+                 e.point.options.title="End location";
+            }
         });
         g.on('loaded', function (e) {
             _map.fitBounds(e.target.getBounds(),{padding:[20,20]});
@@ -355,9 +361,15 @@ function gpxFolderDisplay(options) {
                 var sSymbol = marker.options.iconkey;
                 ra.map.icon.setMarker(marker, sSymbol);
             }
+             if (e.point_type === "start") {
+               e.point.options.title="Start location";
+            }
+            if (e.point_type === "end") {
+                 e.point.options.title="End location";
+            }
         });
         this.gpx.on('loaded', function (e) {
-            _this._map.fitBounds(e.target.getBounds());
+            _this._map.fitBounds(e.target.getBounds(),{padding:[20,20]});
             _this._map.closePopup();
         });
         this.gpx.addTo(this._map);
