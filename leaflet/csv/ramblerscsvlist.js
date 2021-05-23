@@ -242,6 +242,7 @@ ra.csvList = (function () {
                 this.addCSVMarker(index);
             }
             this.cluster.addClusterMarkers();
+            this.cluster.zoomAll({padding: [30, 30]});
         };
         this.addCSVMarker = function (no) {
             var $popup, $lat, $long;

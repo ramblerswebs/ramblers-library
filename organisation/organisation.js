@@ -13,6 +13,7 @@ var raOrganisationMap = (function () {
             this.addMarkers(data.areas);
             this.addMarkers(data.groups);
             this.cluster.addClusterMarkers();
+            this.cluster.zoomAll();
         };
         this.addMarkers = function (items) {
             for (var index = 0; index < items.length; ++index) {

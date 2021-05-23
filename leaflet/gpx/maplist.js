@@ -44,7 +44,7 @@ ra.gpx = (function () {
             }
         });
         g.on('loaded', function (e) {
-            _map.fitBounds(e.target.getBounds());
+            _map.fitBounds(e.target.getBounds(),{padding:[20,20]});
             gpx.displayGpxdetails(g, detailsDivId);
         });
         g.addTo(_map);
@@ -379,6 +379,7 @@ function gpxFolderDisplay(options) {
             }
         }
         this.cluster.addClusterMarkers();
+        this.cluster.zoomAll();
     };
     this.addGPXMarker = function (route) {
         var $popup, $lat, $long;

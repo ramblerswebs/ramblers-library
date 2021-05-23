@@ -471,9 +471,12 @@ function cluster(map) {
     };
     this.addClusterMarkers = function () {
         this.markersCG.addLayers(this.markerList);
+
+    };
+    this.zoomAll = function (options={padding: [20, 20]}) {
         if (this.markerList.length > 0) {
             var bounds = this._getBounds(this.markerList);
-            this._map.fitBounds(bounds);
+            this._map.fitBounds(bounds, options);
         }
     };
     this._getBounds = function (list) {
@@ -493,51 +496,3 @@ function cluster(map) {
     };
 
 }
-//var cluster = (function () {
-//
-//    var cluster = function (map) {
-//       
-//    this.progressDiv = 'ra-cluster-progress-bar';
-//
-//    this._map = map;
-//    this.progressBar = document.getElementById(this.progressDiv);
-//    this.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: this.updateClusterProgressBar, disableClusteringAtZoom: 12, maxClusterRadius: 50});
-//    this.markerList = [];
-//    this.progressBar.style.display = "none";
-//    this.markersCG.addLayers(this.markerList);
-//    this._map.addLayer(this.markersCG);
-//
-//    this.updateClusterProgressBar = function (processed, total, elapsed) {
-//        if (elapsed > 1000) {
-//// if it takes more than a second to load, display the progress bar:
-//            this.progressBar.innerHTML = "Loading: " + Math.round(processed / total * 100) + "%";
-//            this.progressBar.style.display = "block";
-//        }
-//        if (processed === total) {
-//            this.progressBar.style.display = "none";// all markers processed - hide the progress bar:
-//        }
-//    };
-//    this.removeClusterMarkers = function () {
-//        this.markersCG.removeLayers(this.markerList);
-//        this.markerList = [];
-//        //     ramblersMap.markersCG.addLayers(ramblersMap.markerList);
-//    };
-//    this.addClusterMarkers = function () {
-//        this.markersCG.addLayers(this.markerList);
-//        if (this.markerList.length > 0) {
-//            var bounds = getBounds(this.markerList);
-//            this._map.fitBounds(bounds);
-//        }
-//    };
-//    this.addMarker = function ($popup, $lat, $long, $icon) {
-//        var marker = L.marker([$lat, $long], {icon: $icon});
-//        var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
-//        marker.bindPopup($pop, {offset: new L.Point(0, -20)});
-//        this.markerList.push(marker);
-//    };
-//
-//};
-// 
-//    return cluster;
-//
-//})();

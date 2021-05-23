@@ -226,10 +226,6 @@ var raDisplay = (function () {
                     ra.html.setTag("rawalks", "");
                     this.displayMap("visible");
                     this.displayWalksMap($walks);
-//                    if (ramblersMap.markerList.length !== 0) {
-//                        var bounds = getBounds(ramblersMap.markerList);
-//                        ramblersMap.map.fitBounds(bounds);
-//                    }
                     break;
                 case "Contacts":
                     this.displayMap("hidden");
@@ -696,6 +692,7 @@ var raDisplay = (function () {
                 }
             }
             this.cluster.addClusterMarkers();
+            this.cluster.zoomAll();
             return;
         };
         this.addWalkMarker = function ($walk) {

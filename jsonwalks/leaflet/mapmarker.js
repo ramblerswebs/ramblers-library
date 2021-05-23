@@ -62,6 +62,7 @@ var raWalksMap = (function () {
                 this.addWalkMarker($walk);
             }
             this.cluster.addClusterMarkers();
+            this.cluster.zoomAll();
             return;
         };
         this.addWalkMarker = function ($walk) {
