@@ -8,9 +8,7 @@ var ra;
 var raWalksMap = (function () {
     var raWalksMap = function () {
         this.options = null;
-        this.settings = {
-            mapFormat: ["{gradeimgRight}", "{dowddmm}", "{lf}", "{title}", "{lf}", "{distance}", "{,grade}", "{lf}", "{startOSMap}", "{startDirections}"]
-        };
+        this.walkClass="walk";
         this.legend = '<p><strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.</p>' +
                 '<p><img src="libraries/ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="libraries/ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="libraries/ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.</p>';
 
@@ -59,35 +57,13 @@ var raWalksMap = (function () {
             }
             for (index = 0, len = $walks.length; index < len; ++index) {
                 $walk = $walks[index];
-                this.addWalkMarker($walk);
+                ra.walk.addWalkMarker($walk,this.cluster,this.walkClass);
             }
             this.cluster.addClusterMarkers();
             this.cluster.zoomAll();
             return;
         };
-        this.addWalkMarker = function ($walk) {
-            var $long, $lat, $icon, $class, $details, $map;
-            var $popup;
-            var $this = this.settings;
-            $long = $walk.startLocation.longitude;
-            $lat = $walk.startLocation.latitude;
 
-            if ($walk.startLocation.exact) {
-                $icon = ra.map.icon.markerStart();
-            } else {
-                $icon = ra.map.icon.markerArea();
-            }
-            if (ra.walk.isCancelled($walk)) {
-                $icon = ra.map.icon.markerCancelled();
-            }
-            $details = ra.walk.getWalkValues($walk, this.settings.mapFormat);
-            $class = $this.walkClass + $walk.status;
-            $details = "<div class='" + $class + "'>" + $details + "</div>";
-            $popup = $details;
-            $popup = $popup.replace('"', "&quot;");
-            this.cluster.addMarker($popup, $lat, $long, $icon);
-            return;
-        };
     };
 
     return raWalksMap;

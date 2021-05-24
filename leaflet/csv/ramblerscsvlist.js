@@ -207,8 +207,6 @@ ra.csvList = (function () {
                         var td = document.createElement('td');
                         tr.appendChild(td);
                         td.setAttribute('class', item.jpclass + " " + item.align);
-
-                        var value = "";
                         switch (item.type) {
                             case "link":
                                 if (item.values[no] !== "") {
@@ -245,8 +243,8 @@ ra.csvList = (function () {
             this.cluster.zoomAll({padding: [30, 30]});
         };
         this.addCSVMarker = function (no) {
-            var $popup, $lat, $long;
-            var $all=true;
+            var $popup, $lat, $long,title="";
+            var $all = true;
             $popup = "<div style='font-size:120%'>";
             var items = this.data.list.items;
             for (var index = 0; index < items.length; ++index) {
@@ -258,14 +256,21 @@ ra.csvList = (function () {
                             $popup += '<b>' + items[index].name + ': </b>' + items[index].values[no] + '<br/>';
                         }
                     }
-                }else{
-                    $all=false;
+                } else {
+                    $all = false;
                 }
             }
-            if (!$all){
+            if (!$all) {
                 $popup += "All information for location is below map";
             }
             $popup += "</div>";
+            for (var index = 0; index < items.length; ++index) {
+                if (title===""){
+                    if (items[index].linkmarker){
+                        title=items[index].values[no];
+                    }
+                }
+            }
             $lat = items[this.data.list.latitude].values[no];
             $long = items[this.data.list.longitude].values[no];
             if ($lat !== 0 && $long !== 0) {
@@ -275,7 +280,7 @@ ra.csvList = (function () {
                     iconAnchor: [16, 47],
                     popupAnchor: [0, -44]
                 });
-                var marker = L.marker([$lat, $long], {icon: icon});
+                var marker = L.marker([$lat, $long], {icon: icon, riseOnHover: true,title:title});
                 var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
                 marker.bindPopup($pop);
                 marker.ramblers_id = no;

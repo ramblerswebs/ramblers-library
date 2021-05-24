@@ -20,7 +20,7 @@ ra.gpx = (function () {
         var g = new L.GPX(ra.baseDirectory() + file, {async: true,
             polyline_options: {color: linecolour},
             marker_options: {
-             startIconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/route-start.png',
+                startIconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/route-start.png',
                 endIconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/route-end.png',
                 shadowUrl: null,
                 iconSize: [20, 20], // size of the icon
@@ -30,27 +30,30 @@ ra.gpx = (function () {
             el.addData(e.line);
         });
         g.on('addpoint', function (e) {
-            if (e.point_type === "waypoint") {
-                var marker = e.point;
-                var icon = L.icon({
-                    iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/redmarker.png',
-                    iconSize: [36, 41], // size of the icon
-                    iconAnchor: [18, 41],
-                    popupAnchor: [0, -20]
-                });
-                marker.setIcon(icon);
-                var sSymbol = marker.options.iconkey;
-                ra.map.icon.setMarker(marker, sSymbol);
+            var marker = e.point;
+            switch (e.point_type) {
+                case "waypoint":
+                    var icon = L.icon({
+                        iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/redmarker.png',
+                        iconSize: [36, 41], // size of the icon
+                        iconAnchor: [18, 41],
+                        popupAnchor: [0, -20]
+                    });
+                    marker.setIcon(icon);
+                    var sSymbol = marker.options.iconkey;
+                    ra.map.icon.setMarker(marker, sSymbol);
+                    break;
+                case "start":
+                    L.setOptions(marker, {title: "Start location"});
+                    break;
+                case "end":
+                    L.setOptions(marker, {title: "End location"});
+                    break;
             }
-            if (e.point_type === "start") {
-               e.point.options.title="Start location";
-            }
-            if (e.point_type === "end") {
-                 e.point.options.title="End location";
-            }
+            L.setOptions(marker, {riseOnHover: true});
         });
         g.on('loaded', function (e) {
-            _map.fitBounds(e.target.getBounds(),{padding:[20,20]});
+            _map.fitBounds(e.target.getBounds(), {padding: [20, 20]});
             gpx.displayGpxdetails(g, detailsDivId);
         });
         g.addTo(_map);
@@ -349,27 +352,30 @@ function gpxFolderDisplay(options) {
             _this.el.addData(e.line);
         });
         this.gpx.on('addpoint', function (e) {
-            if (e.point_type === "waypoint") {
-                var marker = e.point;
-                var icon = L.icon({
-                    iconUrl: this.base + 'libraries/ramblers/leaflet/images/redmarker.png',
-                    iconSize: [36, 41], // size of the icon
-                    iconAnchor: [18, 41],
-                    popupAnchor: [0, -20]
-                });
-                marker.setIcon(icon);
-                var sSymbol = marker.options.iconkey;
-                ra.map.icon.setMarker(marker, sSymbol);
+            var marker = e.point;
+            switch (e.point_type) {
+                case "waypoint":
+                    var icon = L.icon({
+                        iconUrl: ra.baseDirectory() + 'libraries/ramblers/leaflet/images/redmarker.png',
+                        iconSize: [36, 41], // size of the icon
+                        iconAnchor: [18, 41],
+                        popupAnchor: [0, -20]
+                    });
+                    marker.setIcon(icon);
+                    var sSymbol = marker.options.iconkey;
+                    ra.map.icon.setMarker(marker, sSymbol);
+                    break;
+                case "start":
+                    L.setOptions(marker, {title: "Start location"});
+                    break;
+                case "end":
+                    L.setOptions(marker, {title: "End location"});
+                    break;
             }
-             if (e.point_type === "start") {
-               e.point.options.title="Start location";
-            }
-            if (e.point_type === "end") {
-                 e.point.options.title="End location";
-            }
+            L.setOptions(marker, {riseOnHover: true});
         });
         this.gpx.on('loaded', function (e) {
-            _this._map.fitBounds(e.target.getBounds(),{padding:[20,20]});
+            _this._map.fitBounds(e.target.getBounds(), {padding: [20, 20]});
             _this._map.closePopup();
         });
         this.gpx.addTo(this._map);
@@ -394,13 +400,14 @@ function gpxFolderDisplay(options) {
         this.cluster.zoomAll();
     };
     this.addGPXMarker = function (route) {
-        var $popup, $lat, $long;
+        var $popup, $lat, $long, title;
+        title=route.title;
         $popup = "<div style='font-size:120%'>" + this.displayGPXName(route) + "</div>";
         $popup += '<b>Distance</b> - ' + ra.map.getGPXDistance(route.distance) + '<br/>';
         $popup += this.formatAltitude(route);
         $lat = route.latitude;
         $long = route.longitude;
-        this.cluster.addMarker($popup, $lat, $long, ra.map.icon.markerRoute());
+        this.cluster.addMarker($popup, $lat, $long, {icon: ra.map.icon.markerRoute(), riseOnHover: true, title: title});
     };
     this.formatAltitude = function (route) {
         var text;

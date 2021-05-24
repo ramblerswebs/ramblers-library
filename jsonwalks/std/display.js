@@ -25,7 +25,6 @@ var raDisplay = (function () {
             tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{mediathumbr}", "{title}"]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
             listFormat: ["{dowdd}", "{,meet}", "{,start}", "{,title}", "{,distance}", "{,contactname}", "{,telephone}"],
             gradesFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
-            mapFormat: ["{gradeimgRight}", "{dowddmm}", "{lf}", "{title}", "{lf}", "{distance}", "{,grade}", "{lf}", "{startOSMap}", "{startDirections}"],
             withMonth: ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"],
             jplistName: "group1",
             filterTag: "js-walksFilterPos2",
@@ -688,36 +687,14 @@ var raDisplay = (function () {
             for (index = 0, len = $walks.length; index < len; ++index) {
                 $walk = $walks[index];
                 if ($walk.display) {
-                    this.addWalkMarker($walk);
+                     ra.walk.addWalkMarker($walk,this.cluster,this.settings.walkClass);
                 }
             }
             this.cluster.addClusterMarkers();
             this.cluster.zoomAll();
             return;
         };
-        this.addWalkMarker = function ($walk) {
-            var $long, $lat, $icon, $class, $details, $map;
-            var $popup;
-            var $this = this.settings;
-            $long = $walk.startLocation.longitude;
-            $lat = $walk.startLocation.latitude;
 
-            if ($walk.startLocation.exact) {
-                $icon = ra.map.icon.markerStart();
-            } else {
-                $icon = ra.map.icon.markerArea();
-            }
-            if (ra.walk.isCancelled($walk)) {
-                $icon = ra.map.icon.markerCancelled();
-            }
-            $details = ra.walk.getWalkValues($walk, this.settings.mapFormat);
-            $class = $this.walkClass + $walk.status;
-            $details = "<div class='" + $class + "'>" + $details + "</div>";
-            $popup = $details;
-            $popup = $popup.replace('"', "&quot;");
-            this.cluster.addMarker($popup, $lat, $long, $icon);
-            return;
-        };
 
         this.addPagination = function (no) {
             if (!ra.isES6()) {

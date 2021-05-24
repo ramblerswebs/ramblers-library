@@ -11,9 +11,9 @@ if (typeof (ra.data) === "undefined") {
 ra.walk = (function () {
     var my = {};
     my.DisplayWalkFunction = "ra.walk.displayWalkID";
-    // my.diagnostics = false;
-    // my.walks = [];
-    my.walks = {};
+    my.mapFormat = ["{gradeimgRight}", "{dowddmm}", "{lf}", "{title}", "{lf}", "{distance}",
+        "{,grade}", "{lf}", "{startOSMap}", "{startDirections}"],
+            my.walks = {};
     my.registerWalks = function (walks) {
         var i, no, walk;
         for (i = 0, no = walks.length; i < no; ++i) {
@@ -89,7 +89,7 @@ ra.walk = (function () {
             var pcpop = "<b>" + location.postcode + "</b>";
             pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
             var pcIcon = ra.map.icon.postcode();
-            var marker = L.marker([location.postcodeLatitude, location.postcodeLongitude], {icon: pcIcon}).addTo(layer);
+            var marker = L.marker([location.postcodeLatitude, location.postcodeLongitude], {icon: pcIcon, riseOnHover: true}).addTo(layer);
             marker.bindPopup(pcpop).openPopup();
         }
         if (location.exact) {
@@ -275,13 +275,18 @@ ra.walk = (function () {
         $html += "</div>" + PHP_EOL;
         return $html;
     };
-    my.getWalkValues = function ($walk, $items) {
+    my.getWalkValues = function ($walk, $items, link = true) {
         var index, len, $out, $item, $text;
         $out = "";
         for (index = 0, len = $items.length; index < len; ++index) {
             $out += my.getWalkValue($walk, $items[index]);
         }
-        return my.addWalkLink($walk.id, $out);
+        if (link) {
+            return my.addWalkLink($walk.id, $out);
+        } else {
+            return  $out;
+    }
+
     };
     my.addItemInfo = function ($class, $title, $value) {
         var $html = "";
@@ -803,7 +808,7 @@ ra.walk = (function () {
             }
             my.convertPHPLocation($walk.startLocation);
             if ($walk.hasOwnProperty('finishTime')) {
-          //      $walk.finishTime.time = new Date(location.time.date);
+                //      $walk.finishTime.time = new Date(location.time.date);
             }
 
         }
@@ -933,6 +938,32 @@ ra.walk = (function () {
             location.postcodeDirection = direction.name;
         }
         return location;
+    };
+    my.addWalkMarker = function ($walk, cluster, walkClass) {
+        var $long, $lat, $icon, $class;
+        var $popup;
+        var $this = this.settings;
+        $long = $walk.startLocation.longitude;
+        $lat = $walk.startLocation.latitude;
+        if ($walk.startLocation.exact) {
+            $icon = ra.map.icon.markerStart();
+        } else {
+            $icon = ra.map.icon.markerArea();
+        }
+        if (ra.walk.isCancelled($walk)) {
+            $icon = ra.map.icon.markerCancelled();
+        }
+        $popup = ra.walk.getWalkValues($walk, my.mapFormat);
+        var dist = '';
+        if ($walk.distanceMiles > 0) {
+            dist = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
+        }
+        title = ra.date.dowShortddmm($walk.walkDate) + ra.walk.addYear($walk) + ", " + dist;
+        $class = walkClass + $walk.status;
+        $popup = "<div class='" + $class + "'>" + $popup + "</div>";
+        $popup = $popup.replace('"', "&quot;");
+        cluster.addMarker($popup, $lat, $long, {icon: $icon, title: title, riseOnHover: true, });
+        return;
     };
     my.gradeCSS = function (nationalGrade) {
         var $class = "";

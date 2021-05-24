@@ -30,7 +30,7 @@ function selectAreaCode() {
                 var pt = new L.latLng(item.latitude, item.longitude);
                 var title = '<a href="javascript:void(0)" onclick="dispAreaWalks(\'' + item.groupCode + '\')">' + item.name + '</a>';
                 var icon = L.divIcon({className: $iclass, iconSize: null, html: title});
-                var marker = L.marker(pt, {icon: icon});
+                var marker = L.marker(pt, {icon: icon,riseOnHover:true});
                 areaLayer.addLayer(marker);
             }
         });

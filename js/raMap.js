@@ -329,7 +329,7 @@ ra.map = (function () {
                     break;
             }
 
-            var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long});
+            var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long, riseOnHover:true});
             marker.gr = $gr;
             var text = "<br/><b>Searching for usage details ...</b>";
             marker.bindPopup("<b>Grid Ref " + $gr + "</b><br/>Lat/Long " + $lat + " " + $long + text, {maxWidth: 800});
@@ -473,11 +473,11 @@ function cluster(map) {
         this.markersCG.addLayers(this.markerList);
 
     };
-    this.zoomAll = function (options={padding: [20, 20]}) {
+    this.zoomAll = function (options = {padding: [20, 20]}) {
         if (this.markerList.length > 0) {
             var bounds = this._getBounds(this.markerList);
             this._map.fitBounds(bounds, options);
-        }
+    }
     };
     this._getBounds = function (list) {
         var bounds = new L.LatLngBounds();
@@ -488,11 +488,12 @@ function cluster(map) {
         }
         return bounds;
     };
-    this.addMarker = function ($popup, $lat, $long, $icon) {
-        var marker = L.marker([$lat, $long], {icon: $icon});
+    this.addMarker = function ($popup, $lat, $long, markeroptions = {}) {
+        var marker = L.marker([$lat, $long], markeroptions);
         var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
         marker.bindPopup($pop, {offset: new L.Point(0, -20)});
         this.markerList.push(marker);
+        return marker;
     };
 
 }
