@@ -8,9 +8,13 @@ var ra;
 var raWalksMap = (function () {
     var raWalksMap = function () {
         this.options = null;
-        this.walkClass="walk";
-        this.legend = '<p><strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.</p>' +
-                '<p><img src="libraries/ramblers/images/marker-start.png" alt="Walk start" height="26" width="16">&nbsp; Start locations&nbsp; <img src="libraries/ramblers/images/marker-cancelled.png" alt="Cancelled walk" height="26" width="16"> Cancelled walk&nbsp; <img src="libraries/ramblers/images/marker-area.png" alt="Walking area" height="26" width="16"> Walk in that area.</p>';
+        this.walkClass = "walk";
+        var b = ra.baseDirectory();
+        var sImg = b + "libraries/ramblers/images/marker-start.png";
+        var cImg = b + "libraries/ramblers/images/marker-cancelled.png";
+        var aImg = b + "libraries/ramblers/images/marker-area.png";
+        this.legend = '<p><strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.</p>';
+        this.legend += '<img src="' + sImg + '" alt="Walk start" height="26" width="26">&nbsp; Start locations&nbsp; <img src="' + cImg + '" alt="Cancelled walk" height="26" width="26"> Cancelled walk&nbsp; <img src="' + aImg + '" alt="Walking area" height="26" width="26"> Walk in that area.';
 
         this.load = function (mapOptions, data) {
             this.options = mapOptions;
@@ -57,7 +61,7 @@ var raWalksMap = (function () {
             }
             for (index = 0, len = $walks.length; index < len; ++index) {
                 $walk = $walks[index];
-                ra.walk.addWalkMarker($walk,this.cluster,this.walkClass);
+                ra.walk.addWalkMarker($walk, this.cluster, this.walkClass);
             }
             this.cluster.addClusterMarkers();
             this.cluster.zoomAll();

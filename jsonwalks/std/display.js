@@ -67,9 +67,9 @@ var raDisplay = (function () {
                 this.elements.rapagination2.style.diaplay = 'none';
             }
             var b = ra.baseDirectory();
-            var sImg = b + "libraries/ramblers/images/marker-start.png"
-            var cImg = b + "libraries/ramblers/images/marker-cancelled.png"
-            var aImg = b + "libraries/ramblers/images/marker-area.png"
+            var sImg = b + "libraries/ramblers/images/marker-start.png";
+            var cImg = b + "libraries/ramblers/images/marker-cancelled.png";
+            var aImg = b + "libraries/ramblers/images/marker-area.png";
             var $legend1 = '<strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.';
             var $legend2 = '<img src="' + sImg + '" alt="Walk start" height="26" width="26">&nbsp; Start locations&nbsp; <img src="' + cImg + '" alt="Cancelled walk" height="26" width="26"> Cancelled walk&nbsp; <img src="' + aImg + '" alt="Walking area" height="26" width="26"> Walk in that area.';
             if (data.legendposition === 'top') {
