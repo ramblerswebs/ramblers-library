@@ -55,11 +55,14 @@ class RLeafletMapdraw extends RLeafletMap {
 
         parent::display();
 
+
+
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/leaflet/ra-gpx-drawcontrol.js", "text/javascript");
         $path = "libraries/ramblers/vendors/Leaflet.draw-1.0.4/dist/";
         $document->addStyleSheet($path . "leaflet.draw.css", "text/css");
         $document->addStyleSheet("libraries/ramblers/leaflet/ra-gpx-tools.css", "text/css");
+        $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
         $document->addScript($path . "leaflet.draw-src.js", "text/javascript");
         $document->addScript("libraries/ramblers/leaflet/maplist.js", "text/javascript");
         $document->addScript("libraries/ramblers/leaflet/ra-gpx-upload.js", "text/javascript");

@@ -1,4 +1,4 @@
-var L,document;
+var L, document;
 L.Control.GpxUpload = L.Control.extend({
     options: {
         title: 'Up load a walking route from a GPX file',
@@ -9,7 +9,7 @@ L.Control.GpxUpload = L.Control.extend({
         this.polylineStyle = {color: '#782327'};
         this.enabled = true;
         this.filename = "";
-        var _this=this;
+        var _this = this;
         this._info = {
             name: "",
             desc: "",
@@ -22,7 +22,6 @@ L.Control.GpxUpload = L.Control.extend({
         this.input = this._createIcon(container);
         container.title = this.options.title;
         this._container = container;
-        // container.that = this;
         this.input.addEventListener('input', function (evt) {
             var files = evt.target.files; // FileList object
             var file = files[0];
@@ -189,7 +188,7 @@ L.Control.GpxUpload = L.Control.extend({
                 if (coords.length === 0)
                     continue;
                 // add track
-                var latlngs = removeShortSegments(coords);
+                var latlngs = ra.map.removeShortSegments(coords);
                 var l = new L.Polyline(latlngs, this.polylineStyle);
                 this._itemsCollection.addLayer(l);
                 this._itemsCollection.fire('upload:addline', {line: l});
@@ -237,7 +236,7 @@ L.Control.GpxUpload = L.Control.extend({
     },
     _ra_get_child_text: function (elem, name) {
         var children = elem.childNodes;
-  var _this = this;
+        var _this = this;
         this.result = "";
         this.findname = name;
         if (typeof children !== 'undefined') {

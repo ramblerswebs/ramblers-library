@@ -243,7 +243,7 @@ ra.csvList = (function () {
             this.cluster.zoomAll({padding: [30, 30]});
         };
         this.addCSVMarker = function (no) {
-            var $popup, $lat, $long,title="";
+            var $popup, $lat, $long, title = "";
             var $all = true;
             $popup = "<div style='font-size:120%'>";
             var items = this.data.list.items;
@@ -265,9 +265,9 @@ ra.csvList = (function () {
             }
             $popup += "</div>";
             for (var index = 0; index < items.length; ++index) {
-                if (title===""){
-                    if (items[index].linkmarker){
-                        title=items[index].values[no];
+                if (title === "") {
+                    if (items[index].linkmarker) {
+                        title = items[index].values[no];
                     }
                 }
             }
@@ -280,7 +280,7 @@ ra.csvList = (function () {
                     iconAnchor: [16, 47],
                     popupAnchor: [0, -44]
                 });
-                var marker = L.marker([$lat, $long], {icon: icon, riseOnHover: true,title:title});
+                var marker = L.marker([$lat, $long], {icon: icon, riseOnHover: true, title: title});
                 var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
                 marker.bindPopup($pop);
                 marker.ramblers_id = no;
@@ -381,7 +381,8 @@ ra.csvList = (function () {
     <select data-type=\"items-per-page\"' + $display + '> \
         <option value=\"10\"> 10 per page </option> \
         <option value=\"20\"> 20 per page </option> \
-        <option value=\"30\"> 30 per page </option> \
+        <option value=\"50\"> 50 per page </option> \
+       <option value=\"100\"> 100 per page </option> \
         <option value=\"0\"> view all </option> \
     </select> ';
             $div += '</div> ';

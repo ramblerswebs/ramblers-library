@@ -39,6 +39,8 @@ class RLeafletCsvList extends RLeafletMap {
         $this->options->locationsearch = true;
         $this->options->osgrid = true;
         $this->options->mouseposition = true;
+        $this->options->maptools=true;
+        $this->options->mylocation=true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;
         $this->options->print = true;
@@ -52,16 +54,7 @@ class RLeafletCsvList extends RLeafletMap {
         parent::setCommand('csvTable');
         parent::setDataObject($data);
         parent::display();
-  //      echo "<table id='gpxoptions' ><tr><td class='ra-tab' id='Map' onclick=\"javascript:ra_format('Map')\">Map</td><td class='ra-tab active' id='List' onclick=\"javascript:ra_format('List')\">List</td></tr></table>";
-  //      echo "<div id='gpxouter' >";
-  //      echo "<div id='csvmap' style='display:none;'>";
-  //      echo "<p> </p>";
-        //echo "<div id = \"gpxheader\" ><h4>Click on any walk to display route</h4></div>";
-   //     $text = " ramblersCsvList =new RamblersCsvList; addCsvItems();";
-   //     $text .= "ramblersCsvList.paginationDefault=" . $this->paginationDefault . ";";
-   //     $text .= "displayCsvData();";
-   //     parent::addContent($text);
-  
+   
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
         $document->addStyleSheet("libraries/ramblers/leaflet/csv/csvlist.css", "text/css");
@@ -70,16 +63,6 @@ class RLeafletCsvList extends RLeafletMap {
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
         $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js", "text/javascript");
 
-   //     echo "<br/>";
-   //     echo "<div id='csvRecord'></div>";
-   //     echo "</div>";
-   //     echo "<div id='csvlist' >";
-
-   //     echo "<div id='ra-pagination1'></div>";
-
-   //     echo "<div id=\"dataTab\">Program loading: please give this a minute or so. If this does not vanish then please contact the web master!</div>";
-   //     echo "</div>";
-   //     echo "</div>";
     }
 
     private function readCSV() {
@@ -130,7 +113,4 @@ class RLeafletCsvList extends RLeafletMap {
         fclose($handle);
         return true;
     }
-
-  
-
 }
