@@ -709,10 +709,9 @@ ra.walk = (function () {
     _addLocationInfo = function ($title, $location, $detailsPageUrl) {
         var $out, $gr, $note;
         if ($location.exact) {
-            $note = "Click Google Directions to see map and directions from your current location";
-            $out = "<div class='place'><b>" + $title + " Place</b>:<abbr title='" + $note + "'> " + $location.description + " ";
+            $out = "<div class='place'><b>" + $title + " Place</b>: " + $location.description + " ";
             $out += my._addDirectionsMap($location, "Google directions");
-            $out += "</abbr></div>";
+            $out += "</div>";
             if ($location.time !== "") {
                 $out += ra.html.addDiv("time", "<b>Time</b>: " + $location.timeHHMMshort);
             }
@@ -771,8 +770,7 @@ ra.walk = (function () {
             $note = "Location is " + $location.postcodeDistance + " metres to the " + $location.postcodeDirection + " of " + $this.postcode;
             $note2 = "Check postcode suitablility on map";
         }
-        $pc = "<abbr title='" + $note2 + "'>";
-        $pc += "<b>Postcode</b>: " + $note + "</abbr>";
+        $pc = "<b>Postcode</b>: <abbr title='" + $note2 + "'>" + $note + "</abbr>";
         $out = ra.html.addDiv("postcode " + $distclass, $pc);
         return $out;
     };

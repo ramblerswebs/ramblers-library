@@ -446,6 +446,9 @@ div.even {
 .even:hover {
     background-color:#DDDDDD !important;
 }
+tr.walk:hover {
+    background-color:#DDDDDD !important;
+}
 
 div#rainner {
     padding-top:25px;
