@@ -209,7 +209,7 @@ function gpxFolderDisplay(options) {
                 {name: 'thead', parent: 'table', tag: 'thead'},
                 {name: 'headings', parent: 'thead', tag: 'tr'}];
             if (this.controls.displayAsPreviousWalks) {
-                tags.push({parent: 'headings', tag: 'tr', attrs: {class: 'alignleft'}, textContent: 'Date'});
+                tags.push({parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Date'});
                 tags.push({parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Leader'});
             }
             tags.push(
@@ -220,7 +220,7 @@ function gpxFolderDisplay(options) {
                     {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'max Altitude'},
                     {name: 'elevation', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Elevation Gain'},
                     );
-            if (this.controls.download === 0) {
+            if (this.controls.download > 0) {
                 tags.push({parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'GPX'});
             }
             tags.push({name: 'tbody', parent: 'table', tag: 'tbody'});
@@ -266,7 +266,7 @@ function gpxFolderDisplay(options) {
             link += '<td>' + route.maxAltitude.toFixed(0) + '</td>';
             link += '<td class="wElevation">' + route.cumulativeElevationGain.toFixed(0) + '</td>';
         }
-        if (this.controls.download === 1) {
+        if (this.controls.download > 0) {
             link += '<td>' + this.getGPXdownloadLink(route) + '</td>';
         }
         link += '</tr>';
@@ -292,7 +292,12 @@ function gpxFolderDisplay(options) {
         if (route.duration !== 0) {
             header += "<b>Actual Time:</b> " + ra.time.secsToHrsMins(route.duration) + '<br/>';
         }
-        header += "<b>Download route:</b> " + this.getGPXdownloadLink(route) + '<br/>';
+        if (this.controls.download > 0) {
+            header += "<b>Download route:</b> " + this.getGPXdownloadLink(route) + '<br/>';
+            if (this.controls.download === 1) {
+                header += "* To be able to download GPX Routes, you need to log on to our web site.<br/>";
+            }
+        }
         if (route.tracks > 0) {
             header += "<b>Tracks:</b> " + route.tracks.toFixed(0);
         }
@@ -401,7 +406,7 @@ function gpxFolderDisplay(options) {
     };
     this.addGPXMarker = function (route) {
         var $popup, $lat, $long, title;
-        title=route.title;
+        title = route.title;
         $popup = "<div style='font-size:120%'>" + this.displayGPXName(route) + "</div>";
         $popup += '<b>Distance</b> - ' + ra.map.getGPXDistance(route.distance) + '<br/>';
         $popup += this.formatAltitude(route);

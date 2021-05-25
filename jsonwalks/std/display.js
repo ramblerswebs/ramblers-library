@@ -568,9 +568,6 @@ var raDisplay = (function () {
             }
             $image = '<span class="walkdetail" >';
             $out += ra.walk.getWalkValues($walk, this.settings.gradesFormat);
-
-//   $out += "<span class='ra-detailsimg'></span>";
-            // $out += getCloseImg();
             $text = $out1 + $image + ra.walk.newTooltip($walk, $out) + "\n</span></div>\n";
             if ($displayMonth) {
                 $text += "</div>\n";
