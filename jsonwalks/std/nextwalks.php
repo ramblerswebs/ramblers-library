@@ -12,7 +12,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksStdSimplelist {
 
     public $walkClass = "nextwalk";
     public $feedClass = "walksfeed"; // not used?
-    private $listFormat = ["{dowddmm}",
+    private $listFormat = ["{gradeimg}","{dowddmm}",
         "{,title}", "{,distance}"];
     private $nowalks = 5;
 
