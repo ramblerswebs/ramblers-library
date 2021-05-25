@@ -209,8 +209,8 @@ function gpxFolderDisplay(options) {
                 {name: 'thead', parent: 'table', tag: 'thead'},
                 {name: 'headings', parent: 'thead', tag: 'tr'}];
             if (this.controls.displayAsPreviousWalks) {
-                tags.push({parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Date'});
-                tags.push({parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Leader'});
+                tags.push({name: 'date', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Date'});
+                tags.push({name: 'leader', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Leader'});
             }
             tags.push(
                     {name: 'title', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Title'},
@@ -225,6 +225,12 @@ function gpxFolderDisplay(options) {
             }
             tags.push({name: 'tbody', parent: 'table', tag: 'tbody'});
             var eles = ra.html.generateTags(tag, tags);
+            if (this.controls.displayAsPreviousWalks) {
+                ra.jplist.sortButton(eles.date, "group1", 'wDate', 'date', "asc", "▲");
+                ra.jplist.sortButton(eles.date, "group1", 'wDate', 'date', "desc", "▼");
+                ra.jplist.sortButton(eles.leader, "group1", 'wAuthor', 'text', "asc", "▲");
+                ra.jplist.sortButton(eles.leader, "group1", 'wAuthor', 'text', "desc", "▼");
+            }
             ra.jplist.sortButton(eles.title, "group1", 'wTitle', 'text', "asc", "▲");
             ra.jplist.sortButton(eles.title, "group1", 'wTitle', 'text', "desc", "▼");
             ra.jplist.sortButton(eles.distance, "group1", 'wDistance', 'number', "asc", "▲");
