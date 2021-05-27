@@ -45,6 +45,7 @@
         <folder>leaflet/gpx</folder>
         <folder>leaflet/images</folder>
         <folder>license</folder>
+        <folder>load</folder>
         <folder>organisation</folder>
         <folder>osmap</folder>
         <folder>pages</folder>
