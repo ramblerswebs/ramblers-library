@@ -29,17 +29,54 @@ ra.walk = (function () {
     };
 
     my.displayWalkID = function (event, id) {
-        ra.loc.getPosition(); // start getting location
+        my._getWalkObject(event, id, my._displayModalWalk);
+    };
+    my.toggleDisplay = function (event, id) {
+        var tag = event.currentTarget;
+        if (tag.className.includes('doing')) {
+            return;
+        }
+        if (tag.className.includes('active')) {
+            tag.classList.remove("active");
+            tag.removeChild(tag.lastChild);
+        } else {
+            tag.classList.add("active");
+            tag.classList.add("doing");
+            var info = {tag: tag,
+                ctrlKey: event.ctrlKey,
+                altKey: event.altKey
+            };
+            my._getWalkObject(info, id, my._displayDivWalk);
+        }
+    };
+    my._displayDivWalk = function (event, walk) {
+        var tag = event.tag;
+        var div = document.createElement("div");
+        tag.appendChild(div);
+        var html;
+        if (event.ctrlKey && event.altKey) {
+            html = my.walkDiagnostics(walk);
+        } else {
+            html = my.walkDetails(walk);
+        }
+        div.innerHTML = html;
+        my._addMaptoWalk(walk);
+        tag.classList.remove("doing");
+    };
+    my._displayModalWalk = function (event, walk) {
+        var html;
+        if (event.ctrlKey && event.altKey) {
+            html = my.walkDiagnostics(walk);
+        } else {
+            html = my.walkDetails(walk);
+        }
+        ra.modal.display(html);
+        my._addMaptoWalk(walk);
+    };
+    my._getWalkObject = function (event, id, callback) {
         var walk = my.getWalk(id);
         if (walk !== null) {
-            var html;
-            if (event.ctrlKey && event.altKey) {
-                html = my.walkDiagnostics(walk);
-            } else {
-                html = my.walkDetails(walk);
-            }
-            ra.modal.display(html);
-            my._addMaptoWalk(walk);
+            callback(event, walk);
             return;
         }
         // need to add error popup if cannot load walk
@@ -51,21 +88,16 @@ ra.walk = (function () {
         ra.ajax.getUrl($url, '', null, function (target, result) {
             var gwem1walk = JSON.parse(result);
             var walk = my.convGWEM1toWalk(gwem1walk);
-            var html;
-            if (event.ctrlKey && event.altKey) {
-                html = my.walkDiagnostics(walk);
-            } else {
-                html = my.walkDetails(walk);
-            }
-            ra.modal.display(html);
-            my._addMaptoWalk(walk);
+            callback(event, walk);
+            return;
         });
     };
     my._addMaptoWalk = function (walk) {
         if (my.isCancelled(walk)) {
             return;
         }
-        var tag = document.getElementById(ra.map.defaultMapOptions.divId);
+        var tag = document.getElementById("Div" + walk.id);
+        ra.map.defaultMapOptions.mapDivId="Map" + walk.id
         var lmap = new leafletMap(tag, ra.map.defaultMapOptions);
         var map = lmap.map;
         var layer = L.featureGroup().addTo(map);
@@ -86,11 +118,13 @@ ra.walk = (function () {
         var popup = "", title = '';
         var popupoffset = [0, -30];
         if (location.exact) {
-            var pcpop = "<b>" + location.postcode + "</b>";
-            pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
-            var pcIcon = ra.map.icon.postcode();
-            var marker = L.marker([location.postcodeLatitude, location.postcodeLongitude], {icon: pcIcon, riseOnHover: true}).addTo(layer);
-            marker.bindPopup(pcpop).openPopup();
+            if (location.postcodeLatitude !== 0 && location.postcodeLongitude !== 0) {
+                var pcpop = "<b>" + location.postcode + "</b>";
+                pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
+                var pcIcon = ra.map.icon.postcode();
+                var marker = L.marker([location.postcodeLatitude, location.postcodeLongitude], {icon: pcIcon, riseOnHover: true}).addTo(layer);
+                marker.bindPopup(pcpop).openPopup();
+            }
         }
         if (location.exact) {
             switch (location.type) {
@@ -266,7 +300,7 @@ ra.walk = (function () {
                 $html += "</div>" + PHP_EOL;
             }
         }
-        var mapdiv = ra.map.defaultMapOptions.divId;
+        var mapdiv = "Div" + $walk.id;
         $html += "<div id='" + mapdiv + "'></div>" + PHP_EOL;
         $html += "<div class='walkdates'>" + PHP_EOL;
         $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on Walks Finder</a></div>" + PHP_EOL;
@@ -805,8 +839,8 @@ ra.walk = (function () {
                 my.convertPHPLocation($walk.meetLocation);
             }
             my.convertPHPLocation($walk.startLocation);
-            if ($walk.hasOwnProperty('finishTime')) {
-                //      $walk.finishTime.time = new Date(location.time.date);
+            if ($walk.finishTime !== null) {
+                $walk.finishTime = $walk.finishTime.date;
             }
 
         }
@@ -817,14 +851,13 @@ ra.walk = (function () {
     };
     my.convGWEM1toWalk = function ($item) {
         var nWalk = {};
+        nWalk.id = $item.id;
         nWalk.status = $item.status.value;
         nWalk.groupCode = $item.groupCode;
         nWalk.groupName = $item.groupName;
         nWalk.dateUpdated = $item.dateUpdated;
         nWalk.dateCreated = $item.dateCreated;
         nWalk.cancellationReason = $item.cancellationReason;
-        // basic walk details
-        //  nWalk.walkDate = {};
         nWalk.walkDate = $item.date;
         nWalk.month = ra.date.Month(nWalk.walkDate);
         nWalk.dayofweek = ra.date.dow(nWalk.walkDate);
@@ -833,20 +866,24 @@ ra.walk = (function () {
         nWalk.descriptionHtml = $item.description;
         nWalk.description = ra.html.convertToText($item.description);
         nWalk.additionalNotes = $item.additionalNotes;
-        nWalk.isLinear = $item.isLinear === "true";
-        nWalk.finishTime = null;
-        switch ($item.finishTime) {
-            case null:
-                nWalk.finishTime = null;
-                break;
-            case "00:00:00":
-                nWalk.finishTime = null;
-                break;
-            default:
-                //            $day = nWalk.walkDate.format('Ymd ');
-                //       nWalk.finishTime = DateTime::createFromFormat('Ymd H:i:s', $day.$item.finishTime);
-                break;
+        nWalk.isLinear = $item.isLinear;
+        if ($item.finishTime === null) {
+            nWalk.finishTime = null;
+        } else {
+            nWalk.finishTime = "2000-01-01T" + $item.finishTime;
         }
+//        switch ($item.finishTime) {
+//            case null:
+//                nWalk.finishTime = null;
+//                break;
+//            case "00:00:00":
+//                nWalk.finishTime = null;
+//                break;
+//            default:
+//                //            $day = nWalk.walkDate.format('Ymd ');
+//                //       nWalk.finishTime = DateTime::createFromFormat('Ymd H:i:s', $day.$item.finishTime);
+//                break;
+//        }
 
         nWalk.nationalGrade = $item.difficulty.text;
         nWalk.localGrade = $item.gradeLocal;

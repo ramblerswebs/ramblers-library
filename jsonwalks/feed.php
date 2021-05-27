@@ -14,7 +14,7 @@ class RJsonwalksFeed {
 
     private $walks;
     private $rafeedurl;
- //   private $displayLimit = 0;
+    //   private $displayLimit = 0;
     private $srfr;
 
     public function __construct($rafeedurl) {
@@ -29,8 +29,7 @@ class RJsonwalksFeed {
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(15);
         $this->readFeed($this->rafeedurl);
-         $document = JFactory::getDocument();
-        $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
     }
 
     private function readFeed($rafeedurl) {
@@ -41,7 +40,7 @@ class RJsonwalksFeed {
             "gradeLocal", "attendanceMembers", "attendanceNonMembers", "attendanceChildren", "cancellationReason",
             "dateUpdated", "dateCreated", "media", "points", "groupInvite", "isLinear", "url");
 
-        $result = $this->srfr->getFeed($rafeedurl,"Group Walks Programme");
+        $result = $this->srfr->getFeed($rafeedurl, "Group Walks Programme");
         $json = RErrors::checkJsonFeed($rafeedurl, "Walks", $result, $properties);
         If ($json !== null) {
             $this->walks = new RJsonwalksWalks($json);
@@ -55,7 +54,7 @@ class RJsonwalksFeed {
 
     public function setDisplayLimit($no) {
         echo "setDisplayLimit is no longer supported - please use RJsonwalksStdDisplay";
-      //  $this->displayLimit = $no;
+        //  $this->displayLimit = $no;
     }
 
     public function filterCancelled() {
@@ -92,10 +91,12 @@ class RJsonwalksFeed {
 
     public function filterFestivals($filter) {
         $this->walks->filterFestivals($filter);
-    } 
+    }
+
     public function noFestivals() {
         $this->walks->noFestivals();
-    } 
+    }
+
     public function allFestivals() {
         $this->walks->allFestivals();
     }
@@ -146,17 +147,18 @@ class RJsonwalksFeed {
             echo "No walks found";
             return;
         }
-               $printOn = JRequest::getVar('print') == 1;
+        $printOn = JRequest::getVar('print') == 1;
         if ($printOn) {
             $style = 'BODY {color: #000000;}';
+            $document = JFactory::getDocument();
             $document->addStyleDeclaration($style);
         }
 //        $folder = "ra.setBaseDirectory('" . JURI::base(true) . "');";
 //        $out = "window.addEventListener('load', function(event) {
 //            " . $folder ."  });";
 //        $document->addScriptDeclaration($out, "text/javascript");
-      //  if ($this->displayLimit == 0 OR $printOn) {
-            $displayclass->DisplayWalks($this->walks);
+        //  if ($this->displayLimit == 0 OR $printOn) {
+        $displayclass->DisplayWalks($this->walks);
 //        } else {
 //            $groups = $this->createGroupsOfWalks();
 //            $numItems = count($groups);

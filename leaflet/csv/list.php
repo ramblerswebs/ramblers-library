@@ -17,7 +17,6 @@ class RLeafletCsvList extends RLeafletMap {
     private $list;
     private $diagnostic = false;
     public $paginationDefault = 10;
-    
 
     public function __construct($filename) {
         parent::__construct();
@@ -31,7 +30,7 @@ class RLeafletCsvList extends RLeafletMap {
             $app->enqueueMessage(JText::_("Unable to open/process the file: " . $this->filename), 'error');
             return;
         }
-     
+
         $this->options->helpPage = "listofitemsm.html";
         $this->options->cluster = true;
         $this->options->fullscreen = true;
@@ -39,30 +38,29 @@ class RLeafletCsvList extends RLeafletMap {
         $this->options->locationsearch = true;
         $this->options->osgrid = true;
         $this->options->mouseposition = true;
-        $this->options->maptools=true;
-        $this->options->mylocation=true;
+        $this->options->maptools = true;
+        $this->options->mylocation = true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;
         $this->options->print = true;
-        
-          $data = new class {
+
+        $data = new class {
             
         };
-        $data->list=$this->list;
-        $data->paginationDefault=$this->paginationDefault;
-        
+        $data->list = $this->list;
+        $data->paginationDefault = $this->paginationDefault;
+
         parent::setCommand('csvTable');
         parent::setDataObject($data);
         parent::display();
-   
+        RLoad::addScript("libraries/ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
+        RLoad::addStyleSheet("libraries/ramblers/leaflet/csv/csvlist.css", "text/css");
+        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+
         $document = JFactory::getDocument();
-        $document->addScript("libraries/ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
-        $document->addStyleSheet("libraries/ramblers/leaflet/csv/csvlist.css", "text/css");
-        $document->addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
         $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js", "text/javascript");
-
     }
 
     private function readCSV() {
@@ -113,4 +111,5 @@ class RLeafletCsvList extends RLeafletMap {
         fclose($handle);
         return true;
     }
+
 }

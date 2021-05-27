@@ -49,12 +49,13 @@ class RJsScript {
         JHtml::_('jquery.framework');
 
         $document = JFactory::getDocument();
-        $document->addScript("libraries/ramblers/js/ra.js", "text/javascript");
+
+        RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
         // Leaflet
         $document->addStyleSheet("libraries/ramblers/vendors/leaflet1.7/leaflet.css", "text/css");
         $document->addScript("libraries/ramblers/vendors/leaflet1.7/leaflet.js", "text/javascript");
-        $document->addScript("libraries/ramblers/leaflet/ramblersleaflet.js", "text/javascript");
-        $document->addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
+        RLoad::addScript("libraries/ramblers/leaflet/ramblersleaflet.js", "text/javascript");
+        RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
 
 //        if ($options->locationsearch) {
 //            $document->addStyleSheet("libraries/ramblers/leaflet/Control.Locationsearch.css", "text/css");
@@ -62,8 +63,8 @@ class RJsScript {
 //        }
         if ($options->fullscreen) {
             $path = "libraries/ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
-            $document->addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
-            $document->addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
+            RLoad::addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
+            RLoad::addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
         }
 
         if ($options->rightclick) {
@@ -95,8 +96,8 @@ class RJsScript {
             $document->addScript($path . "leaflet.markercluster.js", "text/javascript");
         }
         if ($options->mouseposition or $options->rightclick) {
-            $document->addScript("libraries/ramblers/leaflet/L.Control.Mouse.js", "text/javascript");
-            $document->addStyleSheet("libraries/ramblers/leaflet/L.Control.Mouse.css", "text/css");
+            RLoad::addScript("libraries/ramblers/leaflet/L.Control.Mouse.js", "text/javascript");
+            RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Mouse.css", "text/css");
         }
 
         if ($options->mouseposition or $options->osgrid or $options->rightclick) {
@@ -117,19 +118,19 @@ class RJsScript {
             $document->addScript($path . "leaflet.browser.print.sizes.js", "text/javascript");
             $document->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
         }
-        $document->addScript("libraries/ramblers/js/ra.js", "text/javascript");
-        $document->addScript("libraries/ramblers/js/raMap.js", "text/javascript");
-        $document->addScript("libraries/ramblers/js/raWalk.js", "text/javascript");
-        $document->addScript("libraries/ramblers/js/raLocation.js", "text/javascript");
-        $document->addScript("libraries/ramblers/leaflet/ra-map-mylocation.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/raMap.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/raWalk.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/raLocation.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/ra-map-mylocation.js", "text/javascript");
 
-        $document->addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
 
 
         // tools
-        $document->addStyleSheet("libraries/ramblers/leaflet/ra-map-tools.css", "text/css");
-        $document->addScript("libraries/ramblers/leaflet/ra-map-tools.js", "text/javascript");
-        $document->addScript("libraries/ramblers/js/feedhandler.js", "text/javascript");
+        RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-map-tools.css", "text/css");
+        RLoad::addScript("libraries/ramblers/leaflet/ra-map-tools.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/feedhandler.js", "text/javascript");
     }
 
 }

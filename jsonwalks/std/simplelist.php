@@ -10,12 +10,13 @@ defined("_JEXEC") or die("Restricted access");
 
 class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
 
-    private $walksClass = "walks";
-    private $walkClass = "walk";
-    private $customFormat = null;
     public $addGridRef = true;
     public $addStartGridRef = false;
     public $addDescription = false;
+    private $walksClass = "walks";
+    private $walkClass = "walk";
+    private $customFormat = null;
+    private $inLineDisplay = false;
     private $listFormat = ["{dowdd}",
         "{,meet}", "{,meetGR}",
         "{,start}", "{,startGR}",
@@ -54,11 +55,11 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
         if ($this->customFormat !== null) {
             $this->listFormat = $this->customFormat;
         }
-        
+
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
-         $groupByMonth = RJsonwalksWalk::groupByMonth($this->listFormat);
-        $lastValue="";
+        $groupByMonth = RJsonwalksWalk::groupByMonth($this->listFormat);
+        $lastValue = "";
         $odd = true;
         echo "<div class='" . $this->walksClass . "' >" . PHP_EOL;
         foreach ($items as $walk) {
@@ -80,6 +81,10 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
         echo "</div>" . PHP_EOL;
     }
 
+    public function inLineDisplay() {
+        $this->inLineDisplay = true;
+    }
+
     public function setWalksClass($class) {
         $this->walksClass = $class;
     }
@@ -89,10 +94,19 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
     }
 
     private function displayWalk($walk, $oddeven) {
-        $text = $walk->getWalkValues( $this->listFormat);
-        echo "<div class='" . $this->walkClass . $walk->status . " " . $oddeven . "' >" . PHP_EOL;
-        echo "<span>" . $text . "</span>" . PHP_EOL;
-        echo "</div>" . PHP_EOL;
+        $DisplayWalkFunction="ra.walk.toggleDisplay";
+        if ($this->inLineDisplay) {
+            $text = $walk->getWalkValues($this->listFormat, false);
+            echo "<div class='" . $this->walkClass . $walk->status . " " . $oddeven . " toggler pointer'"
+                 ." onclick=\"" . $DisplayWalkFunction . "(event," . $walk->id . ")\">" . PHP_EOL;
+            echo "<span class='item'>" . $text . "</span>" . PHP_EOL;
+            echo "</div>" . PHP_EOL;
+        } else {
+            $text = $walk->getWalkValues($this->listFormat);
+            echo "<div class='" . $this->walkClass . $walk->status . " " . $oddeven . "' >" . PHP_EOL;
+            echo "<span class='item'>" . $text . "</span>" . PHP_EOL;
+            echo "</div>" . PHP_EOL;
+        }
     }
 
 }

@@ -26,6 +26,7 @@ class RJsonwalksStdFulldetails extends RJsonwalksStdSimplelist {
     public function __construct() {
         parent::__construct();
         parent::customFormat($this->listFormat);
+        parent::inLineDisplay();
     }
 
     public function DisplayWalks($walks) {

@@ -559,12 +559,16 @@ class RJsonwalksWalk extends REvent {
         self::$customValuesMethod = $method;
     }
 
-    public function getWalkValues($items) {
+    public function getWalkValues($items, $link = true) {
         $text = "";
         foreach ($items as $item) {
             $text .= $this->getWalkValue($item);
         }
-        return $this->addWalkLink($this->id, $text, "");
+        if ($link) {
+            return $this->addWalkLink($this->id, $text, "");
+        } else {
+            return $text;
+        }
     }
 
     public function getWalkValue($options) {

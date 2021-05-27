@@ -709,7 +709,7 @@ var raDisplay = (function () {
             data-id=\"no-items\" \
             data-name=\"pagination1\"> \
             <span data-type=\"info\"> \
-             <a class='link-button small button-p4485' onclick=\"javascript:ra.html.ra.html.printTag('rawalks')\">Print</a> \
+             <a class='link-button small button-p4485' onclick=\"javascript:ra.html.printTag('rawalks')\">Print</a> \
             {startItem} - {endItem} of {itemsNumber} \
             </span> ";
             $div += "<span class='center" + $class + "'> \

@@ -822,3 +822,19 @@ div.ra_filter input{
         clear:right;
     }
 }
+
+
+
+div.walks div.toggler.pointer  {
+    background:url(close.png) no-repeat 100% 50%;
+    background-position: right top;
+}
+
+div.walks div.toggler.active.pointer {
+    background:url(open.png) no-repeat 100% 50%;
+    background-position: right top;
+}
+div.walks div.toggler span.item {
+    display: inline-block; 
+    padding-right:40px;
+}
