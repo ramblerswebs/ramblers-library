@@ -38,6 +38,26 @@ ra.contains = function (items, item) {
     }
     return false;
 };
+// find all email addresses in text
+ra.fetch_mails = function ($text) {
+    var $result = $text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
+    if ($result === null) {
+        return [];
+    } else {
+        return $result;
+    }
+};
+ra.convert_mails = function ($text) {
+    var $img = '<img src="' + ra.baseDirectory() + 'libraries/ramblers/images/symbol_at.png" alt="@ sign" />';
+    var $emails = ra.fetch_mails($text);
+    $emails.forEach(myFunction);
+
+    function myFunction(value, index, array) {
+        var email = value.replace("@", $img);
+        $text = $text.replace(value, email);
+    }
+    return $text;
+};
 // are two objects equivalent,i.e. same properties
 ra.isEquivalent = function (a, b) {
     // Create arrays of property names
@@ -469,14 +489,14 @@ ra.html = (function () {
         return tags;
     };
     html.setTag = function (id, innerhtml) {
-       var tag=html.getTab(id);
+        var tag = html.getTab(id);
         if (tag) {
             tag.innerHTML = innerhtml;
         }
     };
     // toggle element visibility on/off 
     html.toggleVisibility = function (id) {
-         var e=html.getTab(id);
+        var e = html.getTab(id);
         if (e.style.display !== 'none')
             e.style.display = 'none';
         else
@@ -487,9 +507,12 @@ ra.html = (function () {
         html.toggleVisibility(id1);
         html.toggleVisibility(id2);
     };
+    html.insertAfter = function (referenceNode, newNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    };
     // open window with tag content for printing
     html.printTag = function (id) {
-         var tag=html.getTab(id);
+        var tag = html.getTab(id);
         var content = tag.innerHTML;
         var mywindow = window.open('', 'Print', 'height=600,width=800');
         mywindow.document.write('<html><head><title>Print</title>');
@@ -573,7 +596,7 @@ ra.html = (function () {
             x.style.display = "none";
         }
     };
-    html.getTab=function(id){
+    html.getTab = function (id) {
         if (typeof id === 'string') {
             return document.getElementById(id);
         } else {
@@ -624,27 +647,27 @@ ra.link = (function () {
 ra.jplist = (function () {
     var jplist = {};
     jplist.sortButton = function (tag, group, varclass, type, order, text) {
-            var button = document.createElement('button');
-            tag.appendChild(button);
-            button.setAttribute('class', "jplistsortbutton" + order);
-            button.setAttribute('data-jplist-control', "sort-buttons");
-            button.setAttribute('data-path', "." + varclass);
-            button.setAttribute('data-group', group);
-            button.setAttribute('data-order', order);
-            button.setAttribute('data-type', type);
-            button.setAttribute('data-name', "sortbutton");
-            button.setAttribute('data-selected', "false");
-            button.setAttribute('data-mode', "radio");
-            button.textContent = text;
+        var button = document.createElement('button');
+        tag.appendChild(button);
+        button.setAttribute('class', "jplistsortbutton" + order);
+        button.setAttribute('data-jplist-control', "sort-buttons");
+        button.setAttribute('data-path', "." + varclass);
+        button.setAttribute('data-group', group);
+        button.setAttribute('data-order', order);
+        button.setAttribute('data-type', type);
+        button.setAttribute('data-name', "sortbutton");
+        button.setAttribute('data-selected', "false");
+        button.setAttribute('data-mode', "radio");
+        button.textContent = text;
     };
-  
+
     return jplist;
 }
 ());
 ra.w3w = (function () {
     var w3w = {};
     w3w.get = function (lat, lng, id, place) {
-        var tag=ra.html.getTab(id);
+        var tag = ra.html.getTab(id);
         var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
         var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
         ra.ajax.getJSON(url, function (err, items) {

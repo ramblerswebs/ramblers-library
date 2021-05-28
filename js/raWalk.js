@@ -38,7 +38,7 @@ ra.walk = (function () {
         }
         if (tag.className.includes('active')) {
             tag.classList.remove("active");
-            tag.removeChild(tag.lastChild);
+            tag.nextElementSibling.remove();
         } else {
             tag.classList.add("active");
             tag.classList.add("doing");
@@ -52,7 +52,7 @@ ra.walk = (function () {
     my._displayDivWalk = function (event, walk) {
         var tag = event.tag;
         var div = document.createElement("div");
-        tag.appendChild(div);
+        ra.html.insertAfter(tag, div);
         var html;
         if (event.ctrlKey && event.altKey) {
             html = my.walkDiagnostics(walk);
@@ -97,18 +97,18 @@ ra.walk = (function () {
             return;
         }
         var tag = document.getElementById("Div" + walk.id);
-        ra.map.defaultMapOptions.mapDivId="Map" + walk.id
+        ra.map.defaultMapOptions.mapDivId = "Map" + walk.id
         var lmap = new leafletMap(tag, ra.map.defaultMapOptions);
         var map = lmap.map;
         var layer = L.featureGroup().addTo(map);
-        if (walk.meetLocation) {
-            my._addLocation(layer, walk.meetLocation);
+        if (walk.finishLocation) {
+            my._addLocation(layer, walk.finishLocation);
         }
         if (walk.startLocation) {
             my._addLocation(layer, walk.startLocation);
         }
-        if (walk.finishLocation) {
-            my._addLocation(layer, walk.finishLocation);
+        if (walk.meetLocation) {
+            my._addLocation(layer, walk.meetLocation);
         }
         var bounds = layer.getBounds();
         map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
@@ -143,7 +143,11 @@ ra.walk = (function () {
                     popupoffset = [0, -10];
                     break;
                 case "Finishing":
-                    popup = "<b>Walk Fininsh</b><br/>" + location.description;
+                case "End":
+                    popup = "<b>Walk Finish</b><br/>" + location.description;
+                    icon = ra.map.icon.markerFinish();
+                    title = 'End of walk';
+                    popupoffset = [0, -10];
                     break;
             }
         } else {
@@ -830,6 +834,8 @@ ra.walk = (function () {
         var index, len, $walk;
         for (index = 0, len = $walks.length; index < len; ++index) {
             $walk = $walks[index];
+             $walk.description = ra.convert_mails($walk.description);
+             $walk.descriptionHtml = ra.convert_mails($walk.descriptionHtml);
             $walk.dateUpdated = $walk.dateUpdated.date;
             $walk.dateCreated = $walk.dateCreated.date;
             $walk.walkDate = $walk.walkDate.date;
@@ -863,6 +869,7 @@ ra.walk = (function () {
         nWalk.dayofweek = ra.date.dow(nWalk.walkDate);
         nWalk.detailsPageUrl = $item.url;
         nWalk.title = ra.html.convertToText($item.title);
+        $item.description = ra.convert_mails($item.description);
         nWalk.descriptionHtml = $item.description;
         nWalk.description = ra.html.convertToText($item.description);
         nWalk.additionalNotes = $item.additionalNotes;

@@ -125,6 +125,15 @@ ra.map = (function () {
                 });
             }
             return icon._markerStart;
+        };   
+        icon.markerFinish = function () {
+            if (typeof (icon._markerFinish) === "undefined") {
+                icon._markerFinish = L.icon({
+                    iconUrl: ra.baseDirectory() + "libraries/ramblers/images/marker-finish.png",
+                    iconSize: [28, 28]
+                });
+            }
+            return icon._markerFinish;
         };
         icon.markerArea = function () {
             if (typeof (icon._markerArea) === "undefined") {
