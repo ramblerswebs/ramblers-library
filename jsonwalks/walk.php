@@ -90,9 +90,12 @@ class RJsonwalksWalk extends REvent {
             $this->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
 
             $this->detailsPageUrl = $item->url;
-            $this->title = RHtml::convertToText($item->title);
+            $this->title = RHtml::removeNonBasicTags($item->title);
+
+            $this->description = RHtml::removeNonBasicTags($item->description);
+            $this->description = RHtml::convert_mails($this->description);
             $this->descriptionHtml = $item->description;
-            $this->description = RHtml::convertToText($this->descriptionHtml);
+            $this->descriptionHtml = RHtml::convert_mails($this->descriptionHtml);
 
             $this->additionalNotes = $item->additionalNotes;
             $this->isLinear = $item->isLinear == "true";
@@ -124,8 +127,6 @@ class RJsonwalksWalk extends REvent {
                 if (strlen($item->walkContact->contact->email) > 0) {
                     $this->email = "email available";
                 }
-//                $img='<img src="/library/images/symbol_at.png" alt="@ sign" />';
-//                $this->email = str_replace("@", "$img", $this->emailAddr);
                 $this->telephone1 = $item->walkContact->contact->telephone1;
                 $this->telephone2 = $item->walkContact->contact->telephone2;
             }
@@ -179,26 +180,7 @@ class RJsonwalksWalk extends REvent {
         }
     }
 
-//    private function convert_mails($text) {
-//        $emails = $this->fetch_mails($text);
-//        foreach ($emails as $value) {
-//            $img = '<img src="' . JURI::base(true) . 'libraries/images/symbol_at.png" alt="@ sign" />';
-//            $email = str_replace("@", $img, $value);
-//            $text = str_replace($value, $email, $text);
-//        }
-//        return $text;
-//    }
-//
-//    private function fetch_mails($text) {
-//
-//        //String that recognizes an e-mail
-//        $str = '/([a-z0-9_\.\-])+\@(([a-z0-9\-])+\.)+([a-z0-9]{2,4})+/i';
-//        preg_match_all($str, $text, $out);
-//        //return a blank array if not true otherwise insert the email in $out and return
-//        return isset($out[0]) ? $out[0] : array();
-//    }
-
-    public function getEmail($option = 0, $withtitle = false) {
+     public function getEmail($option = 0, $withtitle = false) {
         switch ($option) {
             case 0:
                 if (strlen($this->email) > 0) {
@@ -962,6 +944,12 @@ class RJsonwalksWalk extends REvent {
         } else {
             return $this->_addWalkLink($id, $text, $class);
         }
+    }
+    public function newTooltip  ($text) {
+        if ($this->status === "New") {
+            return "<span data-descr='Walk updated ". $this->dateUpdated->format('D, jS M') . "' class=' walkNew'><span>" . $text . "</span></span";
+        }
+        return $text;
     }
 
     function __destruct() {

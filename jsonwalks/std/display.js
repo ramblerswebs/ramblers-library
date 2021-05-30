@@ -196,7 +196,7 @@ var raDisplay = (function () {
                 }
             }
 
-            switch (this.settings.filter.RA_Display_Format) {
+            switch (this.settings.displayDefault) {
                 case "Grades":
                 case "List":
                 case "Table":
@@ -292,7 +292,7 @@ var raDisplay = (function () {
                         $class = "even";
                     }
                     var displayMonth = month !== $walk.month && should;
-                    switch (this.settings.filter.RA_Display_Format) {
+                    switch (this.settings.displayDefault) {
                         case "Grades":
                             $out += this.displayWalk_Grades($walk, $class, displayMonth);
                             break;
@@ -322,7 +322,7 @@ var raDisplay = (function () {
         };
         this.shouldDisplayMonth = function () {
             var index, len, $item;
-            switch (this.settings.filter.RA_Display_Format) {
+            switch (this.settings.displayDefault) {
                 case "Grades":
                     var $items = this.settings.gradesFormat;
                     for (var index = 0, len = $items.length; index < len; ++index) {
@@ -360,7 +360,7 @@ var raDisplay = (function () {
 
         this.displayWalksHeader = function ($walks) {
             var $out = "";
-            switch (this.settings.filter.RA_Display_Format) {
+            switch (this.settings.displayDefault) {
                 case "Grades":
                     if (this.settings.displayDetailsPrompt) {
                         $out += "<p class='noprint'>Click on item to display full details of walk</p>";
@@ -399,7 +399,7 @@ var raDisplay = (function () {
         };
         this.displayWalksFooter = function () {
             var $out = "";
-            switch (this.settings.filter.RA_Display_Format) {
+            switch (this.settings.displayDefault) {
                 case "Grades":
                     $out += "</div>";
                     $out += "<div style='height:20px;'>  </div>";
@@ -586,9 +586,9 @@ var raDisplay = (function () {
             } else {
                 $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
             }
-            // $out +=  ra.walk.addWalkLink($walk.id, ra.walk.getWalkValues($walk, $items), "");
-            $out += ra.walk.getWalkValues($walk, $items);
-            return $out + "</div>\n";
+
+            $out += ra.walk.newTooltip($walk, ra.walk.getWalkValues($walk, $items));
+            return  $out + "</div>\n";
         };
         this.displayWalk_Table = function ($walk, $class, $displayMonth) {
             var $cols = this.settings.tableFormat;
@@ -610,7 +610,8 @@ var raDisplay = (function () {
             for (index = 0, len = $cols.length; index < len; ++index) {
                 $out += "<td>";
                 $items = $cols[index].items;
-                $out += ra.walk.getWalkValues($walk, $items);
+                $out += ra.walk.newTooltip($walk, ra.walk.getWalkValues($walk, $items));
+
                 //  $out += ra.walk.addWalkLink($walk.id, ra.walk.getWalkValues($walk, $items), "");
                 $out += "</td>";
             }
@@ -684,7 +685,7 @@ var raDisplay = (function () {
             for (index = 0, len = $walks.length; index < len; ++index) {
                 $walk = $walks[index];
                 if ($walk.display) {
-                     ra.walk.addWalkMarker($walk,this.cluster,this.settings.walkClass);
+                    ra.walk.addWalkMarker(this.cluster, $walk, this.settings.walkClass);
                 }
             }
             this.cluster.addClusterMarkers();
@@ -990,7 +991,6 @@ var raDisplay = (function () {
         };
 
         this.processOptions = function (optionsDiv) {
-            this.settings.filter.RA_Display_Format = this.settings.displayDefault;
             var $diag = "<h3>Walks filter diagnostics</h3>";
             switch (this.settings.filterPosition) {
                 case "In module":
@@ -1062,9 +1062,9 @@ var raDisplay = (function () {
             var _this = this;
             col.addEventListener("click", function () {
                 var option = this.getAttribute('data-display-option');
-                var oldOption = _this.settings.filter.RA_Display_Format;
+                var oldOption = _this.settings.displayDefault;
                 _this.optionTag[oldOption].classList.remove('active');
-                _this.settings.filter.RA_Display_Format = option;
+                _this.settings.displayDefault = option;
                 _this.optionTag[option].classList.add('active');
                 var $walks = _this.getWalks();
                 _this.displayWalks($walks);

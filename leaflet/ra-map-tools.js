@@ -40,16 +40,15 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
         container.title = this.options.title;
         container.addEventListener("click", function (e) {
-            ra.modal.display("Loading", false);
-            var tag = document.getElementById("modal-data");
-            tag.innerHTML = "";
+            var forms = document.createElement('div');
+            ra.modal.display(forms, false);
             var title = document.createElement('h4');
             title.textContent = "Mapping Tools";
-            tag.appendChild(title);
+            forms.appendChild(title);
             // tabs
             var container = document.createElement('div');
             container.setAttribute('class', 'tabs');
-            tag.appendChild(container);
+            forms.appendChild(container);
             var tabs = document.createElement('div');
             tabs.setAttribute('class', 'ra-tabs-left ');
             container.appendChild(tabs);
@@ -97,16 +96,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
                 help.setAttribute('target', '_blank');
                 help.style.cssFloat = "right";
                 help.textContent = "Visit our Mapping Help Site";
-                tag.appendChild(help);
-            }
-            if (_this._map.isFullscreen()) {
-                _this._map.toggleFullscreen();
-                var closeBtn = document.getElementById("btnClose");
-                // When the user clicks on <span> (x), close the modal
-                var self = _this;
-                closeBtn.addEventListener("click", function () {
-                    self._returnToFullScreen();
-                });
+                forms.appendChild(help);
             }
             var padding = document.createElement('p');
             container.appendChild(padding);
@@ -118,9 +108,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
     },
     helpPage: function (value) {
         this._helpPage = value;
-    },
-    _returnToFullScreen: function () {
-        this._map.toggleFullscreen();
     },
     addSearch: function (tag) {
         var _this = this;

@@ -4,7 +4,6 @@ if (typeof (ra) === "undefined") {
 }
 ra.map = (function () {
     var my = {};
-    my.defaultMapOptions = {};
     my.getMapLink = function (latitude, longitude, $text) {
         var $code = "http://maps.google.com/maps?z=13&amp;t=h&amp;ll=[lat],[long]";
         $code = $code.replace("[lat]", latitude, $code);
@@ -125,7 +124,7 @@ ra.map = (function () {
                 });
             }
             return icon._markerStart;
-        };   
+        };
         icon.markerFinish = function () {
             if (typeof (icon._markerFinish) === "undefined") {
                 icon._markerFinish = L.icon({
@@ -338,7 +337,7 @@ ra.map = (function () {
                     break;
             }
 
-            var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long, riseOnHover:true});
+            var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long, riseOnHover: true});
             marker.gr = $gr;
             var text = "<br/><b>Searching for usage details ...</b>";
             marker.bindPopup("<b>Grid Ref " + $gr + "</b><br/>Lat/Long " + $lat + " " + $long + text, {maxWidth: 800});
@@ -499,8 +498,8 @@ function cluster(map) {
     };
     this.addMarker = function ($popup, $lat, $long, markeroptions = {}) {
         var marker = L.marker([$lat, $long], markeroptions);
-        var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
-        marker.bindPopup($pop, {offset: new L.Point(0, -20)});
+      //  var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
+        marker.bindPopup($popup, {offset: new L.Point(0, -20)});
         this.markerList.push(marker);
         return marker;
     };

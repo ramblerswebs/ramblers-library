@@ -61,7 +61,7 @@ var raWalksMap = (function () {
             }
             for (index = 0, len = $walks.length; index < len; ++index) {
                 $walk = $walks[index];
-                ra.walk.addWalkMarker($walk, this.cluster, this.walkClass);
+                ra.walk.addWalkMarker(this.cluster, $walk, this.walkClass);
             }
             this.cluster.addClusterMarkers();
             this.cluster.zoomAll();

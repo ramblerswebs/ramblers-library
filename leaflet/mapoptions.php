@@ -8,7 +8,6 @@
 class RLeafletMapoptions {
 
     public $divId = "";
-    public $mapDivId = '';
     public $base = "";
     public $mapHeight = "500px";
     public $mapWidth = "100%";
@@ -39,7 +38,6 @@ class RLeafletMapoptions {
 
     public function __construct() {
         $this->divId = uniqid(rand());
-        $this->mapDivId = 'Map-' . $this->divId;
         $this->base = JURI::base();
     }
 

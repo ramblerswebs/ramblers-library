@@ -371,7 +371,7 @@ h3.ra_openclose:hover {
 }
 
 /* The Modal (background) */
-#js-raModal.ramodal {
+div.js-modal.ramblers {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 999999; /* Sit on top */
@@ -403,13 +403,14 @@ h3.ra_openclose:hover {
     clear: both;
 }
 
-#modal-data {
+.modal-data {
     overflow-y: auto;
     max-height:85%;
 }
 
 /* The Close Button */
-#btnClose, #btnPrint{
+.btn.modal-close,
+.btn.modal-print{
     margin-right:15px;
 }
 
@@ -634,14 +635,6 @@ span.walkdetail  {
     }
 }
 
-divDDD#ra-grade-modal  h1 {color:#782327;font-size:22px;text-align: center;
-                           border-bottom: 1px solid #d1d1d1;
-                           -webkit-box-shadow: 0 1px 0 #ffffff;
-                           -moz-box-shadow: 0 1px 0 #ffffff;
-                           box-shadow: 0 1px 0 #ffffff;
-                           padding-bottom: 15px;
-                           margin-bottom: 15px;
-}
 span.map{
     top:10px;
     height:30px;

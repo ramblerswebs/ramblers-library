@@ -4,6 +4,35 @@ if (typeof (ra) === "undefined") {
 }
 ra._isES6 = null;
 ra._baseDirectory = '';
+ra.defaultMapOptions = {
+    "divId": "",
+    "mapHeight": "250px",
+    "mapWidth": "100%",
+    "helpPage": "",
+    "cluster": false,
+    "fullscreen": false,
+    "google": false,
+    "search": false,
+    "locationsearch": false,
+    "osgrid": true,
+    "mouseposition": false,
+    "rightclick": true,
+    "maptools": false,
+    "mylocation": false,
+    "fitbounds": true,
+    "draw": false,
+    "print": false,
+    "displayElevation": false,
+    "smartRoute": false,
+    "bing": false,
+    "bingkey": "",
+    "ORSkey": null,
+    "ramblersPlaces": false,
+    "topoMapDefault": false,
+    "controlcontainer": false,
+    "copyright": false,
+    "initialview": null
+};
 // return base directory
 ra.baseDirectory = function () {
     return ra._baseDirectory;
@@ -11,6 +40,8 @@ ra.baseDirectory = function () {
 ra.decodeOptions = function (value) {
     var options = JSON.parse(value);
     ra._baseDirectory = options.base + "/";
+    ra.defaultMapOptions.bing = options.bing;
+    ra.defaultMapOptions.bingkey = options.bingkey;
     value = "";
     return options;
 };
@@ -489,14 +520,18 @@ ra.html = (function () {
         return tags;
     };
     html.setTag = function (id, innerhtml) {
-        var tag = html.getTab(id);
+        var tag = html.getTag(id);
         if (tag) {
-            tag.innerHTML = innerhtml;
+            if (typeof innerhtml === 'string') {
+                tag.innerHTML = innerhtml;
+            } else {
+                tag.appendChild(innerhtml);
+            }
         }
     };
     // toggle element visibility on/off 
     html.toggleVisibility = function (id) {
-        var e = html.getTab(id);
+        var e = html.getTag(id);
         if (e.style.display !== 'none')
             e.style.display = 'none';
         else
@@ -512,7 +547,7 @@ ra.html = (function () {
     };
     // open window with tag content for printing
     html.printTag = function (id) {
-        var tag = html.getTab(id);
+        var tag = html.getTag(id);
         var content = tag.innerHTML;
         var mywindow = window.open('', 'Print', 'height=600,width=800');
         mywindow.document.write('<html><head><title>Print</title>');
@@ -596,7 +631,7 @@ ra.html = (function () {
             x.style.display = "none";
         }
     };
-    html.getTab = function (id) {
+    html.getTag = function (id) {
         if (typeof id === 'string') {
             return document.getElementById(id);
         } else {
@@ -667,7 +702,7 @@ ra.jplist = (function () {
 ra.w3w = (function () {
     var w3w = {};
     w3w.get = function (lat, lng, id, place) {
-        var tag = ra.html.getTab(id);
+        var tag = ra.html.getTag(id);
         var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
         var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
         ra.ajax.getJSON(url, function (err, items) {
@@ -723,52 +758,61 @@ ra.w3w = (function () {
 ());
 ra.modal = (function () {
     var modal = {};
+    modal.isFullScreen = false;
+    modal.mapcontrol = null;
+    modal.elements = {modaltag: null};
     modal.display = function ($html, print = true) {
+  
         modal._createModalTag(print);
-        ra.html.setTag("modal-data", $html);
-        // Get the modal
-        var modaltag = document.getElementById('js-raModal');
-        modaltag.style.display = "block";
-// Get the <span> element that closes the modal
-        var span = document.getElementById("btnClose");
-        // When the user clicks on <span> (x), close the modal
-        span.addEventListener("click", function () {
-            modaltag.style.display = "none";
-            ra.html.setTag("modal-data", "");
+        ra.html.setTag(modal.elements.data, $html);
+        modal.elements.modaltag.style.display = "block";
+        modal.elements.close.addEventListener("click", function () {
+            modal.elements.modaltag.style.display = "none";
+            modal.elements.modaltag.innerHTML = "";
+            modal.elements = {modaltag: null};
         });
-        //  var span = document.getElementById("modal-data");
-        var print = document.getElementById("btnPrint");
+        var print = modal.elements.print;
         if (print !== null) {
             print.onclick = function () {
-                ra.html.printTag("modal-data");
+                ra.html.printTag(modal.elements.data);
             };
-    }
+        }
+         modal.fullscreenMap();
+         return;
+    };
+    modal.fullscreen = function (isFullScreen, mapcontrol) {
+        modal.isFullScreen = isFullScreen;
+        modal.mapcontrol = mapcontrol;
+    };
+    modal.fullscreenMap = function () {
+        if (modal.isFullScreen) {
+            modal.mapcontrol.toggleFullscreen();
+            var closeBtn = modal.elements.close;
+            closeBtn.addEventListener("click", function () {
+                modal.mapcontrol.toggleFullscreen();
+            });
+        }
     };
     modal._createModalTag = function (print = true) {
-        // Get the modal
-        var modaltag = document.getElementById('js-raModal');
-        if (modaltag === null) {
-            // create modal tag
+        var tags = [
+            {name: 'modaltag', parent: 'root', tag: 'div', attrs: {class: 'js-modal ramblers'}, style: {display: 'none'}},
+            {name: 'content', parent: 'modaltag', tag: 'div', attrs: {class: 'modal-content'}},
+            {name: 'header', parent: 'content', tag: 'div', attrs: {class: 'modal-header'}},
+            {name: 'print', parent: 'header', tag: 'button', attrs: {class: 'btn modal-print'}, textContent: 'Print'},
+            {name: 'close', parent: 'header', tag: 'button', attrs: {class: 'btn modal-close'}, textContent: 'Close'},
+            {parent: 'content', tag: 'p', style: {clear: 'right'}},
+            {name: 'data', parent: 'content', tag: 'div'},
+            {parent: 'content', tag: 'hr'}
+        ];
+
+        if (modal.elements.modaltag === null) {
             var body = document.getElementsByTagName("BODY")[0];
-            var modaltag = document.createElement("div");
-            modaltag.setAttribute('id', 'js-raModal');
-            modaltag.setAttribute('class', 'ramodal');
-            modaltag.style.display = 'none';
-            body.appendChild(modaltag);
+            modal.elements = ra.html.generateTags(body, tags);
+            modal.elements.close.setAttribute('data-dismiss', 'modal');
         }
-        var $tag = '';
-        $tag += '<!-- Modal Content (The Image) -->';
-        $tag += '<div class="modal-content" >';
-        $tag += '<div class="modal-header">';
-        if (print) {
-            $tag += '<button id="btnPrint" class="btn" type="button" >Print</button>';
-        }
-        $tag += '<button id="btnClose" class="btn" data-dismiss="modal" >Close</button>';
-        $tag += '</div>';
-        $tag += '<p style="clear:right;"> </p>';
-        $tag += '<div id="modal-data"></div>';
-        $tag += '<hr/></div></div>';
-        modaltag.innerHTML = $tag;
+        if (!print) {
+            modal.elements.print.style.display = 'none';
+    }
     };
     return modal;
 }

@@ -25,10 +25,11 @@ function leafletMap(tag, options) {
         mouse: null,
         rightclick: null,
         plotroute: null};
+    this.mapDiv = null;
     var tags = [
         {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra-map-container'}},
         {name: 'cluster', parent: 'root', tag: 'div', attrs: {id: 'ra-cluster-progress-bar'}},
-        {name: 'map', parent: 'container', tag: 'div', attrs: {id: options.mapDivId}, style: {height: options.mapHeight, width: options.mapWidth}},
+        {name: 'map', parent: 'container', tag: 'div', style: {height: options.mapHeight, width: options.mapWidth}},
         {name: 'copyright', parent: 'container', tag: 'div'}
     ];
     var tagcopy = [
@@ -39,6 +40,7 @@ function leafletMap(tag, options) {
 
 
     var elements = ra.html.generateTags(tag, tags);
+    this.mapDiv = elements.map;
     if (options.copyright) {
         ra.html.generateTags(elements.copyright, tagcopy);
     }
@@ -47,7 +49,7 @@ function leafletMap(tag, options) {
         elements.cluster.style.display = 'none';
     }
 
-    this.map = new L.Map(options.mapDivId, {
+    this.map = new L.Map(this.mapDiv, {
         center: new L.LatLng(54.221592, -3.355007),
         zoom: 5,
         zoomSnap: 0.25,
@@ -100,6 +102,11 @@ function leafletMap(tag, options) {
     this.controls.zoom = this.map.addControl(new L.Control.Zoom());
     if (options.fullscreen) {
         this.controls.fullscreen = this.map.addControl(new L.Control.Fullscreen());
+        var self=this;
+        this.map.addEventListener('fullscreenchange', function () {
+            // let modal know if map full screen;
+            ra.modal.fullscreen(self.map.isFullscreen(), self.map);
+        });
     }
     if (options.print) {
         this.controls.print = L.control.browserPrint({
@@ -227,6 +234,9 @@ leafletMap.prototype.scaleControl = function () {
 leafletMap.prototype.rightclickControl = function () {
     return this.controls.rightclick;
 };
+leafletMap.prototype.mapDiv = function () {
+    return this.mapDiv;
+};
 
 
 function singleGpxRoute(mapOptions, _data) {
@@ -267,8 +277,7 @@ function organisationMap(mapOptions, _data) {
 }
 
 function noDirectAction(mapOptions, _data) {
-    var options = ra.decodeOptions(mapOptions);
-    ra.map.defaultMapOptions = options;
+    ra.decodeOptions(mapOptions); // decode will save license info
 }
 function plotWalkingRoute(mapOptions, _data = null) {
     var options = ra.decodeOptions(mapOptions);

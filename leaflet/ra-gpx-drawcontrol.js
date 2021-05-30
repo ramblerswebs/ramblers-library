@@ -19,9 +19,9 @@ var raPlotRoute = function (options, data) {
         mouse: lmap.mouseControl(),
         elevation: lmap.elevationControl()};
     lmap.SetPlotUserOptions(this.userOptions);
-    this.mapDivId = document.getElementById(options.mapDivId);
+    this.mapDiv = lmap.mapDiv;
     this.detailsDiv = document.createElement('div');
-    this.mapDivId.parentNode.insertBefore(this.detailsDiv, this.mapDivId);
+    this.mapDiv.parentNode.insertBefore(this.detailsDiv, this.mapDiv);
     this.SmartRouteControl = null;
     this.rightclick = null; // need to change
     this.drawnItems = new L.FeatureGroup();
