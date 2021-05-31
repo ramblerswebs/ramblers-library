@@ -19,7 +19,6 @@ var raDisplay = (function () {
         this.settings = {
             walkClass: "walk",
             displayClass: "",
-            displayDefault: "Grades",
             displayStartTime: true,
             displayStartDescription: true,
             tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{mediathumbr}", "{title}"]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
@@ -29,7 +28,7 @@ var raDisplay = (function () {
             jplistName: "group1",
             filterTag: "js-walksFilterPos2",
             filterPosition: 3,
-            defaultView: "Grades",
+            currentView: "Grades",
             gradesView: true,
             tableView: true,
             listView: true,
@@ -109,7 +108,7 @@ var raDisplay = (function () {
 
             var wfOptions = JSON.parse(addFilterFormats());
             this.settings.filterPosition = wfOptions.filterPosition;
-            this.settings.defaultView = wfOptions.defaultView;
+            this.settings.currentView = wfOptions.defaultView;
             this.settings.gradesView = wfOptions.detailsView;
             this.settings.tableView = wfOptions.tableView;
             this.settings.listView = wfOptions.listView;
@@ -196,7 +195,7 @@ var raDisplay = (function () {
                 }
             }
 
-            switch (this.settings.displayDefault) {
+            switch (this.settings.currentView) {
                 case "Grades":
                 case "List":
                 case "Table":
@@ -228,9 +227,9 @@ var raDisplay = (function () {
                     break;
                 case "Contacts":
                     this.displayMap("hidden");
-                    ra.html.setTag("rapagination-1", addPagination(no));
-                    ra.html.setTag("rapagination-2", addPagination(no));
-                    ra.html.setTag("rawalks", displayContacts($walks));
+                    ra.html.setTag("rapagination-1", this.addPagination(no));
+                    ra.html.setTag("rapagination-2", this.addPagination(no));
+                    ra.html.setTag("rawalks", this.displayContacts($walks));
                     if (!this.settings.noPagination) {
                         if (ra.isES6()) {
                             jplist.init({
@@ -292,7 +291,7 @@ var raDisplay = (function () {
                         $class = "even";
                     }
                     var displayMonth = month !== $walk.month && should;
-                    switch (this.settings.displayDefault) {
+                    switch (this.settings.currentView) {
                         case "Grades":
                             $out += this.displayWalk_Grades($walk, $class, displayMonth);
                             break;
@@ -315,14 +314,14 @@ var raDisplay = (function () {
                 header = "";
                 footer = "";
             } else {
-                header = this.displayWalksHeader($walks);
+                header = this.displayWalksHeader();
                 footer = this.displayWalksFooter();
             }
             return  header + $out + footer;
         };
         this.shouldDisplayMonth = function () {
             var index, len, $item;
-            switch (this.settings.displayDefault) {
+            switch (this.settings.currentView) {
                 case "Grades":
                     var $items = this.settings.gradesFormat;
                     for (var index = 0, len = $items.length; index < len; ++index) {
@@ -358,9 +357,9 @@ var raDisplay = (function () {
             return true;
         };
 
-        this.displayWalksHeader = function ($walks) {
+        this.displayWalksHeader = function () {
             var $out = "";
-            switch (this.settings.displayDefault) {
+            switch (this.settings.currentView) {
                 case "Grades":
                     if (this.settings.displayDetailsPrompt) {
                         $out += "<p class='noprint'>Click on item to display full details of walk</p>";
@@ -399,7 +398,7 @@ var raDisplay = (function () {
         };
         this.displayWalksFooter = function () {
             var $out = "";
-            switch (this.settings.displayDefault) {
+            switch (this.settings.currentView) {
                 case "Grades":
                     $out += "</div>";
                     $out += "<div style='height:20px;'>  </div>";
@@ -1011,24 +1010,20 @@ var raDisplay = (function () {
             optionsDiv.appendChild(table);
             var row = document.createElement('tr');
             table.appendChild(row);
-            switch (this.settings.displayDefault) {
+            switch (this.settings.currentView) {
                 case "List":
-                    this.settings.displayDefault = 'List';
                     this.addDisplayOption("List", true, row);
                     this.settings.listView = false;
                     break;
                 case "Table":
-                    this.settings.displayDefault = 'Table';
                     this.addDisplayOption("Table", true, row);
                     this.settings.tableView = false;
                     break;
                 case "Map":
-                    this.settings.displayDefault = 'Map';
                     this.addDisplayOption("Map", true, row);
                     this.settings.mapView = false;
                     break;
                 default:
-                    this.settings.displayDefault = 'Grades';
                     this.addDisplayOption("Grades", true, row);
                     this.settings.gradesView = false;
             }
@@ -1062,9 +1057,9 @@ var raDisplay = (function () {
             var _this = this;
             col.addEventListener("click", function () {
                 var option = this.getAttribute('data-display-option');
-                var oldOption = _this.settings.displayDefault;
+                var oldOption = _this.settings.currentView;
                 _this.optionTag[oldOption].classList.remove('active');
-                _this.settings.displayDefault = option;
+                _this.settings.currentView = option;
                 _this.optionTag[option].classList.add('active');
                 var $walks = _this.getWalks();
                 _this.displayWalks($walks);

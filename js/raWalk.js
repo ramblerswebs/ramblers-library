@@ -210,7 +210,7 @@ ra.walk = (function () {
         $html += "</div>";
         if ($walk.hasMeetPlace) {
             $html += "<div class='meetplace'>";
-            $out = _addLocationInfo("Meeting", $walk.meetLocation, $walk.detailsPageUrl);
+            $out = _addLocationInfo("Meeting", $walk.meetLocation);
             $html += $out;
             $html += "</div>" + PHP_EOL;
         }
@@ -219,12 +219,12 @@ ra.walk = (function () {
         } else {
             $html += "<div class='nostartplace'><b>No start place - Rough location only</b>: ";
         }
-        $html += _addLocationInfo("Start", $walk.startLocation, $walk.detailsPageUrl);
+        $html += _addLocationInfo("Start", $walk.startLocation);
         $html += "</div>" + PHP_EOL;
         if ($walk.isLinear) {
             $html += "<div class='finishplace'>";
             if ($walk.finishLocation !== null) {
-                $html += _addLocationInfo("Finish", $walk.finishLocation, $walk.detailsPageUrl);
+                $html += _addLocationInfo("Finish", $walk.finishLocation);
             } else {
                 $html += "<span class='walkerror' >Linear walk but no finish location supplied</span>";
             }
@@ -307,7 +307,8 @@ ra.walk = (function () {
         var mapdiv = "Div" + $walk.id;
         $html += "<div id='" + mapdiv + "'></div>" + PHP_EOL;
         $html += "<div class='walkdates'>" + PHP_EOL;
-        $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on Walks Finder</a></div>" + PHP_EOL;
+        $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on National Web Site</a></div>" + PHP_EOL;
+        $html += "<div class='updated'>Walk ID " + $walk.id + "</div>" + PHP_EOL;
         $html += "<div class='updated walk" + $walk.status + "'>Last update: " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
@@ -744,8 +745,8 @@ ra.walk = (function () {
             return ' ' + ra.date.YYYY(walkDate);
         }
     };
-    _addLocationInfo = function ($title, $location, $detailsPageUrl) {
-        var $out, $gr, $note;
+    _addLocationInfo = function ($title, $location) {
+        var $out, $gr;
         if ($location.exact) {
             $out = "<div class='place'><b>" + $title + " Place</b>: " + $location.description + " ";
             $out += my._addDirectionsMap($location, "Google directions");
@@ -753,12 +754,9 @@ ra.walk = (function () {
             if ($location.time !== "") {
                 $out += ra.html.addDiv("time", "<b>Time</b>: " + $location.timeHHMMshort);
             }
-            if ($location.exact) {
-                $gr = "<b>Grid Ref</b>: " + $location.gridref + " ";
-                $gr += ra.link.getOSMap($location.latitude, $location.longitude, "OS Map");
-                $out += ra.html.addDiv("gridref", $gr);
-            }
-
+            $gr = "<b>Grid Ref</b>: " + $location.gridref + " ";
+            $gr += ra.link.getOSMap($location.latitude, $location.longitude, "OS Map");
+            $out += ra.html.addDiv("gridref", $gr);
             $out += ra.html.addDiv("latlong", "<b>Latitude</b>: " + $location.latitude + " , <b>Longitude</b>: " + $location.longitude);
             if ($location.postcode !== "") {
                 $out += _displayPostcode($location);
@@ -774,18 +772,21 @@ ra.walk = (function () {
                 ra.w3w.get($location.latitude, $location.longitude, tagname, true);
             }, 500);
         } else {
-            $out = "<div class='place'>";
-            $out += "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
-            $out += ra.map.getMapLink($location.latitude, $location.longitude, "Map of area");
             if ($location.type === "Start") {
-                // if ($this.displayStartTime) {
-                $out += "<div class='starttime'>Start time: " + $location.timeHHMMshort + "</div>";
-                // }
-                // if ($this.displayStartDescription) {
-                $out += "<div class='startdescription'>" + $location.description + "</div>";
-                // }
+                $out = "<div class='place'>";
+                $out += "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
+                $out += ra.map.getMapLink($location.latitude, $location.longitude, "Map of area");
+                $out += "<br/>Contact group if you wish to meet at the start";
+                //            if ($location.type === "Start") {
+//                // if ($this.displayStartTime) {
+//                $out += "<div class='starttime'>Start time: " + $location.timeHHMMshort + "</div>";
+//                // }
+//                // if ($this.displayStartDescription) {
+//                $out += "<div class='startdescription'>" + $location.description + "</div>";
+//                // }
+//            }
+                $out += "</div>";
             }
-            $out += "</div>";
         }
 
         return $out;
@@ -984,7 +985,7 @@ ra.walk = (function () {
     my.addWalkMarker = function (cluster, $walk, walkClass) {
         var $long, $lat, $icon, $class;
         var $popup;
-      //  var $this = this.settings;
+        //  var $this = this.settings;
         $long = $walk.startLocation.longitude;
         $lat = $walk.startLocation.latitude;
         if ($walk.startLocation.exact) {

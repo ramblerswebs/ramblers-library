@@ -63,7 +63,7 @@ ra.titleCase = function (str) {
 ra.contains = function (items, item) {
     var index, len;
     for (index = 0, len = items.length; index < len; ++index) {
-        if (isEquivalent(items[index], item)) {
+        if (ra.isEquivalent(items[index], item)) {
             return true;
         }
     }
