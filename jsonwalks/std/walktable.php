@@ -71,6 +71,8 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $odd = !$odd;
         }
         echo "</table>" . PHP_EOL;
+        $schema = new RJsonwalksAddschema();
+        $schema->display($walks);
     }
 
     public function setMonthlyReminder($clss, $method) {

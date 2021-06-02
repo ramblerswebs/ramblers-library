@@ -99,6 +99,8 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $this->map->display();
         $document->addScript("libraries/ramblers/jsonwalks/std/display.js", "text/javascript");
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        $schema = new RJsonwalksAddschema();
+        $schema->display($walks);
     }
 
     public function setCustomListFormat($value) {
