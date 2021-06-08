@@ -479,7 +479,8 @@ ra.walk = (function () {
             case "{startMapCode}":
                 break;
             case "{title}":
-                out = ra.html.addslashes($walk.title);
+               // out = ra.html.addslashes($walk.title);
+                out = $walk.title;
                 out = "<b>" + out + "</b>";
                 break;
             case "{description}":

@@ -1,4 +1,4 @@
-var L,ra, document;
+var L, ra, document;
 L.Control.GpxDownload = L.Control.extend({
     options: {
         title: 'Download your walking routes as a GPX file',
@@ -101,25 +101,23 @@ L.Control.GpxDownload = L.Control.extend({
     },
     _details: function (evt) {
         this._map.fire('download:cancelled');
-        //this.holder.style.display = "none";
-        var html = '<form id="js-gpxForm"></form>';
-        ra.modal.display(html, false);
+        var contentTag = document.createElement('div');
+        ra.modal.display(contentTag, false);
         if (this._map.isFullscreen()) {
             this._map.toggleFullscreen();
-            var closeBtn = document.getElementById("btnClose");
+            var closeBtn = ra.modal.elements.close;
             var _this = this;
             closeBtn.addEventListener("click", function () {
                 _this._returnToFullScreen();
             });
         }
-        this._addDetailsForm("js-gpxForm");
+        this._addDetailsForm(contentTag);
     },
     _returnToFullScreen: function () {
         this._map.toggleFullscreen();
     },
-    _addDetailsForm: function (tagname) {
-        var formtag = document.getElementById(tagname);
-        var heading = document.createElement('h2');
+    _addDetailsForm: function (formtag) {
+               var heading = document.createElement('h2');
         heading.textContent = 'GPX File Details';
         formtag.appendChild(heading);
         this._addText(formtag, 'ra-gpx-popup', 'File Name/Title', this._info, 'name');

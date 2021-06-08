@@ -79,7 +79,8 @@ feeds = function () {
             var items = selectTag.raData.items;
             var item = items[selectTag.value];
             //  alert("accept" + item.display_name);
-            var closeBtn = document.getElementById("btnClose");
+            var closeBtn = ra.modal.elements.close;
+            ;
             closeBtn.dispatchEvent(new Event("click"));
             let event = new Event("locationfound", {bubbles: true}); // (2)
             event.raData = {};
@@ -105,10 +106,13 @@ feeds = function () {
     };
     this.getSearchMapModal = function (e) {
         var eventTag = e.target;
-        var $html = '<div id="js-search-content"></div>';
-        $html += '<p></p>';
-        ra.modal.display($html);
-        var contentTag = document.getElementById("js-search-content");
+        var contentTag = document.createElement('div');
+        var p = document.createElement('p');
+        contentTag.appendChild(p);
+        ra.modal.display(contentTag);
+        ////   var $html = '<div id="js-search-content"></div>';
+        //  //$html += '<p></p>';
+        //    var contentTag = document.getElementById("js-search-content");
         this.getSearchTags(eventTag, contentTag);
     };
     this.getPossibleMapLocations = function (raData) { // called via an event on input field
@@ -291,28 +295,32 @@ feeds = function () {
 
     this.getPredefinedSearchModal = function (e, title, context, record, url) {
         var findButton = e.target;
-        var $html = '';
-        $html += '<div id="js-location-search"></div>';
-        $html += '<p></p>';
-        ra.modal.display($html);
-        var formDiv = document.getElementById("js-location-search");
+        var contentTag = document.createElement('div');
+        var p = document.createElement('p');
+        contentTag.appendChild(p);
+        ra.modal.display(contentTag);
+//        var $html = '';
+//        $html += '<div id="js-location-search"></div>';
+//        $html += '<p></p>';
+//        ra.modal.display($html);
+        //  var formDiv = document.getElementById("js-location-search");
         var label = document.createElement('label');
         label.textContent = title;
-        formDiv.appendChild(label);
+        contentTag.appendChild(label);
         var inputField = document.createElement('input');
         inputField.setAttribute('type', 'text');
         inputField.setAttribute('class', 'map-select');
         inputField.setAttribute('placeholder', 'Enter name');
-        formDiv.appendChild(inputField);
+        contentTag.appendChild(inputField);
 
-        var searchBtn = this.searchButton(formDiv);
+        var searchBtn = this.searchButton(contentTag);
 
         var comment1 = document.createElement('p');
         comment1.textContent = context;
-        formDiv.appendChild(comment1);
+        contentTag.appendChild(comment1);
 
         var selectDiv = document.createElement('div');
-        formDiv.appendChild(selectDiv);
+        contentTag.appendChild(selectDiv);
         var selectTitle = document.createElement('p');
         selectDiv.appendChild(selectTitle);
         var selectTag = document.createElement('select');
@@ -322,7 +330,7 @@ feeds = function () {
         acceptBtn.setAttribute('type', 'button');
         acceptBtn.setAttribute('class', 'actionbutton');
         acceptBtn.textContent = 'Accept';
-        formDiv.appendChild(acceptBtn);
+        contentTag.appendChild(acceptBtn);
         acceptBtn.style.display = "none";
 
         searchBtn.raData = {};
@@ -356,7 +364,7 @@ feeds = function () {
             item.longitude = parseFloat(item.longitude);
             event.raData.item = item;
             findButton.dispatchEvent(event);
-            var closeBtn = document.getElementById("btnClose");
+            var closeBtn = ra.modal.elements.close;
             closeBtn.dispatchEvent(new Event("click"));
         });
         selectTag.addEventListener("change", function () {

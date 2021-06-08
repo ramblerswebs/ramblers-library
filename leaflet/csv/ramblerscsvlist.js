@@ -5,8 +5,6 @@
  */
 
 var L, ra, jplist, OsGridRef;
-
-
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -15,22 +13,22 @@ ra.csvList = (function () {
     csvList.display = function () {
         this.list = null;
         //this.paginationDefault = 10;
-
         this.load = function (options, data) {
             this.options = options;
             this.data = data;
+            this.dataGroup = ra.uniqueID();
             var tags = [
                 {name: 'table', parent: 'root', tag: 'table', attrs: {class: 'ra-tab-options'}},
                 {name: 'row', parent: 'table', tag: 'tr'},
                 {name: 'map', parent: 'row', tag: 'td', attrs: {class: 'ra-tab'}, textContent: 'Map'},
                 {name: 'list', parent: 'row', tag: 'td', attrs: {class: 'ra-tab active'}, textContent: 'List'},
-                {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {id: 'gpxouter'}},
+                {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {class: 'gpxouter'}},
                 {name: 'csvmap', parent: 'gpxouter', tag: 'div', style: {display: 'none'}},
                 {name: 'csvrecord', parent: 'gpxouter', tag: 'div'},
                 {name: 'csvlist', parent: 'gpxouter', tag: 'div'},
-                {name: 'ra-pagination1', parent: 'csvlist', tag: 'div', attrs: {id: 'ra-pagination1'}},
-                {name: 'dataTab', parent: 'csvlist', tag: 'div'},
-                {name: 'csvFilter', parent: 'dataTab', tag: 'div', attrs: {class: 'csvFilter'}, textContent: 'Program loading: please give this a minute or so.If this does not vanish then please contact the web master!'}
+                {name: 'csvFilter', parent: 'csvlist', tag: 'div', attrs: {class: 'csvFilter'}, textContent: 'Program loading: please give this a minute or so.If this does not vanish then please contact the web master!'},
+                {name: 'raPagination1', parent: 'csvlist', tag: 'div'},
+                {name: 'dataTab', parent: 'csvlist', tag: 'div'}
             ];
             this.masterdiv = document.getElementById(options.divId);
 
@@ -47,7 +45,7 @@ ra.csvList = (function () {
         };
 
         this.displayCsvData = function () {
-            ra.html.setTag('ra-pagination1', this.addPagination());
+            this.addPagination(this.data.list.rows, this.elements.raPagination1);
             this.testForMap();
             this.displayCSVTable();
 
@@ -148,7 +146,7 @@ ra.csvList = (function () {
             if (tag !== null) {
                 var table = this.displayCSVHeader(tag);
                 var tbody = document.createElement('tbody');
-                tbody.setAttribute('data-jplist-group', "group1");
+                tbody.setAttribute('data-jplist-group', this.dataGroup);
                 table.appendChild(tbody);
                 this.displayCSVRows(tbody);
                 this.displayCSVFilter();
@@ -171,9 +169,9 @@ ra.csvList = (function () {
                     tr.appendChild(th);
                     th.setAttribute('class', item.align);
                     th.textContent = item.name;
-                    if (item.sort) {
-                        ra.jplist.sortButton(th, "group1", item.jpclass, item.type, "asc", "▲");
-                        ra.jplist.sortButton(th, "group1", item.jpclass, item.type, "desc", "▼");
+                    if (item.sort || item.linkmarker) {
+                        ra.jpList.sortButton(th, this.dataGroup, item.jpclass, item.type, "asc", "▲");
+                        ra.jpList.sortButton(th, this.dataGroup, item.jpclass, item.type, "desc", "▼");
                     }
                 }
             }
@@ -186,7 +184,7 @@ ra.csvList = (function () {
                 item = items[index];
                 if (item.table) {
                     if (item.filter) {
-                        filter += this.jplistFilter('group1', item);
+                        filter += this.jplistFilter(this.dataGroup, item);
                     }
                 }
             }
@@ -339,8 +337,7 @@ ra.csvList = (function () {
                     this.elements.list.classList.add('active');
                     this.elements.csvmap.style.display = "none";
                     this.elements.csvlist.style.display = "inline";
-                    var slider = document.getElementById('slider-range-filter');
-                    jplist.resetControl(slider);
+                    ra.jpList.updateControls();
                     break;
                 case 'Map':
                     this.elements.map.classList.add('active');
@@ -350,80 +347,30 @@ ra.csvList = (function () {
                     break;
             }
         };
-        this.addPagination = function () {
-            if (!ra.isES6()) {
-                return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
+        this.addPagination = function (no, tag) {
+            var printTag = this.elements.dataTab;
+            var printButton = ra.jpList.addPagination(no, tag, this.dataGroup, "pagination1", 20, false);
+            if (printButton !== null) {
+                printButton.addEventListener('click', function () {
+                    ra.html.printTag(printTag);
+                });
             }
-
-            var $div = '<div class="clear"></div>\
-            <div data-jplist-control=\"pagination\" \
-            data-group=\"group1\" \
-            data-items-per-page=\"' + this.data.paginationDefault + '\" \
-            data-current-page=\"0\" \
-            data-name=\"pagination1\"> \
-            <span data-type=\"info\"> \
-            {startItem} - {endItem} of {itemsNumber} \
-            </span> ';
-            var $display = "";
-            if (!this.data.list.paginateList) {
-                $display = ' style=\"display:none;\" ';
-            }
-            $div += '  <span' + $display + '> \
-            <button type=\"button\" data-type=\"first\">First</button> \
-            <button type=\"button\" data-type=\"prev\">Previous</button> \
-            <span class=\"jplist-holder\" data-type=\"pages\"> \
-                <button type=\"button\" data-type=\"page\">{pageNumber}</button> \
-            </span> \
-            <button type=\"button\" data-type=\"next\">Next</button> \
-            <button type=\"button\" data-type=\"last\">Last</button> \
-            </span> \
-            <!-- items per page select --> \
-    <select data-type=\"items-per-page\"' + $display + '> \
-        <option value=\"10\"> 10 per page </option> \
-        <option value=\"20\"> 20 per page </option> \
-        <option value=\"50\"> 50 per page </option> \
-       <option value=\"100\"> 100 per page </option> \
-        <option value=\"0\"> view all </option> \
-    </select> ';
-            $div += '</div> ';
-            return $div;
         };
         this.jplistFilter = function (group, item) {
-            var out = "";
-            if (item.type === "text") {
-                out = '<input \
-     data-jplist-control="textbox-filter"  data-group="' + group + '" \
-     data-name="my-filter-' + item.jpclass + '" \
-     data-path=".' + item.jpclass + '" type="text" \
-     value="" placeholder="Filter by ' + item.name + '" />';
-            }
+            var min, max;
             if (item.type === "number") {
-                var min, max;
+
                 var result = item.values.map(Number);
                 min = result.reduce(function (a, b) {
                     return Math.min(a, b);
-                });
+                }, 99999);
                 max = result.reduce(function (a, b) {
                     return Math.max(a, b);
-                });
-                out = '<div class="csv-slider"><div id="slider-range-filter" \
-    data-jplist-control="slider-range-filter" \
-    data-path=".' + item.jpclass + '" \
-    data-group="group1" \
-    data-name="' + item.jpclass + '" \
-    data-min="' + min + '" \
-    data-from="' + min + '" \
-    data-to="' + max + '" \
-    data-max="' + max + '"> \
- \
-     <b>' + item.name + ':</b> <span data-type="value-1"></span> \
-      <div class="jplist-slider" data-type="slider"></div> \
-     <span data-type="value-2"></span>  \
-</div></div>';
+                }, -99999);
             }
-
-            return out;
+            return ra.jpList.addFilter(group, item.jpclass, item.name, item.type, min, max);
         };
+
     };
     return csvList;
 }

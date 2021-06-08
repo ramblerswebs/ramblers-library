@@ -1,9 +1,10 @@
-var ra;
+var ra, jplist;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
 ra._isES6 = null;
 ra._baseDirectory = '';
+ra.uniquenumber = 0;
 ra.defaultMapOptions = {
     "divId": "",
     "mapHeight": "250px",
@@ -52,6 +53,10 @@ ra.decodeData = function (value) {
     var data = JSON.parse(value);
     value = "";
     return data;
+};
+ra.uniqueID = function () {
+    ra.uniquenumber += 1;
+    return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
 // convert string to title case
 ra.titleCase = function (str) {
@@ -522,6 +527,7 @@ ra.html = (function () {
     html.setTag = function (id, innerhtml) {
         var tag = html.getTag(id);
         if (tag) {
+            tag.innerHTML = '';
             if (typeof innerhtml === 'string') {
                 tag.innerHTML = innerhtml;
             } else {
@@ -562,10 +568,10 @@ ra.html = (function () {
                 mywindow.document.write(noprint);
             }
         }
-        mywindow.document.write('</head><body><div id="document"><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');
+        mywindow.document.write('</head><body><div id="js-document"><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');
         mywindow.document.write(content);
         mywindow.document.write('</div></div></body></html>');
-        var span = mywindow.document.getElementById("document");
+        var span = mywindow.document.getElementById("js-document");
 // When the user clicks on <span> (x), close the modal
         span.onclick = function () {
             mywindow.close();
@@ -679,9 +685,9 @@ ra.link = (function () {
     return link;
 }
 ());
-ra.jplist = (function () {
-    var jplist = {};
-    jplist.sortButton = function (tag, group, varclass, type, order, text) {
+ra.jpList = (function () {
+    var jpList = {};
+    jpList.sortButton = function (tag, group, varclass, type, order, text) {
         var button = document.createElement('button');
         tag.appendChild(button);
         button.setAttribute('class', "jplistsortbutton" + order);
@@ -695,8 +701,100 @@ ra.jplist = (function () {
         button.setAttribute('data-mode', "radio");
         button.textContent = text;
     };
+    jpList.addPagination = function (no, tag, jplistGroup, jplistName, itemsPerPage, print = false) {
+        tag.innerHTML = '';
+        if (!ra.isES6()) {
+            var h3 = document.createElement('h3');
+            h3.setAttribute('class', 'oldBrowser');
+            h3.textContent = 'You are using an old Web Browser!';
+            var p = document.createElement('p');
+            p.setAttribute('class', 'oldBrowser');
+            h3.textContent = 'We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...';
+            h3.appendChild(p);
+            tag.appendChild(h3);
+            return null;
+        }
+        if (no < 21) {
+            var tags = [
+                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'link-button small button-p4485'}, textContent: 'Print'}
+            ];
+            var elements = ra.html.generateTags(tag, tags);
+        } else {
+            var div = document.createElement('div');
+            div.setAttribute('data-jplist-control', 'pagination');
+            div.setAttribute('data-group', jplistGroup);
+            div.setAttribute('data-items-per-page', itemsPerPage);
+            div.setAttribute('data-current-page', '0');
+            div.setAttribute('data-id', 'no-items');
+            div.setAttribute('data-name', jplistName);
 
-    return jplist;
+            var tags = [
+                {name: 'spanitems', parent: 'root', tag: 'span'},
+                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'link-button small button-p4485'}, textContent: 'Print'},
+                {name: 'span', parent: 'spanitems', tag: 'span', attrs: {'data-type': 'info'}, textContent: '{startItem} - {endItem} of {itemsNumber}'},
+                {name: 'buttons', parent: 'root', tag: 'span', attrs: {class: 'center '}},
+                {name: 'first', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'first'}, textContent: 'First'},
+                {name: 'previous', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'prev'}, textContent: 'Previous'},
+                {name: 'xxx', parent: 'buttons', tag: 'span', attrs: {class: 'jplist-holder', 'data-type': 'pages'}},
+                {name: 'pageNumber', parent: 'xxx', tag: 'button', attrs: {type: 'button', 'data-type': 'page'}, textContent: '{pageNumber}'},
+                {name: 'next', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'next'}, textContent: 'Next'},
+                {name: 'last', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'last'}, textContent: 'Last'},
+                {name: 'select', parent: 'root', tag: 'select', attrs: {'data-type': 'items-per-page'}},
+                {parent: 'select', tag: 'option', attrs: {value: '10'}, textContent: '10 per page'},
+                {parent: 'select', tag: 'option', attrs: {value: '20'}, textContent: '20 per page'},
+                {parent: 'select', tag: 'option', attrs: {value: '50'}, textContent: '50 per page'},
+                {parent: 'select', tag: 'option', attrs: {value: '100'}, textContent: '100 per page'},
+                {parent: 'select', tag: 'option', attrs: {value: '0'}, textContent: 'View all'}
+            ];
+
+            var elements = ra.html.generateTags(div, tags);
+            elements.select.style.width = "120px";
+            tag.appendChild(div);
+        }
+        elements.print.style.marginRight = "5px";
+        if (print) {
+            return elements.print;
+        } else {
+            elements.print.style.display = 'none';
+            return null;
+    }
+    };
+    jpList.addFilter = function (group, jpclass, name, type, min = 0, max = 999999) {
+        var out = "";
+        if (type === "text") {
+            out = '<input \
+     data-jplist-control="textbox-filter"  data-group="' + group + '" \
+     data-name="my-filter-' + jpclass + '" \
+     data-path=".' + jpclass + '" type="text" \
+     value="" placeholder="Filter by ' + name + '" />';
+        }
+        if (type === "number") {
+            out = '<div class="csv-slider"><div class="ra-slider" \
+      data-jplist-control="slider-range-filter" \
+      data-path=".' + jpclass + '" \
+      data-group="' + group + '" \
+      data-name="my-slider-' + jpclass + '" \
+      data-min="' + min + '" \
+      data-from="' + min + '" \
+      data-to="' + max + '" \
+      data-max="' + max + '"> \
+      <b>' + name + ':</b> <span data-type="value-1"></span> \
+      <div class="jplist-slider" data-type="slider"></div> \
+      <span data-type="value-2"></span>  \
+      </div></div>';
+        }
+
+        return out;
+    };
+    jpList.updateControls = function () {
+        var sliders = document.getElementsByClassName('ra-slider');
+        for (let slider of sliders) {
+            jplist.resetControl(slider);
+        }
+    };
+
+
+    return jpList;
 }
 ());
 ra.w3w = (function () {
@@ -762,7 +860,7 @@ ra.modal = (function () {
     modal.mapcontrol = null;
     modal.elements = {modaltag: null};
     modal.display = function ($html, print = true) {
-  
+
         modal._createModalTag(print);
         ra.html.setTag(modal.elements.data, $html);
         modal.elements.modaltag.style.display = "block";
@@ -777,8 +875,8 @@ ra.modal = (function () {
                 ra.html.printTag(modal.elements.data);
             };
         }
-         modal.fullscreenMap();
-         return;
+        modal.fullscreenMap();
+        return;
     };
     modal.fullscreen = function (isFullScreen, mapcontrol) {
         modal.isFullScreen = isFullScreen;

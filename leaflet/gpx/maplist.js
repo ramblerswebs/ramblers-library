@@ -94,6 +94,7 @@ function gpxFolderDisplay(options) {
     this._map = null;
     this.options = options;
     this.base = ra.baseDirectory();
+    this.jplistgroup = ra.uniqueID();
     this.controls = {
         folder: null,
         linecolour: "#782327",
@@ -112,16 +113,17 @@ function gpxFolderDisplay(options) {
     var tags1 = [
         {name: 'table', parent: 'root', tag: 'table', attrs: {class: 'ra-tab-options'}},
         {name: 'row', parent: 'table', tag: 'tr'},
-        {name: 'map', parent: 'row', tag: 'td', attrs: {class: 'ra-tab active', id: 'Map'}, textContent: 'Map'},
-        {name: 'list', parent: 'row', tag: 'td', attrs: {class: 'ra-tab', id: 'List'}, textContent: 'List'},
-        {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {id: 'gpxouter'}},
-        {name: 'gpxmap', parent: 'gpxouter', tag: 'div', attrs: {id: 'gpxmap'}},
+        {name: 'map', parent: 'row', tag: 'td', attrs: {class: 'ra-tab active'}, textContent: 'Map'},
+        {name: 'list', parent: 'row', tag: 'td', attrs: {class: 'ra-tab'}, textContent: 'List'},
+        {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {class: 'gpxouter'}},
+        {name: 'gpxmap', parent: 'gpxouter', tag: 'div'},
         {parent: 'gpxmap', tag: 'p'},
         {name: 'gpxheader', parent: 'gpxmap', tag: 'div'},
         {parent: 'gpxmap', tag: 'h4', textContent: 'Click on any walk to see summary, click on title to display route'},
-        {name: 'gpxlist', parent: 'gpxouter', tag: 'div', attrs: {id: 'gpxlist'}, style: {display: 'none'}},
-        {parent: 'gpxlist', tag: 'div', attrs: {id: 'ra-pagination1'}},
-        {name: 'tableDiv', parent: 'gpxlist', tag: 'div', attrs: {textContent: 'Program loading: please give this a minute or so. If this does not vanish then please contact the web master!'}}
+        {name: 'gpxlist', parent: 'gpxouter', tag: 'div', style: {display: 'none'}},
+        {name: 'filters', parent: 'gpxlist', tag: 'div'},
+        {name: 'pagination', parent: 'gpxlist', tag: 'div'},
+        {name: 'tableDiv', parent: 'gpxlist', tag: 'div', textContent: 'Program loading: please give this a minute or so. If this does not vanish then please contact the web master!'}
     ];
     this.routes = null;
     this.masterdiv = document.getElementById(options.divId);
@@ -149,7 +151,9 @@ function gpxFolderDisplay(options) {
     });
     this.displayData = function (data) {
         this.setData(data);
-        ra.html.setTag('ra-pagination1', this.addPagination());
+        this.addFilters(this.elements.filters);
+        this.addPagination(this.routes.length, this.elements.pagination);
+        //  ra.html.setTag(this.elements.pagination, this.addPagination());
         this.displayGPXTable();
         this.addGPXMarkers();
         this.addRouteEvents();
@@ -170,13 +174,16 @@ function gpxFolderDisplay(options) {
     this.ra_format = function (option) {
         this.elements.map.classList.remove('active');
         this.elements.list.classList.remove('active');
-        document.getElementById(option).classList.add('active');
+
         switch (option) {
             case 'List':
+                this.elements.list.classList.add('active');
                 this.elements.gpxmap.style.display = "none";
                 this.elements.gpxlist.style.display = "inline";
+                ra.jpList.updateControls();
                 break;
             case 'Map':
+                this.elements.map.classList.add('active');
                 this.elements.gpxlist.style.display = "none";
                 this.elements.gpxmap.style.display = "inline";
                 this._map.invalidateSize();
@@ -203,6 +210,7 @@ function gpxFolderDisplay(options) {
         var tag;
         //  var extra = "";
         tag = this.elements.tableDiv;
+        tag.innerHTML = '';
         if (tag !== null) {
             var tags = [
                 {name: 'table', parent: 'root', tag: 'table', attrs: {id: 'gpxdetails'}},
@@ -226,19 +234,19 @@ function gpxFolderDisplay(options) {
             tags.push({name: 'tbody', parent: 'table', tag: 'tbody'});
             var eles = ra.html.generateTags(tag, tags);
             if (this.controls.displayAsPreviousWalks) {
-                ra.jplist.sortButton(eles.date, "group1", 'wDate', 'date', "asc", "▲");
-                ra.jplist.sortButton(eles.date, "group1", 'wDate', 'date', "desc", "▼");
-                ra.jplist.sortButton(eles.leader, "group1", 'wAuthor', 'text', "asc", "▲");
-                ra.jplist.sortButton(eles.leader, "group1", 'wAuthor', 'text', "desc", "▼");
+                ra.jpList.sortButton(eles.date, this.jplistgroup, 'wDate', 'date', "asc", "▲");
+                ra.jpList.sortButton(eles.date, this.jplistgroup, 'wDate', 'date', "desc", "▼");
+                ra.jpList.sortButton(eles.leader, this.jplistgroup, 'wAuthor', 'text', "asc", "▲");
+                ra.jpList.sortButton(eles.leader, this.jplistgroup, 'wAuthor', 'text', "desc", "▼");
             }
-            ra.jplist.sortButton(eles.title, "group1", 'wTitle', 'text', "asc", "▲");
-            ra.jplist.sortButton(eles.title, "group1", 'wTitle', 'text', "desc", "▼");
-            ra.jplist.sortButton(eles.distance, "group1", 'wDistance', 'number', "asc", "▲");
-            ra.jplist.sortButton(eles.distance, "group1", 'wDistance', 'number', "desc", "▼");
-            ra.jplist.sortButton(eles.elevation, "group1", 'wElevation', 'number', "asc", "▲");
-            ra.jplist.sortButton(eles.elevation, "group1", 'wElevation', 'number', "desc", "▼");
+            ra.jpList.sortButton(eles.title, this.jplistgroup, 'wTitle', 'text', "asc", "▲");
+            ra.jpList.sortButton(eles.title, this.jplistgroup, 'wTitle', 'text', "desc", "▼");
+            ra.jpList.sortButton(eles.distance, this.jplistgroup, 'wDistance', 'number', "asc", "▲");
+            ra.jpList.sortButton(eles.distance, this.jplistgroup, 'wDistance', 'number', "desc", "▼");
+            ra.jpList.sortButton(eles.elevation, this.jplistgroup, 'wElevation', 'number', "asc", "▲");
+            ra.jpList.sortButton(eles.elevation, this.jplistgroup, 'wElevation', 'number', "desc", "▼");
             out = "";
-            eles.tbody.setAttribute('data-jplist-group', 'group1');
+            eles.tbody.setAttribute('data-jplist-group', this.jplistgroup);
             for (index = 0; index < this.routes.length; ++index) {
                 var route = this.routes[index];
                 if (this.displayRoute(route)) {
@@ -468,52 +476,26 @@ function gpxFolderDisplay(options) {
         this.cluster.addClusterMarkers();
         return false;
     };
-    this.addPagination = function () {
-        if (!ra.isES6()) {
-            return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
-        }
-        var $div = '</span> \
-<input class="ra-route-search" \
-     data-jplist-control="textbox-filter" \
-     data-group="group1" \
-     data-name="my-filter-1" \
-     data-path=".wTitle" \
-     data-clear-btn-id="title-clear-btn" \
-     type="text" \
-     value="" \
-     placeholder="Filter by Title" \
-/>                \
-<button type="button" id="title-clear-btn">Clear</button> \
-</span></div><div class="clear"></div>\
-<div data-jplist-control=\"pagination\" \
-            data-group=\"group1\" \
-            data-items-per-page=\"20\" \
-            data-current-page=\"0\" \
-            data-name=\"pagination1\"> \
-            <span data-type=\"info\"> \
-            {startItem} - {endItem} of {itemsNumber} \
-            </span> ';
-        var $display = "";
-        if (this.routes.length < 15) {
-            $display = ' style=\"display:none;\" ';
-        }
-        $div += '  <span' + $display + '> \
-            <button type=\"button\" data-type=\"first\">First</button> \
-            <button type=\"button\" data-type=\"prev\">Previous</button> \
-            <span class=\"jplist-holder\" data-type=\"pages\"> \
-                <button type=\"button\" data-type=\"page\">{pageNumber}</button> \
-            </span> \
-            <button type=\"button\" data-type=\"next\">Next</button> \
-            <button type=\"button\" data-type=\"last\">Last</button> \
-            </span> \
-            <!-- items per page select --> \
-    <select data-type=\"items-per-page\"' + $display + '> \
-        <option value=\"10\"> 10 per page </option> \
-        <option value=\"20\"> 20 per page </option> \
-        <option value=\"30\"> 30 per page </option> \
-        <option value=\"0\"> view all </option> \
-    </select> ';
-        $div += '</div> ';
-        return $div;
+    this.addFilters = function (tag) {
+        var out = '';
+        out += ra.jpList.addFilter(this.jplistgroup, 'wTitle', 'Title', 'text');
+        var min, max;
+        var result = this.routes;
+        min = result.reduce(function (a, b) {
+            var km = Math.floor(b.distance / 1000);
+            return Math.min(a, km);
+        }, 99999);
+        max = result.reduce(function (a, b) {
+            var km = Math.ceil(b.distance / 1000);
+            return Math.max(a, km);
+        }, -99999);
+        out += ra.jpList.addFilter(this.jplistgroup, 'wDistance', 'Distance Km', 'number', min, max);
+        tag.innerHTML = out;
+
     };
+    this.addPagination = function (no, tag) {
+        ra.jpList.addPagination(no, tag, this.jplistgroup, "pagination1", 20, false);
+        return;
+    };
+
 }

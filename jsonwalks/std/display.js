@@ -21,11 +21,14 @@ var raDisplay = (function () {
             displayClass: "",
             displayStartTime: true,
             displayStartDescription: true,
+            displayDetailsPrompt: true,
             tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{mediathumbr}", "{title}"]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
             listFormat: ["{dowdd}", "{,meet}", "{,start}", "{,title}", "{,distance}", "{,contactname}", "{,telephone}"],
             gradesFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
             withMonth: ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"],
-            jplistName: "group1",
+            jplistGroup: "group1",
+            jplistName: "name1",
+            itemsPerPage: 20,
             filterTag: "js-walksFilterPos2",
             filterPosition: 3,
             currentView: "Grades",
@@ -42,7 +45,7 @@ var raDisplay = (function () {
         this.load = function (mapOptions, data) {
 
             this.mapOptions = mapOptions;
-
+            this.settings.jplistName = 'jpl' + mapOptions.divId;
             var tags = [
                 {name: 'outer', parent: 'root', tag: 'div'},
                 {name: 'filterDiagnostics', parent: 'outer', tag: 'div'},
@@ -50,9 +53,9 @@ var raDisplay = (function () {
                 {name: 'raoptions', parent: 'outer', tag: 'div'},
                 {name: 'inner', parent: 'outer', tag: 'div', attrs: {id: 'rainner'}},
                 {name: 'js-walksFilterPos3', parent: 'inner', tag: 'div', attrs: {id: 'js-walksFilterPos3'}},
-                {name: 'rapagination1', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-1'}},
-                {parent: 'inner', tag: 'div', attrs: {id: 'rawalks'}, textContent: 'Processing data - this should be replaced shortly.'},
-                {name: 'rapagination2', parent: 'inner', tag: 'div', attrs: {id: 'rapagination-2'}},
+                {name: 'rapagination1', parent: 'inner', tag: 'div'},
+                {name: 'rawalks', parent: 'inner', tag: 'div', textContent: 'Processing data - this should be replaced shortly.'},
+                {name: 'rapagination2', parent: 'inner', tag: 'div'},
                 {name: 'map', parent: 'inner', tag: 'div'}
             ];
 
@@ -201,12 +204,12 @@ var raDisplay = (function () {
                 case "Table":
                     this.displayMap("hidden");
                     if ($walks.length === 0) {
-                        ra.html.setTag("rawalks", '<h3>Sorry there are no walks at the moment.</h3>');
+                        ra.html.setTag(this.elements.rawalks, '<h3>Sorry there are no walks at the moment.</h3>');
                         return;
                     }
-                    ra.html.setTag("rapagination-1", this.addPagination(no));
-                    ra.html.setTag("rapagination-2", this.addPagination(no));
-                    ra.html.setTag("rawalks", this.displayWalksText($walks));
+                    this.addPagination(no, this.elements.rapagination1);
+                    this.addPagination(no, this.elements.rapagination2);
+                    ra.html.setTag(this.elements.rawalks, this.displayWalksText($walks));
                     // jplist.init();
                     if (!this.settings.noPagination) {
                         if (ra.isES6() && no !== 0) {
@@ -219,17 +222,17 @@ var raDisplay = (function () {
 
                     break;
                 case "Map":
-                    ra.html.setTag("rapagination-1", "");
-                    ra.html.setTag("rapagination-2", "");
-                    ra.html.setTag("rawalks", "");
+                    ra.html.setTag(this.elements.rapagination1, "");
+                    ra.html.setTag(this.elements.rapagination2, "");
+                    ra.html.setTag(this.elements.rawalks, "");
                     this.displayMap("visible");
                     this.displayWalksMap($walks);
                     break;
                 case "Contacts":
                     this.displayMap("hidden");
-                    ra.html.setTag("rapagination-1", this.addPagination(no));
-                    ra.html.setTag("rapagination-2", this.addPagination(no));
-                    ra.html.setTag("rawalks", this.displayContacts($walks));
+                    this.addPagination(no, this.elements.rapagination1);
+                    this.addPagination(no, this.elements.rapagination2);
+                    ra.html.setTag(this.elements.rawalks, this.displayContacts($walks));
                     if (!this.settings.noPagination) {
                         if (ra.isES6()) {
                             jplist.init({
@@ -248,17 +251,17 @@ var raDisplay = (function () {
 //  tag.style.visibility = which;
                 if (which === "hidden") {
                     tag.style.display = "none";
-                    setPaginationMargin("on");
+                    this.setPaginationMargin("on");
                 } else {
                     tag.style.display = "block";
-                    setPaginationMargin("off");
+                    this.setPaginationMargin("off");
                     this.map.invalidateSize();
                 }
             }
         };
-        setPaginationMargin = function (which) {
-            var tag1 = document.getElementById("rapagination-1");
-            var tag2 = document.getElementById("rapagination-2");
+        this.setPaginationMargin = function (which) {
+            var tag1 = this.elements.rapagination1;
+            var tag2 = this.elements.rapagination2;
             if (tag1 && tag2) {
                 if (which === "on") {
                     tag1.style.paddingBottom = "5px";
@@ -309,8 +312,8 @@ var raDisplay = (function () {
 
             if (no === 0) {
                 $out = "<h3>Sorry, but no walks meet your filter search</h3>";
-                ra.html.setTag("rapagination-1", "");
-                ra.html.setTag("rapagination-2", "");
+                ra.html.setTag(this.elements.rapagination1, "");
+                ra.html.setTag(this.elements.rapagination2, "");
                 header = "";
                 footer = "";
             } else {
@@ -364,13 +367,13 @@ var raDisplay = (function () {
                     if (this.settings.displayDetailsPrompt) {
                         $out += "<p class='noprint'>Click on item to display full details of walk</p>";
                     }
-                    $out += "<div data-jplist-group=\"" + this.settings.jplistName + "\">";
+                    $out += "<div data-jplist-group=\"" + this.settings.jplistGroup + "\">";
                     break;
                 case "List":
                     if (this.settings.displayDetailsPrompt) {
                         $out += "<p class='noprint'>Click on item to display full details of walk</p>";
                     }
-                    $out += "<div data-jplist-group=\"" + this.settings.jplistName + "\">";
+                    $out += "<div data-jplist-group=\"" + this.settings.jplistGroup + "\">";
                     break;
                 case "Table":
                     if (this.settings.displayDetailsPrompt) {
@@ -381,7 +384,7 @@ var raDisplay = (function () {
                     if (!should) {
                         $out += this.displayTableHeader();
                     }
-                    $out += "<tbody data-jplist-group=\"" + this.settings.jplistName + "\">";
+                    $out += "<tbody data-jplist-group=\"" + this.settings.jplistGroup + "\">";
                     break;
             }
             return $out;
@@ -652,7 +655,7 @@ var raDisplay = (function () {
             if (dispTel2) {
                 out += "</th><th>Telephone2";
             }
-            out += "</th></tr><tbody data-jplist-group=\"" + this.settings.jplistName + "\">";
+            out += "</th></tr><tbody data-jplist-group=\"" + this.settings.jplistGroup + "\">";
             for (index = 0, len = $contacts.length; index < len; ++index) {
                 $contact = $contacts[index];
                 out += "<tr data-jplist-item><td>" + $contact.name;
@@ -693,43 +696,15 @@ var raDisplay = (function () {
         };
 
 
-        this.addPagination = function (no) {
-            if (!ra.isES6()) {
-                return "<h3 class='oldBrowser'>You are using an old Web Browser!</h3><p class='oldBrowser'>We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...</p>";
+        this.addPagination = function (no, tag) {
+            var printTag = this.elements.rawalks;
+            var printButton = ra.jpList.addPagination(no, tag, this.settings.jplistGroup, this.settings.jplistName, this.settings.itemsPerPage, true);
+            if (printButton !== null) {
+                printButton.addEventListener('click', function () {
+                    ra.html.printTag(printTag);
+                });
             }
-            var $class = "";
-            if (no < 11) {
-                $class = " hidden";
-            }
-
-            var $div = "<div data-jplist-control=\"pagination\" \
-            data-group=\"" + this.settings.jplistName + "\" \
-            data-items-per-page=\"" + this.settings.itemsPerPage + "\" \
-            data-current-page=\"0\" \
-            data-id=\"no-items\" \
-            data-name=\"pagination1\"> \
-            <span data-type=\"info\"> \
-             <a class='link-button small button-p4485' onclick=\"javascript:ra.html.printTag('rawalks')\">Print</a> \
-            {startItem} - {endItem} of {itemsNumber} \
-            </span> ";
-            $div += "<span class='center" + $class + "'> \
-            <button type=\"button\" data-type=\"first\">First</button> \
-            <button type=\"button\" data-type=\"prev\">Previous</button> \
-            <span class=\"jplist-holder\" data-type=\"pages\"> \
-            <button type=\"button\" data-type=\"page\">{pageNumber}</button> \
-            </span> <button type=\"button\" data-type=\"next\">Next</button> \
-            <button type=\"button\" data-type=\"last\">Last</button> \
-            </span> \
-            <!-- items per page select --> \
-    <select data-type=\"items-per-page\" class=\"" + $class + "\"> \
-        <option value=\"10\"> 10 per page </option> \
-        <option value=\"20\"> 20 per page </option> \
-        <option value=\"50\"> 50 per page </option> \
-        <option value=\"100\"> 100 per page </option> \
-        <option value=\"0\"> view all </option> \
-    </select> ";
-            $div += " </div>";
-            return $div;
+            return;
         };
 
         this.addFilter = function (tag, title, items, singleOpen, all = true, dates = false) {
