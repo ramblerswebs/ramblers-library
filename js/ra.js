@@ -720,26 +720,22 @@ ra.jpList = (function () {
             ];
             var elements = ra.html.generateTags(tag, tags);
         } else {
-            var div = document.createElement('div');
-            div.setAttribute('data-jplist-control', 'pagination');
-            div.setAttribute('data-group', jplistGroup);
-            div.setAttribute('data-items-per-page', itemsPerPage);
-            div.setAttribute('data-current-page', '0');
-            div.setAttribute('data-id', 'no-items');
-            div.setAttribute('data-name', jplistName);
-
             var tags = [
-                {name: 'spanitems', parent: 'root', tag: 'span'},
+                {name: 'div', parent: 'root', tag: 'div', attrs: {'data-jplist-control': 'pagination',
+                        'data-group': jplistGroup, 'data-items-per-page': itemsPerPage,
+                        'data-current-page': '0', 'data-id': 'no-items',
+                        'data-name': jplistName}},
+                {name: 'spanitems', parent: 'div', tag: 'span'},
                 {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'link-button small button-p4485'}, textContent: 'Print'},
                 {name: 'span', parent: 'spanitems', tag: 'span', attrs: {'data-type': 'info'}, textContent: '{startItem} - {endItem} of {itemsNumber}'},
-                {name: 'buttons', parent: 'root', tag: 'span', attrs: {class: 'center '}},
+                {name: 'buttons', parent: 'div', tag: 'span', attrs: {class: 'center '}},
                 {name: 'first', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'first'}, textContent: 'First'},
                 {name: 'previous', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'prev'}, textContent: 'Previous'},
                 {name: 'xxx', parent: 'buttons', tag: 'span', attrs: {class: 'jplist-holder', 'data-type': 'pages'}},
                 {name: 'pageNumber', parent: 'xxx', tag: 'button', attrs: {type: 'button', 'data-type': 'page'}, textContent: '{pageNumber}'},
                 {name: 'next', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'next'}, textContent: 'Next'},
                 {name: 'last', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'last'}, textContent: 'Last'},
-                {name: 'select', parent: 'root', tag: 'select', attrs: {'data-type': 'items-per-page'}},
+                {name: 'select', parent: 'div', tag: 'select', attrs: {'data-type': 'items-per-page'}},
                 {parent: 'select', tag: 'option', attrs: {value: '10'}, textContent: '10 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '20'}, textContent: '20 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '50'}, textContent: '50 per page'},
@@ -747,9 +743,8 @@ ra.jpList = (function () {
                 {parent: 'select', tag: 'option', attrs: {value: '0'}, textContent: 'View all'}
             ];
 
-            var elements = ra.html.generateTags(div, tags);
+            var elements = ra.html.generateTags(tag, tags);
             elements.select.style.width = "120px";
-            tag.appendChild(div);
         }
         elements.print.style.marginRight = "5px";
         if (print) {
