@@ -29,8 +29,8 @@ class RLeafletGpxMaplist extends RLeafletMap {
             
         };
         $this->data->items = json_decode($items);
-
         $this->help_page = "listofroutes.html";
+
         $this->options->cluster = true;
         $this->options->displayElevation = true;
         $this->options->fullscreen = true;
@@ -57,7 +57,6 @@ class RLeafletGpxMaplist extends RLeafletMap {
             }
         }
 
-
         $this->data->download = $this->downloadState();
         $this->data->folder = $this->folder;
         $this->data->linecolour = $this->linecolour;
@@ -73,14 +72,6 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
         $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js", "text/javascript");
-        //   echo "<br/>";
-        //    echo "</div>";
-        //    echo "<div id='gpxlist' style='display:none;' >";
-        if ($this->displayAsPreviousWalks) {
-            echo "<h4>List of Previous Walks</h4>";
-        } else {
-            echo "<h4>List of Walking Routes</h4>";
-        }
     }
 
     private function loggedon() {
@@ -91,15 +82,15 @@ class RLeafletGpxMaplist extends RLeafletMap {
         return false;
     }
 
-    private function hasDescriptions($items) {
-        return true;
-        foreach ($items as $item) {
-            if ($item->description !== '') {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private function hasDescriptions($items) {
+//        return true;
+//        foreach ($items as $item) {
+//            if ($item->description !== '') {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     private function downloadState() {
         $state = 0; // no download link
