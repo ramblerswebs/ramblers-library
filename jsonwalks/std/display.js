@@ -29,8 +29,6 @@ var raDisplay = (function () {
             jplistGroup: "group1",
             jplistName: "name1",
             itemsPerPage: 20,
-            filterTag: "js-walksFilterPos2",
-            filterPosition: 3,
             currentView: "Grades",
             gradesView: true,
             tableView: true,
@@ -49,10 +47,9 @@ var raDisplay = (function () {
             var tags = [
                 {name: 'outer', parent: 'root', tag: 'div'},
                 {name: 'filterDiagnostics', parent: 'outer', tag: 'div'},
-                {name: 'js-walksFilterPos2', parent: 'outer', tag: 'div', attrs: {id: 'js-walksFilterPos2'}},
+                {name: 'walksFilter', parent: 'outer', tag: 'div', attrs: {class: 'walksFilter'}},
                 {name: 'raoptions', parent: 'outer', tag: 'div'},
                 {name: 'inner', parent: 'outer', tag: 'div', attrs: {id: 'rainner'}},
-                {name: 'js-walksFilterPos3', parent: 'inner', tag: 'div', attrs: {id: 'js-walksFilterPos3'}},
                 {name: 'rapagination1', parent: 'inner', tag: 'div'},
                 {name: 'rawalks', parent: 'inner', tag: 'div', textContent: 'Processing data - this should be replaced shortly.'},
                 {name: 'rapagination2', parent: 'inner', tag: 'div'},
@@ -110,7 +107,6 @@ var raDisplay = (function () {
         this.processWalksFilter = function () {
 
             var wfOptions = JSON.parse(addFilterFormats());
-            this.settings.filterPosition = wfOptions.filterPosition;
             this.settings.currentView = wfOptions.defaultView;
             this.settings.gradesView = wfOptions.detailsView;
             this.settings.tableView = wfOptions.tableView;
@@ -930,11 +926,11 @@ var raDisplay = (function () {
             this.setFilterGroup(result.distances);
             this.setFilterGroup(result.grades);
 
-            var tag = document.getElementById(this.settings.filterTag);
+            var tag = this.elements.walksFilter;
             var pos = tag;
             if (tag !== null) {
                 tag.innerHTML = '';
-                var singleOpen = this.settings.filterTag !== "js-walksFilterPos1";
+                var singleOpen = true;
                 if (singleOpen) {
                     this.addOpenClose(tag, "Filter");
                     var div = document.createElement('div');
@@ -960,21 +956,7 @@ var raDisplay = (function () {
         };
 
         this.processOptions = function (optionsDiv) {
-            var $diag = "<h3>Walks filter diagnostics</h3>";
-            switch (this.settings.filterPosition) {
-                case "In module":
-                case "1":
-                    this.settings.filterTag = 'js-walksFilterPos1';
-                    $diag += "Position - In Module<br/>";
-                    break;
-                case "In Article, above tabs":
-                case "2":
-                    this.settings.filterTag = 'js-walksFilterPos2';
-                    $diag += "Position - In Article, above tabs<br/>";
-                    break;
-                default:
-                    $diag += "Position - In Article, below tabs<br/>";
-            }
+           // var $diag = "<h3>Walks filter diagnostics</h3>";
             var table = document.createElement('table');
             table.setAttribute('class', 'ra-tab-options');
             optionsDiv.appendChild(table);

@@ -771,17 +771,14 @@ span.link{
     margin-left:5px;
 }
 /*  Displat.php/js walks filter                    */
-div#js-walksFilterPos2,
-div#js-walksFilterPos3{
-    width :100%;
-}
-div#js-walksFilterPos2 > h3.ra_openclose,
-div#js-walksFilterPos3 > h3.ra_openclose{
+
+div.walksFilter > h3.ra_openclose,
+div.walksFilter > h3.ra_openclose{
     width :120px;
     float:right;
 }
-div#js-walksFilterPos2  div.ra-filteritem,
-div#js-walksFilterPos3 div.ra-filteritem{
+div.walksFilter  div.ra-filteritem,
+div.walksFilter div.ra-filteritem{
     padding-left:10px;
     width:90%;
     -webkit-column-break-inside: avoid; /* Chrome, Safari */
