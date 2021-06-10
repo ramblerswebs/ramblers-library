@@ -58,10 +58,8 @@ ra.csvList = (function () {
                 this.addCSVMarkers();
             }
             if (ra.isES6()) {
-                jplist.init({
-                    storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
-                    storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
-                });
+                var no=this.data.list.rows;
+                ra.jpList.init(no,'ra-csv-list');
             }
         };
         this.testForMap = function () {

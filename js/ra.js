@@ -778,7 +778,6 @@ ra.jpList = (function () {
       <span data-type="value-2"></span>  \
       </div></div>';
         }
-
         return out;
     };
     jpList.updateControls = function () {
@@ -787,7 +786,14 @@ ra.jpList = (function () {
             jplist.resetControl(slider);
         }
     };
-
+    jpList.init = function (no, name) {
+        if (ra.isES6() && no > 20) {
+            jplist.init({
+                storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
+                storageName: name //the same storage name can be used to share storage between multiple pages
+            });
+        }
+    };
 
     return jpList;
 }

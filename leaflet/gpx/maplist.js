@@ -158,10 +158,7 @@ function gpxFolderDisplay(options) {
         this.addGPXMarkers();
         this.addRouteEvents();
         if (ra.isES6()) {
-            jplist.init({
-                storage: 'cookies', //'localStorage', 'sessionStorage' or 'cookies'
-                storageName: 'my-page-storage' //the same storage name can be used to share storage between multiple pages
-            });
+           ra.jpList.init(this.routes.length,'ra-gpx-list');
         }
     };
     this.setData = function (data) {

@@ -25,11 +25,19 @@ class RJsonwalksStdFulldetails extends RJsonwalksStdSimplelist {
 
     public function __construct() {
         parent::__construct();
-        parent::customFormat($this->listFormat);
         parent::inLineDisplay();
     }
 
     public function DisplayWalks($walks) {
+        if (!$this->addContacttoHeader) {
+            foreach (array_keys($this->listFormat, "{,contactname}", true) as $key) {
+                unset($this->listFormat[$key]);
+            }
+            foreach (array_keys($this->listFormat, "{,telephone}", true) as $key) {
+                unset($this->listFormat[$key]);
+            }
+        }
+        parent::customFormat($this->listFormat);
         parent::DisplayWalks($walks);
     }
 

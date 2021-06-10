@@ -212,12 +212,7 @@ var raDisplay = (function () {
                     ra.html.setTag(this.elements.rawalks, this.displayWalksText($walks));
                     // jplist.init();
                     if (!this.settings.noPagination) {
-                        if (ra.isES6() && no !== 0) {
-                            jplist.init({
-                                storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                                storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
-                            });
-                        }
+                        ra.jpList.init(no,'ra-display');
                     }
 
                     break;
@@ -717,7 +712,7 @@ var raDisplay = (function () {
             div.setAttribute('class', 'ra-filteritem');
             tag.appendChild(div);
             if (!singleOpen) {
-                addOpenClose(div, title);
+                this.addOpenClose(div, title);
             } else {
                 var h3 = document.createElement('h3');
                 h3.textContent = title;
@@ -806,13 +801,13 @@ var raDisplay = (function () {
             var li = document.createElement('li');
             tag.appendChild(li);
             var input = document.createElement('input');
-            input.setAttribute('id', item.id);
             input.setAttribute('type', 'checkbox');
             input.checked = true;
             li.appendChild(input);
             var _this = this;
+            var keyid = item.id;
             input.addEventListener("change", function (event) {
-                _this.settings.filter[event.target.id] = event.target.checked;
+                _this.settings.filter[keyid] = event.target.checked;
                 var $walks = _this.getWalks();
                 _this.displayWalks($walks);
             });
@@ -829,7 +824,6 @@ var raDisplay = (function () {
             label.textContent = name;
             li.appendChild(label);
             var input = document.createElement('input');
-            input.setAttribute('id', id);
             input.setAttribute('type', 'date');
             input.setAttribute('value', value);
             input.setAttribute('min', min);
@@ -838,11 +832,12 @@ var raDisplay = (function () {
             input.checked = true;
             li.appendChild(input);
             var _this = this;
+            var keyid = id;
             input.addEventListener("input", function (event) {
                 var input = event.target;
                 var value = input.value;
                 if (value === '') {
-                    if (input.id === 'RA_DateStart') {
+                    if (keyid === 'RA_DateStart') {
                         value = input.min;
                         input.value = min;
                     } else {
@@ -850,7 +845,7 @@ var raDisplay = (function () {
                         input.value = max;
                     }
                 }
-                _this.settings.filter[event.target.id] = value;
+                _this.settings.filter[keyid] = value;
                 var $walks = _this.getWalks();
                 _this.displayWalks($walks);
             });
