@@ -368,7 +368,7 @@ ra.walk = (function () {
             "{mediathumbl}",
             "{meetOSMap}", "{meetDirections}", "{startOSMap}", "{startDirections}"];
         var index, len, option, $value;
-        var $html = "<table><tr><th>Name</th><th>Value</th><th>HTML</th></tr>";
+        var $html = "<table><tr><th>No</th><th>Name</th><th>Value</th><th>HTML</th></tr>";
         for (index = 0, len = options.length; index < len; ++index) {
             option = options[index];
             $html += "<tr>";
@@ -724,7 +724,7 @@ ra.walk = (function () {
     };
     my.newTooltip = function ($walk, $text) {
         if ($walk.status === "New") {
-            return "<span data-descr='Walk updated " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "' class=' walkNew'><span>" + $text + "</span></span";
+            return "<span data-descr='Walk updated " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";
         }
         return $text;
     };
