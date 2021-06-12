@@ -722,7 +722,11 @@ ra.walk = (function () {
     }
 
     };
-    my.newTooltip = function ($walk, $text) {
+    my.addTooltip = function ($walk, $text) {
+        if ($walk.status.toLowerCase() === "cancelled"){
+             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
+           
+        }
         if ($walk.status === "New") {
             return "<span data-descr='Walk updated " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";
         }

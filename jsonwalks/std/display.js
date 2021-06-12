@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var ra, jplist, addFilterFormats;
+var ra, jplist, addFilterFormats, displayTableRowClass;
 
 if (typeof (ra) === "undefined") {
     ra = {};
@@ -208,7 +208,7 @@ var raDisplay = (function () {
                     ra.html.setTag(this.elements.rawalks, this.displayWalksText($walks));
                     // jplist.init();
                     if (!this.settings.noPagination) {
-                        ra.jpList.init(no,'ra-display');
+                        ra.jpList.init(no, 'ra-display');
                     }
 
                     break;
@@ -561,7 +561,7 @@ var raDisplay = (function () {
             }
             $image = '<span class="walkdetail" >';
             $out += ra.walk.getWalkValues($walk, this.settings.gradesFormat);
-            $text = $out1 + $image + ra.walk.newTooltip($walk, $out) + "\n</span></div>\n";
+            $text = $out1 + $image + ra.walk.addTooltip($walk, $out) + "\n</span></div>\n";
             if ($displayMonth) {
                 $text += "</div>\n";
             }
@@ -580,7 +580,7 @@ var raDisplay = (function () {
                 $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
             }
 
-            $out += ra.walk.newTooltip($walk, ra.walk.getWalkValues($walk, $items));
+            $out += ra.walk.addTooltip($walk, ra.walk.getWalkValues($walk, $items));
             return  $out + "</div>\n";
         };
         this.displayWalk_Table = function ($walk, $class, $displayMonth) {
@@ -603,7 +603,7 @@ var raDisplay = (function () {
             for (index = 0, len = $cols.length; index < len; ++index) {
                 $out += "<td>";
                 $items = $cols[index].items;
-                $out += ra.walk.newTooltip($walk, ra.walk.getWalkValues($walk, $items));
+                $out += ra.walk.addTooltip($walk, ra.walk.getWalkValues($walk, $items));
 
                 //  $out += ra.walk.addWalkLink($walk.id, ra.walk.getWalkValues($walk, $items), "");
                 $out += "</td>";
@@ -698,7 +698,7 @@ var raDisplay = (function () {
             return;
         };
 
-        this.addFilter = function (tag, title, items, singleOpen, all = true, dates = false) {
+        this.addFilter = function (tag, title, items, all = true, dates = false) {
             if (!all) {
                 if (Object.keys(items).length === 1) {
                     return;
@@ -707,19 +707,13 @@ var raDisplay = (function () {
             var div = document.createElement('div');
             div.setAttribute('class', 'ra-filteritem');
             tag.appendChild(div);
-            if (!singleOpen) {
-                this.addOpenClose(div, title);
-            } else {
-                var h3 = document.createElement('h3');
-                h3.textContent = title;
-                div.appendChild(h3);
-            }
+
+            var h3 = document.createElement('h3');
+            h3.textContent = title;
+            div.appendChild(h3);
 
             var intDiv = document.createElement('div');
             intDiv.setAttribute('class', 'ra_filter');
-            if (!singleOpen) {
-                intDiv.style.display = "none";
-            }
             div.appendChild(intDiv);
             if (!dates) {
                 var ul = document.createElement('ul');
@@ -930,20 +924,18 @@ var raDisplay = (function () {
             var pos = tag;
             if (tag !== null) {
                 tag.innerHTML = '';
-                var singleOpen = true;
-                if (singleOpen) {
-                    this.addOpenClose(tag, "Filter");
-                    var div = document.createElement('div');
-                    div.setAttribute('class', 'filter-columns');
-                    div.style.display = "none";
-                    tag.appendChild(div);
-                    pos = div;
-                }
-                this.addFilter(pos, 'Groups', result.groups, singleOpen, false);
-                this.addFilter(pos, 'Dates', result.dates, singleOpen, true, true);
-                this.addFilter(pos, 'Day of the Week', result.dow, singleOpen);
-                this.addFilter(pos, 'Distance', result.distances, singleOpen);
-                this.addFilter(pos, 'Grade', result.grades, singleOpen);
+                this.addOpenClose(tag, "Filter");
+                var div = document.createElement('div');
+                div.setAttribute('class', 'filter-columns');
+                div.style.display = "none";
+                tag.appendChild(div);
+                pos = div;
+
+                this.addFilter(pos, 'Groups', result.groups, false);
+                this.addFilter(pos, 'Dates', result.dates, true, true);
+                this.addFilter(pos, 'Day of the Week', result.dow);
+                this.addFilter(pos, 'Distance', result.distances);
+                this.addFilter(pos, 'Grade', result.grades);
             }
 
         };
@@ -956,7 +948,7 @@ var raDisplay = (function () {
         };
 
         this.processOptions = function (optionsDiv) {
-           // var $diag = "<h3>Walks filter diagnostics</h3>";
+            // var $diag = "<h3>Walks filter diagnostics</h3>";
             var table = document.createElement('table');
             table.setAttribute('class', 'ra-tab-options');
             optionsDiv.appendChild(table);

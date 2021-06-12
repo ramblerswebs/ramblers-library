@@ -945,7 +945,10 @@ class RJsonwalksWalk extends REvent {
             return $this->_addWalkLink($id, $text, $class);
         }
     }
-    public function newTooltip  ($text) {
+    public function addTooltip  ($text) {
+         if ($this->isCancelled()){
+             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" . $text . "</span>";       
+        }
         if ($this->status === "New") {
             return "<span data-descr='Walk updated ". $this->dateUpdated->format('D, jS M') . "' class=' walkNew'>" . $text . "</span>";
         }

@@ -118,7 +118,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
                 $out .= "<td>";
             }
             $items = $col['items'];
-            $out .= $walk->newTooltip($walk->getWalkValues($items));
+            $out .= $walk->addTooltip($walk->getWalkValues($items));
             $out .= "</td>";
         }
         $out .= "</tr>";
