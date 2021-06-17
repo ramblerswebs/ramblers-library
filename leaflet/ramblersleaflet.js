@@ -102,7 +102,7 @@ function leafletMap(tag, options) {
     this.controls.zoom = this.map.addControl(new L.Control.Zoom());
     if (options.fullscreen) {
         this.controls.fullscreen = this.map.addControl(new L.Control.Fullscreen());
-        var self=this;
+        var self = this;
         this.map.addEventListener('fullscreenchange', function () {
             // let modal know if map full screen;
             ra.modal.fullscreen(self.map.isFullscreen(), self.map);
@@ -240,55 +240,72 @@ leafletMap.prototype.mapDiv = function () {
 
 
 function singleGpxRoute(mapOptions, _data) {
+    ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
     var data = ra.decodeData(_data);
     var masterdiv = document.getElementById(options.divId);
     let map = new leafletMap(masterdiv, options);
     ra.gpx.displayGPX(map, data);
+    ra.loading.stop();
 }
 function folderGpxRoutes(mapOptions, _data) {
+    ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
     var data = ra.decodeData(_data);
     var display = new gpxFolderDisplay(options);
     display.displayData(data);
-
+    ra.loading.stop();
 }
 function csvTable(mapOptions, _data) {
+    ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
     var data = ra.decodeData(_data);
     var display = new ra.csvList.display();
     display.load(options, data);
-
+    ra.loading.stop();
 }
 function walksMap(mapOptions, _data = null) {
+    ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
     var data = ra.decodeData(_data);
     var mapping = new raWalksMap();
     mapping.load(options, data);
+    ra.loading.stop();
 }
 
 function organisationMap(mapOptions, _data) {
+    ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
     var data = ra.decodeData(_data);
-
-
     var org = new raOrganisationMap(options);
     org.load(data);
+    ra.loading.stop();
+}
+function accountsMap(mapOptions, _data) {
+    ra.loading.start();
+    var options = ra.decodeOptions(mapOptions);
+    var data = ra.decodeData(_data);
+    var accounts = new raAccountsMap(options);
+    accounts.load(data);
+    ra.loading.stop();
 }
 
 function noDirectAction(mapOptions, _data) {
     ra.decodeOptions(mapOptions); // decode will save license info
 }
 function plotWalkingRoute(mapOptions, _data = null) {
+    ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
     var data = ra.decodeData(_data);
     var plotControl = new raPlotRoute(options, data);
     plotControl.load();
-
+    ra.loading.stop();
 }
 function loadDisplayWalks(mapOptions, _data) {
+    ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
     var data = ra.decodeData(_data);
     var disp = new raDisplay();
     disp.load(options, data);
+    ra.loading.stop();
 }

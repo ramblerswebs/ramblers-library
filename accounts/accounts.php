@@ -84,11 +84,15 @@ class RAccounts {
     }
 
     public function addMapMarkers($map) {
+        RLoad::addScript("libraries/ramblers/accounts/accounts.js", "text/javascript");
+        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        $map->setCommand('accountsMap');
         $map->options->fullscreen = true;
         $map->options->search = true;
         $map->options->locationsearch = true;
         $map->options->osgrid = true;
         $map->options->mouseposition = true;
+        $map->options->displayElevation = false;
         $map->options->rightclick = true;
         $map->options->fitbounds = true;
         $map->options->cluster = true;
@@ -97,44 +101,13 @@ class RAccounts {
         $map->options->ramblersPlaces = true;
         $this->readAccounts();
         $text = "";
-        foreach ($this->dbresults as $item) :
-            $text .= $this->addMapMarker($map, $item) . PHP_EOL;
-        endforeach;
-        $map->addContent($text);
-    }
-
-    private function addMapMarker($map, $item) {
-
-        $text = "Unknown group";
-        $long = $item->longitude;
-        $lat = $item->latitude;
-        $url = "http://www." . $item->domain;
-        if (strlen($item->code) === 2) {
-            $title = str_replace("'", "", $item->areaname);
-            // $icon = "ramblersMap.walkingarea";
-            $iclass = "group-icon a";
-            $class = "groupA";
-            $text = "Area: " . $title . " [" . $item->code . "]";
-        } else {
-
-            $title = str_replace("'", "", $item->groupname);
-            //  $icon = "ramblersMap.walkinggroup";
-            $iclass = "group-icon g";
-            $class = "groupG";
-            $text = str_replace("'", "", "Area: " . $item->areaname) . "<br/>";
-            if (strlen($item->code) === 4) {
-                $text .= "Group: " . $title . " [" . $item->code . "]";
-            }
-        }
-        //  $class = "website";
-        //   $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" . $url . "</a></div>";
-        //   $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", " . $icon . ");";
-        // $class = "group" . $this->scope;
-        $popup = "<div class='" . $class . "'>" . $text . "<br/><a href='" . $url . "' target='_blank'>" . $title . "</a></div>";
-        $icon = "myicon=L.divIcon({className: '" . $iclass . "', iconSize: null, html: '" . $title . "'});  ";
-        $marker = "addMarker(\"" . $popup . "\", " . $lat . ", " . $long . ", myicon);";
-
-        return $icon . $marker;
+        $data = new class {
+            
+        };
+        echo "<h4>Map of Hosted Ramblers Area/Group Websites</h4>";
+        $data->hostedsites = $this->dbresults;
+        $map->setDataObject($data);
+        //    $map->display();
     }
 
     public function readAccounts() {

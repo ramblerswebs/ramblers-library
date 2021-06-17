@@ -157,41 +157,10 @@ class ROrganisation {
         echo "</table>";
     }
 
-    public function listAreasOLD() {
-        foreach ($this->areas as $area) {
-            $code = "";
-            if ($this->showCodes) {
-                $code = "Area " . $area->code . ": ";
-            }
-            echo "<div class='ra_area'>" . $code . $area->getLink($this->showLinks) . "</div>";
-            echo "<ul>";
-            if ($this->showGroups) {
-                $code = "";
-                foreach ($area->groups as $group) {
-                    if ($this->showCodes) {
-                        switch ($group->scope) {
-                            case "G":
-                                $code = "Group " . $group->code . ":  ";
-                                break;
-                            case "S":
-                                $code = "Special Group " . $group->code . ":  ";
-                                break;
-                            default:
-                                $code = "Other Group " . $group->code . ":  ";
-                                break;
-                        }
-                    }
-                    Echo "<div class='ra_group'>" . $code . $group->getLink($this->showLinks) . "</div>";
-                }
-                echo "</ul>";
-            }
-        }
-    }
-
     public function display($map) {
         if (isset($map)) {
-            $document = JFactory::getDocument();
-            $document->addScript("libraries/ramblers/organisation/organisation.js", "text/javascript");
+            RLoad::addScript("libraries/ramblers/organisation/organisation.js", "text/javascript");
+            RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
             $map->setCommand('organisationMap');
             $map->help_page = "";
             $map->options->fullscreen = true;
@@ -201,7 +170,7 @@ class ROrganisation {
             $map->options->mouseposition = true;
             $map->options->rightclick = true;
             $map->options->fitbounds = true;
-            $map->options->displayElevation = true;
+            $map->options->displayElevation = false;
             $map->options->cluster = true;
             $map->options->mylocation = true;
             $map->options->maptools = true;
@@ -212,36 +181,13 @@ class ROrganisation {
             $data = new class {
                 
             };
-            $data->groups = $this->groups;
+            echo "<h4>Map of Ramblers Areas and Groups</h4>";
             $data->areas = $this->areas;
             $map->setDataObject($data);
             $map->display();
-            echo "<h4>Map of Ramblers Areas and Groups</h4>";
 
-
-            //   $map->addBounds();
-//            $text = "";
-//            foreach ($this->groups as $key => $group) {
-//                $areatext = "";
-//                if ($group->scope <> "A") {
-//                    $areacode = substr($key, 0, 2);
-//                    $area = $this->areas[$areacode];
-//                    $areatext = "Area <br/><a href='" . $area->url . "' target='_blank'>" . $area->name . "</a><br/>";
-//                }
-//                $marker = $group->addMapMarker($areatext);
-//                $text.=$marker . PHP_EOL;
-//            }
-//            $map->addContent($text);
         }
     }
-
-//    public function centreMap($centreGroup) {
-//        $this->centreGroup = strtoupper($centreGroup);
-//    }
-//
-//    public function setZoom($zoom) {
-//        $this->mapZoom = $zoom;
-//    }
 
     private function checkJsonProperties($item) {
         $properties = array("scope", "groupCode", "name", "url", "description", "latitude",

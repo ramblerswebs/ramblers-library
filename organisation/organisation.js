@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+var ra;
 var raOrganisationMap = (function () {
 
     var raOrganisationMap = function (options) {
@@ -11,39 +12,61 @@ var raOrganisationMap = (function () {
         this.cluster = new cluster(this.lmap.map);
         this.load = function (data) {
             this.addMarkers(data.areas);
-            this.addMarkers(data.groups);
+            //    this.addMarkers(data.groups);
             this.cluster.addClusterMarkers();
             this.cluster.zoomAll();
         };
-        this.addMarkers = function (items) {
-            for (var index = 0; index < items.length; ++index) {
-                var item = this.items[index];
-                this.addMarker(item);
+        this.addMarkers = function (areas) {
+            var area, group;
+            for (const name in areas) {
+                area = areas[name];
+                this.addMarker(area);
+                for (const groupname in area.groups) {
+                    group = area.groups[groupname];
+                    this.addMarker(group, area);
+                }
             }
         };
-        this.addMarker = function (item) {
-        var $popup, $lat, $long;
-          switch (item.scope) {
-            case "A":
-                $iclass = "group-icon a";
-                $text = "Ramblers Area [" + item.code + "]";
-                break;
-            case "G":
-                $iclass = "group-icon g";
-                $text = $areatext + "Group [" + item.code + "]";
-                break;
-            default:
-                $iclass = "group-icon s";
-                $text = $areatext + "Special Group [" + item.code + "]";
-                break;
-        }
-        $popup = "<div style='font-size:120%'>" + this.displayGPXName(route) + "</div>";
-        $popup += '<b>Distance</b> - ' + ra.map.getGPXDistance(route.distance) + '<br/>';
-        $popup += this.formatAltitude(route);
-        $lat = item.latitude;
-        $long = item.longitude;
-        this.cluster.addMarker($popup, $lat, $long, ra.map.icon.markerRoute());
-    };
+        this.addMarker = function (item, area) {
+            var $popup, $lat, $long, $iclass, $areatext = "", $icon,$website;
+            var $url, $lat, $long, $desc, $title, $code;
+
+
+            $title = item.name.replace("'", "&apos;");
+
+
+            $long = item.longitude;
+            $lat = item.latitude;
+            $url = item.url;
+            $website = item.website;
+            //  $desc = "<br/>"+htmlentities(item.description);
+            $desc = "<br/>" + item.description;
+            $desc = $desc.replace("\n", '<br />');
+            $desc = $desc.replace("\r", '');
+            $code = " [" + item.code + "]";
+            switch (item.scope) {
+                case "A":
+                    $iclass = "group-icon a";
+                    break;
+                case "G":
+                    $iclass = "group-icon g";
+                    $areatext = "Part of " + area.name + " area";
+                    break;
+                default:
+                    $iclass = "group-icon s";
+                    $areatext = "Part of " + area.name + " area";
+                    break;
+            }
+            var $class = "group" + item.scope;
+            $popup = "<div class='" + $class + "'><h4><a href='" + $url + "' target='_blank'>" + $title + "</a>" + $code + "</h4>" + $areatext + $desc + "</div>";
+     if ($website){
+         $popup += "<a href='" + $website + "' target='_blank'>" + $website + "</a>";
+     }
+         $icon = L.divIcon({className: $iclass, iconSize: null, html: $title});
+
+            this.cluster.addMarker($popup, $lat, $long, {icon: $icon, riseOnHover: true, title: $title});
+
+        };
     }
     ;
 

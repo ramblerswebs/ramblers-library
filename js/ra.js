@@ -364,6 +364,13 @@ ra.date = (function () {
                 return "th";
         }
     };
+    date.periodInDays = function (date1, date2) {
+        var d1 = date._setDateTime(date1);
+        var d2 = date._setDateTime(date2);
+        const diffTime = Math.abs(d1 - d2);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    };
     date._setDateTime = function (datetimestring) {
         var value = datetimestring;
         if (typeof value === "string") {
@@ -652,7 +659,7 @@ ra.link = (function () {
     link.getOSMap = function (lat, long, text) {
         var $out;
         $out = "<abbr title='Click Map to see Ordnance Survey map of location'>";
-        $out = "<span class='pointer' onClick=\"javascript:ra.link.streetmap(" + lat + "," + long + ")\">[" + text + "]</span>";
+        $out = "<span class='mappopup' onClick=\"javascript:ra.link.streetmap(" + lat + "," + long + ")\">[" + text + "]</span>";
         $out += "</abbr>";
         return $out;
     };
@@ -683,6 +690,35 @@ ra.link = (function () {
         window.open(page, "Google Map", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
     };
     return link;
+}
+());
+ra.loading = (function () {
+    var loading = {};
+    loading.start = function () {
+        var tags = [
+            {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'container'}},
+            {name: 'loader', parent: 'container', tag: 'div', attrs: {class: 'loader'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'loader--text'}}
+        ];
+        loading.elements = ra.html.generateTags(document.body, tags);
+//        setTimeout(function () {
+//            if (loading.elements.container !== null) {
+//                alert("Sorry - There seems to be a problem in displaying the information you requesterd\n\
+//Please contact the web master");
+//            }
+//        }, 30000);
+    };
+    loading.stop = function () {
+        loading.elements.container.remove();
+        loading.elements.container = null;
+    };
+    return loading;
 }
 ());
 ra.jpList = (function () {

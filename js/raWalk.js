@@ -479,7 +479,7 @@ ra.walk = (function () {
             case "{startMapCode}":
                 break;
             case "{title}":
-               // out = ra.html.addslashes($walk.title);
+                // out = ra.html.addslashes($walk.title);
                 out = $walk.title;
                 out = "<b>" + out + "</b>";
                 break;
@@ -626,7 +626,8 @@ ra.walk = (function () {
                 if ($walk.hasMeetPlace) {
                     var $lat = $walk.meetLocation.latitude;
                     var $long = $walk.meetLocation.longitude;
-                    out = "<span><a href='javascript:ra.link.streetmap(" + $lat + "," + $long + ")' >[OS Map]</a></span>";
+                    //      out = "<span><a href='javascript:ra.link.streetmap(" + $lat + "," + $long + ")' >[OS Map]</a></span>";
+                    out = ra.link.getOSMap($lat, $long, "OS Map");
                 }
                 break;
             case "{meetDirections}":
@@ -640,7 +641,8 @@ ra.walk = (function () {
                 if ($walk.startLocation.exact) {
                     var $lat = $walk.startLocation.latitude;
                     var $long = $walk.startLocation.longitude;
-                    out = "<span><a href='javascript:ra.link.streetmap(" + $lat + "," + $long + ")' >[OS Map]</a></span>";
+                    //      out = "<span><a href='javascript:ra.link.streetmap(" + $lat + "," + $long + ")' >[OS Map]</a></span>";
+                    out = ra.link.getOSMap($lat, $long, "OS Map");
                 }
                 break;
             case "{startDirections}":
@@ -723,9 +725,9 @@ ra.walk = (function () {
 
     };
     my.addTooltip = function ($walk, $text) {
-        if ($walk.status.toLowerCase() === "cancelled"){
-             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
-           
+        if ($walk.status.toLowerCase() === "cancelled") {
+            return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
+
         }
         if ($walk.status === "New") {
             return "<span data-descr='Walk updated " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";

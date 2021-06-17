@@ -179,8 +179,6 @@ var raPlotRoute = function (options, data) {
                 self.SmartRoute.saveRoute(false);
             }
 
-            //  self.displayMouseGridSquare = self.displayMouseGridSquare;
-            //  self.displayMouseGridSquare = false;
             self.gridSquarePause();
             self.enableMapMoveDrawing();
             setGpxToolStatus('off');

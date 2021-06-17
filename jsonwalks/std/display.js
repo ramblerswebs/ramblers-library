@@ -36,7 +36,7 @@ var raDisplay = (function () {
             mapView: true,
             contactsView: false,
             diagnostics: false,
-            filter: {},
+            filter: {updated: 0},
             options: null
         };
         this.optionTag = {};
@@ -542,6 +542,9 @@ var raDisplay = (function () {
             if (d !== "") {
                 $display = d1 <= d;
             }
+            if (this.settings.filter.updated > 0) {
+                $display = $walk.updatedDays < this.settings.filter.updated;
+            }
             if (!$display) {
                 return false;
             }
@@ -698,6 +701,47 @@ var raDisplay = (function () {
             return;
         };
 
+        this.addFilterUpdates = function (tag, title, items, all = true, dates = false) {
+            if (!all) {
+                if (Object.keys(items).length === 1) {
+                    return;
+                }
+            }
+            var div = document.createElement('div');
+            div.setAttribute('class', 'ra-filteritem');
+            tag.appendChild(div);
+
+            var h3 = document.createElement('h3');
+            h3.textContent = title;
+            div.appendChild(h3);
+
+            var intDiv = document.createElement('div');
+            intDiv.setAttribute('class', 'ra_filter');
+            div.appendChild(intDiv);
+
+            var select = document.createElement('select');
+
+            intDiv.appendChild(select);
+
+            Object.keys(items).forEach(function (key) {
+                var item = items[key];
+                if (item.no > 0) {
+                    var option = document.createElement('option');
+                    select.appendChild(option);
+                    option.setAttribute('value', item.id);
+                    option.innerText = item.name + " [" + item.no + "]";
+                    if (item.id === '0') {
+                        option.setAttribute('selected', true);
+                    }
+                }
+            });
+            var _this = this;
+            select.addEventListener("change", function (event) {
+                _this.settings.filter['updated'] = event.target.value;
+                var $walks = _this.getWalks();
+                _this.displayWalks($walks);
+            });
+        };
         this.addFilter = function (tag, title, items, all = true, dates = false) {
             if (!all) {
                 if (Object.keys(items).length === 1) {
@@ -862,9 +906,16 @@ var raDisplay = (function () {
                     Leisurely: {no: 0, name: 'Leisurely', id: 'RA_Diff_l'},
                     Moderate: {no: 0, name: 'Moderate', id: 'RA_Diff_m'},
                     Strenuous: {no: 0, name: 'Strenuous', id: 'RA_Diff_s'},
-                    Technical: {no: 0, name: 'Technical', id: 'RA_Diff_t'}}};
+                    Technical: {no: 0, name: 'Technical', id: 'RA_Diff_t'}},
+                updates: {LessThan7Dats: {no: 0, name: 'In last week', id: '8'},
+                    LessThan14Days: {no: 0, name: 'In last 2 weeks', id: '14'},
+                    LessTheAMonth: {no: 0, name: 'In last month', id: '32'},
+                    LessThen3Months: {no: 0, name: 'In last 3 months', id: '93'},
+                    AllWalks: {no: 0, name: 'All walks', id: '0'}}
+            };
             var i, len;
             var walk;
+            var today = new Date();
             len = walks.length;
             if (len > 0) {
                 result.dates.min.no = ra.date.YYYYMMDD(walks[0].walkDate);
@@ -902,6 +953,22 @@ var raDisplay = (function () {
                     default:
                         result.distances.over15.no += 1;
                 }
+                var diffDays = ra.date.periodInDays(today, walk.dateUpdated);
+                walk.updatedDays = diffDays;
+                result.updates['AllWalks'].no += 1;
+                if (diffDays < 3 * 31) {
+                    result.updates['LessThen3Months'].no += 1;
+                }
+                if (diffDays < 32) {
+                    result.updates['LessTheAMonth'].no += 1;
+                }
+                if (diffDays < 15) {
+                    result.updates['LessThan14Days'].no += 1;
+                }
+                if (diffDays < 8) {
+                    result.updates['LessThan7Dats'].no += 1;
+                }
+
             }
             return result;
         };
@@ -933,9 +1000,11 @@ var raDisplay = (function () {
 
                 this.addFilter(pos, 'Groups', result.groups, false);
                 this.addFilter(pos, 'Dates', result.dates, true, true);
+                this.addFilterUpdates(pos, 'Updated', result.updates);
                 this.addFilter(pos, 'Day of the Week', result.dow);
                 this.addFilter(pos, 'Distance', result.distances);
                 this.addFilter(pos, 'Grade', result.grades);
+
             }
 
         };
