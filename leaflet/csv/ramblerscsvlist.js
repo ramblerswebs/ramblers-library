@@ -10,6 +10,7 @@ if (typeof (ra) === "undefined") {
 }
 ra.csvList = (function () {
     var csvList = {};
+
     csvList.display = function () {
         this.list = null;
         //this.paginationDefault = 10;
@@ -17,6 +18,7 @@ ra.csvList = (function () {
             this.options = options;
             this.data = data;
             this.dataGroup = ra.uniqueID();
+            this.myjplist = new ra.jplist(this.dataGroup);
             var tags = [
                 {name: 'table', parent: 'root', tag: 'table', attrs: {class: 'ra-tab-options'}},
                 {name: 'row', parent: 'table', tag: 'tr'},
@@ -57,10 +59,10 @@ ra.csvList = (function () {
                 this.map.invalidateSize();
                 this.addCSVMarkers();
             }
-            if (ra.isES6()) {
-                var no=this.data.list.rows;
-                ra.jpList.init(no,'ra-csv-list');
-            }
+
+            this.myjplist.init('ra-csv-list');
+            this.myjplist.updateControls();
+
         };
         this.testForMap = function () {
             this.data.list.longitude = -1;
@@ -168,8 +170,8 @@ ra.csvList = (function () {
                     th.setAttribute('class', item.align);
                     th.textContent = item.name;
                     if (item.sort || item.linkmarker) {
-                        ra.jpList.sortButton(th, this.dataGroup, item.jpclass, item.type, "asc", "▲");
-                        ra.jpList.sortButton(th, this.dataGroup, item.jpclass, item.type, "desc", "▼");
+                        this.myjplist.sortButton(th, item.jpclass, item.type, "asc", "▲");
+                        this.myjplist.sortButton(th, item.jpclass, item.type, "desc", "▼");
                     }
                 }
             }
@@ -182,7 +184,7 @@ ra.csvList = (function () {
                 item = items[index];
                 if (item.table) {
                     if (item.filter) {
-                        filter += this.jplistFilter(this.dataGroup, item);
+                        filter += this.jplistFilter(item);
                     }
                 }
             }
@@ -335,7 +337,7 @@ ra.csvList = (function () {
                     this.elements.list.classList.add('active');
                     this.elements.csvmap.style.display = "none";
                     this.elements.csvlist.style.display = "inline";
-                    ra.jpList.updateControls();
+                    this.myjplist.updateControls();
                     break;
                 case 'Map':
                     this.elements.map.classList.add('active');
@@ -347,14 +349,14 @@ ra.csvList = (function () {
         };
         this.addPagination = function (no, tag) {
             var printTag = this.elements.dataTab;
-            var printButton = ra.jpList.addPagination(no, tag, this.dataGroup, "pagination1", 20, false);
+            var printButton = this.myjplist.addPagination(no, tag, "pagination1", 20, false);
             if (printButton !== null) {
                 printButton.addEventListener('click', function () {
                     ra.html.printTag(printTag);
                 });
             }
         };
-        this.jplistFilter = function (group, item) {
+        this.jplistFilter = function (item) {
             var min, max;
             if (item.type === "number") {
 
@@ -366,7 +368,7 @@ ra.csvList = (function () {
                     return Math.max(a, b);
                 }, -99999);
             }
-            return ra.jpList.addFilter(group, item.jpclass, item.name, item.type, min, max);
+            return this.myjplist.addFilter(item.jpclass, item.name, item.type, min, max);
         };
 
     };

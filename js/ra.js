@@ -721,119 +721,7 @@ ra.loading = (function () {
     return loading;
 }
 ());
-ra.jpList = (function () {
-    var jpList = {};
-    jpList.sortButton = function (tag, group, varclass, type, order, text) {
-        var button = document.createElement('button');
-        tag.appendChild(button);
-        button.setAttribute('class', "jplistsortbutton" + order);
-        button.setAttribute('data-jplist-control', "sort-buttons");
-        button.setAttribute('data-path', "." + varclass);
-        button.setAttribute('data-group', group);
-        button.setAttribute('data-order', order);
-        button.setAttribute('data-type', type);
-        button.setAttribute('data-name', "sortbutton");
-        button.setAttribute('data-selected', "false");
-        button.setAttribute('data-mode', "radio");
-        button.textContent = text;
-    };
-    jpList.addPagination = function (no, tag, jplistGroup, jplistName, itemsPerPage, print = false) {
-        tag.innerHTML = '';
-        if (!ra.isES6()) {
-            var h3 = document.createElement('h3');
-            h3.setAttribute('class', 'oldBrowser');
-            h3.textContent = 'You are using an old Web Browser!';
-            var p = document.createElement('p');
-            p.setAttribute('class', 'oldBrowser');
-            h3.textContent = 'We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...';
-            h3.appendChild(p);
-            tag.appendChild(h3);
-            return null;
-        }
-        if (no < 21) {
-            var tags = [
-                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'link-button small button-p4485'}, textContent: 'Print'}
-            ];
-            var elements = ra.html.generateTags(tag, tags);
-        } else {
-            var tags = [
-                {name: 'div', parent: 'root', tag: 'div', attrs: {'data-jplist-control': 'pagination',
-                        'data-group': jplistGroup, 'data-items-per-page': itemsPerPage,
-                        'data-current-page': '0', 'data-id': 'no-items',
-                        'data-name': jplistName}},
-                {name: 'spanitems', parent: 'div', tag: 'span'},
-                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'link-button small button-p4485'}, textContent: 'Print'},
-                {name: 'span', parent: 'spanitems', tag: 'span', attrs: {'data-type': 'info'}, textContent: '{startItem} - {endItem} of {itemsNumber}'},
-                {name: 'buttons', parent: 'div', tag: 'span', attrs: {class: 'center '}},
-                {name: 'first', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'first'}, textContent: 'First'},
-                {name: 'previous', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'prev'}, textContent: 'Previous'},
-                {name: 'xxx', parent: 'buttons', tag: 'span', attrs: {class: 'jplist-holder', 'data-type': 'pages'}},
-                {name: 'pageNumber', parent: 'xxx', tag: 'button', attrs: {type: 'button', 'data-type': 'page'}, textContent: '{pageNumber}'},
-                {name: 'next', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'next'}, textContent: 'Next'},
-                {name: 'last', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'last'}, textContent: 'Last'},
-                {name: 'select', parent: 'div', tag: 'select', attrs: {'data-type': 'items-per-page'}},
-                {parent: 'select', tag: 'option', attrs: {value: '10'}, textContent: '10 per page'},
-                {parent: 'select', tag: 'option', attrs: {value: '20'}, textContent: '20 per page'},
-                {parent: 'select', tag: 'option', attrs: {value: '50'}, textContent: '50 per page'},
-                {parent: 'select', tag: 'option', attrs: {value: '100'}, textContent: '100 per page'},
-                {parent: 'select', tag: 'option', attrs: {value: '0'}, textContent: 'View all'}
-            ];
 
-            var elements = ra.html.generateTags(tag, tags);
-            elements.select.style.width = "120px";
-        }
-        elements.print.style.marginRight = "5px";
-        if (print) {
-            return elements.print;
-        } else {
-            elements.print.style.display = 'none';
-            return null;
-    }
-    };
-    jpList.addFilter = function (group, jpclass, name, type, min = 0, max = 999999) {
-        var out = "";
-        if (type === "text") {
-            out = '<input \
-     data-jplist-control="textbox-filter"  data-group="' + group + '" \
-     data-name="my-filter-' + jpclass + '" \
-     data-path=".' + jpclass + '" type="text" \
-     value="" placeholder="Filter by ' + name + '" />';
-        }
-        if (type === "number") {
-            out = '<div class="csv-slider"><div class="ra-slider" \
-      data-jplist-control="slider-range-filter" \
-      data-path=".' + jpclass + '" \
-      data-group="' + group + '" \
-      data-name="my-slider-' + jpclass + '" \
-      data-min="' + min + '" \
-      data-from="' + min + '" \
-      data-to="' + max + '" \
-      data-max="' + max + '"> \
-      <b>' + name + ':</b> <span data-type="value-1"></span> \
-      <div class="jplist-slider" data-type="slider"></div> \
-      <span data-type="value-2"></span>  \
-      </div></div>';
-        }
-        return out;
-    };
-    jpList.updateControls = function () {
-        var sliders = document.getElementsByClassName('ra-slider');
-        for (let slider of sliders) {
-            jplist.resetControl(slider);
-        }
-    };
-    jpList.init = function (no, name) {
-        if (ra.isES6() && no > 20) {
-            jplist.init({
-                storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                storageName: name //the same storage name can be used to share storage between multiple pages
-            });
-        }
-    };
-
-    return jpList;
-}
-());
 ra.w3w = (function () {
     var w3w = {};
     w3w.get = function (lat, lng, id, place) {
@@ -1106,4 +994,128 @@ ra.units = (function () {
 }
 ());
 
-//  ra.geom.test();
+ra.jplist = function (group) {
+    this.hasFilters = false;
+    this.group = group;
+    this.sortButton = function (tag, varclass, type, order, text) {
+        var button = document.createElement('button');
+        tag.appendChild(button);
+        button.setAttribute('class', "jplistsortbutton" + order);
+        button.setAttribute('data-jplist-control', "sort-buttons");
+        button.setAttribute('data-path', "." + varclass);
+        button.setAttribute('data-group', this.group);
+        button.setAttribute('data-order', order);
+        button.setAttribute('data-type', type);
+        button.setAttribute('data-name', "sortbutton");
+        button.setAttribute('data-selected', "false");
+        button.setAttribute('data-mode', "radio");
+        button.textContent = text;
+    };
+    this.addPagination = function (no, tag, jplistName, itemsPerPage, print = false) {
+        tag.innerHTML = '';
+        if (!ra.isES6()) {
+            var h3 = document.createElement('h3');
+            h3.setAttribute('class', 'oldBrowser');
+            h3.textContent = 'You are using an old Web Browser!';
+            var p = document.createElement('p');
+            p.setAttribute('class', 'oldBrowser');
+            h3.textContent = 'We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...';
+            h3.appendChild(p);
+            tag.appendChild(h3);
+            return null;
+        }
+        if (no < 21) {
+            var tags = [
+                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'link-button small button-p4485'}, textContent: 'Print'}
+            ];
+            var elements = ra.html.generateTags(tag, tags);
+        } else {
+            var tags = [
+                {name: 'div', parent: 'root', tag: 'div', attrs: {'data-jplist-control': 'pagination',
+                        'data-group': this.group, 'data-items-per-page': itemsPerPage,
+                        'data-current-page': '0', 'data-id': 'no-items',
+                        'data-name': jplistName}},
+                {name: 'spanitems', parent: 'div', tag: 'span'},
+                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'link-button small button-p4485'}, textContent: 'Print'},
+                {name: 'span', parent: 'spanitems', tag: 'span', attrs: {'data-type': 'info'}, textContent: '{startItem} - {endItem} of {itemsNumber}'},
+                {name: 'buttons', parent: 'div', tag: 'span', attrs: {class: 'center '}},
+                {name: 'first', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'first'}, textContent: 'First'},
+                {name: 'previous', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'prev'}, textContent: 'Previous'},
+                {name: 'xxx', parent: 'buttons', tag: 'span', attrs: {class: 'jplist-holder', 'data-type': 'pages'}},
+                {name: 'pageNumber', parent: 'xxx', tag: 'button', attrs: {type: 'button', 'data-type': 'page'}, textContent: '{pageNumber}'},
+                {name: 'next', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'next'}, textContent: 'Next'},
+                {name: 'last', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'last'}, textContent: 'Last'},
+                {name: 'select', parent: 'div', tag: 'select', attrs: {'data-type': 'items-per-page'}},
+                {parent: 'select', tag: 'option', attrs: {value: '10'}, textContent: '10 per page'},
+                {parent: 'select', tag: 'option', attrs: {value: '20'}, textContent: '20 per page'},
+                {parent: 'select', tag: 'option', attrs: {value: '50'}, textContent: '50 per page'},
+                {parent: 'select', tag: 'option', attrs: {value: '100'}, textContent: '100 per page'},
+                {parent: 'select', tag: 'option', attrs: {value: '0'}, textContent: 'View all'}
+            ];
+
+            var elements = ra.html.generateTags(tag, tags);
+            elements.select.style.width = "120px";
+        }
+        elements.print.style.marginRight = "5px";
+        if (print) {
+            return elements.print;
+        } else {
+            elements.print.style.display = 'none';
+            return null;
+    }
+    };
+    this.addFilter = function (varclass, name, type, min = 0, max = 999999) {
+        var out = "";
+        if (type === "text") {
+            this.hasFilters = true;
+            out = '<input \
+     data-jplist-control="textbox-filter"  data-group="' + this.group + '" \
+     data-name="my-filter-' + varclass + '" \
+     data-path=".' + varclass + '" type="text" \
+     value="" placeholder="Filter by ' + name + '" />';
+        }
+        if (type === "number") {
+            this.hasFilters = true;
+            out = '<div class="csv-slider"><div class="ra-slider" \
+      data-jplist-control="slider-range-filter" \
+      data-path=".' + varclass + '" \
+      data-group="' + this.group + '" \
+      data-name="my-slider-' + varclass + '" \
+      data-min="' + min + '" \
+      data-from="' + min + '" \
+      data-to="' + max + '" \
+      data-max="' + max + '"> \
+      <b>' + name + ':</b> <span data-type="value-1"></span> \
+      <div class="jplist-slider" data-type="slider"></div> \
+      <span data-type="value-2"></span>  \
+      </div></div>';
+        }
+        return out;
+    };
+    this.updateControls = function () {
+        var sliders = document.getElementsByClassName('ra-slider');
+        for (let slider of sliders) {
+            jplist.resetControl(slider);
+        }
+    };
+    this.init = function (name) {
+        var hasPagination = false;
+        var elements = document.querySelectorAll("[data-jplist-control='pagination']");
+        for (let i = 0; i < elements.length; i++) {
+            let element = elements[i];
+            if (element.hasAttribute('data-group')) {
+                if (element.getAttribute('data-group') === this.group) {
+                    hasPagination = true;
+                }
+            }
+        }
+        if (ra.isES6()) {
+            if (this.hasFilters || hasPagination) {
+                jplist.init({
+                    storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
+                    storageName: name //the same storage name can be used to share storage between multiple pages
+                });
+            }
+        }
+    };
+};

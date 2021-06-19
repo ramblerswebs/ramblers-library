@@ -14,7 +14,7 @@ class RLeafletGpxMap extends RLeafletMap {
 
     public function displayPath($gpx) {
         RLoad::addScript("libraries/ramblers/leaflet/gpx/maplist.js", "text/javascript");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
         $this->help_page = "singleroute.html";
         $this->options->fullscreen = true;
         $this->options->cluster = false;

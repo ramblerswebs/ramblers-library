@@ -14,7 +14,6 @@ var raDisplay = (function () {
     var raDisplay = function () {
         this._allwalks = null;
         this.map = null;
-
         this.elements = null;
         this.settings = {
             walkClass: "walk",
@@ -26,7 +25,7 @@ var raDisplay = (function () {
             listFormat: ["{dowdd}", "{,meet}", "{,start}", "{,title}", "{,distance}", "{,contactname}", "{,telephone}"],
             gradesFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
             withMonth: ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"],
-            jplistGroup: "group1",
+            jplistGroup: ra.uniqueID(),
             jplistName: "name1",
             itemsPerPage: 20,
             currentView: "Grades",
@@ -39,6 +38,7 @@ var raDisplay = (function () {
             filter: {updated: 0},
             options: null
         };
+        this.myjplist = new ra.jplist(this.settings.jplistGroup);
         this.optionTag = {};
         this.load = function (mapOptions, data) {
 
@@ -206,9 +206,9 @@ var raDisplay = (function () {
                     this.addPagination(no, this.elements.rapagination1);
                     this.addPagination(no, this.elements.rapagination2);
                     ra.html.setTag(this.elements.rawalks, this.displayWalksText($walks));
-                    // jplist.init();
+
                     if (!this.settings.noPagination) {
-                        ra.jpList.init(no, 'ra-display');
+                        this.myjplist.init('ra-display');
                     }
 
                     break;
@@ -225,12 +225,7 @@ var raDisplay = (function () {
                     this.addPagination(no, this.elements.rapagination2);
                     ra.html.setTag(this.elements.rawalks, this.displayContacts($walks));
                     if (!this.settings.noPagination) {
-                        if (ra.isES6()) {
-                            jplist.init({
-                                storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                                storageName: 'ra-jplist' //the same storage name can be used to share storage between multiple pages
-                            });
-                        }
+                        this.myjplist.init('ra-display');
                     }
                     break;
             }
@@ -692,7 +687,7 @@ var raDisplay = (function () {
 
         this.addPagination = function (no, tag) {
             var printTag = this.elements.rawalks;
-            var printButton = ra.jpList.addPagination(no, tag, this.settings.jplistGroup, this.settings.jplistName, this.settings.itemsPerPage, true);
+            var printButton = this.myjplist.addPagination(no, tag,  this.settings.jplistName, this.settings.itemsPerPage, true);
             if (printButton !== null) {
                 printButton.addEventListener('click', function () {
                     ra.html.printTag(printTag);

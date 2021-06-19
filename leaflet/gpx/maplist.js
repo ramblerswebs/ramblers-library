@@ -95,6 +95,7 @@ function gpxFolderDisplay(options) {
     this.options = options;
     this.base = ra.baseDirectory();
     this.jplistgroup = ra.uniqueID();
+    this.myjplist = new ra.jplist(this.jplistgroup);
     this.controls = {
         folder: null,
         linecolour: "#782327",
@@ -153,13 +154,13 @@ function gpxFolderDisplay(options) {
         this.setData(data);
         this.addFilters(this.elements.filters);
         this.addPagination(this.routes.length, this.elements.pagination);
-        //  ra.html.setTag(this.elements.pagination, this.addPagination());
         this.displayGPXTable();
         this.addGPXMarkers();
         this.addRouteEvents();
-        if (ra.isES6()) {
-           ra.jpList.init(this.routes.length,'ra-gpx-list');
-        }
+
+        this.myjplist.init('ra-gpx-list');
+        this.myjplist.updateControls();
+
     };
     this.setData = function (data) {
         this.routes = data.items;
@@ -177,7 +178,7 @@ function gpxFolderDisplay(options) {
                 this.elements.list.classList.add('active');
                 this.elements.gpxmap.style.display = "none";
                 this.elements.gpxlist.style.display = "inline";
-                ra.jpList.updateControls();
+                this.myjplist.updateControls();
                 break;
             case 'Map':
                 this.elements.map.classList.add('active');
@@ -231,17 +232,17 @@ function gpxFolderDisplay(options) {
             tags.push({name: 'tbody', parent: 'table', tag: 'tbody'});
             var eles = ra.html.generateTags(tag, tags);
             if (this.controls.displayAsPreviousWalks) {
-                ra.jpList.sortButton(eles.date, this.jplistgroup, 'wDate', 'date', "asc", "▲");
-                ra.jpList.sortButton(eles.date, this.jplistgroup, 'wDate', 'date', "desc", "▼");
-                ra.jpList.sortButton(eles.leader, this.jplistgroup, 'wAuthor', 'text', "asc", "▲");
-                ra.jpList.sortButton(eles.leader, this.jplistgroup, 'wAuthor', 'text', "desc", "▼");
+                this.myjplist.sortButton(eles.date, 'wDate', 'date', "asc", "▲");
+                this.myjplist.sortButton(eles.date, 'wDate', 'date', "desc", "▼");
+                this.myjplist.sortButton(eles.leader, 'wAuthor', 'text', "asc", "▲");
+                this.myjplist.sortButton(eles.leader, 'wAuthor', 'text', "desc", "▼");
             }
-            ra.jpList.sortButton(eles.title, this.jplistgroup, 'wTitle', 'text', "asc", "▲");
-            ra.jpList.sortButton(eles.title, this.jplistgroup, 'wTitle', 'text', "desc", "▼");
-            ra.jpList.sortButton(eles.distance, this.jplistgroup, 'wDistance', 'number', "asc", "▲");
-            ra.jpList.sortButton(eles.distance, this.jplistgroup, 'wDistance', 'number', "desc", "▼");
-            ra.jpList.sortButton(eles.elevation, this.jplistgroup, 'wElevation', 'number', "asc", "▲");
-            ra.jpList.sortButton(eles.elevation, this.jplistgroup, 'wElevation', 'number', "desc", "▼");
+            this.myjplist.sortButton(eles.title, 'wTitle', 'text', "asc", "▲");
+            this.myjplist.sortButton(eles.title, 'wTitle', 'text', "desc", "▼");
+            this.myjplist.sortButton(eles.distance, 'wDistance', 'number', "asc", "▲");
+            this.myjplist.sortButton(eles.distance, 'wDistance', 'number', "desc", "▼");
+            this.myjplist.sortButton(eles.elevation, 'wElevation', 'number', "asc", "▲");
+            this.myjplist.sortButton(eles.elevation, 'wElevation', 'number', "desc", "▼");
             out = "";
             eles.tbody.setAttribute('data-jplist-group', this.jplistgroup);
             for (index = 0; index < this.routes.length; ++index) {
@@ -475,7 +476,7 @@ function gpxFolderDisplay(options) {
     };
     this.addFilters = function (tag) {
         var out = '';
-        out += ra.jpList.addFilter(this.jplistgroup, 'wTitle', 'Title', 'text');
+        out += this.myjplist.addFilter('wTitle', 'Title', 'text');
         var min, max;
         var result = this.routes;
         min = result.reduce(function (a, b) {
@@ -486,12 +487,12 @@ function gpxFolderDisplay(options) {
             var km = Math.ceil(b.distance / 1000);
             return Math.max(a, km);
         }, -99999);
-        out += ra.jpList.addFilter(this.jplistgroup, 'wDistance', 'Distance Km', 'number', min, max);
+        out += this.myjplist.addFilter('wDistance', 'Distance Km', 'number', min, max);
         tag.innerHTML = out;
 
     };
     this.addPagination = function (no, tag) {
-        ra.jpList.addPagination(no, tag, this.jplistgroup, "pagination1", 20, false);
+        this.myjplist.addPagination(no, tag, "pagination1", 20, false);
         return;
     };
 

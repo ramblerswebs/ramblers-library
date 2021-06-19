@@ -264,9 +264,9 @@ L.Control.Rightclick = L.Control.extend({
         links += '<a href="javascript:ra.loc.directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
         this._mouseLayer.clearLayers();
         var tags = [
-            {parent: 'root', tag: 'div','innerHTML':desc},
+            {parent: 'root', tag: 'div', 'innerHTML': desc},
             {name: 'w3w', parent: 'root', tag: 'div'},
-            {parent: 'root', tag: 'div','innerHTML':links}
+            {parent: 'root', tag: 'div', 'innerHTML': links}
 
         ];
         var pop = document.createElement('div');
@@ -274,11 +274,11 @@ L.Control.Rightclick = L.Control.extend({
         var elements = ra.html.generateTags(pop, tags);
         var point = L.marker(p).bindPopup(pop);
         this._mouseLayer.addLayer(point);
-        
 
 
 
-    //    point.getPopup().setContent(ele);
+
+        //    point.getPopup().setContent(ele);
         //      ra.html.createElement(tag, 'span').innerHTML = desc;
         //         w3w = ra.html.createElement(tag, 'span');
         //         ra.html.createElement(tag, 'span').innerHTML = links;

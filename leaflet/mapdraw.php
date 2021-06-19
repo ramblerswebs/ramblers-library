@@ -57,7 +57,7 @@ class RLeafletMapdraw extends RLeafletMap {
 
         RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-drawcontrol.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-gpx-tools.css", "text/css");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
         RLoad::addScript("libraries/ramblers/leaflet/maplist.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-upload.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-download.js", "text/javascript");

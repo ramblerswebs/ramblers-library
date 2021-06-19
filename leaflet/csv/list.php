@@ -55,7 +55,7 @@ class RLeafletCsvList extends RLeafletMap {
         parent::display();
         RLoad::addScript("libraries/ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/csv/csvlist.css", "text/css");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
 
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");

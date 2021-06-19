@@ -160,7 +160,7 @@ class ROrganisation {
     public function display($map) {
         if (isset($map)) {
             RLoad::addScript("libraries/ramblers/organisation/organisation.js", "text/javascript");
-            RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+            RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
             $map->setCommand('organisationMap');
             $map->help_page = "";
             $map->options->fullscreen = true;

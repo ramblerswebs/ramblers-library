@@ -14,6 +14,10 @@ if (typeof (ra.data.location) === "undefined") {
 //ra.location = null;
 ra.loc = (function () {
     var loc = {};
+    loc.directionsSpan = function ($lat, $long) {
+        return "<span class='mappopup' onclick='javascript:ra.loc.directions(" + $lat + "," + $long + ")' >[Directions]</span>";
+
+    };
     loc.directions = function ($lat, $long) {
         var page = -'';
         if (ra.data.location.found) {
@@ -55,7 +59,7 @@ ra.loc = (function () {
             ra.data.location.position = position;
             ra.data.location.found = false;
             ra.data.location.error = "";
-             var e = document.createEvent('HTMLEvents');
+            var e = document.createEvent('HTMLEvents');
             e.initEvent('accuratepositionprogress', false, true);
             e.result = ra.data.location;
             document.dispatchEvent(e);

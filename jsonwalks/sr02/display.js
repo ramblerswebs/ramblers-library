@@ -1,7 +1,8 @@
 displayCustomValues = function ($option, $walk) {
-    $response = {};
-    $response.found = true;
-    $response.out = "";
+    $response = {
+        found: true,
+        out: ""};
+    // custom field must start with x
     switch ($option) {
         case "{xSymbol}":
             /* Picnic or Pub icon */

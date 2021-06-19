@@ -29,7 +29,7 @@ class RJsonwalksFeed {
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(15);
         $this->readFeed($this->rafeedurl);
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
     }
 
     private function readFeed($rafeedurl) {

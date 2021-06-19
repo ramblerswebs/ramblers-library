@@ -634,7 +634,7 @@ ra.walk = (function () {
                 if ($walk.hasMeetPlace) {
                     var $lat = $walk.meetLocation.latitude;
                     var $long = $walk.meetLocation.longitude;
-                    out = "<span><a href='javascript:ra.loc.directions(" + $lat + "," + $long + ")' >[Directions]</a></span>";
+                    out = ra.loc.directionsSpan($lat, $long);
                 }
                 break;
             case "{startOSMap}":
@@ -649,15 +649,17 @@ ra.walk = (function () {
                 if ($walk.startLocation.exact) {
                     var $lat = $walk.startLocation.latitude;
                     var $long = $walk.startLocation.longitude;
-                    out = "<span><a href='javascript:ra.loc.directions(" + $lat + "," + $long + ")' >[Directions]</a></span>";
+                    out = ra.loc.directionsSpan($lat, $long);
                 }
                 break;
             default:
                 var $found = false;
                 var $response = "";
                 if (typeof displayCustomValues === 'function') {
-                    $response = displayCustomValues($option, $walk);
-                    $found = $response.found;
+                    if ($option.startsWith("{x")) {
+                        $response = displayCustomValues($option, $walk);
+                        $found = $response.found;
+                    }
                 }
                 if ($found) {
                     out += $response.out;

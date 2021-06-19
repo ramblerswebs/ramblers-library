@@ -85,7 +85,7 @@ class RAccounts {
 
     public function addMapMarkers($map) {
         RLoad::addScript("libraries/ramblers/accounts/accounts.js", "text/javascript");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerswalks.css');
+        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
         $map->setCommand('accountsMap');
         $map->options->fullscreen = true;
         $map->options->search = true;
@@ -96,11 +96,12 @@ class RAccounts {
         $map->options->rightclick = true;
         $map->options->fitbounds = true;
         $map->options->cluster = true;
+        $map->options->maptools = true;
         $map->options->draw = false;
         $map->options->print = true;
         $map->options->ramblersPlaces = true;
         $this->readAccounts();
-        $text = "";
+
         $data = new class {
             
         };
