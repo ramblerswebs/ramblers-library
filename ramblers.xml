@@ -3,13 +3,13 @@
     <name>RamblersLibrary</name>
     <libraryname>ramblers</libraryname>
     <author>Chris Vaughan Derby and South Derbyshire</author>
-    <creationDate>14 May 2021</creationDate>
+    <creationDate>21 June 2021</creationDate>
     <copyright>Copyright (C) 2016/2021</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>https://github.com/ramblerswebs/ramblers-library/wiki</authorUrl>
-    <version>4.0.0RC1</version>
-    <description>Ramblers classes to process, JSON Walks feeds, Retrieve CB membership information</description>
+    <version>4.0.0</version>
+    <description>Ramblers Library to provide diplay walks, GPX routes etc</description>
     
     <files>
         <filename>ramblers.xml</filename>
