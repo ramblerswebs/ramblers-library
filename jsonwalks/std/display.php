@@ -59,7 +59,6 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         //  $this->map->addScriptsandStyles($options);
 
         $items = $walks->allWalks();
-        $document = JFactory::getDocument();
         $display = new RJsonwalksStdCancelledwalks();
         $number = $this->noCancelledWalks($items);
 
@@ -97,7 +96,8 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
         $this->map->setDataObject($data);
         $this->map->display();
-        $document->addScript("libraries/ramblers/jsonwalks/std/display.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/jsonwalks/std/display.js", "text/javascript");
+        $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);

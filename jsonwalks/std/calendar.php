@@ -19,11 +19,6 @@ class RJsonwalksStdCalendarDEL extends RJsonwalksDisplaybase {
 
    public function DisplayWalks($walks) {
         define('CR', ' - ');
-
-//set error handler
-        //     set_error_handler("customError");
-// $event->show();
-
         $output = "BEGIN:VCALENDAR\nVERSION:2.0\nMETHOD:PUBLISH\n";
         $items = $walks->allWalks();
         foreach ($items as $walk) {

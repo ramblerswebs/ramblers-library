@@ -20,7 +20,7 @@ var raAccountsMap = (function () {
             }
         };
         this.addMarker = function (item) {
-            if (item.status=="DELETED"){
+            if (item.status === "DELETED") {
                 return;
             }
             var $popup, $lat, $long, $iclass, $icon;
@@ -46,25 +46,18 @@ var raAccountsMap = (function () {
 
             }
 
-
             var $class = "group" + item.scope;
-            $popup = "<div class='" + $class + "'>" + $text + "Website status: "+item.status + "</div>";
+            $popup = "<div class='" + $class + "'>" + $text + "Website status: " + item.status + "</div>";
             if (item.status) {
                 $popup += "Domain name: <a href='" + $url + "' target='_blank'>" + $url + "</a>";
             } else {
                 $popup += "<p>" + $url + "</p>";
             }
-            $icon = L.divIcon({className: $iclass, iconSize: null, html: $group});
+            $icon = L.divIcon({className: $iclass, iconSize: null, html: $group, popupAnchor: [10, 30]});
 
             this.cluster.addMarker($popup, $lat, $long, {icon: $icon, riseOnHover: true, title: $group});
 
         };
-    }
-    ;
-
+    };
     return raAccountsMap;
-
 })();
-
-
-

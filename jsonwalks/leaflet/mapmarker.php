@@ -14,7 +14,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
 
     public function __construct() {
         $this->map = new RLeafletMap;
-         $this->map->setCommand("walksMap");
+        $this->map->setCommand("walksMap");
         $this->map->help_page = "ledwalks.html";
         $options = $this->map->options;
         $options->cluster = true;
@@ -49,17 +49,17 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
     }
 
     public function DisplayWalks($walks) {
-            $document = JFactory::getDocument();
         $items = $walks->allWalks();
         $data = new class {
             
         };
         $data->walks = array_values($items);
         //  $data->walks = [];
-       
+
         $data->legendposition = $this->legendposition;
         $this->map->setDataObject($data);
         $this->map->display();
-        $document->addScript("libraries/ramblers/jsonwalks/leaflet/mapmarker.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/jsonwalks/leaflet/mapmarker.js", "text/javascript");
     }
+
 }

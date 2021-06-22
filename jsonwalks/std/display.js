@@ -687,7 +687,7 @@ var raDisplay = (function () {
 
         this.addPagination = function (no, tag) {
             var printTag = this.elements.rawalks;
-            var printButton = this.myjplist.addPagination(no, tag,  this.settings.jplistName, this.settings.itemsPerPage, true);
+            var printButton = this.myjplist.addPagination(no, tag, this.settings.jplistName, this.settings.itemsPerPage, true);
             if (printButton !== null) {
                 printButton.addEventListener('click', function () {
                     ra.html.printTag(printTag);
@@ -881,7 +881,8 @@ var raDisplay = (function () {
         };
         this.getWalksStats = function (walks) {
             var result = {groups: {},
-                dates: {min: {no: 0, name: 'Start Date', id: 'RA_DateStart'}, max: {no: 0, name: 'End Date', id: 'RA_DateEnd'}},
+                dates: {min: {no: 0, name: 'Start', id: 'RA_DateStart'},
+                    max: {no: 0, name: 'End ', id: 'RA_DateEnd'}},
                 dow: {Monday: {no: 0, name: 'Monday', id: 'RA_DayOfWeek_0'},
                     Tuesday: {no: 0, name: 'Tuesday', id: 'RA_DayOfWeek_1'},
                     Wednesday: {no: 0, name: 'Wednesday', id: 'RA_DayOfWeek_2'},

@@ -28,7 +28,7 @@ var raOrganisationMap = (function () {
             }
         };
         this.addMarker = function (item, area) {
-            var $popup, $lat, $long, $iclass, $areatext = "", $icon,$website;
+            var $popup, $lat, $long, $iclass, $areatext = "", $icon, $website;
             var $url, $lat, $long, $desc, $title, $code;
 
 
@@ -59,10 +59,10 @@ var raOrganisationMap = (function () {
             }
             var $class = "group" + item.scope;
             $popup = "<div class='" + $class + "'><h4><a href='" + $url + "' target='_blank'>" + $title + "</a>" + $code + "</h4>" + $areatext + $desc + "</div>";
-     if ($website){
-         $popup += "<a href='" + $website + "' target='_blank'>" + $website + "</a>";
-     }
-         $icon = L.divIcon({className: $iclass, iconSize: null, html: $title});
+            if ($website) {
+                $popup += "<a href='" + $website + "' target='_blank'>" + $website + "</a>";
+            }
+            $icon = L.divIcon({className: $iclass, iconSize: null, html: $title, popupAnchor: [10, 30]});
 
             this.cluster.addMarker($popup, $lat, $long, {icon: $icon, riseOnHover: true, title: $title});
 

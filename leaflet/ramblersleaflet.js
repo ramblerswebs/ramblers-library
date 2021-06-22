@@ -242,51 +242,64 @@ leafletMap.prototype.mapDiv = function () {
 function singleGpxRoute(mapOptions, _data) {
     ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
-    var data = ra.decodeData(_data);
-    var masterdiv = document.getElementById(options.divId);
-    let map = new leafletMap(masterdiv, options);
-    ra.gpx.displayGPX(map, data);
+    // no masterdiv in article means the page is divided into sections and this content is not displayed
+    if (document.getElementById(options.divId) !== null) {
+        var data = ra.decodeData(_data);
+        var masterdiv = document.getElementById(options.divId);
+        let map = new leafletMap(masterdiv, options);
+        ra.gpx.displayGPX(map, data);
+    }
     ra.loading.stop();
 }
 function folderGpxRoutes(mapOptions, _data) {
     ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
-    var data = ra.decodeData(_data);
-    var display = new gpxFolderDisplay(options);
-    display.displayData(data);
+    if (document.getElementById(options.divId) !== null) {
+        var data = ra.decodeData(_data);
+        var display = new gpxFolderDisplay(options);
+        display.displayData(data);
+    }
     ra.loading.stop();
 }
 function csvTable(mapOptions, _data) {
     ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
-    var data = ra.decodeData(_data);
-    var display = new ra.csvList.display();
-    display.load(options, data);
+    if (document.getElementById(options.divId) !== null) {
+        var data = ra.decodeData(_data);
+        var display = new ra.csvList.display();
+        display.load(options, data);
+    }
     ra.loading.stop();
 }
 function walksMap(mapOptions, _data = null) {
     ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
-    var data = ra.decodeData(_data);
-    var mapping = new raWalksMap();
-    mapping.load(options, data);
+    if (document.getElementById(options.divId) !== null) {
+        var data = ra.decodeData(_data);
+        var mapping = new raWalksMap();
+        mapping.load(options, data);
+    }
     ra.loading.stop();
 }
 
 function organisationMap(mapOptions, _data) {
     ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
-    var data = ra.decodeData(_data);
-    var org = new raOrganisationMap(options);
-    org.load(data);
+    if (document.getElementById(options.divId) !== null) {
+        var data = ra.decodeData(_data);
+        var org = new raOrganisationMap(options);
+        org.load(data);
+    }
     ra.loading.stop();
 }
 function accountsMap(mapOptions, _data) {
     ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
-    var data = ra.decodeData(_data);
-    var accounts = new raAccountsMap(options);
-    accounts.load(data);
+    if (document.getElementById(options.divId) !== null) {
+        var data = ra.decodeData(_data);
+        var accounts = new raAccountsMap(options);
+        accounts.load(data);
+    }
     ra.loading.stop();
 }
 
@@ -296,16 +309,20 @@ function noDirectAction(mapOptions, _data) {
 function plotWalkingRoute(mapOptions, _data = null) {
     ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
-    var data = ra.decodeData(_data);
-    var plotControl = new raPlotRoute(options, data);
-    plotControl.load();
+    if (document.getElementById(options.divId) !== null) {
+        var data = ra.decodeData(_data);
+        var plotControl = new raPlotRoute(options, data);
+        plotControl.load();
+    }
     ra.loading.stop();
 }
 function loadDisplayWalks(mapOptions, _data) {
     ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
-    var data = ra.decodeData(_data);
-    var disp = new raDisplay();
-    disp.load(options, data);
+    if (document.getElementById(options.divId) !== null) {
+        var data = ra.decodeData(_data);
+        var disp = new raDisplay();
+        disp.load(options, data);
+    }
     ra.loading.stop();
 }

@@ -36,7 +36,6 @@ class REventCalendar extends RJsonwalksDisplaybase {
     function Display($events) {
         RLoad::addStyleSheet('libraries/ramblers/calendar/calendar.css');
         RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
-        //     $document->addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
         $cal = new RCalendar($this->size, $this->mDisplayAll);
         $cal->setMonthFormat($this->monthFormat);
         $cal->show($this, $events);
