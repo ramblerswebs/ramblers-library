@@ -17,9 +17,7 @@ class RLeafletMapdraw extends RLeafletMap {
     }
 
     public function setCenter($lat, $long, $zoom) {
-        $this->lat = $lat;
-        $this->long = $long;
-        $this->zoom = $zoom;
+        $this->options->setinitialviewView($lat, $long, $zoom);
     }
 
     public function display() {
