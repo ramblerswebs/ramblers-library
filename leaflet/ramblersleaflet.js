@@ -189,17 +189,12 @@ function leafletMap(tag, options) {
         L.control.racontainer({id: 'js-gewmapButtons'}).addTo(this.map);
     }
 
-
     if (options.initialview) {
         var pt = L.latLng(options.initialview.latitude, options.initialview.longitude);
         this.map.setView(pt, options.initialview.zoom);
     }
 
 }
-
-leafletMap.prototype.sayHi = function () {
-    alert(this.name);
-};
 
 leafletMap.prototype.SetPlotUserOptions = function (value) {
     this.userOptions.plotroute = value;
@@ -256,8 +251,8 @@ function folderGpxRoutes(mapOptions, _data) {
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
-        var display = new gpxFolderDisplay(options);
-        display.displayData(data);
+        var display = new gpxFolderDisplay(options, data);
+        display.load();
     }
     ra.loading.stop();
 }
@@ -266,8 +261,8 @@ function csvTable(mapOptions, _data) {
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
-        var display = new ra.csvList.display();
-        display.load(options, data);
+        var display = new ra.csvList.display(options, data);
+        display.load();
     }
     ra.loading.stop();
 }
@@ -276,8 +271,8 @@ function walksMap(mapOptions, _data = null) {
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
-        var mapping = new raWalksMap();
-        mapping.load(options, data);
+        var mapping = new raWalksMap(options, data);
+        mapping.load();
     }
     ra.loading.stop();
 }
@@ -287,8 +282,8 @@ function organisationMap(mapOptions, _data) {
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
-        var org = new raOrganisationMap(options);
-        org.load(data);
+        var org = new raOrganisationMap(options, data);
+        org.load();
     }
     ra.loading.stop();
 }
@@ -297,8 +292,8 @@ function accountsMap(mapOptions, _data) {
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
-        var accounts = new raAccountsMap(options);
-        accounts.load(data);
+        var accounts = new raAccountsMap(options, data);
+        accounts.load();
     }
     ra.loading.stop();
 }
@@ -321,8 +316,8 @@ function loadDisplayWalks(mapOptions, _data) {
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
-        var disp = new raDisplay();
-        disp.load(options, data);
+        var disp = new raDisplay(options, data);
+        disp.load();
     }
     ra.loading.stop();
 }

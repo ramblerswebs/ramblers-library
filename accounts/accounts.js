@@ -1,12 +1,13 @@
 var ra;
 var raAccountsMap = (function () {
 
-    var raAccountsMap = function (options) {
+    var raAccountsMap = function (options, data) {
         var masterdiv = document.getElementById(options.divId);
         this.lmap = new leafletMap(masterdiv, options);
         this.cluster = new cluster(this.lmap.map);
-        this.load = function (data) {
-            this.addMarkers(data.hostedsites);
+        this.data = data;
+        this.load = function () {
+            this.addMarkers(this.data.hostedsites);
             //    this.addMarkers(data.groups);
             this.cluster.addClusterMarkers();
             this.cluster.zoomAll();

@@ -1,8 +1,3 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 var L, ra, jplist;
 if (typeof (ra) === "undefined") {
     ra = {};
@@ -90,7 +85,7 @@ ra.gpx = (function () {
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
-function gpxFolderDisplay(options) {
+function gpxFolderDisplay(options, data) {
     this._map = null;
     this.options = options;
     this.base = ra.baseDirectory();
@@ -150,8 +145,10 @@ function gpxFolderDisplay(options) {
             });
         }
     });
-    this.displayData = function (data) {
-        this.setData(data);
+    this.data = data;
+
+    this.load = function () {
+        this.setData(this.data);
         this.addFilters(this.elements.filters);
         this.addPagination(this.routes.length, this.elements.pagination);
         this.displayGPXTable();

@@ -11,7 +11,7 @@ if (typeof (ra) === "undefined") {
 
 var raDisplay = (function () {
 
-    var raDisplay = function () {
+    var raDisplay = function (mapOptions, data) {
         this._allwalks = null;
         this.map = null;
         this.elements = null;
@@ -40,10 +40,23 @@ var raDisplay = (function () {
         };
         this.myjplist = new ra.jplist(this.settings.jplistGroup);
         this.optionTag = {};
-        this.load = function (mapOptions, data) {
+        this.mapOptions = mapOptions;
+        this.settings.jplistName = 'jpl' + mapOptions.divId;
+        if (data.customListFormat !== null) {
+            this.settings.listFormat = data.customListFormat;
+        }
+        if (data.customTableFormat !== null) {
+            this.settings.tableFormat = data.customTableFormat;
+        }
+        if (data.customGradesFormat !== null) {
+            this.settings.gradesFormat = data.customGradesFormat;
+        }
+        this.legendposition = data.legendposition;
+        this.settings.displayClass = data.displayClass;
+        this._allwalks = ra.walk.convertPHPWalks(data.walks);
+        ra.walk.registerWalks(this._allwalks);
+        this.load = function () {
 
-            this.mapOptions = mapOptions;
-            this.settings.jplistName = 'jpl' + mapOptions.divId;
             var tags = [
                 {name: 'outer', parent: 'root', tag: 'div'},
                 {name: 'filterDiagnostics', parent: 'outer', tag: 'div'},
@@ -56,13 +69,13 @@ var raDisplay = (function () {
                 {name: 'map', parent: 'inner', tag: 'div'}
             ];
 
-            this.masterdiv = document.getElementById(mapOptions.divId);
+            this.masterdiv = document.getElementById(this.mapOptions.divId);
 
             this.elements = ra.html.generateTags(this.masterdiv, tags);
-            if (!mapOptions.paginationTop) {
+            if (!this.mapOptions.paginationTop) {
                 this.elements.rapagination1.style.diaplay = 'none';
             }
-            if (!mapOptions.paginationBottom) {
+            if (!this.mapOptions.paginationBottom) {
                 this.elements.rapagination2.style.diaplay = 'none';
             }
             var b = ra.baseDirectory();
@@ -71,7 +84,7 @@ var raDisplay = (function () {
             var aImg = b + "libraries/ramblers/images/marker-area.png";
             var $legend1 = '<strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.';
             var $legend2 = '<img src="' + sImg + '" alt="Walk start" height="26" width="26">&nbsp; Start locations&nbsp; <img src="' + cImg + '" alt="Cancelled walk" height="26" width="26"> Cancelled walk&nbsp; <img src="' + aImg + '" alt="Walking area" height="26" width="26"> Walk in that area.';
-            if (data.legendposition === 'top') {
+            if (this.legendposition === 'top') {
                 var leg = document.createElement('p');
                 leg.innerHTML = $legend1;
                 this.elements.map.appendChild(leg);
@@ -79,25 +92,14 @@ var raDisplay = (function () {
                 leg.innerHTML = $legend2;
                 this.elements.map.appendChild(leg);
             }
-            this.lmap = new leafletMap(this.elements.map, mapOptions);
+            this.lmap = new leafletMap(this.elements.map, this.mapOptions);
             this.map = this.lmap.map;
             this.cluster = new cluster(this.map);
-            if (data.customListFormat !== null) {
-                this.settings.listFormat = data.customListFormat;
-            }
-            if (data.customTableFormat !== null) {
-                this.settings.tableFormat = data.customTableFormat;
-            }
-            if (data.customGradesFormat !== null) {
-                this.settings.gradesFormat = data.customGradesFormat;
-            }
-            this.settings.displayClass = data.displayClass;
+
             if (typeof addFilterFormats === 'function') {
                 this.processWalksFilter();
             }
             this.processOptions(this.elements.raoptions);
-            this._allwalks = ra.walk.convertPHPWalks(data.walks);
-            ra.walk.registerWalks(this._allwalks);
             var $walks = this.getAllWalks();
             this.setFilters($walks);
             this.displayWalks($walks);

@@ -6,7 +6,7 @@
 var ra;
 
 var raWalksMap = (function () {
-    var raWalksMap = function () {
+    var raWalksMap = function (mapOptions, data) {
         this.options = null;
         this.walkClass = "walk";
         var b = ra.baseDirectory();
@@ -15,10 +15,10 @@ var raWalksMap = (function () {
         var aImg = b + "libraries/ramblers/images/marker-area.png";
         this.legend = '<p><strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.</p>';
         this.legend += '<img src="' + sImg + '" alt="Walk start" height="26" width="26">&nbsp; Start locations&nbsp; <img src="' + cImg + '" alt="Cancelled walk" height="26" width="26"> Cancelled walk&nbsp; <img src="' + aImg + '" alt="Walking area" height="26" width="26"> Walk in that area.';
-
-        this.load = function (mapOptions, data) {
-            this.options = mapOptions;
-            this.data = data;
+        this.options = mapOptions;
+        this.data = data;
+        
+        this.load = function ( ) {
             var tags = [
                 {name: 'container', parent: 'root', tag: 'div'},
                 {name: 'legendtop', parent: 'container', tag: 'div'},
@@ -44,7 +44,7 @@ var raWalksMap = (function () {
             this.lmap = new leafletMap(this.elements.map, this.options);
             this.map = this.lmap.map;
             this.cluster = new cluster(this.map);
-            this._allwalks = ra.walk.convertPHPWalks(data.walks);
+            this._allwalks = ra.walk.convertPHPWalks(this.data.walks);
             ra.walk.registerWalks(this._allwalks);
             var $walks = this._allwalks;
 //            if (document.getElementById("leafletmap") !== null) {

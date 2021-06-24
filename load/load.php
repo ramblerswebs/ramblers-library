@@ -2,7 +2,7 @@
 
 class RLoad {
 
-    private static $revisionversion = "2";
+    private static $revisionversion = "3";
 
     public static function addScript($path, $type = "text/javascript") {
         $document = JFactory::getDocument();

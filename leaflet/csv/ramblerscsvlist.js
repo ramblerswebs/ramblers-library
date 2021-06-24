@@ -11,12 +11,13 @@ if (typeof (ra) === "undefined") {
 ra.csvList = (function () {
     var csvList = {};
 
-    csvList.display = function () {
+    csvList.display = function (options,data) {
         this.list = null;
+        this.options = options;  
+        this.data = data;
         //this.paginationDefault = 10;
-        this.load = function (options, data) {
-            this.options = options;
-            this.data = data;
+        
+        this.load = function ( ) {
             this.dataGroup = ra.uniqueID();
             this.myjplist = new ra.jplist(this.dataGroup);
             var tags = [
