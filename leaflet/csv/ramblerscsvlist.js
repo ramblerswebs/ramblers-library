@@ -1,14 +1,11 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 var L, ra, jplist, OsGridRef;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
-ra.csvList = (function () {
+if (typeof (ra.display) === "undefined") {
+    ra.display = {};
+}
+ra.display.csvList = (function () {
     var csvList = {};
 
     csvList.display = function (options,data) {

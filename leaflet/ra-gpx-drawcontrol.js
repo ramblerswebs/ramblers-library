@@ -1,5 +1,11 @@
 var L, ra;
-var raPlotRoute = function (options, data) {
+if (typeof (ra) === "undefined") {
+    ra = {};
+}
+if (typeof (ra.display) === "undefined") {
+    ra.display = {};
+}
+ra.display.plotRoute = function (options, data) {
     this.userOptions = {
         draw: {
             panToNewPoint: true,

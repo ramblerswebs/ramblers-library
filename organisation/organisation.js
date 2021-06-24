@@ -1,12 +1,12 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 var ra;
-var raOrganisationMap = (function () {
+if (typeof (ra) === "undefined") {
+    ra = {};
+}
+if (typeof (ra.display) === "undefined") {
+    ra.display = {};
+}
+ra.display.organisationMap = function (options, data) {
 
-    var raOrganisationMap = function (options, data) {
         var masterdiv = document.getElementById(options.divId);
         this.lmap = new leafletMap(masterdiv, options);
         this.cluster = new cluster(this.lmap.map);
@@ -68,10 +68,6 @@ var raOrganisationMap = (function () {
             this.cluster.addMarker($popup, $lat, $long, {icon: $icon, riseOnHover: true, title: $title});
 
         };
-    }
-    ;
+    
 
-    return raOrganisationMap;
-
-})();
-
+};

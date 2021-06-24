@@ -1,7 +1,11 @@
 var ra;
-var raAccountsMap = (function () {
-
-    var raAccountsMap = function (options, data) {
+if (typeof (ra) === "undefined") {
+    ra = {};
+}
+if (typeof (ra.display) === "undefined") {
+    ra.display = {};
+}
+ ra.display.accountsMap = function (options, data) {
         var masterdiv = document.getElementById(options.divId);
         this.lmap = new leafletMap(masterdiv, options);
         this.cluster = new cluster(this.lmap.map);
@@ -60,5 +64,4 @@ var raAccountsMap = (function () {
 
         };
     };
-    return raAccountsMap;
-})();
+    

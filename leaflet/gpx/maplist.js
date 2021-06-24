@@ -2,16 +2,23 @@ var L, ra, jplist;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
-ra.gpx = (function () {
-    var gpx = {};
-    gpx.displayGPX = function (lmap, data) {
+if (typeof (ra.display) === "undefined") {
+    ra.display = {};
+}
+ra.display.gpxSingle = function (options, data) {
+
+    this.data = data;
+    var masterdiv = document.getElementById(options.divId);
+    this.lmap = new leafletMap(masterdiv, options);
+    this.load = function () {
+        var data = this.data;
         var file = data.gpxfile;
         var linecolour = data.linecolour;
         var imperial = data.imperial;
         var detailsDivId = data.detailsDivId;
         /////////////////////////
-        var _map = lmap.map;
-        var el = lmap.elevationControl();
+        var _map = this.lmap.map;
+        var el = this.lmap.elevationControl();
         var g = new L.GPX(ra.baseDirectory() + file, {async: true,
             polyline_options: {color: linecolour},
             marker_options: {
@@ -47,13 +54,14 @@ ra.gpx = (function () {
             }
             L.setOptions(marker, {riseOnHover: true});
         });
+        var _this = this;
         g.on('loaded', function (e) {
             _map.fitBounds(e.target.getBounds(), {padding: [20, 20]});
-            gpx.displayGpxdetails(g, detailsDivId);
+            _this.displayGpxdetails(g, detailsDivId);
         });
         g.addTo(_map);
     };
-    gpx.displayGpxdetails = function (g, divId) {
+    this.displayGpxdetails = function (g, divId) {
         if (document.getElementById(divId) !== null) {
             var info = g._info;
             var header = "";
@@ -78,14 +86,12 @@ ra.gpx = (function () {
             }
         }
     };
-    return gpx;
-}
-());
-/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-function gpxFolderDisplay(options, data) {
+
+
+};
+
+ra.display.gpxFolder = function (options, data) {
+
     this._map = null;
     this.options = options;
     this.base = ra.baseDirectory();
@@ -493,4 +499,4 @@ function gpxFolderDisplay(options, data) {
         return;
     };
 
-}
+};

@@ -58,6 +58,51 @@ ra.uniqueID = function () {
     ra.uniquenumber += 1;
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
+ra.bootstrapper = function (displayClass, mapOptions, _data) {
+    ra.loading.start();
+    var options = ra.decodeOptions(mapOptions);
+    if (document.getElementById(options.divId) !== null) {
+        var data = ra.decodeData(_data);
+        var display;
+        var load = true;
+        switch (displayClass) {
+            case 'singleGpxRoute':
+                display = new ra.display.gpxSingle(options, data);
+                break;
+            case 'folderGpxRoutes':
+                display = new ra.display.gpxFolder(options, data);
+                break;
+            case 'csvTable':
+                display = new ra.display.csvList.display(options, data);
+                break;
+            case 'walksMap':
+                display = new ra.display.walksMap(options, data);
+                break;
+            case 'organisationMap':
+                display = new ra.display.organisationMap(options, data);
+                break;
+            case 'accountsMap':
+                display = new ra.display.accountsMap(options, data);
+                break;
+            case 'plotWalkingRoute':
+                display = new ra.display.plotRoute(options, data);
+                break;
+            case 'loadDisplayWalks':
+                display = new ra.display.walksTabs(options, data);
+                break;
+            case 'noDirectAction':
+                load = false;
+                break;
+            default:
+                load = false;
+                alert('Ra.Bootstrapper - option not known!');
+        }
+        if (load) {
+            display.load();
+        }
+    }
+    ra.loading.stop();
+};
 // convert string to title case
 ra.titleCase = function (str) {
     return str.replace(/(^|\s)\S/g, function (t) {
