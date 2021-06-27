@@ -109,6 +109,9 @@ ra.display.walksTabs = function (mapOptions, data) {
     this.processWalksFilter = function () {
 
         var wfOptions = JSON.parse(addFilterFormats());
+        if (wfOptions.defaultView==="Details"){
+            wfOptions.defaultView="Grades";
+        }
         this.settings.currentView = wfOptions.defaultView;
         this.settings.gradesView = wfOptions.detailsView;
         this.settings.tableView = wfOptions.tableView;
