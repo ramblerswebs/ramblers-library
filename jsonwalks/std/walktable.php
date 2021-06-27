@@ -12,6 +12,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
     private $walksClass = "walks";
     private $walkClass = "walk";
+    private $tableClass='pantone5565';
     private $customFormat = null;
     private $monthlyReminderClass = null;
     private $monthlyReminderMethod = null;
@@ -44,7 +45,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         $groupByMonth = RJsonwalksWalk::groupByMonth($this->tableFormat);
         $odd = false;
         $lastValue = "";
-        echo "<table class='" . $this->walksClass . "' >" . PHP_EOL;
+        echo "<table class='" . $this->tableClass . "' >" . PHP_EOL;
 
         if (!$groupByMonth) {
             echo $this->displayTableHeader();
@@ -91,6 +92,9 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
     public function setWalkClass($class) {
         $this->walkClass = $class;
+    }
+    public function setTableClass($class){
+        $this->tableClass=$class;
     }
 
     private function displayTableHeader() {
