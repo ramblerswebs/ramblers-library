@@ -835,8 +835,7 @@ ra.modal = (function () {
         ra.html.setTag(modal.elements.data, $html);
         modal.elements.modaltag.style.display = "block";
         modal.elements.close.addEventListener("click", function () {
-            modal.elements.modaltag.style.display = "none";
-            modal.elements.modaltag.innerHTML = "";
+            modal.elements.modaltag.remove();
             modal.elements = {modaltag: null};
         });
         var print = modal.elements.print;
