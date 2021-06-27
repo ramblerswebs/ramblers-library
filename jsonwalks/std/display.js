@@ -109,8 +109,8 @@ ra.display.walksTabs = function (mapOptions, data) {
     this.processWalksFilter = function () {
 
         var wfOptions = JSON.parse(addFilterFormats());
-        if (wfOptions.defaultView==="Details"){
-            wfOptions.defaultView="Grades";
+        if (wfOptions.defaultView === "Details") {
+            wfOptions.defaultView = "Grades";
         }
         this.settings.currentView = wfOptions.defaultView;
         this.settings.gradesView = wfOptions.detailsView;
@@ -822,8 +822,9 @@ ra.display.walksTabs = function (mapOptions, data) {
                 var children = ul_list.children;
                 Object.keys(children).forEach(function (key) {
                     var node = children[key].childNodes[0];
+                    var keyid = node.getAttribute('data-filter-id');
                     node.checked = all;
-                    _this.settings.filter[node.id] = all;
+                    _this.settings.filter[keyid] = all;
                 });
             }
             var $walks = _this.getWalks();
@@ -839,8 +840,10 @@ ra.display.walksTabs = function (mapOptions, data) {
         input.checked = true;
         li.appendChild(input);
         var _this = this;
-        var keyid = item.id;
+        input.setAttribute('data-filter-id', item.id);
+        // var keyid = item.id;
         input.addEventListener("change", function (event) {
+            var keyid = event.target.getAttribute('data-filter-id');
             _this.settings.filter[keyid] = event.target.checked;
             var $walks = _this.getWalks();
             _this.displayWalks($walks);
