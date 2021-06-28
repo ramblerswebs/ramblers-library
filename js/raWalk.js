@@ -747,7 +747,7 @@ ra.walk = (function () {
     my.addYear = function ($walk) {
         var d = new Date();
         var newDate = new Date(d.getTime() + 300 * 24 * 60 * 60000);
-        var walkDate = new Date($walk.walkDate);
+        var walkDate = ra.date._setDateTime($walk.walkDate);
         if (walkDate.getTime() < newDate.getTime()) {
             return '';
         } else {

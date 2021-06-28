@@ -419,13 +419,22 @@ ra.date = (function () {
     date._setDateTime = function (datetimestring) {
         var value = datetimestring;
         if (typeof value === "string") {
+            var arr = datetimestring.split(/[\-\+ :T]/);
+            var date = new Date();
+            date.setUTCFullYear(arr[0]);
+            date.setUTCMonth(arr[1] - 1);
+            date.setUTCDate(arr[2]);
+            date.setUTCHours(arr[3]);
+            date.setUTCMinutes(arr[4]);
+           // date.setUTCSeconds(arr[5]);
+            return date;
             // note Mac does not handle yyyy-mm-dd, change to yyyy/mm/dd 
-            value = value.substr(0, 19).replace(/-/g, "/");
-            value = value.replace("T", " ");
+            //  value = value.substr(0, 19).replace(/-/g, "/");
+            //   value = value.replace("T", " ");
         } else {
             return value;
         }
-        return new Date(value);
+        //   return new Date(value);
     };
 //Day 	--- 	---
 //d 	Day of the month, 2 digits with leading zeros 	01 to 31

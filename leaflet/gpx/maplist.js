@@ -225,9 +225,9 @@ ra.display.gpxFolder = function (options, data) {
                     {name: 'title', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Title'},
                     {name: 'distance', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Distance Km'},
                     {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Miles'},
-                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'min Altitude'},
-                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'max Altitude'},
-                    {name: 'elevation', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Elevation Gain'},
+                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'min Altitude(m)'},
+                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'max Altitude(m)'},
+                    {name: 'elevation', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Elevation Gain(m)'},
                     );
             if (this.controls.download > 0) {
                 tags.push({parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'GPX'});
