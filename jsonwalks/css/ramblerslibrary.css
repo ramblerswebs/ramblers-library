@@ -338,14 +338,11 @@ table.gradeTable  div.Technical  {
 div.nextwalk div.walkPublished,
 div.nextwalk div.walkNew,
 div.nextwalk div.walkCancelled{
-
     min-height: 30px;
     line-height: 1.2em;
 }
 div.nextwalk span.grade.middle{
-    top:-7px;
     float:left;
-    margin-right:0px;
 }
 
 span.mappopup:hover{
