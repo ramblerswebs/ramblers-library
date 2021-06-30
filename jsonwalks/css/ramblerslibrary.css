@@ -335,13 +335,17 @@ table.gradeTable  div.Technical  {
     padding-left: 30px;
     min-height:30px;
 }
+div.nextwalk div.walkPublished,
+div.nextwalk div.walkNew,
+div.nextwalk div.walkCancelled{
 
-
-div.nextWalksWithGrade,
-span.nextWalksWithGrade{
-    display:inline-block;
     min-height: 30px;
     line-height: 1.2em;
+}
+div.nextwalk span.grade.middle{
+    top:-7px;
+    float:left;
+    margin-right:0px;
 }
 
 span.mappopup:hover{
@@ -665,9 +669,9 @@ span.grade.details{
 span.middle.grade {
     height:30px;
     vertical-align: middle;
-    padding-right:10px;
     display: inline;
 }
+
 span.left.grade {
     float:left;
     padding-right:10px;
