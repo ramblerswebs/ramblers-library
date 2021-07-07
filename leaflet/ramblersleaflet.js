@@ -109,6 +109,7 @@ function leafletMap(tag, options) {
         });
     }
     if (options.print) {
+        var self = this;
         this.controls.print = L.control.browserPrint({
             title: 'Print',
             documentTitle: 'The Ramblers - working for walkers',
@@ -122,7 +123,7 @@ function leafletMap(tag, options) {
                     function (layer) {
                         var bing = L.bingLayer(layer.key, layer.options);
                         // fix as above object fails to set url
-                        bing._url = this.currentLayer._url;
+                        bing._url = self.currentLayer._url;
                         return bing;
                     }
             );
@@ -179,8 +180,9 @@ function leafletMap(tag, options) {
 //    this.map.on('LayersControlEvent', function (ev) {
 //        alert(ev.latlng); // ev is an event object (MouseEvent in this case)
 //    });
+    var _this = this;
     this.map.on('baselayerchange', function (e) {
-        this.currentLayer = e.layer;
+        _this.currentLayer = e.layer;
         //alert('Changed to ' + e.name);
     });
 

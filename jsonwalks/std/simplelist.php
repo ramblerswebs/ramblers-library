@@ -82,7 +82,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
     }
-
+    // display full walk either as popup or inline
     public function inLineDisplay() {
         $this->inLineDisplay = true;
     }
