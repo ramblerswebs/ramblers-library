@@ -337,7 +337,7 @@ ra.walk = (function () {
             var $items = $value.items;
             var index, len;
             for (index = 0, len = $items.length; index < len; ++index) {
-                $name = $items[index].text;
+                $name = $items[index].name;
                 if ($name !== "") {
                     $html += "<li class='item'>" + $name + "</li>";
                     $any = true;
@@ -576,12 +576,14 @@ ra.walk = (function () {
                 }
                 break;
             case "{contactname}":
-                if ($walk.isLeader) {
-                    out = "Leader ";
-                } else {
-                    out = "Contact ";
+                if ($walk.contactName !== '') {
+                    if ($walk.isLeader) {
+                        out = "Leader ";
+                    } else {
+                        out = "Contact ";
+                    }
+                    out += "<b>" + $walk.contactName + "</b>";
                 }
-                out += "<b>" + $walk.contactName + "</b>";
                 break;
             case "{contactperson}":
                 out = $walk.contactName;

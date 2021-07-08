@@ -123,7 +123,7 @@ L.Control.SmartRoute = L.Control.extend({
     drawSmartRoute: function (data) {
         var geometry = data.features[0].geometry;
         this._smartRouteLayer.clearLayers();
-        var latlngs = ra.map.ragetLatlngs(geometry.coordinates);
+        var latlngs = ra.map.getLatlngs(geometry.coordinates);
         this.latlngs = latlngs; // latlngs for when we save route.
         var style = this._userOptions.style;
         this._smartRouteLayer.addLayer(L.polyline(latlngs, style));

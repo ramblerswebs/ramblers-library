@@ -421,7 +421,7 @@ ra.map = (function () {
         }
         return lnglats;
     };
-    my.ragetLatlngs = function (lnglats) {
+    my.getLatlngs = function (lnglats) {
         var latlngs = [];
         for (const lnglat of lnglats) {
             var latlng = L.latLng(lnglat[1], lnglat[0]);
