@@ -11,17 +11,17 @@ defined('_JEXEC') or die('Restricted access');
 class RJsonwalksItem {
 
     //put your code here
-    public $name;
+    public $text;
 
     function __construct($value) {
         if (isset($value)) {
             if (property_exists($value, "text")) {
-                $this->name = $value->text;
+                $this->text = $value->text;
             }
         }
     }
     public function getName() {
-        return $this->name;
+        return $this->text;
     }
 
 }

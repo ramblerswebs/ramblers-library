@@ -90,6 +90,9 @@ ra.bootstrapper = function (displayClass, mapOptions, _data) {
             case 'loadDisplayWalks':
                 display = new ra.display.walksTabs(options, data);
                 break;
+            case 'myGroups':
+                display = new ra.display.organisationMyGroup(options, data);
+                break;
             case 'noDirectAction':
                 load = false;
                 break;
@@ -426,7 +429,7 @@ ra.date = (function () {
             date.setUTCDate(arr[2]);
             date.setUTCHours(arr[3]);
             date.setUTCMinutes(arr[4]);
-           // date.setUTCSeconds(arr[5]);
+            // date.setUTCSeconds(arr[5]);
             return date;
             // note Mac does not handle yyyy-mm-dd, change to yyyy/mm/dd 
             //  value = value.substr(0, 19).replace(/-/g, "/");

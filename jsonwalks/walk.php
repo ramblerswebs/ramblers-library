@@ -33,8 +33,11 @@ class RJsonwalksWalk extends REvent {
     public $telephone2 = "";        // second telephone number of contact
 // meeting place
     public $hasMeetPlace = false;   // true or false
+    public $hasExactMeetPlace = false;   // true or false
     public $meetLocation;           // a [[RJsonwalksLocation]] object if hasMeetPlace=true
 // starting place
+    public $hasExactStartPlace=false;
+    public $hasNeither=false;
     public $startLocation;          // a [[RJsonwalksLocation]] object for the start
 // finish place
     public $isLinear = false;       // true if walk has a finishing place otherwise false
@@ -159,7 +162,7 @@ class RJsonwalksWalk extends REvent {
             if (count($item->facilities->items) > 0) {
                 $this->facilities = new RJsonwalksItems($item->facilities);
             }
-// pocess meeting and starting locations
+// process meeting and starting locations
             $this->processPoints($item->points);
             $this->createExtraData();
             $this->media = $this->getMedia($item);
@@ -261,14 +264,21 @@ class RJsonwalksWalk extends REvent {
             if ($value->typeString == "Meeting") {
                 $this->hasMeetPlace = true;
                 $this->meetLocation = new RJsonwalksLocation($value, $this->walkDate);
+                 if ($this->meetLocation->exact){
+                    $this->hasExactMeetPlace=true;
+                }
             }
             if ($value->typeString == "Start") {
                 $this->startLocation = new RJsonwalksLocation($value, $this->walkDate);
+                if ($this->startLocation->exact){
+                    $this->hasExactStartPlace=true;
+                }
             }
             if ($value->typeString == "End") {
                 $this->finishLocation = new RJsonwalksLocation($value, $this->walkDate);
             }
         }
+        $this->hasNeither=!$this->hasExactMeetPlace && !$this->hasExactStartPlace;
     }
 
     public function EventDate() {

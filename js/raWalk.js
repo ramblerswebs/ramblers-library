@@ -330,16 +330,16 @@ ra.walk = (function () {
     my.addItemInfo = function ($class, $title, $value) {
         var $html = "";
         var $any = false;
-        var $name;
+        var $text;
         if ($value !== null) {
             $html += "<div class='" + $class + "'><b>" + $title + "</b>";
             $html += "<ul>";
             var $items = $value.items;
             var index, len;
             for (index = 0, len = $items.length; index < len; ++index) {
-                $name = $items[index].name;
-                if ($name !== "") {
-                    $html += "<li class='item'>" + $name + "</li>";
+                $text = $items[index].text;
+                if ($text !== "") {
+                    $html += "<li class='item'>" + $text + "</li>";
                     $any = true;
                 }
             }
