@@ -450,3 +450,21 @@ button.jplistsortbuttondesc {
 button.jplistsortbuttondesc {
     clear:both;
 }
+
+table th {
+    border: 0 none;
+    font-weight: bold;
+}
+div.component-content table th, div.component-content table td {
+    border: 1px solid #ddd;
+    line-height: 1.5em;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+}
+table th {
+    background-color: #8BA69C;
+    background-image: -moz-linear-gradient(center top , #8BA69C, #A3B8B0);
+    background-repeat: repeat-x;
+    color: #000000;
+}
