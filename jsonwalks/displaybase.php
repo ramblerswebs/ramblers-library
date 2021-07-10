@@ -41,6 +41,7 @@ abstract class RJsonwalksDisplaybase {
         // default map options for display of walk
         $this->options->mapHeight = "250px";
         $this->options->rightclick = true;
+        $this->options->fullscreen = true;
         $this->options->copyright = false;
         $this->script->add($this->options);
     }

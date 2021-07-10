@@ -11,7 +11,7 @@ ra.defaultMapOptions = {
     "mapWidth": "100%",
     "helpPage": "",
     "cluster": false,
-    "fullscreen": false,
+    "fullscreen": true,
     "google": false,
     "search": false,
     "locationsearch": false,
