@@ -912,6 +912,7 @@ ra.walk = (function () {
         nWalk.ascentFeet = $item.ascentFeet;
         nWalk.ascentMetres = $item.ascentMetres;
         // contact details
+         nWalk.email='';
         if ($item.walkContact !== null) {
             nWalk.isLeader = $item.walkContact.isWalkLeader === "true";
             nWalk.contactName = $item.walkContact.contact.displayName.trim();
