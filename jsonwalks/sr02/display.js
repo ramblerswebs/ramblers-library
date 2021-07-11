@@ -7,11 +7,11 @@ displayCustomValues = function ($option, $walk) {
         case "{xSymbol}":
             /* Picnic or Pub icon */
             if ($walk.additionalNotes.includes("picnic")) {
-                $response.out = '<img src="/libraries/ramblers/jsonwalks/sr02/Sandwich-icon.png" title="Picnic Required" width="24" height="24" align="left"/>';
+                $response.out = '<img src="' + ra.baseDirectory() + 'libraries/ramblers/jsonwalks/sr02/Sandwich-icon.png" title="Picnic Required" width="24" height="24" align="left"/>';
                 break;
             }
             if ($walk.additionalNotes.includes("pub")) {
-                $response.out = '<img src="/libraries/ramblers/jsonwalks/sr02/beer.png" title="Pub Lunch" width="24" height="24" align="left"/>';
+                $response.out = '<img src="' + ra.baseDirectory() + 'libraries/ramblers/jsonwalks/sr02/beer.png" title="Pub Lunch" width="24" height="24" align="left"/>';
             }
             break;
         case "{xNationalGrade}":
