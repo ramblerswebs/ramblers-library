@@ -1,7 +1,7 @@
 table.sr02prog {
-	border-width: 1px ;
-	border-color: #333333;
-	border-style: solid ;
+    border-width: 1px ;
+    border-color: #333333;
+    border-style: solid ;
 }
 table.sr02prog tr.easy {  
     background-color: #81BEF7 ;  /* Easy: ambles */
@@ -20,12 +20,12 @@ table.sr02prog tr.linear {
 }
 table.sr02prog tr.krew {  
     background-color: #66FFFF ;  /* ken's krew */
-	padding-left: 10px;
+    padding-left: 10px;
 }
 table {
-	border-width: 1px ;
-	border-color: #333333;
-	border-style: solid ;
+    border-width: 1px ;
+    border-color: #333333;
+    border-style: solid ;
 }
 table tr.sr02easy {  
     background-color: #81BEF7 ;  /* Easy: ambles */
@@ -44,5 +44,14 @@ table tr.sr02linear {
 }
 table tr.sr02krew {  
     background-color: #66FFFF ;  /* ken's krew */
-	padding-left: 10px;
+    padding-left: 10px;
+}
+div.sr02walk div span.item::before {
+    content: "•"; color: black;
+    display: inline-block; width: 1em;
+    margin-left: -1em
+}
+div.sr02walk div span.item{
+    line-height:12px;
+    font-size: 13px;
 }

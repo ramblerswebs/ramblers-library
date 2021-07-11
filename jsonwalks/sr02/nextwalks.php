@@ -1,30 +1,25 @@
 <?php
 
 /**
- * Description of RJsonwalksStdWalktable3col
+ * Description of WalksDisplay
  *
  * @author Chris Vaughan
+  Modified Brian Smith Easy Surrey Walkers
  */
 // no direct access
 defined("_JEXEC") or die("Restricted access");
 
-class RJsonwalksSr02Table2 extends RJsonwalksStdWalktable {
+class RJsonwalksSr02Nextwalks extends RJsonwalksStdNextwalks {
 
-    private $tableFormat = [
-        ['title' => 'Date/Time', 'items' => ["{dowddmm}", "{;startTime}"]],
-        ['title' => 'Leader/Contact', 'items' => ["{xContact}", "{;telephone1}", "{;telephone2}"]],
-        ['title' => 'Details', 'items' => ["{title}", "{;description}", "{lf}", "{Grid Ref: }", "{startGR}", "{ Postcode: }", "{startPC}", "{;additionalNotes}"]],
-        ['title' => 'Distance', 'items' => ["{distance}", "{;xNationalGrade}", "{xSymbol}"]]
-    ];
+    public $walkClass = "sr02walk";
 
     public function __construct() {
         parent::__construct();
-        parent::customFormat($this->tableFormat);
-        parent::setRowClass($this, 'rowClass');
+        parent::customFormat(["{dowddmm}", "{;xTitle}", "{,distance}"]);
         RJsonwalksWalk::setCustomValues($this, "customValue");
+        parent::setWalksClass($this->walkClass);
         $document = JFactory::getDocument();
         $document->addStyleSheet("libraries/ramblers/jsonwalks/sr02/style.css");
-        parent::setWalksClass("sr02prog");
     }
 
     public function customValue($option, $walk) {
@@ -57,30 +52,6 @@ class RJsonwalksSr02Table2 extends RJsonwalksStdWalktable {
         }
 
         return $response;
-    }
-
-    public function rowClass($walk) {
-        $class = "leisurely";
-        $day = $walk->walkDate->format('l');
-        if (($walk->isLinear) && ($day == "Wednesday")) {
-            $class = "sr02linear";
-        } else {
-            switch ($walk->nationalGrade) {
-                case "Easy" :
-                    $class = "sr02easy";
-                    break;
-                case "Leisurely" :
-                    $class = "sr02leisurely";
-                    break;
-                case "Moderate" :
-                    $class = "sr02moderate";
-                    break;
-                case "Strenuous" :
-                    $class = "sr02strenuous";
-                    break;
-            }
-        }
-        return $class;
     }
 
 }
