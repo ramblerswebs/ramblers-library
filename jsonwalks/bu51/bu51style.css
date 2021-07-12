@@ -1,0 +1,19 @@
+/*
+BU51 styles to override ramblers-webs defaults
+*/
+div.bu51-nextwalk div.odd span.item,
+div.bu51-nextwalk div.even span.item{
+    background-color: transparent !important;
+    color:#d7a900;
+}
+div.bu51-nextwalk div.odd:hover span.item,
+div.bu51-nextwalk div.even:hover span.item{
+    background-color: transparent !important;
+    color:#5b491f;
+}
+.odd,.even{
+    background-color: transparent !important;
+    }
+.odd:hover,.even:hover{
+    background-color: transparent !important;
+   }
