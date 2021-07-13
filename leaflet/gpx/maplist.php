@@ -29,6 +29,16 @@ class RLeafletGpxMaplist extends RLeafletMap {
             
         };
         $this->data->items = json_decode($items);
+        if ($this->displayAsPreviousWalks) {
+            usort($this->data->items, function($a, $b) {
+                return strcmp($a->date, $b->date);
+            });
+        }else{
+              usort($this->data->items, function($a, $b) {
+                return strcmp($a->title, $b->title);
+            });
+        }
+
         $this->help_page = "listofroutes.html";
 
         $this->options->cluster = true;

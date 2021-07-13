@@ -1066,6 +1066,7 @@ ra.jplist = function (group) {
         button.setAttribute('data-selected', "false");
         button.setAttribute('data-mode', "radio");
         button.textContent = text;
+        return button;
     };
     this.addPagination = function (no, tag, jplistName, itemsPerPage, print = false) {
         tag.innerHTML = '';
@@ -1146,6 +1147,10 @@ ra.jplist = function (group) {
       <span data-type="value-2"></span>  \
       </div></div>';
         }
+        var _this = this;
+        window.addEventListener("resize", function () {
+            _this.updateControls();
+        });
         return out;
     };
     this.updateControls = function () {
