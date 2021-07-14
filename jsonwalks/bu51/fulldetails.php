@@ -10,7 +10,7 @@ defined("_JEXEC") or die("Restricted access");
 
 class RJsonwalksBU51Fulldetails extends RJsonwalksStdSimplelist {
 
-    public $walkClass = "nextwalk";
+    public $walkClass = "bu51Nextwalk";
     public $feedClass = "walksfeed"; // not used?
     private $listFormat = ["{gradeimg}", "{title}", "{lf}",
         "{dowddmmyyyy}", "{[meet at ]meetTime}", "{[ start at ]startTime}",
@@ -21,6 +21,7 @@ class RJsonwalksBU51Fulldetails extends RJsonwalksStdSimplelist {
         parent::__construct();
         parent::customFormat($this->listFormat);
         parent::setWalksClass($this->walkClass);
+        RLoad::addStyleSheet("libraries/ramblers/jsonwalks/bu51/bu51style.css", "text/css");
     }
 
     public function noWalks($no) {

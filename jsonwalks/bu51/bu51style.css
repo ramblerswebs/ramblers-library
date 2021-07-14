@@ -13,7 +13,14 @@ div.bu51-nextwalk div.even:hover span.item{
 }
 .odd,.even{
     background-color: transparent !important;
-    }
+}
 .odd:hover,.even:hover{
     background-color: transparent !important;
-   }
+}
+div.bu51Nextwalk{
+    background-color:#5b491f;
+    color:#FFFFFF;
+}
+div.bu51Nextwalk div:hover{
+    color:#CCCCCC;
+}
