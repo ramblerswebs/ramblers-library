@@ -1,5 +1,6 @@
+var ra;
 displayCustomValues = function ($option, $walk) {
-    $response = {
+    var $response = {
         found: true,
         out: ""};
     // custom field must start with x
@@ -20,6 +21,9 @@ displayCustomValues = function ($option, $walk) {
         case "{xContact}":
             $response.out = "<b>" + $walk.contactName + "</b>";
             break;
+        case "{xGradeImg}":
+            $response.out = gradeImage($walk.nationalGrade);
+            break;
         default:
             $response.found = false;
             break;
@@ -27,6 +31,32 @@ displayCustomValues = function ($option, $walk) {
 
     return $response;
 };
+gradeImage = function (nationalGrade) {
+    var $folder = ra.baseDirectory();
+    var $url = $folder + "libraries/ramblers/jsonwalks/sr02/images/grades/";
+    switch (nationalGrade) {
+        case "Easy Access":
+            $url = "<img src='" + $url + "grade-ea30.jpg' alt='Easy Access' height='30' width='30'>";
+            break;
+        case "Easy":
+            $url = "<img src='" + $url + "grade-e30.jpg' alt='Easy' height='30' width='30'>";
+            break;
+        case "Leisurely":
+            $url = "<img src='" + $url + "grade-l30.jpg' alt='Leisurely' height='30' width='30'>";
+            break;
+        case "Moderate":
+            $url = "<img src='" + $url + "grade-m30.jpg' alt='Moderate' height='30' width='30'>";
+            break;
+        case "Strenuous":
+            $url = "<img src='" + $url + "grade-s30.jpg' alt='Strenuous' height='30' width='30'>";
+            break;
+        case "Technical":
+            $url = "<img src='" + $url + "grade-t30.jpg' alt='Technical' height='30' width='30'>";
+            break;
+    }
+    return $url;
+};
+
 displayGradesRowClass = function ($walk) {
     return displayTableRowClass($walk);
 };

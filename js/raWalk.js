@@ -1149,33 +1149,6 @@ ra.walk = (function () {
             }
             return $tag;
         };
-//        grade.markerDisplay = function (nationalGrade, $class) {
-//            var $tag = "";
-//            var $img = grade.image(nationalGrade);
-//            switch (nationalGrade) {
-//                case "Easy Access":
-//                    $tag = "<span data-descr='Easy Access' class='grade " + $class + "'>' onclick='ra.walk.dGH()'>" + $img + "<br/>" + nationalGrade + "</span>";
-//                    break;
-//                case "Easy":
-//                    $tag = "<span data-descr='Easy' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "<br/>" + nationalGrade + "</span>";
-//                    break;
-//                case "Leisurely":
-//                    $tag = "<span data-descr='Leisurely' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "<br/>" + nationalGrade + "</span>";
-//                    break;
-//                case "Moderate":
-//                    $tag = "<span data-descr='Moderate' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "<br/>" + nationalGrade + "</span>";
-//                    break;
-//                case "Strenuous":
-//                    $tag = "<span data-descr='Strenuous' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "<br/>" + nationalGrade + "</span>";
-//                    break;
-//                case "Technical":
-//                    $tag = "<span data-descr='Technical' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "<br/>" + nationalGrade + "</span>";
-//                    break;
-//                default:
-//                    break;
-//            }
-//            return $tag;
-//        };
         return grade;
     }
     ());
