@@ -420,24 +420,22 @@ ra.date = (function () {
         return diffDays;
     };
     date._setDateTime = function (datetimestring) {
+        // also used by time
         var value = datetimestring;
         if (typeof value === "string") {
+            // set each item so it works on mac
             var arr = datetimestring.split(/[\-\+ :T]/);
             var date = new Date();
             date.setUTCFullYear(arr[0]);
             date.setUTCMonth(arr[1] - 1);
             date.setUTCDate(arr[2]);
-            date.setUTCHours(arr[3]);
-            date.setUTCMinutes(arr[4]);
+            date.setHours(arr[3]);
+            date.setMinutes(arr[4]);
             // date.setUTCSeconds(arr[5]);
             return date;
-            // note Mac does not handle yyyy-mm-dd, change to yyyy/mm/dd 
-            //  value = value.substr(0, 19).replace(/-/g, "/");
-            //   value = value.replace("T", " ");
         } else {
             return value;
         }
-        //   return new Date(value);
     };
 //Day 	--- 	---
 //d 	Day of the month, 2 digits with leading zeros 	01 to 31
@@ -471,33 +469,25 @@ ra.date = (function () {
 //H 	24-hour format of an hour with leading zeros 	00 through 23
 //i 	Minutes with leading zeros 	00 to 59
 
-
-
-    date.format = function (datetime)
-    {
-        date.toLocaleString('default', {month: 'long'});
-    };
     return date;
 }
 ());
 ra.time = (function () {
     var time = {};
     time.HHMM = function (datetime) {
-        var value = datetime;
-        if (typeof datetime === "string") {
-            value = new Date(datetime);
-        }
-        var options = {hour: 'numeric', minute: 'numeric'};
-        return value.toLocaleString("en-UK", options);
+        var date = ra.date._setDateTime(datetime);
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        var strTime = hours + ':' + minutes + ampm;
+        return strTime;
     };
     time.HHMMshort = function (datetime) {
-        var value = datetime;
-        if (typeof datetime === "string") {
-            value = new Date(datetime);
-        }
-        var tim = value.toLocaleString('default', {timeStyle: 'short', hour12: true});
-        tim = tim.replace(/^0+/i, '');
-        return tim.replace(":00", "");
+        var value = ra.date._setDateTime(datetime);
+        return time.HHMM(value).replace(":00", "");
     };
     time.secsToHrsMins = function (seconds) {
         if (isNaN(seconds)) {
