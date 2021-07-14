@@ -27,6 +27,12 @@ displayCustomValues = function ($option, $walk) {
 
     return $response;
 };
+displayGradesRowClass = function ($walk) {
+    return displayTableRowClass($walk);
+};
+displayListRowClass = function ($walk) {
+    return displayTableRowClass($walk);
+};
 
 displayTableRowClass = function ($walk) {
     var $class = "leisurely";

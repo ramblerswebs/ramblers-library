@@ -27,18 +27,27 @@ table {
     border-color: #333333;
     border-style: solid ;
 }
+div.sr02easy,
 table tr.sr02easy {  
     background-color: #81BEF7 ;  /* Easy: ambles */
 }
+div.sr02leisurely,
 table tr.sr02leisurely {   
     background-color: #FFFFFF ;   /* Leisurely */
 }
+[data-jplist-item]{
+    padding-top:3px;
+    padding-bottom:3px;
+}
+div.sr02moderate,
 table tr.sr02moderate {   
     background-color: #CCFFCC ;   /* Moderate: long/all day */
 }
+div.sr02strenuous,
 table tr.sr02strenuous {   
     background-color: #EDB1F3 ;  /* mainly fast-fitness */
 }
+div.sr02linear,
 table tr.sr02linear {  
     background-color: yellow ;  /* linear walks */
 }

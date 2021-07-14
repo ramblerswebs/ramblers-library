@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var ra, jplist, addFilterFormats, displayTableRowClass;
+var ra, jplist, addFilterFormats, displayGradesRowClass, displayTableRowClass, displayListRowClass;
 
 if (typeof (ra) === "undefined") {
     ra = {};
@@ -554,13 +554,17 @@ ra.display.walksTabs = function (mapOptions, data) {
     this.displayWalk_Grades = function ($walk, $class, $displayMonth) {
         var $text, $image;
         var $out = "", $out1 = "";
+        var $customClass = $class;
+        if (typeof displayGradesRowClass === 'function') {
+            $customClass = displayGradesRowClass($walk);
+        }
 
         if ($displayMonth) {
             $out1 += "<div data-jplist-item >";
             $out1 += "<h3>" + $walk.month + ra.walk.addYear($walk) + "</h3>";
             $out1 += "<div class='" + $class + " walk" + $walk.status + "' >";
         } else {
-            $out1 += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+            $out1 += "<div data-jplist-item class='" + $customClass + " walk" + $walk.status + "' >";
         }
         $image = '<span class="walkdetail" >';
         $out += ra.walk.getWalkValues($walk, this.settings.gradesFormat);
@@ -574,14 +578,17 @@ ra.display.walksTabs = function (mapOptions, data) {
     this.displayWalk_List = function ($walk, $class, $displayMonth) {
         var $items = this.settings.listFormat;
         var $out = "";
+        var $customClass = $class;
+        if (typeof displayListRowClass === 'function') {
+            $customClass = displayListRowClass($walk);
+        }
         if ($displayMonth) {
             $out += "<div data-jplist-item >";
             $out += "<h3>" + $walk.month + ra.walk.addYear($walk) + "</h3>";
             $out += "</div>\n";
             $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
-        } else {
-            $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
         }
+        $out += "<div data-jplist-item class='" + $customClass + " walk" + $walk.status + "' >";
 
         $out += ra.walk.addTooltip($walk, ra.walk.getWalkValues($walk, $items));
         return  $out + "</div>\n";
@@ -611,8 +618,6 @@ ra.display.walksTabs = function (mapOptions, data) {
             //  $out += ra.walk.addWalkLink($walk.id, ra.walk.getWalkValues($walk, $items), "");
             $out += "</td>";
         }
-
-
         $out += "</tr>";
         return $out;
     };
