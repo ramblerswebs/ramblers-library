@@ -34,7 +34,14 @@ abstract class RJsonwalksDisplaybase {
     abstract protected function DisplayWalks($walks);
 
     public function __construct() {
-        $this->printOn = JRequest::getVar('print') == 1;
+        $version = new JVersion();
+        // Joomla4 Update to use correct call.
+        if (version_compare($version->getShortVersion(), '4.0', '<')) {
+            $this->printOn = JRequest::getVar('print') == 1;
+        } else {
+            $jinput = JFactory::getApplication()->getInput();
+            $this->printOn = $jinput->getVar('print') == 1;
+        }
         $this->script = new RJsScript();
         $this->options = new RLeafletMapoptions();
         $this->script = new RJsScript($this->options);
@@ -58,7 +65,6 @@ abstract class RJsonwalksDisplaybase {
 //        $this->dispMenu = $menu;
 //        $this->dispArticle = $article;
     }
-
 
     public function getWalkMapHref($walk, $desc) {
         $out = "<a href=";

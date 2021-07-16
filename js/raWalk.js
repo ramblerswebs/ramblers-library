@@ -182,7 +182,7 @@ ra.walk = (function () {
             $html += "<div class='reason'>WALK CANCELLED: " + $walk.cancellationReason + "</div>" + PHP_EOL;
         }
         $html += "<div class='basics'>" + PHP_EOL;
-        $html += "<div class='description'><b><span class='title'>" + $walk.title + "</span><br/>" + my.getWalkValue($walk, '{dowddmm}') + PHP_EOL;
+        $html += "<div class='description'><b><span class='walktitle'>" + $walk.title + "</span><br/>" + my.getWalkValue($walk, '{dowddmm}') + PHP_EOL;
         $html += "</b></div>" + PHP_EOL;
         if ($walk.description !== "") {
             $html += "<div class='description'> " + $walk.descriptionHtml + "</div>" + PHP_EOL;
@@ -817,7 +817,7 @@ ra.walk = (function () {
             } else {
                 $distclass = " distfar";
             }
-            $note = "Location is " + $location.postcodeDistance + " metres to the " + $location.postcodeDirection + " of " + $this.postcode;
+            $note = "Location is " + $location.postcodeDistance.toFixed() + " metres to the " + $location.postcodeDirection + " of " + $this.postcode;
             $note2 = "Check postcode suitablility on map";
         }
         $pc = "<b>Postcode</b>: <abbr title='" + $note2 + "'>" + $note + "</abbr>";

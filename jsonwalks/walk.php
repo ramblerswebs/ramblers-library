@@ -36,8 +36,8 @@ class RJsonwalksWalk extends REvent {
     public $hasExactMeetPlace = false;   // true or false
     public $meetLocation;           // a [[RJsonwalksLocation]] object if hasMeetPlace=true
 // starting place
-    public $hasExactStartPlace=false;
-    public $hasNeither=false;
+    public $hasExactStartPlace = false;
+    public $hasNeither = false;
     public $startLocation;          // a [[RJsonwalksLocation]] object for the start
 // finish place
     public $isLinear = false;       // true if walk has a finishing place otherwise false
@@ -183,7 +183,7 @@ class RJsonwalksWalk extends REvent {
         }
     }
 
-     public function getEmail($option = 0, $withtitle = false) {
+    public function getEmail($option = 0, $withtitle = false) {
         switch ($option) {
             case 0:
                 if (strlen($this->email) > 0) {
@@ -195,6 +195,14 @@ class RJsonwalksWalk extends REvent {
             case 2:
             case 4:
                 $printOn = JRequest::getVar('print') == 1;
+                $version = new JVersion();
+                // Joomla4 Update to use correct call.
+                if (version_compare($version->getShortVersion(), '4.0', '<')) {
+                    $printOn = JRequest::getVar('print') == 1;
+                } else {
+                    $jinput = JFactory::getApplication()->getInput();
+                    $printOn = $jinput->getVar('print') == 1;
+                }
                 $link = "https://www.ramblers.org.uk/go-walking/find-a-walk-or-route/contact-walk-organiser.aspx?walkId=";
                 if ($withtitle) {
                     return RHtml::withDiv("email", "<b>Email: </b><a href='" . $link . $this->id . "' target='_blank'>Contact via ramblers.org.uk</a>", $printOn);
@@ -264,21 +272,21 @@ class RJsonwalksWalk extends REvent {
             if ($value->typeString == "Meeting") {
                 $this->hasMeetPlace = true;
                 $this->meetLocation = new RJsonwalksLocation($value, $this->walkDate);
-                 if ($this->meetLocation->exact){
-                    $this->hasExactMeetPlace=true;
+                if ($this->meetLocation->exact) {
+                    $this->hasExactMeetPlace = true;
                 }
             }
             if ($value->typeString == "Start") {
                 $this->startLocation = new RJsonwalksLocation($value, $this->walkDate);
-                if ($this->startLocation->exact){
-                    $this->hasExactStartPlace=true;
+                if ($this->startLocation->exact) {
+                    $this->hasExactStartPlace = true;
                 }
             }
             if ($value->typeString == "End") {
                 $this->finishLocation = new RJsonwalksLocation($value, $this->walkDate);
             }
         }
-        $this->hasNeither=!$this->hasExactMeetPlace && !$this->hasExactStartPlace;
+        $this->hasNeither = !$this->hasExactMeetPlace && !$this->hasExactStartPlace;
     }
 
     public function EventDate() {
@@ -955,12 +963,13 @@ class RJsonwalksWalk extends REvent {
             return $this->_addWalkLink($id, $text, $class);
         }
     }
-    public function addTooltip  ($text) {
-         if ($this->isCancelled()){
-             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" . $text . "</span>";       
+
+    public function addTooltip($text) {
+        if ($this->isCancelled()) {
+            return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" . $text . "</span>";
         }
         if ($this->status === "New") {
-            return "<span data-descr='Walk updated ". $this->dateUpdated->format('D, jS M') . "' class=' walkNew'>" . $text . "</span>";
+            return "<span data-descr='Walk updated " . $this->dateUpdated->format('D, jS M') . "' class=' walkNew'>" . $text . "</span>";
         }
         return $text;
     }

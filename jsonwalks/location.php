@@ -184,7 +184,15 @@ class RJsonwalksLocation {
         $pc = "<abbr title='" . $note . "'><b>Postcode</b>: " . $this->postcode . " ";
         $pc .= $link;
         $pc .= "</abbr>";
-        $out = RHtml::withDiv("postcode " . $distclass, $pc, JRequest::getVar('print') == 1);
+        $version = new JVersion();
+        // Joomla4 Update to use correct call.
+        if (version_compare($version->getShortVersion(), '4.0', '<')) {
+            $printOn = JRequest::getVar('print') == 1;
+        } else {
+            $jinput = JFactory::getApplication()->getInput();
+            $printOn = $jinput->getVar('print') == 1;
+        }
+        $out = RHtml::withDiv("postcode " . $distclass, $pc, $printOn == 1);
         return $out;
     }
 

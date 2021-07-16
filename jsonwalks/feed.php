@@ -147,43 +147,20 @@ class RJsonwalksFeed {
             echo "No walks found";
             return;
         }
-        $printOn = JRequest::getVar('print') == 1;
+        $version = new JVersion();
+        // Joomla4 Update to use correct call.
+        if (version_compare($version->getShortVersion(), '4.0', '<')) {
+            $printOn = JRequest::getVar('print') == 1;
+        } else {
+            $jinput = JFactory::getApplication()->getInput();
+            $printOn = $jinput->getVar('print') == 1;
+        }
         if ($printOn) {
             $style = 'BODY {color: #000000;}';
             $document = JFactory::getDocument();
             $document->addStyleDeclaration($style);
         }
-//        $folder = "ra.setBaseDirectory('" . JURI::base(true) . "');";
-//        $out = "window.addEventListener('load', function(event) {
-//            " . $folder ."  });";
-//        $document->addScriptDeclaration($out, "text/javascript");
-        //  if ($this->displayLimit == 0 OR $printOn) {
         $displayclass->DisplayWalks($this->walks);
-//        } else {
-//            $groups = $this->createGroupsOfWalks();
-//            $numItems = count($groups);
-//            $i = 1;
-//            $blockId = 1;
-//            $block = "ra_block" . $blockId;
-//            foreach ($groups as $walks) {
-//                if ($i == 1) {
-//                    echo "<div id='" . $block . "' style='display: block'>" . PHP_EOL;
-//                } else {
-//                    echo "<div id='" . $block . "' style='display: none'>" . PHP_EOL;
-//                }
-//                $displayclass->DisplayWalks($walks);
-//                if ($i === $numItems) {
-//                    echo "<p><b>End of list</b></p>";
-//                } else {
-//                    $more = "ra_more" . $blockId;
-//                    $blockId += 1;
-//                    $block = "ra_block" . $blockId;
-//                    echo "<div class='ra_walks_more' id='" . $more . "' ><p></p><a " . $this->getTogglePair($block, $more) . " >Display more walks ...</a><p>&nbsp;</p><p>&nbsp;</p></div>";
-//                }
-//                echo "</div>" . PHP_EOL;
-//                $i += 1;
-//            }
-//        }
     }
 
     public function displayIcsDownload($name, $pretext, $linktext, $posttext) {
@@ -196,10 +173,6 @@ class RJsonwalksFeed {
         $display->Display("de02walks", $events); // display walks information
 // is this line correct and is function used
     }
-
-//    private function getTogglePair($one, $two) {
-//        return ' onclick="ra.html.toggleVisibilities(\'' . $one . '\',\'' . $two . '\')"';
-//    }
 
     public function getWalks() {
         return $this->walks;
@@ -217,24 +190,6 @@ class RJsonwalksFeed {
         }
         return 'cache' . DS . 'ra_feed';
     }
-
-//    private function createGroupsOfWalks() {
-//        $groups = array();
-//        $allwalks = $this->walks->allWalks();
-//        $no = 0;
-//        $walks = new RJsonwalksWalks(null);
-//        $groups[] = $walks;
-//        foreach ($allwalks as $walk) {
-//            $no += 1;
-//            $walks->addWalk($walk);
-//            if ($no >= $this->displayLimit) {
-//                $no = 0;
-//                $walks = new RJsonwalksWalks(null);
-//                $groups[] = $walks;
-//            }
-//        }
-//        return $groups;
-//    }
 
     public function filterFeed($filter) { // filter by component filter subform
         if ($filter->titlecontains !== '') {

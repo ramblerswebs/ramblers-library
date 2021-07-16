@@ -77,6 +77,10 @@ span.walkerror {
 div.walkstdfulldetails div.description p{
     margin: 0px;
 }
+div.walkstdfulldetails span.walktitle{
+    color: #303030;
+    font-size: 26px;
+}
 div.walkstdfulldetails div.group
 {
     font-size: 115%;
