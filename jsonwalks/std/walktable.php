@@ -26,7 +26,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         ['title' => 'Date', 'items' => ["{dowddmm}"]],
         ['title' => 'Meet', 'items' => ["{meet}", "{,meetGR}", "{,meetPC}"]],
         ['title' => 'Start', 'items' => ["{start}", "{,startGR}", "{,startPC}"]],
-        ['title' => 'Title', 'items' => ["{mediathumbr}", "{title}"]],
+        ['title' => 'Title', 'items' => ["{title}","{mediathumbr}"]],
         ['title' => 'Distance', 'items' => ["{distance}"]],
         ['title' => 'Grade', 'items' => ["{grade+}"]],
         ['title' => 'Contact', 'items' => ["{contact}"]]];
