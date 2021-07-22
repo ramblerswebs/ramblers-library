@@ -8,6 +8,7 @@ function leafletMap(tag, options) {
         tools: null,
         zoom: null,
         elevation: null,
+        errorDiv: null,
         print: null,
         mylocation: null,
         scale: null,
@@ -25,10 +26,9 @@ function leafletMap(tag, options) {
         mouse: null,
         rightclick: null,
         plotroute: null};
-    this.mapDiv = null;
+    this.mapDiv = null; 
     var tags = [
         {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra-map-container'}},
-        {name: 'cluster', parent: 'root', tag: 'div', attrs: {id: 'ra-cluster-progress-bar'}},
         {name: 'map', parent: 'container', tag: 'div', style: {height: options.mapHeight, width: options.mapWidth}},
         {name: 'copyright', parent: 'container', tag: 'div'}
     ];
@@ -43,10 +43,6 @@ function leafletMap(tag, options) {
     this.mapDiv = elements.map;
     if (options.copyright) {
         ra.html.generateTags(elements.copyright, tagcopy);
-    }
-
-    if (!options.cluster) {
-        elements.cluster.style.display = 'none';
     }
 
     this.map = new L.Map(this.mapDiv, {
@@ -70,7 +66,7 @@ function leafletMap(tag, options) {
             attribution: 'Bing/OS Crown Copyright'});
     }
     // top right control for error messages
-    L.control.racontainer({id: 'ra-error-text', position: 'topright'}).addTo(this.map);
+    this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
 
     // top left controls
     if (options.displayElevation) {
@@ -139,15 +135,17 @@ function leafletMap(tag, options) {
     } else {
         this.map.addLayer(this.mapLayers["Open Street Map"]);
     }
+    var _this = this;
     if (options.maptools) {
-        try {
-            this.controls.tools = L.control.ra_map_tools();
-            this.controls.tools.userOptions(this.userOptions);
-            this.controls.tools.helpPage(options.helpPage);
-            this.controls.tools.addTo(this.map);
-        } catch (err) {
-            document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
-        }
+        //   try {
+        this.controls.tools = L.control.ra_map_tools();
+        this.controls.tools.userOptions(this.userOptions);
+        this.controls.tools.helpPage(options.helpPage);
+        this.controls.tools.setErrorDiv(this.controls.errorDiv);
+        this.controls.tools.addTo(this.map);
+        //  } catch (err) {
+        //      _this.controls.errorDiv.innerHTML = "ERROR: " + err.message;
+        //  }
     }
     // bottom left controls
     if (options.startingplaces) {
@@ -162,7 +160,7 @@ function leafletMap(tag, options) {
             this.controls.rightclick.mapControl(this.controls.layers);
             this.userOptions.rightclick = this.controls.rightclick.userOptions();
         } catch (err) {
-            document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
+            this.controls.errorDiv.innerHTML = "ERROR: " + err.message;
         }
     }
 
@@ -171,7 +169,7 @@ function leafletMap(tag, options) {
             this.controls.mouse = L.control.mouse().addTo(this.map);
             this.userOptions.mouse = this.controls.mouse.userOptions();
         } catch (err) {
-            document.getElementById("ra-error-text").innerHTML = "ERROR: " + err.message;
+            this.controls.errorDiv.innerHTML = "ERROR: " + err.message;
         }
 
     }
@@ -230,6 +228,9 @@ leafletMap.prototype.scaleControl = function () {
 };
 leafletMap.prototype.rightclickControl = function () {
     return this.controls.rightclick;
+};
+leafletMap.prototype.errorDivConctrol = function () {
+    return this.controls.errorDiv;
 };
 leafletMap.prototype.mapDiv = function () {
     return this.mapDiv;
