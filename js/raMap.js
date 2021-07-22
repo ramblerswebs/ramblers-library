@@ -452,10 +452,12 @@ ra.map = (function () {
 ());
 
 function cluster(map) {
-    this.progressDiv = 'ra-cluster-progress-bar';
+    var body = document.getElementsByTagName("BODY")[0];
+    this.progressBar = document.createElement('div');
+    this.progressBar.setAttribute('class', 'ra-cluster-progress-bar');
+    body.appendChild( this.progressBar);
 
     this._map = map;
-    this.progressBar = document.getElementById(this.progressDiv);
     this.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: this.updateClusterProgressBar, disableClusteringAtZoom: 12, maxClusterRadius: 50});
     this.markerList = [];
     this.progressBar.style.display = "none";
@@ -498,7 +500,7 @@ function cluster(map) {
     };
     this.addMarker = function ($popup, $lat, $long, markeroptions = {}) {
         var marker = L.marker([$lat, $long], markeroptions);
-      //  var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
+        //  var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
         marker.bindPopup($popup, {offset: new L.Point(0, -20)});
         this.markerList.push(marker);
         return marker;

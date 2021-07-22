@@ -39,6 +39,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
             container.setAttribute('id', this.options.id);
         }
         container.title = this.options.title;
+      //  this.getDrawSettings();
         container.addEventListener("click", function (e) {
             var forms = document.createElement('div');
             ra.modal.display(forms, false);
@@ -106,6 +107,9 @@ L.Control.RA_Map_Tools = L.Control.extend({
     userOptions: function (value) {
         this._userOptions = value;
     },
+    setErrorDiv: function (value) {
+        this._errorDiv = value;
+    },
     helpPage: function (value) {
         this._helpPage = value;
     },
@@ -134,14 +138,14 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
     },
     osZoomLevel: function () {
-        document.getElementById("ra-error-text").innerHTML = "";
+        this._errorDiv.innerHTML = "";
         if (this.baseTiles === 'Ordnance Survey') {
             var zoom = this._map.getZoom();
             if (zoom <= 11) {
-                document.getElementById("ra-error-text").innerHTML = "Info: Zoom in to see Ordnance Survey Maps";
+                this._errorDiv.innerHTML = "Info: Zoom in to see Ordnance Survey Maps";
             }
             if (zoom > 17) {
-                document.getElementById("ra-error-text").innerHTML = "Info: Zoom out to see Ordnance Survey Maps";
+                this._errorDiv.innerHTML = "Info: Zoom out to see Ordnance Survey Maps";
             }
         }
     },
@@ -279,16 +283,21 @@ L.Control.RA_Map_Tools = L.Control.extend({
         });
     },
     getDrawSettings: function () {
-        var scookie = ra.cookie.read('raDraw');
-        if (scookie !== null) {
-            var cookie = JSON.parse(scookie);
-            this.saveDrawOptions = cookie.saveOptions;
-            this._userOptions.plotroute.draw.panToNewPoint = cookie.panToNewPoint;
-            this._userOptions.plotroute.draw.joinSegments = cookie.joinSegments;
-            this._userOptions.plotroute.style.weight = cookie.weight;
-            this._userOptions.plotroute.style.opacity = cookie.opacity;
-            this._userOptions.plotroute.style.color = cookie.colour;
-            this._map.fire("draw:color-change", null);
+        if (this._userOptions.plotroute !== null) {
+            var scookie = ra.cookie.read('raDraw');
+            if (scookie !== null) {
+                var cookie = JSON.parse(scookie);
+                this.saveDrawOptions = cookie.saveOptions;
+//            if (this._userOptions.plotroute === null) {
+//                this._userOptions.plotroute = {draw: {}, style: {}};
+//            }
+                this._userOptions.plotroute.draw.panToNewPoint = cookie.panToNewPoint;
+                this._userOptions.plotroute.draw.joinSegments = cookie.joinSegments;
+                this._userOptions.plotroute.style.weight = cookie.weight;
+                this._userOptions.plotroute.style.opacity = cookie.opacity;
+                this._userOptions.plotroute.style.color = cookie.colour;
+                this._map.fire("draw:color-change", null);
+            }
         }
     },
     setDrawSettings: function () {
@@ -629,7 +638,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
     setYesNo: function (tag, value) {
         tag.raobject[tag.property] = !value;
         tag.click();
-    },
+    }
 });
 L.control.ra_map_tools = function (options) {
     return new L.Control.RA_Map_Tools(options);

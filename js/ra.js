@@ -40,7 +40,9 @@ ra.baseDirectory = function () {
 };
 ra.decodeOptions = function (value) {
     var options = JSON.parse(value);
-    ra._baseDirectory = options.base + "/";
+    if (options.hasOwnProperty ('base')) {
+        ra._baseDirectory = options.base + "/";
+    }
     ra.defaultMapOptions.bing = options.bing;
     ra.defaultMapOptions.bingkey = options.bingkey;
     value = "";
@@ -66,32 +68,41 @@ ra.bootstrapper = function (displayClass, mapOptions, _data) {
         var display;
         var load = true;
         switch (displayClass) {
-            case 'singleGpxRoute':
+            case 'ra.display.gpxSingle':
                 display = new ra.display.gpxSingle(options, data);
                 break;
-            case 'folderGpxRoutes':
+            case 'ra.display.gpxFolder':
                 display = new ra.display.gpxFolder(options, data);
                 break;
-            case 'csvTable':
+            case 'ra.display.csvList.display':
                 display = new ra.display.csvList.display(options, data);
                 break;
-            case 'walksMap':
+            case 'ra.display.walksMap':
                 display = new ra.display.walksMap(options, data);
                 break;
-            case 'organisationMap':
+            case 'ra.display.organisationMap':
                 display = new ra.display.organisationMap(options, data);
                 break;
-            case 'accountsMap':
+            case 'ra.display.accountsMap':
                 display = new ra.display.accountsMap(options, data);
                 break;
-            case 'plotWalkingRoute':
+            case 'ra.display.plotRoute':
                 display = new ra.display.plotRoute(options, data);
                 break;
-            case 'loadDisplayWalks':
+            case 'ra.display.walksTabs':
                 display = new ra.display.walksTabs(options, data);
                 break;
-            case 'myGroups':
+            case 'ra.display.organisationMyGroup':
                 display = new ra.display.organisationMyGroup(options, data);
+                break;
+            case 'ra.walkseditor.viewwalk':
+                display = new ra.walkseditor.viewwalk(options, data);
+                break;
+            case 'ra.walkseditor.editwalk':
+                display = new ra.walkseditor.editwalk(options, data);
+                break;
+            case 'ra.walkseditor.editplace':
+                display = new ra.walkseditor.editplace(options, data);
                 break;
             case 'noDirectAction':
                 load = false;
@@ -813,7 +824,7 @@ ra.w3w = (function () {
             event.raData.dataObject = dataObject;
             if (err === null) {
                 event.raData.words = item.words;
-                event.raDatasuper.ultra.enhancement.nearestPlace = item.nearestPlace;
+                event.raData.nearestPlace = item.nearestPlace;
             }
             tag.dispatchEvent(event);
         });

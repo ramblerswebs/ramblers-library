@@ -38,7 +38,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
             return;
         }
         $this->map = new RLeafletMap();
-        $this->map->setCommand("loadDisplayWalks");
+        $this->map->setCommand("ra.display.walksTabs");
         $this->map->help_page = "ledwalks.html";
         $this->map->leafletLoad = false;
         $options = $this->map->options;

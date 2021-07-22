@@ -21,7 +21,7 @@ class RLeafletMapdraw extends RLeafletMap {
     }
 
     public function display() {
-        parent::setCommand('plotWalkingRoute');
+        parent::setCommand('ra.display.plotRoute');
         if ($this->displayDescription) {
             echo "<div id='ra-description' class='clearfix'>";
             if (RLicense::isOpenRoutingServiceKeySet()) {
@@ -56,7 +56,6 @@ class RLeafletMapdraw extends RLeafletMap {
         RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-drawcontrol.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-gpx-tools.css", "text/css");
         RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
-        RLoad::addScript("libraries/ramblers/leaflet/maplist.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-upload.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-download.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-reverse-route.js", "text/javascript");

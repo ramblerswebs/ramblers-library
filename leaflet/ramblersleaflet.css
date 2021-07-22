@@ -36,7 +36,7 @@ div.leaflet-container{
     font-weight: bold;
     color:red;
 }
-#ra-cluster-progress-bar {left: 0;
+.a-cluster-progress-bar {left: 0;
                           line-height: 20px;
                           margin-top: -10px;
                           position: absolute;

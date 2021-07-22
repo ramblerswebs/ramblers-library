@@ -71,7 +71,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $this->data->folder = $this->folder;
         $this->data->linecolour = $this->linecolour;
         $this->data->displayAsPreviousWalks = $this->displayAsPreviousWalks;
-        parent::setCommand('folderGpxRoutes');
+        parent::setCommand('ra.display.gpxFolder');
         parent::setDataObject($this->data);
         parent::display();
 

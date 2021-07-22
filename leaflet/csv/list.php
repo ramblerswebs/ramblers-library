@@ -50,7 +50,7 @@ class RLeafletCsvList extends RLeafletMap {
         $data->list = $this->list;
         $data->paginationDefault = $this->paginationDefault;
 
-        parent::setCommand('csvTable');
+        parent::setCommand('ra.display.csvList.display');
         parent::setDataObject($data);
         parent::display();
         RLoad::addScript("libraries/ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");

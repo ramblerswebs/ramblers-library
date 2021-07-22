@@ -23,8 +23,10 @@ ra.display.plotRoute = function (options, data) {
     this.controls = {
         rightclick: lmap.rightclickControl(),
         mouse: lmap.mouseControl(),
+        tools: lmap.toolsControl(),
         elevation: lmap.elevationControl()};
     lmap.SetPlotUserOptions(this.userOptions);
+    this.controls.tools.getDrawSettings();
     this.mapDiv = lmap.mapDiv;
     this.detailsDiv = document.createElement('div');
     this.mapDiv.parentNode.insertBefore(this.detailsDiv, this.mapDiv);
@@ -68,9 +70,9 @@ ra.display.plotRoute = function (options, data) {
                 polyline: {
                     metric: true,
                     shapeOptions: {
-                        color: '#782327',
-                        opacity: 1,
-                        weight: 3
+                        color: this.userOptions.style.color,
+                        opacity: this.userOptions.style.opacity,
+                        weight: this.userOptions.style.weight
                     }
                 },
                 polygon: false,
@@ -92,7 +94,7 @@ ra.display.plotRoute = function (options, data) {
             }
             //  color: '#007A87',
         });
-        // ramblersMap.DrawControl = drawControl;
+
         if (options.ORSkey !== null) {
             // add smart route layer
             this.SmartRouteControl = new L.Control.SmartRoute();
@@ -156,14 +158,16 @@ ra.display.plotRoute = function (options, data) {
         this.drawnItems.on("reverse:reversed", function (e) {
             self.addElevations(false);
         });
+        var _this = this;
         this._map.on('draw:color-change', function (e) {
             // var drawnItems = this.drawnItems;
+
             self.drawnItems.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
-                    self.RA_Map_Tools._changePolyline(layer);
+                    _this.controls.tools._changePolyline(layer);
                 }
             });
-            self.DrawControl.setDrawingOptions({
+            self.drawControl.setDrawingOptions({
                 polyline: {shapeOptions: self.userOptions.style}});
             if (self.SmartRoute.enabled) {
                 self.SmartRoute.setOpacityZero();

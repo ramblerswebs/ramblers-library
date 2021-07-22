@@ -80,7 +80,7 @@ class RLeafletGpxMap extends RLeafletMap {
             }
         }
 
-        parent::setCommand('singleGpxRoute');
+        parent::setCommand('ra.display.gpxSingle');
         parent::setDataObject($this->data);
         parent::display();
     }
