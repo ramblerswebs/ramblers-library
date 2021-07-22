@@ -26,7 +26,7 @@ function leafletMap(tag, options) {
         mouse: null,
         rightclick: null,
         plotroute: null};
-    this.mapDiv = null; 
+    this.mapDiv = null;
     var tags = [
         {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra-map-container'}},
         {name: 'map', parent: 'container', tag: 'div', style: {height: options.mapHeight, width: options.mapWidth}},

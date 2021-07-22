@@ -86,7 +86,7 @@ class RAccounts {
     public function addMapMarkers($map) {
         RLoad::addScript("libraries/ramblers/accounts/accounts.js", "text/javascript");
         RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
-        $map->setCommand('accountsMap');
+        $map->setCommand('ra.display.accountsMap');
         $map->options->fullscreen = true;
         $map->options->search = true;
         $map->options->locationsearch = true;
