@@ -24,3 +24,110 @@ div.bu51Nextwalk{
 div.bu51Nextwalk div:hover{
     color:#CCCCCC;
 }
+div.js-modal.ramblers {
+    padding-top: unset;
+    margin-top: 2%;
+    max-height: 97%;
+    background: linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(91 73 31 / .6));
+}
+
+.modal-content {
+    margin: auto;
+    width: 95%;
+    max-width: 75rem;
+    background-color: rgb(91 73 31 / 90%);
+    border-radius: unset;
+    padding: 3px;
+    border: solid 1px #D7A901;
+    }
+
+.modal-content .modal-header {
+    padding: 4px;
+    border-bottom: 0px solid #eee;
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-between;
+    position:  sticky;
+    top: 0px;
+    background-color: rgb(91 73 31 / 90%);
+ }
+	
+.modal-header .btn {
+	border: none;
+	background: none;
+	color:#fff;
+	box-shadow:none;
+	background-color: #d7a900;
+	text-transform:uppercase;
+	letter-spacing:0.1rem;
+	line-height:1.15;
+	-webkit-transition: all 0.2s;
+	-moz-transition: all 0.2s;
+	transition: all 0.2s;
+	font-size: 0.8rem;
+	padding: 0.4rem;
+	border-radius: 4px;}
+
+.mappopup {
+    cursor: pointer;
+    background-color: #d7a900;
+    color: #fff;
+    letter-spacing: 0.1rem;
+    border-radius: 4px;
+    padding: 0.2rem;
+    display: inline-block;
+}
+
+div.walkstdfulldetails{
+background-color: unset;
+}
+
+@media only screen and (max-width: 768px){
+    div.walkstdfulldetails {
+		padding: 0;
+	}
+}
+	
+div.walkstdfulldetails, div.walkstdfulldetails div.group, div.walkstdfulldetails div.reason, div.walkstdfulldetails div.basics, 
+div.walkstdfulldetails div.nomeetplace, div.walkstdfulldetails div.meetplace, div.walkstdfulldetails div.startplace, 
+div.walkstdfulldetails div.nostartplace, div.walkstdfulldetails div.finishplace, div.walkstdfulldetails div.difficulty, 
+div.walkstdfulldetails div.walkcontact, div.walkstdfulldetails div.walkmedia, div.walkstdfulldetails div.festivals, div.walkstdfulldetails 
+div.strands, div.walkstdfulldetails div.suitability, div.walkstdfulldetails div.surroundings, div.walkstdfulldetails div.theme, 
+div.walkstdfulldetails div.specialStatus, div.walkstdfulldetails div.facilities, div.walkstdfulldetails div.walkdates, div.ra-map-container {
+	border:none;
+	border-radius: unset;
+	margin: 3px 2px;
+	line-height: 1.5;
+	width: 98%;
+
+}
+
+div.walkstdfulldetails div.description p {
+    margin: 0 0 0.75rem 0;}
+
+span.title {
+    font-size: 120%;
+}
+
+@media only screen and (max-width: 414px){
+    div.walkstdfulldetails div.reason, div.walkstdfulldetails div.basics div.description, div.walkstdfulldetails div.meetplace div.place, 
+    div.walkstdfulldetails div.startplace div.place, div.walkstdfulldetails div.finishplace div.place, div.walkstdfulldetails div.group {
+        font-size: 100%;
+    }
+}
+	
+img.walkmedia {
+   -webkit-border-radius: unset;
+    -moz-border-radius: unset;
+    border-radius: unset;
+    max-height: 250px;
+    max-width: 80%;
+}
+
+div.walk-image {
+    font-size: 80%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin: 2px 0px;
+}
