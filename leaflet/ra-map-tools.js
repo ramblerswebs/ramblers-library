@@ -39,7 +39,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
             container.setAttribute('id', this.options.id);
         }
         container.title = this.options.title;
-      //  this.getDrawSettings();
+        //  this.getDrawSettings();
         container.addEventListener("click", function (e) {
             var forms = document.createElement('div');
             ra.modal.display(forms, false);
@@ -62,8 +62,8 @@ L.Control.RA_Map_Tools = L.Control.extend({
             var first = true;
 
             if (_this._userOptions.plotroute !== null) {
-                _this.addTabItem(container, list, 'Plot Walking Route', 'route', true);
-                var drawDiv = _this.addTabContentItem(content, "route", true);
+                _this.addTabItem(container, list, 'Plot Walking Route', 'route', first);
+                var drawDiv = _this.addTabContentItem(content, "route", first);
                 _this.addDrawOptions(drawDiv);
                 _this.saveDrawOptions = false;
                 _this.getDrawSettings();
@@ -71,8 +71,9 @@ L.Control.RA_Map_Tools = L.Control.extend({
             }
 
             var searchDiv;
-            _this.addTabItem(container, list, 'Search', 'search', true);
+            _this.addTabItem(container, list, 'Search', 'search', first);
             searchDiv = _this.addTabContentItem(content, "search", first);
+            first = false;
             _this.addSearch(searchDiv);
 
             var osmapsDiv = _this.addTabContentItem(content, "osmaps", false);

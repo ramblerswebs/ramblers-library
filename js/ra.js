@@ -40,7 +40,7 @@ ra.baseDirectory = function () {
 };
 ra.decodeOptions = function (value) {
     var options = JSON.parse(value);
-    if (options.hasOwnProperty ('base')) {
+    if (options.hasOwnProperty('base')) {
         ra._baseDirectory = options.base + "/";
     }
     ra.defaultMapOptions.bing = options.bing;
@@ -66,52 +66,19 @@ ra.bootstrapper = function (displayClass, mapOptions, _data) {
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
         var display;
-        var load = true;
-        switch (displayClass) {
-            case 'ra.display.gpxSingle':
-                display = new ra.display.gpxSingle(options, data);
-                break;
-            case 'ra.display.gpxFolder':
-                display = new ra.display.gpxFolder(options, data);
-                break;
-            case 'ra.display.csvList.display':
-                display = new ra.display.csvList.display(options, data);
-                break;
-            case 'ra.display.walksMap':
-                display = new ra.display.walksMap(options, data);
-                break;
-            case 'ra.display.organisationMap':
-                display = new ra.display.organisationMap(options, data);
-                break;
-            case 'ra.display.accountsMap':
-                display = new ra.display.accountsMap(options, data);
-                break;
-            case 'ra.display.plotRoute':
-                display = new ra.display.plotRoute(options, data);
-                break;
-            case 'ra.display.walksTabs':
-                display = new ra.display.walksTabs(options, data);
-                break;
-            case 'ra.display.organisationMyGroup':
-                display = new ra.display.organisationMyGroup(options, data);
-                break;
-            case 'ra.walkseditor.viewwalk':
-                display = new ra.walkseditor.viewwalk(options, data);
-                break;
-            case 'ra.walkseditor.editwalk':
-                display = new ra.walkseditor.editwalk(options, data);
-                break;
-            case 'ra.walkseditor.editplace':
-                display = new ra.walkseditor.editplace(options, data);
-                break;
-            case 'noDirectAction':
-                load = false;
-                break;
-            default:
-                load = false;
-                alert('Ra.Bootstrapper - option not known!');
-        }
-        if (load) {
+        //  var load = true;
+        if (displayClass !== 'noDirectAction') {
+            const parts = displayClass.split('.');
+            var myclass = window;
+            for (let i = 0; i < parts.length; i++) {
+                myclass = myclass[parts[i]];
+                if (myclass === 'undefined') {
+                    alert('Ra.Bootstrapper - ' + displayClass + ' option not known!');
+                    ra.loading.stop();
+                    return;
+                }
+            }
+            var display = new myclass(options, data);
             display.load();
         }
     }
@@ -774,7 +741,7 @@ ra.loading = (function () {
     };
     loading.stop = function () {
         loading.elements.container.remove();
-        loading.elements.container = null;
+        loading.elements = null;
     };
     return loading;
 }
