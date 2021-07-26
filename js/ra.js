@@ -66,13 +66,14 @@ ra.bootstrapper = function (displayClass, mapOptions, _data) {
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
         var display;
+        var myclass;
         //  var load = true;
         if (displayClass !== 'noDirectAction') {
             const parts = displayClass.split('.');
-            var myclass = window;
+            myclass = window;
             for (let i = 0; i < parts.length; i++) {
                 myclass = myclass[parts[i]];
-                if (myclass === 'undefined') {
+                if (typeof myclass === 'undefined') {
                     alert('Ra.Bootstrapper - ' + displayClass + ' option not known!');
                     ra.loading.stop();
                     return;
