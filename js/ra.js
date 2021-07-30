@@ -347,6 +347,9 @@ ra.date = (function () {
     date.dowddmm = function (datetime) {
         return date.dowdd(datetime) + " " + date.month(datetime);
     };
+    date.ddmm = function (datetime) {
+        return date.dd(datetime) + " " + date.month(datetime);
+    };
     date.dowddmmyyyy = function (datetime) {
         return date.dowddmm(datetime) + " " + date.YYYY(datetime);
     };

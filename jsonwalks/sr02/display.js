@@ -5,6 +5,9 @@ displayCustomValues = function ($option, $walk) {
         out: ""};
     // custom field must start with x
     switch ($option) {
+        case "{xdowddmm}":
+        $response.out = "<b>" + ra.date.dow($walk.walkDate)+"<br/>"  + ra.date.ddmm($walk.walkDate)+ ra.walk.addYear($walk) + "</b>";
+         break;
         case "{xSymbol}":
             /* Picnic or Pub icon */
             if ($walk.additionalNotes.includes("picnic")) {

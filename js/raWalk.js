@@ -112,6 +112,11 @@ ra.walk = (function () {
         }
         var bounds = layer.getBounds();
         map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
+//        // fix contact link does not work if popup is underneath it and it is in coloumn two
+//        var elems = document.getElementsByClassName("walkcontact");
+//        elems[0].addEventListener('mouseover', function () {
+//            map.closePopup();
+//        });
     };
     my._addLocation = function (layer, location) {
         var icon = ra.map.icon.markerRoute();
@@ -166,7 +171,8 @@ ra.walk = (function () {
             }
         }
         var marker = L.marker([location.latitude, location.longitude], {icon: icon, title: title, riseOnHover: true}).addTo(layer);
-        marker.bindPopup(popup, {offset: popupoffset, autoClose: false}).openPopup();
+        marker.bindPopup(popup, {offset: popupoffset,keepInView:true, autoClose: false}).openPopup();
+        // keepInView so popup in not under contact links as link does not work/available
     };
     my.displayWalkURL = function (url) {
         window.open(url);
@@ -247,9 +253,9 @@ ra.walk = (function () {
         }
         $html += "</div>" + PHP_EOL;
         if ($walk.isLeader === false) {
-            $html += "<div class='walkcontact'><b>Contact</b>: ";
+            $html += "<div class='walkcontact'><b>Contact: </b>";
         } else {
-            $html += "<div class='walkcontact'><b>Contact Leader</b>: ";
+            $html += "<div class='walkcontact'><b>Contact Leader: </b>";
         }
         $html += ra.html.addDiv("contactname", "<b>Name</b>: " + $walk.contactName);
         if ($walk.email !== "") {
@@ -912,7 +918,7 @@ ra.walk = (function () {
         nWalk.ascentFeet = $item.ascentFeet;
         nWalk.ascentMetres = $item.ascentMetres;
         // contact details
-         nWalk.email='';
+        nWalk.email = '';
         if ($item.walkContact !== null) {
             nWalk.isLeader = $item.walkContact.isWalkLeader === "true";
             nWalk.contactName = $item.walkContact.contact.displayName.trim();
