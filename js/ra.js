@@ -407,13 +407,13 @@ ra.date = (function () {
         if (typeof value === "string") {
             // set each item so it works on mac
             var arr = datetimestring.split(/[\-\+ :T]/);
-            var date = new Date();
-            date.setUTCFullYear(arr[0]);
-            date.setUTCMonth(arr[1] - 1);
-            date.setUTCDate(arr[2]);
-            date.setHours(arr[3]);
-            date.setMinutes(arr[4]);
-            // date.setUTCSeconds(arr[5]);
+            var date = new Date(arr[0], arr[1] - 1, arr[2]);
+            if (arr.length > 3) {
+                date.setHours(arr[3]);
+            }
+            if (arr.length > 4) {
+                date.setMinutes(arr[4]);
+            }
             return date;
         } else {
             return value;
