@@ -118,6 +118,13 @@ class RJsScript {
             $document->addScript($path . "leaflet.browser.print.sizes.js", "text/javascript");
             $document->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
         }
+
+        if ($options->calendar) {
+            $path = "libraries/ramblers/vendors/fullcalendar-5.9.0/lib/";
+            RLoad::addScript($path . "main.js", "text/javascript");
+            RLoad::addStyleSheet($path . "main.css", "text/css");
+        }
+
         RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/js/raMap.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/js/raWalk.js", "text/javascript");
