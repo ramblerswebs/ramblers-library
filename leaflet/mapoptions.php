@@ -35,6 +35,7 @@ class RLeafletMapoptions {
     public $controlcontainer = false;
     public $copyright = true;
     public $initialview = null;
+    public $calendar = false;
 
     public function __construct() {
         $this->divId = uniqid(rand());
