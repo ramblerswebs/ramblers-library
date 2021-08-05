@@ -149,7 +149,7 @@ L.Control.Rightclick = L.Control.extend({
         this._map.on('zoomend', this._onZoomEnd, this);
         this._map.on('contextmenu', this._onRightClick, this);
         var options = ['<optgroup label="General Information">',
-            '<option value="details">Right click/tap hold to see Location Details</option>',
+            '<option value="details">Right click/tap hold to see mouse location info</option>',
             '<option value="postcode">Right click/tap hold to see nearby Postcodes</option>',
             '<option value="osmaps">Right click/tap hold to see relevant OS Maps</option>',
             '</optgroup>',

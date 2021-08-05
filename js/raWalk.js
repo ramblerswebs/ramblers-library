@@ -102,23 +102,24 @@ ra.walk = (function () {
         var map = lmap.map;
         var layer = L.featureGroup().addTo(map);
         if (walk.finishLocation) {
-            my._addLocation(layer, walk.finishLocation);
+            my._addLocation(layer, walk.finishLocation, map);
         }
         if (walk.startLocation) {
-            my._addLocation(layer, walk.startLocation);
+            my._addLocation(layer, walk.startLocation, map);
         }
         if (walk.meetLocation) {
-            my._addLocation(layer, walk.meetLocation);
+            my._addLocation(layer, walk.meetLocation, map);
         }
         var bounds = layer.getBounds();
         map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
+
 //        // fix contact link does not work if popup is underneath it and it is in coloumn two
 //        var elems = document.getElementsByClassName("walkcontact");
 //        elems[0].addEventListener('mouseover', function () {
 //            map.closePopup();
 //        });
     };
-    my._addLocation = function (layer, location) {
+    my._addLocation = function (layer, location, map) {
         var icon = ra.map.icon.markerRoute();
         var popup = "", title = '';
         var popupoffset = [0, -30];
@@ -128,7 +129,7 @@ ra.walk = (function () {
                 pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
                 var pcIcon = ra.map.icon.postcode();
                 var marker = L.marker([location.postcodeLatitude, location.postcodeLongitude], {icon: pcIcon, riseOnHover: true}).addTo(layer);
-                marker.bindPopup(pcpop).openPopup();
+                marker.bindPopup(pcpop).closePopup();
             }
         }
         if (location.exact) {
@@ -171,8 +172,20 @@ ra.walk = (function () {
             }
         }
         var marker = L.marker([location.latitude, location.longitude], {icon: icon, title: title, riseOnHover: true}).addTo(layer);
-        marker.bindPopup(popup, {offset: popupoffset,keepInView:true, autoClose: false}).openPopup();
+        marker.bindPopup(popup, {offset: popupoffset, autoClose: false}).closePopup();
+        //  marker.closePopup();
+        var openPopups = true;
         // keepInView so popup in not under contact links as link does not work/available
+        map.on("mouseover", function (event) {
+            if (openPopups) {
+                marker.openPopup();
+            }
+            openPopups = false;
+        });
+        map.on("mouseout", function (event) {
+            marker.closePopup();
+            openPopups = true;
+        });
     };
     my.displayWalkURL = function (url) {
         window.open(url);
@@ -775,9 +788,6 @@ ra.walk = (function () {
             $gr += ra.link.getOSMap($location.latitude, $location.longitude, "OS Map");
             $out += ra.html.addDiv("gridref", $gr);
             $out += ra.html.addDiv("latlong", "<b>Latitude</b>: " + $location.latitude + " , <b>Longitude</b>: " + $location.longitude);
-            if ($location.postcode !== "") {
-                $out += _displayPostcode($location);
-            }
             var tagname = "ra-loc=" + $location.type;
             var tag = document.getElementById(tagname);
             if (tag !== null) {
@@ -788,6 +798,9 @@ ra.walk = (function () {
             setTimeout(function () {
                 ra.w3w.get($location.latitude, $location.longitude, tagname, true);
             }, 500);
+            if ($location.postcode !== "") {
+                $out += _displayPostcode($location);
+            }
         } else {
             if ($location.type === "Start") {
                 $out = "<div class='place'>";
