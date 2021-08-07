@@ -58,6 +58,7 @@ ra.display.plotRoute = function (options, data) {
         var upload = new L.Control.GpxUpload();
         upload.setRouteItems(this.drawnItems);
         this._map.addControl(upload);
+        upload.set_polyline_style(this.userOptions.style);
         var reverse = new L.Control.ReverseRoute();
         reverse.setRouteItems(this.drawnItems);
         this._map.addControl(reverse);

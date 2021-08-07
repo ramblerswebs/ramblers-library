@@ -124,7 +124,7 @@ ra.walk = (function () {
         var popup = "", title = '';
         var popupoffset = [0, -30];
         if (location.exact) {
-            if (location.postcodeLatitude !== 0 && location.postcodeLongitude !== 0) {
+            if (location.postcodeDistance < 10000) {
                 var pcpop = "<b>" + location.postcode + "</b>";
                 pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
                 var pcIcon = ra.map.icon.postcode();
@@ -831,13 +831,17 @@ ra.walk = (function () {
             $note2 = "Postcode is within 100m of location";
             $distclass = " distclose";
         } else {
+            $note = "Location is " + $location.postcodeDistance.toFixed() + " metres to the " + $location.postcodeDirection + " of " + $this.postcode;
+            $note2 = "Check postcode suitablility on map";
             if ($dist < 500) {
                 $distclass = " distnear";
             } else {
                 $distclass = " distfar";
             }
-            $note = "Location is " + $location.postcodeDistance.toFixed() + " metres to the " + $location.postcodeDirection + " of " + $this.postcode;
-            $note2 = "Check postcode suitablility on map";
+            if ($dist > 10000) {
+                $note = "Postcode " + $this.postcode;
+                $note2 = 'Postcode location not known';
+            }
         }
         $pc = "<b>Postcode</b>: <abbr title='" + $note2 + "'>" + $note + "</abbr>";
         $out = ra.html.addDiv("postcode " + $distclass, $pc);
