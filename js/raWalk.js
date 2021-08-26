@@ -1092,7 +1092,7 @@ ra.walk = (function () {
     };
     my.dGH = function () {
         var $url;
-        $url = ra.baseDirectory() + "/libraries/ramblers/pages/grades.html";
+        $url = ra.baseDirectory() + "libraries/ramblers/pages/grades.html";
         var marker;
         ra.ajax.postUrl($url, "", marker, _displayGradesModal);
     };
@@ -1121,8 +1121,7 @@ ra.walk = (function () {
             }
         };
         grade.image = function (nationalGrade) {
-            var $folder = ra.baseDirectory();
-            var $url = $folder + "libraries/ramblers/images/grades/";
+            var $url = ra.baseDirectory() + "libraries/ramblers/images/grades/";
             switch (nationalGrade) {
                 case "Easy Access":
                     $url = "<img src='" + $url + "grade-ea30.jpg' alt='Easy Access' height='30' width='30'>";

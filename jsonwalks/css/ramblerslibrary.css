@@ -48,6 +48,7 @@ span.walksummary img{
 .nextwalkCancelled a,
 .walkCancelled {
     color:#C60C30; 
+    text-decoration: line-through;
 }
 
 .nextwalkNew {
@@ -1057,4 +1058,9 @@ container {
     75% {
         content: "Loading...";
     }
+}
+
+.fc-event-time, .fc-event-title {
+padding: 0 1px;
+white-space: normal;
 }

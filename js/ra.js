@@ -41,7 +41,7 @@ ra.baseDirectory = function () {
 ra.decodeOptions = function (value) {
     var options = JSON.parse(value);
     if (options.hasOwnProperty('base')) {
-        ra._baseDirectory = options.base + "/";
+        ra._baseDirectory = options.base;
     }
     ra.defaultMapOptions.bing = options.bing;
     ra.defaultMapOptions.bingkey = options.bingkey;
@@ -400,6 +400,15 @@ ra.date = (function () {
         const diffTime = Math.abs(d1 - d2);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays;
+    };
+    date.isValidString = function (text) {
+        if (typeof text === 'undefined') {
+            return false;
+        }
+        if (text === null) {
+            return false;
+        }
+        return Date.parse(text) !== null;
     };
     date._setDateTime = function (datetimestring) {
         // also used by time
@@ -763,7 +772,7 @@ ra.w3w = (function () {
                 tag.innerHTML = "Error accessing What3Words: " + err + "<br/>";
             } else {
                 var out = '<a class="w3w" href="https://what3words.com/about-us/" target="_blank">What3Words: </a>';
-                out += '<a class="w3w" href="https://what3words.com/' + items.words + '" target="_blank"> ///'+items.words+'</a><br/>';
+                out += '<a class="w3w" href="https://what3words.com/' + items.words + '" target="_blank"> ///' + items.words + '</a><br/>';
                 if (place) {
                     out += '<b>Nearest Place: </b>' + items.nearestPlace + '<br/>';
                 }

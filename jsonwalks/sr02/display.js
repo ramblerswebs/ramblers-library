@@ -6,8 +6,8 @@ displayCustomValues = function ($option, $walk) {
     // custom field must start with x
     switch ($option) {
         case "{xdowddmm}":
-        $response.out = "<b>" + ra.date.dow($walk.walkDate)+"<br/>"  + ra.date.ddmm($walk.walkDate)+ ra.walk.addYear($walk) + "</b>";
-         break;
+            $response.out = "<b>" + ra.date.dow($walk.walkDate) + "<br/>" + ra.date.ddmm($walk.walkDate) + ra.walk.addYear($walk) + "</b>";
+            break;
         case "{xSymbol}":
             /* Picnic or Pub icon */
             if ($walk.additionalNotes.includes("picnic")) {
@@ -35,8 +35,8 @@ displayCustomValues = function ($option, $walk) {
     return $response;
 };
 gradeImage = function (nationalGrade) {
-    var $folder = ra.baseDirectory();
-    var $url = $folder + "libraries/ramblers/jsonwalks/sr02/images/grades/";
+
+    var $url = ra.baseDirectory() + "libraries/ramblers/jsonwalks/sr02/images/grades/";
     switch (nationalGrade) {
         case "Easy Access":
             $url = "<img src='" + $url + "grade-ea30.jpg' alt='Easy Access' height='30' width='30'>";

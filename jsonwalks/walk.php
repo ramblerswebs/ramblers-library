@@ -37,6 +37,7 @@ class RJsonwalksWalk extends REvent {
     public $meetLocation;           // a [[RJsonwalksLocation]] object if hasMeetPlace=true
 // starting place
     public $hasExactStartPlace = false;
+    public $hasFinishPlace = false;
     public $hasNeither = false;
     public $startLocation;          // a [[RJsonwalksLocation]] object for the start
 // finish place
@@ -283,6 +284,7 @@ class RJsonwalksWalk extends REvent {
                 }
             }
             if ($value->typeString == "End") {
+                $this->hasFinishPlace = true;
                 $this->finishLocation = new RJsonwalksLocation($value, $this->walkDate);
             }
         }
