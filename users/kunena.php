@@ -89,6 +89,7 @@ class RUsersKunena {
                 echo '</ul>';
             }
         }
+        $a=1;
     }
 
 }

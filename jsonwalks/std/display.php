@@ -29,8 +29,12 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
     private $customListFormat = null;
     private $customTableFormat = null;
     private $customGradesFormat = null;
+    private $customTabOrder = null;
 
     public function DisplayWalks($walks) {
+        //  $tabOrder = ['Grades', 'Table', 'List', 'Map'];
+        //   $this->setTabOrder($tabOrder);
+
         $this->id = uniqid(rand());
         if ($this->printOn) {
             echo "<p>Web master please disable this print option</p>";
@@ -90,9 +94,10 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $data->noPagination = $this->noPagination;
         $data->displayDetailsPrompt = $this->displayDetailsPrompt;
         $data->legendposition = $this->legendposition;
+        $data->customGradesFormat = $this->customGradesFormat;
         $data->customListFormat = $this->customListFormat;
         $data->customTableFormat = $this->customTableFormat;
-        $data->customGradesFormat = $this->customGradesFormat;
+        $data->customTabOrder = $this->customTabOrder;
 
         $this->map->setDataObject($data);
         $this->map->display();
@@ -101,6 +106,10 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
+    }
+
+    public function setTabOrder($value) {
+        $this->customTabOrder = $value;
     }
 
     public function setCustomListFormat($value) {
@@ -128,4 +137,20 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         }
         return $number;
     }
+
+    private function fred() {
+        $tabOrder = ['Grades', 'Table', 'List', 'Map'];
+        $display->setTabOrder($tabOrder);
+        $display->setCustomListFormat = ( ['{dowdd}', '{,meet}', '{,start}',
+            '{,title}', '{,distance}',
+            '{,contactname}', '{,telephone}']);
+        $display->setCustomGradesFormat(['{gradeimg}', '{dowddmm}', '{,title}', '{,distance}', '{,contactname}']);
+        $tableFormat = [
+            ['title' => 'Date/Time', 'items' => ["{dowddmm}", "{;startTime}"]],
+            ['title' => 'Leader/Contact', 'items' => ["{xContact}", "{;telephone1}", "{;telephone2}"]],
+            ['title' => 'Details', 'items' => ["{title}", "{;description}", "{lf}", "{Grid Ref: }", "{startGR}", "{ Postcode: }", "{startPC}", "{;additionalNotes}"]],
+            ['title' => 'Distance', 'items' => ["{distance}", "{;xNationalGrade}", "{xSymbol}"]]
+        ];
+    }
+
 }

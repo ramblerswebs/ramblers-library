@@ -11,9 +11,9 @@
  *
  * @author Chris Vaughan
  */
-class RJsonwalksStdAreawalks {
+class RJsonwalksStdAreawalks extends RJsonwalksDisplaybase{
 
-    function DisplayWalks() {
+    public function DisplayWalks() {
 
         $app = JFactory::getApplication();
         RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
@@ -88,12 +88,12 @@ class RJsonwalksStdAreawalks {
             if ($group->scope == "A") {
                 $name = $group->name;
                 $code = $group->groupCode;
-                echo '<option value="' . $code . '">' . $name . '</option>';
+            //    echo '<option value="' . $code . '">' . $name . '</option>';
             }
         }
-        echo '</select> ';
-        $map = new RLeafletMap();
-        $content = "selectAreaCode();";
+       
+         $this->map = new RLeafletMap();
+        $this->map->setCommand("loadDisplayAreaWalks");
         $map->options->fullscreen = true;
         $map->options->cluster = false;
         $map->options->search = false;
@@ -104,7 +104,14 @@ class RJsonwalksStdAreawalks {
         $map->options->fitbounds = false;
         $map->options->displayElevation = false;
         $map->options->print = false;
-        $map->addContent($content);
+            $data = new class {
+            
+        };
+        $data->areas = $json;
+       
+        
+
+        $this->map->setDataObject($data);
         $map->display();
         echo '</div> ';
     }

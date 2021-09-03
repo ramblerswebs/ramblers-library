@@ -21,6 +21,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         displayStartTime: true,
         displayStartDescription: true,
         displayDetailsPrompt: true,
+        tabOrder: ["Grades", "Table", "List", "Map"],
         tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{mediathumbr}", "{title}"]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
         listFormat: ["{dowdd}", "{,meet}", "{,start}", "{,title}", "{,distance}", "{,contactname}", "{,telephone}"],
         gradesFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
@@ -42,6 +43,9 @@ ra.display.walksTabs = function (mapOptions, data) {
     this.optionTag = {};
     this.mapOptions = mapOptions;
     this.settings.jplistName = 'jpl' + mapOptions.divId;
+    if (data.customTabOrder !== null) {
+        this.settings.tabOrder = data.customTabOrder;
+    }
     if (data.customListFormat !== null) {
         this.settings.listFormat = data.customListFormat;
     }
@@ -112,12 +116,41 @@ ra.display.walksTabs = function (mapOptions, data) {
         if (wfOptions.defaultView === "Details") {
             wfOptions.defaultView = "Grades";
         }
-        this.settings.currentView = wfOptions.defaultView;
-        this.settings.gradesView = wfOptions.detailsView;
-        this.settings.tableView = wfOptions.tableView;
-        this.settings.listView = wfOptions.listView;
-        this.settings.mapView = wfOptions.mapView;
-        this.settings.contactsView = wfOptions.contactsView;
+        this.settings.tabOrder = [wfOptions.defaultView];
+        switch (wfOptions.defaultView) {
+            case "Grades":
+                wfOptions.detailsView = false;
+                break;
+            case "Table":
+                wfOptions.tableView = false;
+                break;
+            case "List":
+                wfOptions.listView = false;
+                break;
+            case "Map":
+                wfOptions.mapView = false;
+                break;
+            case "Contacts":
+                wfOptions.contactsView = false;
+                break;
+        }
+
+        if (wfOptions.detailsView) {
+            this.settings.tabOrder.push("Grades");
+        }
+        if (wfOptions.tableView) {
+            this.settings.tabOrder.push("Table");
+        }
+        if (wfOptions.listView) {
+            this.settings.tabOrder.push("List");
+        }
+        if (wfOptions.mapView) {
+            this.settings.tabOrder.push("Map");
+        }
+        if (wfOptions.contactsView) {
+            this.settings.tabOrder.push("Contacts");
+        }
+
 
         var $diag = "<h3>Walks filter diagnostics</h3>";
         if (wfOptions.listFormat !== null) {
@@ -611,11 +644,9 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         var index, len, $items;
         for (index = 0, len = $cols.length; index < len; ++index) {
-            $out += "<td>";
             $items = $cols[index].items;
+            $out += "<td>";
             $out += ra.walk.addTooltip($walk, ra.walk.getWalkValues($walk, $items));
-
-            //  $out += ra.walk.addWalkLink($walk.id, ra.walk.getWalkValues($walk, $items), "");
             $out += "</td>";
         }
         $out += "</tr>";
@@ -1025,6 +1056,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         });
     };
 
+
     this.processOptions = function (optionsDiv) {
         // var $diag = "<h3>Walks filter diagnostics</h3>";
         var table = document.createElement('table');
@@ -1032,38 +1064,25 @@ ra.display.walksTabs = function (mapOptions, data) {
         optionsDiv.appendChild(table);
         var row = document.createElement('tr');
         table.appendChild(row);
-        switch (this.settings.currentView) {
-            case "List":
-                this.addDisplayOption("List", true, row);
-                this.settings.listView = false;
-                break;
-            case "Table":
-                this.addDisplayOption("Table", true, row);
-                this.settings.tableView = false;
-                break;
-            case "Map":
-                this.addDisplayOption("Map", true, row);
-                this.settings.mapView = false;
-                break;
-            default:
-                this.addDisplayOption("Grades", true, row);
-                this.settings.gradesView = false;
-        }
-        if (this.settings.gradesView) {
-            this.addDisplayOption("Grades", false, row);
-        }
-        if (this.settings.tableView) {
-            this.addDisplayOption("Table", false, row);
-        }
-        if (this.settings.listView) {
-            this.addDisplayOption("List", false, row);
-        }
-        if (this.settings.mapView) {
-            this.addDisplayOption("Map", false, row);
-        }
-        if (this.settings.contactsView) {
-            this.addDisplayOption("Contacts", false, row);
-        }
+        var first = true;
+        var _this = this;
+        this.settings.tabOrder.forEach(function (value, index, array) {
+            switch (value) {
+                case "List":
+                case "Table":
+                case "Map":
+                case "Grades":
+                case "Contacts":
+                    if (first) {
+                        _this.settings.currentView = value;
+                    }
+                    _this.addDisplayOption(value, first, row);
+                    first = false;
+                    break;
+                default:
+                    alert("Invalid tab option " + value);
+            }
+        });
         this.settings.defaultOptions += "</tr></table>";
     };
     this.addDisplayOption = function (name, active, row) {
