@@ -14,11 +14,15 @@ class RJsonwalksFeed {
 
     private $walks;
     private $rafeedurl;
-    //   private $displayLimit = 0;
     private $srfr;
 
     public function __construct($rafeedurl) {
-        $this->rafeedurl = trim($rafeedurl);
+        $feedurl = trim($rafeedurl);
+        if (!$this->startsWith(strtolower($feedurl), 'http')) {
+            $feedurl = "https://www.ramblers.org.uk/api/lbs/walks?" . $rafeedurl;
+        }
+        $this->rafeedurl = $feedurl;
+
         $this->walks = new RJsonwalksWalks(NULL);
         $CacheTime = 15; // minutes
         $time = getdate();
@@ -30,6 +34,10 @@ class RJsonwalksFeed {
         $this->srfr->setReadTimeout(15);
         $this->readFeed($this->rafeedurl);
         RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
+    }
+    private function startsWith($string, $startString) {
+        $len = strlen($startString);
+        return (substr($string, 0, $len) === $startString);
     }
 
     private function readFeed($rafeedurl) {
@@ -54,7 +62,6 @@ class RJsonwalksFeed {
 
     public function setDisplayLimit($no) {
         echo "setDisplayLimit is no longer supported - please use RJsonwalksStdDisplay";
-        //  $this->displayLimit = $no;
     }
 
     public function filterCancelled() {

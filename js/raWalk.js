@@ -339,6 +339,9 @@ ra.walk = (function () {
         for (index = 0, len = $items.length; index < len; ++index) {
             $out += my.getWalkValue($walk, $items[index]);
         }
+        if ($out===''){
+            return $out;
+        }
         if (link) {
             return my.addWalkLink($walk.id, $out);
         } else {
@@ -748,7 +751,10 @@ ra.walk = (function () {
 
     };
     my.addTooltip = function ($walk, $text) {
-        if ($walk.status.toLowerCase() === "cancelled") {
+       if ($text===''){
+           return $text;
+       }
+       if ($walk.status.toLowerCase() === "cancelled") {
             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
 
         }
