@@ -50,6 +50,10 @@ class RJsonwalksWalks {
         }
     }
 
+    public function removeWalk($key) {
+        unset($this->arrayofwalks[$key]);
+    }
+
     public function filterDistanceFrom($easting, $northing, $distanceKm) {
         foreach ($this->arrayofwalks as $key => $walk) {
             if ($walk->distanceFrom($easting, $northing) > $distanceKm) {
@@ -98,18 +102,18 @@ class RJsonwalksWalks {
             }
         }
     }
-    
+
     public function allFestivals() {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if (count($walk->festivals)===0) {
+            if (count($walk->festivals) === 0) {
                 unset($this->arrayofwalks[$key]);
             }
         }
     }
-    
+
     public function noFestivals() {
         foreach ($this->arrayofwalks as $key => $walk) {
-           if (count($walk->festivals)>0) {
+            if (count($walk->festivals) > 0) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -232,7 +236,7 @@ class RJsonwalksWalks {
     public function noWalks($no) {
         $i = 0;
         foreach ($this->arrayofwalks as $key => $value) {
-            $i+=1;
+            $i += 1;
             if ($i > $no) {
                 unset($this->arrayofwalks[$key]);
             }

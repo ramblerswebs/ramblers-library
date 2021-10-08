@@ -334,18 +334,31 @@ ra.walk = (function () {
         return $html;
     };
     my.getWalkValues = function ($walk, $items, link = true) {
-        var index, len, $out;
-        $out = "";
+        var index, len, out, lastItem, thisItem;
+        var options;
+        out = "";
+        lastItem = '';
         for (index = 0, len = $items.length; index < len; ++index) {
-            $out += my.getWalkValue($walk, $items[index]);
+
+            options = getPrefix($items[index]);
+
+            thisItem = my.getWalkValue($walk, options.walkValue);
+            if (lastItem !== '') {
+                out += options.previousPrefix;
+            }
+            if (thisItem !== "") {
+                out+= options.prefix;
+            }
+            out += thisItem;
+            lastItem = thisItem;
         }
-        if ($out===''){
-            return $out;
+        if (out === '') {
+            return out;
         }
         if (link) {
-            return my.addWalkLink($walk.id, $out);
+            return my.addWalkLink($walk.id, out);
         } else {
-            return  $out;
+            return  out;
     }
 
     };
@@ -390,7 +403,7 @@ ra.walk = (function () {
             "{mediathumbl}",
             "{meetOSMap}", "{meetDirections}", "{startOSMap}", "{startDirections}"];
         var index, len, option, $value;
-        var $html = "<table><tr><th>No</th><th>Name</th><th>Value</th><th>HTML</th></tr>";
+        var $html = "<table><tr><th style='min-width: 30px;'>No</th><th  style='min-width: 120px;'>Name</th><th>Value</th><th>HTML</th></tr>";
         for (index = 0, len = options.length; index < len; ++index) {
             option = options[index];
             $html += "<tr>";
@@ -401,16 +414,12 @@ ra.walk = (function () {
         }
         return $html;
     };
-    my.getWalkValue = function ($walk, $options) {
-        var BR = "<br/>";
+    my.getWalkValue = function ($walk, $option) {
+        var BR = '<br/>';
         var out = "";
-        var $prefix;
-        var values = getPrefix($options);
-        $prefix = values[0];
-        var $option = values[1];
         switch ($option) {
             case "{lf}":
-                out = "<br/>";
+                out = BR;
                 break;
             case "{group}":
                 out = $walk.groupName;
@@ -512,15 +521,15 @@ ra.walk = (function () {
                 out = my.getWalkValue($walk, "{distance}");
                 out += "<br/><span class='pointer' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
-                    out += "<br/>" + $walk.localGrade;
+                    out += BR + $walk.localGrade;
                 }
                 break;
             case "{difficulty+}":
                 out = my.getWalkValue($walk, "{distance}");
-                out += "<br/>" + ra.walk.grade.disp($walk.nationalGrade, "middle") + "<br/>";
+                out += BR + ra.walk.grade.disp($walk.nationalGrade, "middle") + BR;
                 out += "<span class='pointer' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
-                    out += "<br/>" + $walk.localGrade;
+                    out += BR + $walk.localGrade;
                 }
                 break;
             case "{distance}":
@@ -547,7 +556,7 @@ ra.walk = (function () {
             case "{grade}":
                 out = "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
-                    out += "<br/>" + $walk.localGrade;
+                    out += BR + $walk.localGrade;
                 }
                 break;
             case "{grade+}":
@@ -555,7 +564,7 @@ ra.walk = (function () {
                 out += "<div>" + ra.walk.grade.disp($walk.nationalGrade, "middle") + "</div>";
                 out += "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
-                    out += "<br/>" + $walk.localGrade;
+                    out += BR + $walk.localGrade;
                 }
                 break;
             case "{nationalGrade}":
@@ -578,11 +587,12 @@ ra.walk = (function () {
                 }
                 break;
             case "{contact}":
+                var $titlePrefix = '';
                 out = "";
                 if ($walk.isLeader) {
-                    $prefix += "Leader";
+                    $titlePrefix += "Leader";
                 } else {
-                    $prefix += "Contact";
+                    $titlePrefix += "Contact";
                 }
                 if ($walk.contactName !== "") {
                     out += " <b>" + $walk.contactName + "</b>";
@@ -595,6 +605,9 @@ ra.walk = (function () {
                 }
                 if ($walk.telephone2 !== "") {
                     out += BR + $walk.telephone2;
+                }
+                if (out !== '') {
+                    out = $titlePrefix + out;
                 }
                 break;
             case "{contactname}":
@@ -692,39 +705,50 @@ ra.walk = (function () {
                     out = $option.replace("}", "");
                 }
         }
-        if (out !== "") {
-            return  $prefix + out;
-        }
-        return "";
+
+        return out;
     };
-    getPrefix = function ($option) {
-        var $prefix = "";
+    getPrefix = function (walkOption) {
+        var options = {};
+        options.previousPrefix = '';
+        options.prefix = "";
+        options.walkValue = walkOption;
         var $loop = true;
         do {
-            switch ($option.substr(0, 2)) {
+            switch ( options.walkValue.substr(0, 2)) {
                 case "{;":
-                    $prefix += "<br/>";
-                    $option = $option.replace("{;", "{");
+                    options.prefix += '<br/>';
+                    options.walkValue = options.walkValue.replace("{;", "{");
                     break;
                 case "{,":
-                    $prefix += ", ";
-                    $option = $option.replace("{,", "{");
+                    options.prefix += ", ";
+                    options.walkValue = options.walkValue.replace("{,", "{");
                     break;
                 case "{[":
-                    var $close = $option.indexOf("]");
+                    var $close = options.walkValue.indexOf("]");
                     if ($close > 0) {
-                        $prefix += $option.substr(2, close - 2);
-                        $option = "{" + $option.substr(close + 1);
+                        options.prefix +=  options.walkValue.substr(2, $close - 2);
+                        options.walkValue = "{" + options.walkValue.substr($close + 1);
                     } else {
-                        $prefix += $option;
-                        $option = "{}";
+                        options.prefix +=  options.walkValue;
+                        options.walkValue = "{}";
+                    }
+                    break;
+                case "{<":
+                    var $close =  options.walkValue.indexOf(">");
+                    if ($close > 0) {
+                        options.previousPrefix += options.walkValue.substr(2, $close - 2);
+                        options.walkValue = "{" + options.walkValue.substr($close + 1);
+                    } else {
+                        options.previousPrefix += options.walkValue;
+                        options.walkValue = "{}";
                     }
                     break;
                 default:
                     $loop = false;
             }
         } while ($loop);
-        return [$prefix, $option];
+        return options;
     };
     my._addWalkLink = function (id, $text, $class = "") {
         return  "<span class='pointer " + $class + "' onclick=\"" + my.DisplayWalkFunction + "(event," + id + ")\">" + $text + "</span>";
@@ -751,10 +775,10 @@ ra.walk = (function () {
 
     };
     my.addTooltip = function ($walk, $text) {
-       if ($text===''){
-           return $text;
-       }
-       if ($walk.status.toLowerCase() === "cancelled") {
+        if ($text === '') {
+            return $text;
+        }
+        if ($walk.status.toLowerCase() === "cancelled") {
             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
 
         }
@@ -1122,6 +1146,24 @@ ra.walk = (function () {
                     return "S";
                 case "Technical":
                     return "T";
+                default:
+                    return "";
+            }
+        };
+        grade.colour = function (nationalGrade) {
+            switch (nationalGrade) {
+                case "Easy Access":
+                    return "#8BA69C";
+                case "Easy":
+                    return "#A8B400";
+                case "Leisurely":
+                    return "#007A87";
+                case "Moderate":
+                    return "#C75B12";
+                case "Strenuous":
+                    return "#782327";
+                case "Technical":
+                    return "#5B491F";
                 default:
                     return "";
             }

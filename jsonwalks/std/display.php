@@ -29,6 +29,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
     private $customListFormat = null;
     private $customTableFormat = null;
     private $customGradesFormat = null;
+    private $customCalendarFormat = null;
     private $customTabOrder = null;
 
     public function DisplayWalks($walks) {
@@ -60,6 +61,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $options->maptools = true;
         $options->rightclick = true;
         $options->print = true;
+        $options->calendar = true;
         //  $this->map->addScriptsandStyles($options);
 
         $items = $walks->allWalks();
@@ -95,6 +97,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $data->displayDetailsPrompt = $this->displayDetailsPrompt;
         $data->legendposition = $this->legendposition;
         $data->customGradesFormat = $this->customGradesFormat;
+        $data->customCalendarFormat = $this->customCalendarFormat;
         $data->customListFormat = $this->customListFormat;
         $data->customTableFormat = $this->customTableFormat;
         $data->customTabOrder = $this->customTabOrder;
@@ -124,6 +127,10 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $this->customGradesFormat = $value;
     }
 
+    public function setCustomCalendarFormat($value) {
+        $this->customCalendarFormat = $value;
+    }
+
     private function addGotoWalk() {
         // no longer used
     }
@@ -137,20 +144,4 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         }
         return $number;
     }
-
-    private function fred() {
-        $tabOrder = ['Grades', 'Table', 'List', 'Map'];
-        $display->setTabOrder($tabOrder);
-        $display->setCustomListFormat = ( ['{dowdd}', '{,meet}', '{,start}',
-            '{,title}', '{,distance}',
-            '{,contactname}', '{,telephone}']);
-        $display->setCustomGradesFormat(['{gradeimg}', '{dowddmm}', '{,title}', '{,distance}', '{,contactname}']);
-        $tableFormat = [
-            ['title' => 'Date/Time', 'items' => ["{dowddmm}", "{;startTime}"]],
-            ['title' => 'Leader/Contact', 'items' => ["{xContact}", "{;telephone1}", "{;telephone2}"]],
-            ['title' => 'Details', 'items' => ["{title}", "{;description}", "{lf}", "{Grid Ref: }", "{startGR}", "{ Postcode: }", "{startPC}", "{;additionalNotes}"]],
-            ['title' => 'Distance', 'items' => ["{distance}", "{;xNationalGrade}", "{xSymbol}"]]
-        ];
-    }
-
 }

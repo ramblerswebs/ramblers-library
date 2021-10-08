@@ -12,16 +12,28 @@ defined('_JEXEC') or die('Restricted access');
 
 class RJsonwalksFeed {
 
-    private $walks;
+    private $walks = [];
     private $rafeedurl;
     private $srfr;
 
-    public function __construct($rafeedurl) {
-        $feedurl = trim($rafeedurl);
-        if (!$this->startsWith(strtolower($feedurl), 'http')) {
-            $feedurl = "https://www.ramblers.org.uk/api/lbs/walks?" . $rafeedurl;
+    public function __construct($options) {
+        $okay = false;
+        if (is_string($options)) {
+            $feedurl = trim($options);
+            if (!$this->startsWith(strtolower($feedurl), 'http')) {
+                $feedurl = "https://www.ramblers.org.uk/api/lbs/walks?" . $feedurl;
+            }
+            $this->rafeedurl = $feedurl;
+            $okay = true;
         }
-        $this->rafeedurl = $feedurl;
+        if (is_object($options)) {
+            $this->rafeedurl=$options->getGwemUrl();
+            $okay = true;
+        }
+        if (!$okay) {
+            echo "Input to RJsonwalksFeed is not valid";
+            return;
+        }
 
         $this->walks = new RJsonwalksWalks(NULL);
         $CacheTime = 15; // minutes
@@ -35,6 +47,7 @@ class RJsonwalksFeed {
         $this->readFeed($this->rafeedurl);
         RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
     }
+
     private function startsWith($string, $startString) {
         $len = strlen($startString);
         return (substr($string, 0, $len) === $startString);

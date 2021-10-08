@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var ra, jplist, addFilterFormats, displayGradesRowClass, displayTableRowClass, displayListRowClass;
+var ra, jplist, FullCalendar, addFilterFormats, displayGradesRowClass, displayTableRowClass, displayListRowClass;
 
 if (typeof (ra) === "undefined") {
     ra = {};
@@ -21,10 +21,11 @@ ra.display.walksTabs = function (mapOptions, data) {
         displayStartTime: true,
         displayStartDescription: true,
         displayDetailsPrompt: true,
-        tabOrder: ["Grades", "Table", "List", "Map"],
+        tabOrder: ["Grades", "Table", "List", "Calendar", "Map"],
         tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{mediathumbr}", "{title}"]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
         listFormat: ["{dowdd}", "{,meet}", "{,start}", "{,title}", "{,distance}", "{,contactname}", "{,telephone}"],
         gradesFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
+        calendarFormat: ["{title}", "{,distance}", ",", " ", "{meetTime}", "{< or >startTime}"],
         withMonth: ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"],
         jplistGroup: ra.uniqueID(),
         jplistName: "name1",
@@ -46,14 +47,17 @@ ra.display.walksTabs = function (mapOptions, data) {
     if (data.customTabOrder !== null) {
         this.settings.tabOrder = data.customTabOrder;
     }
+    if (data.customGradesFormat !== null) {
+        this.settings.gradesFormat = data.customGradesFormat;
+    }
     if (data.customListFormat !== null) {
         this.settings.listFormat = data.customListFormat;
     }
     if (data.customTableFormat !== null) {
         this.settings.tableFormat = data.customTableFormat;
     }
-    if (data.customGradesFormat !== null) {
-        this.settings.gradesFormat = data.customGradesFormat;
+    if (data.customCalendarFormat !== null) {
+        this.settings.CalendarFormat = data.customCalendarFormat;
     }
     this.legendposition = data.legendposition;
     this.settings.displayClass = data.displayClass;
@@ -105,6 +109,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         this.processOptions(this.elements.raoptions);
         var $walks = this.getAllWalks();
+        this.checkColumnNotBlank($walks, this.settings.tableFormat);
         this.setFilters($walks);
         this.displayWalks($walks);
         // to support Area walks display
@@ -250,6 +255,13 @@ ra.display.walksTabs = function (mapOptions, data) {
                 }
 
                 break;
+            case "Calendar":
+                this.displayMap("hidden");
+                ra.html.setTag(this.elements.rapagination1, "");
+                ra.html.setTag(this.elements.rapagination2, "");
+                ra.html.setTag(this.elements.rawalks, "");
+                this.displayWalksCalendar($walks);
+                break;
             case "Map":
                 ra.html.setTag(this.elements.rapagination1, "");
                 ra.html.setTag(this.elements.rapagination2, "");
@@ -346,6 +358,27 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         return  header + $out + footer;
     };
+    this.checkColumnNotBlank = function ($walks, tableformat) {
+        var $walk, no, first;
+        for (i = 0, no = $walks.length; i < no; ++i) {
+            first = i === 0;
+            $walk = $walks[i];
+            // check if any columns are blank
+            var index, len, $items, content;
+            for (index = 0, len = tableformat.length; index < len; ++index) {
+                $items = tableformat[index].items;
+                if (first) {
+                    tableformat[index].blank = true;
+                }
+                if (tableformat[index].blank) {
+                    content = ra.walk.addTooltip($walk, ra.walk.getWalkValues($walk, $items));
+                    if (content !== '') {
+                        tableformat[index].blank = false;
+                    }
+                }
+            }
+        }
+    };
     this.shouldDisplayMonth = function () {
         var index, len, $item;
         switch (this.settings.currentView) {
@@ -413,16 +446,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         return $out;
     };
-    this.displayTableHeader = function () {
-        var $cols = this.settings.tableFormat;
-        var $out = "<tr>";
-        var index, len, $heading;
-        for (index = 0, len = $cols.length; index < len; ++index) {
-            $heading = $cols[index].title;
-            $out += "<th>" + $heading + "</th>";
-        }
-        return $out + "</tr>";
-    };
+
     this.displayWalksFooter = function () {
         var $out = "";
         switch (this.settings.currentView) {
@@ -591,20 +615,15 @@ ra.display.walksTabs = function (mapOptions, data) {
         if (typeof displayGradesRowClass === 'function') {
             $customClass = displayGradesRowClass($walk);
         }
-
+        $out1 += "<div data-jplist-item >";
         if ($displayMonth) {
-            $out1 += "<div data-jplist-item >";
             $out1 += "<h3>" + $walk.month + ra.walk.addYear($walk) + "</h3>";
-            $out1 += "<div class='" + $class + " walk" + $walk.status + "' >";
-        } else {
-            $out1 += "<div data-jplist-item class='" + $customClass + " walk" + $walk.status + "' >";
         }
+        $out1 += "<div  class='" + $customClass + " walk" + $walk.status + "' >";
         $image = '<span class="walkdetail" >';
         $out += ra.walk.getWalkValues($walk, this.settings.gradesFormat);
         $text = $out1 + $image + ra.walk.addTooltip($walk, $out) + "\n</span></div>\n";
-        if ($displayMonth) {
-            $text += "</div>\n";
-        }
+        $text += "</div>\n";
         return $text;
     };
 
@@ -615,16 +634,26 @@ ra.display.walksTabs = function (mapOptions, data) {
         if (typeof displayListRowClass === 'function') {
             $customClass = displayListRowClass($walk);
         }
+        $out += "<div data-jplist-item >";
         if ($displayMonth) {
-            $out += "<div data-jplist-item >";
             $out += "<h3>" + $walk.month + ra.walk.addYear($walk) + "</h3>";
-            $out += "</div>\n";
-            $out += "<div data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
         }
-        $out += "<div data-jplist-item class='" + $customClass + " walk" + $walk.status + "' >";
-
+        $out += "<div class='" + $customClass + " walk" + $walk.status + "' >";
         $out += ra.walk.addTooltip($walk, ra.walk.getWalkValues($walk, $items));
         return  $out + "</div>\n";
+    };
+    this.displayTableHeader = function () {
+        var $cols = this.settings.tableFormat;
+        var $out = "<tr>";
+        var index, len, $heading;
+        for (index = 0, len = $cols.length; index < len; ++index) {
+            if (!$cols[index].blank) {
+                $heading = $cols[index].title;
+                $out += "<th>" + $heading + "</th>";
+            }
+
+        }
+        return $out + "</tr>";
     };
     this.displayWalk_Table = function ($walk, $class, $displayMonth) {
         var $cols = this.settings.tableFormat;
@@ -645,9 +674,11 @@ ra.display.walksTabs = function (mapOptions, data) {
         var index, len, $items;
         for (index = 0, len = $cols.length; index < len; ++index) {
             $items = $cols[index].items;
-            $out += "<td>";
-            $out += ra.walk.addTooltip($walk, ra.walk.getWalkValues($walk, $items));
-            $out += "</td>";
+            if (!$cols[index].blank) {
+                $out += "<td>";
+                $out += ra.walk.addTooltip($walk, ra.walk.getWalkValues($walk, $items));
+                $out += "</td>";
+            }
         }
         $out += "</tr>";
         return $out;
@@ -704,8 +735,85 @@ ra.display.walksTabs = function (mapOptions, data) {
     checkContactTelephone1 = function (contact) {
         return contact.telephone1 !== "";
     };
+
     checkContactTelephone2 = function (contact) {
         return contact.telephone2 !== "";
+    };
+
+    this.displayWalksCalendar = function ($walks) {
+        var index, len, $walk, div;
+        if ($walks.length === 0) {
+            ra.html.setTag(this.elements.rawalks, '<h3>Sorry there are no walks at the moment.</h3>');
+        }
+        var events = [];
+        var $items = this.settings.calendarFormat;
+        for (index = 0, len = $walks.length; index < len; ++index) {
+            $walk = $walks[index];
+            if ($walk.display) {
+                var event = {};
+
+                event.id = $walk.id;
+                event.start = $walk.walkDate;
+                if ($walk.startLocation.exact) {
+                    event.start = $walk.startLocation.time;
+                }
+                if ($walk.hasMeetPlace) {
+                    event.start = $walk.meetLocation.time;
+                }
+                div = document.createElement("div");
+                div.innerHTML = ra.walk.getWalkValues($walk, $items, false);
+                event.title = div.textContent || div.innerText || "";
+                event.textColor = '#000000';
+                if ($walk.status === 'Cancelled') {
+                    event.textColor = 'red';
+                    event.backgroundColor = 'white';
+                } else {
+                    event.backgroundColor = ra.walk.grade.colour($walk.nationalGrade);
+                    event.textColor = 'white';
+                }
+
+
+                event.classNames = ['pointer'];
+                event.display = 'block';
+                event.eventContent = {html: ra.walk.getWalkValues($walk, $items, false)};
+                events.push(event);
+            }
+        }
+        var calendarTab = this.elements.rawalks;
+
+        var _this = this;
+        var calendar = new FullCalendar.Calendar(calendarTab, {
+            height: 'auto',
+            selectable: true,
+            displayEventTime: false,
+            headerToolbar: {center: 'dayGridMonth,listMonth'}, // buttons for switching between views
+            events: events,
+
+            views: {
+                dayGrid: {
+                    eventTimeFormat: {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        meridiem: false
+                    }
+                },
+                timeGrid: {
+                    // options apply to timeGridWeek and timeGridDay views
+                },
+                week: {
+                    // options apply to dayGridWeek and timeGridWeek views
+                },
+                day: {
+                    // options apply to dayGridDay and timeGridDay views
+                }
+            },
+            eventClick: function (info) {
+                // alert('Event: ' + info.event.id);
+                var id = info.event.id;
+                ra.walk.displayWalkID(info, id);
+            }
+        });
+        calendar.render();
     };
 
     this.displayWalksMap = function ($walks) {
@@ -1070,6 +1178,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             switch (value) {
                 case "List":
                 case "Table":
+                case "Calendar":
                 case "Map":
                 case "Grades":
                 case "Contacts":

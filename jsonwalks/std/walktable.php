@@ -12,7 +12,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
     private $walksClass = "walks";
     private $walkClass = "walk";
-    private $tableClass='pantone5565';
+    private $tableClass = 'pantone5565';
     private $customFormat = null;
     private $monthlyReminderClass = null;
     private $monthlyReminderMethod = null;
@@ -26,7 +26,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         ['title' => 'Date', 'items' => ["{dowddmm}"]],
         ['title' => 'Meet', 'items' => ["{meet}", "{,meetGR}", "{,meetPC}"]],
         ['title' => 'Start', 'items' => ["{start}", "{,startGR}", "{,startPC}"]],
-        ['title' => 'Title', 'items' => ["{title}","{mediathumbr}"]],
+        ['title' => 'Title', 'items' => ["{title}", "{mediathumbr}"]],
         ['title' => 'Distance', 'items' => ["{distance}"]],
         ['title' => 'Grade', 'items' => ["{grade+}"]],
         ['title' => 'Contact', 'items' => ["{contact}"]]];
@@ -93,8 +93,9 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     public function setWalkClass($class) {
         $this->walkClass = $class;
     }
-    public function setTableClass($class){
-        $this->tableClass=$class;
+
+    public function setTableClass($class) {
+        $this->tableClass = $class;
     }
 
     private function displayTableHeader() {
