@@ -565,27 +565,50 @@ class RJsonwalksWalk extends REvent {
         self::$customValuesMethod = $method;
     }
 
+//    public function getWalkValues($items, $link = true) {
+//        $out = "";
+//        foreach ($items as $item) {
+//            $out .= $this->getWalkValue($item);
+//        }
+//        if ($link) {
+//            return $this->addWalkLink($this->id, $out, "");
+//        } else {
+//            return $out;
+//        }
+//    }
     public function getWalkValues($items, $link = true) {
-        $text = "";
+        $out = "";
+        $lastItem = '';
         foreach ($items as $item) {
-            $text .= $this->getWalkValue($item);
+
+            $options = $this->getPrefix($item);
+
+            $thisItem = $this->getWalkValue($options->walkValue);
+            if ($lastItem !== '' && $thisItem !== '') {
+                $out .= $options->previousPrefix;
+            }
+            if ($thisItem !== "") {
+                $out .= $options->prefix;
+            }
+            $out .= $thisItem;
+            $lastItem = $thisItem;
+        }
+        if ($out === '') {
+            return $out;
         }
         if ($link) {
-            return $this->addWalkLink($this->id, $text, "");
+            return $this->addWalkLink($this->id, $out);
         } else {
-            return $text;
+            return $out;
         }
     }
 
-    public function getWalkValue($options) {
+    public function getWalkValue($option) {
         $BR = "<br/>";
         $out = "";
-        $values = $this->getPrefix($options);
-        $prefix = $values[0];
-        $option = $values[1];
         switch ($option) {
             case "{lf}":
-                $out = "<br/>";
+                $out = $BR;
                 break;
             case "{group}":
                 $out = $this->groupName;
@@ -688,9 +711,9 @@ class RJsonwalksWalk extends REvent {
                 break;
             case "{difficulty}":
                 $out = $this->getWalkValue("{distance}");
-                $out .= "<br/><span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
+                $out .= $BR . "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    $out .= "<br/>" . $this->localGrade;
+                    $out .= $BR . $this->localGrade;
                 }
                 break;
             case "{difficulty+}":
@@ -698,7 +721,7 @@ class RJsonwalksWalk extends REvent {
                 $out .= "<div>" . $this->getGradeSpan("middle") . "</div>";
                 $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    $out .= "<br/>" . $this->localGrade;
+                    $out .= $BR . $this->localGrade;
                 }
                 break;
             case "{distance}":
@@ -725,14 +748,14 @@ class RJsonwalksWalk extends REvent {
             case "{grade}":
                 $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    $out .= "<br/>" . $this->localGrade;
+                    $out .= $BR . $this->localGrade;
                 }
                 break;
             case "{grade+}":
                 $out = "<div>" . $this->getGradeSpan("middle") . "</div>";
                 $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    $out .= "<br/>" . $this->localGrade;
+                    $out .= $BR . $this->localGrade;
                 }
                 break;
             case "{nationalGrade}":
@@ -755,11 +778,12 @@ class RJsonwalksWalk extends REvent {
                 }
                 break;
             case "{contact}":
+                 $titlePrefix = '';
                 $out = "";
                 if ($this->isLeader) {
-                    $out .= "Leader ";
+                    $titlePrefix = "Leader ";
                 } else {
-                    $out .= "Contact: ";
+                    $titlePrefix = "Contact ";
                 }
                 if ($this->contactName !== "") {
                     $out .= "<b>" . $this->contactName . "</b>";
@@ -773,12 +797,17 @@ class RJsonwalksWalk extends REvent {
                 if ($this->telephone2 !== "") {
                     $out .= $BR . $this->telephone2;
                 }
+                if ($out !== '') {
+                    $out = $titlePrefix . $out;
+                }
                 break;
             case "{contactname}":
-                if ($this->isLeader) {
-                    $prefix .= "Leader: ";
-                } else {
-                    $prefix .= "Contact: ";
+                if ($this->contactName !== '') {
+                    if ($this->isLeader) {
+                        $out .= "Leader: ";
+                    } else {
+                        $out .= "Contact: ";
+                    }
                 }
                 $out = $this->contactName;
                 break;
@@ -862,10 +891,7 @@ class RJsonwalksWalk extends REvent {
                     $out = str_replace("}", "", $option);
                 }
         }
-        if ($out !== "") {
-            return $prefix . $out;
-        }
-        return "";
+        return $out;
     }
 
     private function gradeAbbr() {
@@ -913,34 +939,49 @@ class RJsonwalksWalk extends REvent {
         return "<a href='" . $link . $this->id . "' target='_blank'>Email contact via ramblers.org.uk</a>";
     }
 
-    private function getPrefix($option) {
-        $prefix = "";
+    private function getPrefix($walkOption) {
+        $options = new StdClass();
+        $options->previousPrefix = "";
+        $options->prefix = "";
+        $options->walkValue = $walkOption;
         $loop = true;
-//      do            {
-        switch (substr($option, 0, 2)) {
-            case "{;":
-                $prefix .= "<br/>";
-                $option = str_replace("{;", "{", $option);
-                break;
-            case "{,":
-                $prefix = ", ";
-                $option = str_replace("{,", "{", $option);
-                break;
-            case "{[":
-                $close = strpos($option, "]");
-                if ($close > 0) {
-                    $prefix = substr($option, 2, $close - 2);
-                    $option = "{" . substr($option, $close + 1);
-                } else {
-                    $prefix = $option;
-                    $option = "{}";
-                }
-                break;
-            default:
-                $loop = false;
-        }
-//        } while ($loop);
-        return [$prefix, $option];
+        do {
+            switch (substr($options->walkValue, 0, 2)) {
+                case "{;":
+                    $options->prefix .= "<br/>";
+                    $options->walkValue = str_replace("{;", "{", $options->walkValue);
+                    break;
+                case "{,":
+                    $options->prefix .= ", ";
+                    $options->walkValue = str_replace("{,", "{", $options->walkValue);
+                    break;
+                case "{[":
+                    $close = strpos($options->walkValue, "]");
+                    if ($close !== false) {
+                        $options->prefix .= substr($options->walkValue, 2, $close - 2);
+                        $options->walkValue = "{" . substr($options->walkValue, $close + 1);
+                    } else {
+                        $options->prefix .= $options->walkValue;
+                        $options->walkValue = "{}";
+                    }
+
+                    break;
+                case "{<":
+                    $close = strpos($options->walkValue, ">");
+                    if ($close !== false) {
+                        $options->previousPrefix .= substr($options->walkValue, 2, $close - 2);
+                        $options->walkValue = "{" . substr($options->walkValue, $close + 1);
+                    } else {
+                        $options->previousPrefix .= $options->walkValue;
+                        $options->walkValue = "{}";
+                    }
+
+                    break;
+                default:
+                    $loop = false;
+            }
+        } while ($loop);
+        return $options;
     }
 
     private function _addWalkLink($id, $text, $class = "") {

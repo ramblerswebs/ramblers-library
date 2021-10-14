@@ -343,11 +343,11 @@ ra.walk = (function () {
             options = getPrefix($items[index]);
 
             thisItem = my.getWalkValue($walk, options.walkValue);
-            if (lastItem !== '') {
+            if (lastItem !== '' && thisItem!=='') {
                 out += options.previousPrefix;
             }
             if (thisItem !== "") {
-                out+= options.prefix;
+                out += options.prefix;
             }
             out += thisItem;
             lastItem = thisItem;
@@ -590,9 +590,9 @@ ra.walk = (function () {
                 var $titlePrefix = '';
                 out = "";
                 if ($walk.isLeader) {
-                    $titlePrefix += "Leader";
+                    $titlePrefix = "Leader ";
                 } else {
-                    $titlePrefix += "Contact";
+                    $titlePrefix = "Contact ";
                 }
                 if ($walk.contactName !== "") {
                     out += " <b>" + $walk.contactName + "</b>";
@@ -715,7 +715,7 @@ ra.walk = (function () {
         options.walkValue = walkOption;
         var $loop = true;
         do {
-            switch ( options.walkValue.substr(0, 2)) {
+            switch (options.walkValue.substr(0, 2)) {
                 case "{;":
                     options.prefix += '<br/>';
                     options.walkValue = options.walkValue.replace("{;", "{");
@@ -727,15 +727,15 @@ ra.walk = (function () {
                 case "{[":
                     var $close = options.walkValue.indexOf("]");
                     if ($close > 0) {
-                        options.prefix +=  options.walkValue.substr(2, $close - 2);
+                        options.prefix += options.walkValue.substr(2, $close - 2);
                         options.walkValue = "{" + options.walkValue.substr($close + 1);
                     } else {
-                        options.prefix +=  options.walkValue;
+                        options.prefix += options.walkValue;
                         options.walkValue = "{}";
                     }
                     break;
                 case "{<":
-                    var $close =  options.walkValue.indexOf(">");
+                    var $close = options.walkValue.indexOf(">");
                     if ($close > 0) {
                         options.previousPrefix += options.walkValue.substr(2, $close - 2);
                         options.walkValue = "{" + options.walkValue.substr($close + 1);
