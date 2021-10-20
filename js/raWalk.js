@@ -97,7 +97,7 @@ ra.walk = (function () {
         if (my.isCancelled(walk)) {
             return;
         }
-        var tag = document.getElementById("Div" + walk.id);
+        var tag = document.getElementById("div" + walk.id);
         var lmap = new leafletMap(tag, ra.defaultMapOptions);
         var map = lmap.map;
         var layer = L.featureGroup().addTo(map);
@@ -113,7 +113,7 @@ ra.walk = (function () {
         var bounds = layer.getBounds();
         map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
 
-//        // fix contact link does not work if popup is underneath it and it is in coloumn two
+//        fix contact link does not work if popup is underneath it and it is in coloumn two
 //        var elems = document.getElementsByClassName("walkcontact");
 //        elems[0].addEventListener('mouseover', function () {
 //            map.closePopup();
@@ -196,11 +196,11 @@ ra.walk = (function () {
         var $html = "";
         var $link, $out, $text;
         $html += "<div class='walkstdfulldetails stdfulldetails walk" + $walk.status + "' >" + PHP_EOL;
-        $html += "<div class='group " + my.gradeCSS($walk.nationalGrade) + "'><b>Group</b>: " + $walk.groupName + "</div>" + PHP_EOL;
+        $html += "<div class='walkitem group " + my.gradeCSS($walk.nationalGrade) + "'><b>Group</b>: " + $walk.groupName + "</div>" + PHP_EOL;
         if (my.isCancelled($walk)) {
-            $html += "<div class='reason'>WALK CANCELLED: " + $walk.cancellationReason + "</div>" + PHP_EOL;
+            $html += "<div class='walkitem reason'>WALK CANCELLED: " + $walk.cancellationReason + "</div>" + PHP_EOL;
         }
-        $html += "<div class='basics'>" + PHP_EOL;
+        $html += "<div class='walkitem basics'>" + PHP_EOL;
         $html += "<div class='description'><b><span class='walktitle'>" + $walk.title + "</span><br/>" + my.getWalkValue($walk, '{dowddmm}') + PHP_EOL;
         $html += "</b></div>" + PHP_EOL;
         if ($walk.description !== "") {
@@ -228,20 +228,20 @@ ra.walk = (function () {
         }
         $html += "</div>";
         if ($walk.hasMeetPlace) {
-            $html += "<div class='meetplace'>";
+            $html += "<div class='walkitem meetplace'>";
             $out = _addLocationInfo("Meeting", $walk.meetLocation);
             $html += $out;
             $html += "</div>" + PHP_EOL;
         }
         if ($walk.startLocation.exact) {
-            $html += "<div class='startplace'>";
+            $html += "<div class='walkitem startplace'>";
         } else {
-            $html += "<div class='nostartplace'><b>No start place - Rough location only</b>: ";
+            $html += "<div class='walkitem nostartplace'><b>No start place - Rough location only</b>: ";
         }
         $html += _addLocationInfo("Start", $walk.startLocation);
         $html += "</div>" + PHP_EOL;
         if ($walk.isLinear) {
-            $html += "<div class='finishplace'>";
+            $html += "<div class='walkitem finishplace'>";
             if ($walk.finishLocation !== null) {
                 $html += _addLocationInfo("Finish", $walk.finishLocation);
             } else {
@@ -249,7 +249,7 @@ ra.walk = (function () {
             }
             $html += "</div>" + PHP_EOL;
         }
-        $html += "<div class='difficulty'><b>Difficulty</b>: ";
+        $html += "<div class='walkitem difficulty'><b>Difficulty</b>: ";
         if ($walk.distanceMiles > 0) {
             $html += ra.html.addDiv("distance", "<b>Distance</b>: " + $walk.distanceMiles + "mi / " + $walk.distanceKm + "km");
         }
@@ -265,10 +265,11 @@ ra.walk = (function () {
             $html += ra.html.addDiv("ascent", "<b>Ascent</b>: " + $walk.ascentMetres + " m/" + $walk.ascentFeet + " ft");
         }
         $html += "</div>" + PHP_EOL;
+        $html += "<div class='walkitem walkcontact'>";
         if ($walk.isLeader === false) {
-            $html += "<div class='walkcontact'><b>Contact: </b>";
+            $html += "<b>Contact: </b>";
         } else {
-            $html += "<div class='walkcontact'><b>Contact Leader: </b>";
+            $html += "<b>Contact Leader: </b>";
         }
         $html += ra.html.addDiv("contactname", "<b>Name</b>: " + $walk.contactName);
         if ($walk.email !== "") {
@@ -302,7 +303,7 @@ ra.walk = (function () {
         $html += my.addItemInfo("facilities", "Facilities", $walk.facilities);
         if ($walk.media.length > 0) {
             if ($walk.media.length > 0) {
-                $html += "<div class='walkmedia'> ";
+                $html += "<div class='walkitem walkmedia'> ";
                 var index, len;
                 for (index = 0, len = $walk.media.length; index < len; ++index) {
                     var item = $walk.media[index];
@@ -323,14 +324,14 @@ ra.walk = (function () {
                 $html += "</div>" + PHP_EOL;
             }
         }
-        var mapdiv = "Div" + $walk.id;
-        $html += "<div id='" + mapdiv + "'></div>" + PHP_EOL;
-        $html += "<div class='walkdates'>" + PHP_EOL;
+        $html += "<div class='walkitem walkdates'>" + PHP_EOL;
         $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on National Web Site</a></div>" + PHP_EOL;
         $html += "<div class='updated'>Walk ID " + $walk.id + "</div>" + PHP_EOL;
         $html += "<div class='updated walk" + $walk.status + "'>Last update: " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
+        var mapdiv = "div" + $walk.id;
+        $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;
         return $html;
     };
     my.getWalkValues = function ($walk, $items, link = true) {
@@ -343,7 +344,7 @@ ra.walk = (function () {
             options = getPrefix($items[index]);
 
             thisItem = my.getWalkValue($walk, options.walkValue);
-            if (lastItem !== '' && thisItem!=='') {
+            if (lastItem !== '' && thisItem !== '') {
                 out += options.previousPrefix;
             }
             if (thisItem !== "") {
@@ -367,7 +368,7 @@ ra.walk = (function () {
         var $any = false;
         var $text;
         if ($value !== null) {
-            $html += "<div class='" + $class + "'><b>" + $title + "</b>";
+            $html += "<div class='walkitem " + $class + "'><b>" + $title + "</b>";
             $html += "<ul>";
             var $items = $value.items;
             var index, len;

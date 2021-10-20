@@ -139,14 +139,14 @@ L.Control.RA_Map_Tools = L.Control.extend({
         }
     },
     osZoomLevel: function () {
-        this._errorDiv.innerHTML = "";
+        this._errorDiv.setText("");
         if (this.baseTiles === 'Ordnance Survey') {
             var zoom = this._map.getZoom();
             if (zoom <= 11) {
-                this._errorDiv.innerHTML = "Info: Zoom in to see Ordnance Survey Maps";
+                this._errorDiv.setText("Info: Zoom in to see Ordnance Survey Maps");
             }
             if (zoom > 17) {
-                this._errorDiv.innerHTML = "Info: Zoom out to see Ordnance Survey Maps";
+                this._errorDiv.setText("Info: Zoom out to see Ordnance Survey Maps");
             }
         }
     },

@@ -7,7 +7,7 @@ ra._baseDirectory = '';
 ra.uniquenumber = 0;
 ra.defaultMapOptions = {
     "divId": "",
-    "mapHeight": "250px",
+    "mapHeight": "500px",
     "mapWidth": "100%",
     "helpPage": "",
     "cluster": false,

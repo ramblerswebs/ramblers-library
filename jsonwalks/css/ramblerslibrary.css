@@ -102,36 +102,16 @@ div.walkstdfulldetails div.group
     background-color: var(--pantone1815);
     color: #eeeeee;
 }
-div.walkdates {
+div.walkstdfulldetails div.walkitem.walkdates {
     font-size: 80%;
     font-style: italic;
 }
 
-div.walkstdfulldetails div.reason,
-div.walkstdfulldetails div.basics div.description,
-div.walkstdfulldetails div.meetplace div.place,
-div.walkstdfulldetails div.startplace div.place,
-div.walkstdfulldetails div.finishplace div.place{
+div.walkstdfulldetails div.walkitem {
     font-size: 115%;
 }
 
-div.walkstdfulldetails div.reason,
-div.walkstdfulldetails div.basics,
-div.walkstdfulldetails div.nomeetplace,
-div.walkstdfulldetails div.meetplace,
-div.walkstdfulldetails div.startplace,
-div.walkstdfulldetails div.nostartplace,
-div.walkstdfulldetails div.finishplace,
-div.walkstdfulldetails div.difficulty,
-div.walkstdfulldetails div.walkcontact,
-div.walkstdfulldetails div.walkmedia,
-div.walkstdfulldetails div.festivals,
-div.walkstdfulldetails div.strands,
-div.walkstdfulldetails div.suitability,
-div.walkstdfulldetails div.surroundings,
-div.walkstdfulldetails div.theme,
-div.walkstdfulldetails div.specialStatus,
-div.walkstdfulldetails div.facilities{
+div.walkstdfulldetails div.walkitem {
     margin: 2px;
     border-radius: 10px 10px 10px 10px;
     padding: 5px;
@@ -145,6 +125,12 @@ div.walkstdfulldetails div.facilities{
     line-height: 1.5em;
 
 }
+div.walkstdfulldetails div.walkitem.map {
+    
+    padding: 5px;
+    
+
+}
 div.walkstdfulldetails div.festivals > ul,
 div.walkstdfulldetails div.strands > ul,
 div.walkstdfulldetails div.suitability > ul,
@@ -154,16 +140,6 @@ div.walkstdfulldetails div.specialStatus > ul,
 div.walkstdfulldetails div.facilities > ul {
     margin-bottom: 0px;
 }
-div.walkstdfulldetails div.walkdates{
-    margin: 2px;
-    border-radius: 10px 10px 10px 10px;
-    padding: 5px;
-    display: table;
-    width:97%;
-    border: 2px solid #cccccc  ;
-    background-color: #f0f0f0;
-    line-height: 1.5em;
-}
 div.walkstdfulldetails.walkCancelled.stdfulldetails div.reason{
     text-decoration: none;
     color:var(--pantone0186); 
@@ -171,13 +147,7 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.reason{
 /*div.walkstdfulldetails.walkCancelled.stdfulldetails {
         color:var(--pantone0186);
 }*/
-div.walkstdfulldetails.walkCancelled.stdfulldetails div.basics,
-div.walkstdfulldetails.walkCancelled.stdfulldetails div.nomeetplace,
-div.walkstdfulldetails.walkCancelled.stdfulldetails div.meetplace,
-div.walkstdfulldetails.walkCancelled.stdfulldetails div.startplace,
-div.walkstdfulldetails.walkCancelled.stdfulldetails div.nostartplace,
-div.walkstdfulldetails.walkCancelled.stdfulldetails div.finishplace,
-div.walkstdfulldetails.walkCancelled.stdfulldetails div.difficulty {
+div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
     text-decoration: line-through;
 }
 
@@ -382,7 +352,7 @@ h3.ra_openclose:hover {
 div.js-modal.ramblers {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
-    z-index: 999999; /* Sit on top */
+    z-index: 20000; /* Sit on top */
     padding-top: 30px; /* Location of the box */
     left: 0;
     top: 0;

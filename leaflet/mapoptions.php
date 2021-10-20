@@ -32,7 +32,7 @@ class RLeafletMapoptions {
     public $ORSkey = null;
     public $ramblersPlaces = false;
     public $topoMapDefault = false;
-    public $controlcontainer = false;
+    public $controlcontainer = false; // used by Walks Editor
     public $copyright = true;
     public $initialview = null;
     public $calendar = false;

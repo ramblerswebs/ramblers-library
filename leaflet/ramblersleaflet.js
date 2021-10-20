@@ -67,7 +67,6 @@ function leafletMap(tag, options) {
     }
     // top right control for error messages
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
-
     // top left controls
     if (options.displayElevation) {
         this.controls.elevation = L.control.elevation({
@@ -137,15 +136,15 @@ function leafletMap(tag, options) {
     }
     var _this = this;
     if (options.maptools) {
-        //   try {
-        this.controls.tools = L.control.ra_map_tools();
-        this.controls.tools.userOptions(this.userOptions);
-        this.controls.tools.helpPage(options.helpPage);
-        this.controls.tools.setErrorDiv(this.controls.errorDiv);
-        this.controls.tools.addTo(this.map);
-        //  } catch (err) {
-        //      _this.controls.errorDiv.innerHTML = "ERROR: " + err.message;
-        //  }
+        try {
+            this.controls.tools = L.control.ra_map_tools();
+            this.controls.tools.userOptions(this.userOptions);
+            this.controls.tools.helpPage(options.helpPage);
+            this.controls.tools.setErrorDiv(this.errorDivControl());
+            this.controls.tools.addTo(this.map);
+        } catch (err) {
+            this.controls.errorDiv.setText("ERROR: " + err.message);
+        }
     }
     // bottom left controls
     if (options.startingplaces) {
@@ -160,7 +159,7 @@ function leafletMap(tag, options) {
             this.controls.rightclick.mapControl(this.controls.layers);
             this.userOptions.rightclick = this.controls.rightclick.userOptions();
         } catch (err) {
-            this.controls.errorDiv.innerHTML = "ERROR: " + err.message;
+            this.controls.errorDiv.setText("ERROR: " + err.message);
         }
     }
 
@@ -169,7 +168,7 @@ function leafletMap(tag, options) {
             this.controls.mouse = L.control.mouse().addTo(this.map);
             this.userOptions.mouse = this.controls.mouse.userOptions();
         } catch (err) {
-            this.controls.errorDiv.innerHTML = "ERROR: " + err.message;
+            this.controls.errorDiv.setText("ERROR: " + err.message);
         }
 
     }
@@ -186,6 +185,7 @@ function leafletMap(tag, options) {
 
     // bottom right controls
     if (options.controlcontainer) {
+        // used by walks editor
         L.control.racontainer({id: 'js-gewmapButtons'}).addTo(this.map);
     }
 
@@ -229,7 +229,7 @@ leafletMap.prototype.scaleControl = function () {
 leafletMap.prototype.rightclickControl = function () {
     return this.controls.rightclick;
 };
-leafletMap.prototype.errorDivConctrol = function () {
+leafletMap.prototype.errorDivControl = function () {
     return this.controls.errorDiv;
 };
 leafletMap.prototype.mapDiv = function () {
