@@ -294,6 +294,8 @@ ra.walk = (function () {
             }
         }
         $html += "</div>" + PHP_EOL;
+        var mapdiv = "div" + $walk.id;
+        $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;
         $html += my.addItemInfo("strands", "", $walk.strands);
         $html += my.addItemInfo("festivals", "Festivals", $walk.festivals);
         $html += my.addItemInfo("suitability", "Suitability", $walk.suitability);
@@ -330,8 +332,8 @@ ra.walk = (function () {
         $html += "<div class='updated walk" + $walk.status + "'>Last update: " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
-        var mapdiv = "div" + $walk.id;
-        $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;
+        //    var mapdiv = "div" + $walk.id;
+        //    $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;
         return $html;
     };
     my.getWalkValues = function ($walk, $items, link = true) {
@@ -1128,6 +1130,7 @@ ra.walk = (function () {
         ra.ajax.postUrl($url, "", marker, _displayGradesModal);
     };
     _displayGradesModal = function (marker, $html) {
+        $html = $html.replace(/basedirectory/g, ra.baseDirectory());
         ra.modal.display($html);
     };
     my.grade = (function () {

@@ -432,10 +432,10 @@ class RJsonwalksWalk extends REvent {
         return $lasttime;
     }
 
-    public static function nationalGradesLink() {
-        $out = '<p></p><p>Description of <a href="libraries/ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">National Grades</a></p>';
-        echo $out;
-    }
+//    public static function nationalGradesLink() {
+//        $out = '<p></p><p>Description of <a href="libraries/ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">National Grades</a></p>';
+//        echo $out;
+//    }
 
     public function getGradeImage() {
         $image = "libraries/ramblers/images/grades/base.jpg";

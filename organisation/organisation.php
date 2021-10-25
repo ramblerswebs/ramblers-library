@@ -304,7 +304,7 @@ class ROrganisation {
         $group->hasFinishPlace = 0;
         $group->hasNeither = 0;
         $group->isLinear = 0;
-       $group->pace = 0;
+        $group->pace = 0;
         $group->ascentFeet = 0;
         $group->localGrade = 0;
         $group->suitability = 0;
@@ -356,7 +356,7 @@ class ROrganisation {
             $this->setValues($totals, $area, $walk, 'distanceZero', 'distanceMiles', '<=', 0);
             $this->setValues($totals, $area, $walk, 'hasMeetPlace', 'hasMeetPlace', '===', true);
             $this->setValues($totals, $area, $walk, 'isLinear', 'isLinear', '===', true);
-            if ($walk->hasExactMeetPlace ) {
+            if ($walk->hasExactMeetPlace) {
                 $this->setValues($totals, $area, $walk, 'hasOnlyMeetPlace', 'hasExactStartPlace', '===', false);
                 if (!$walk->hasExactStartPlace) {
                     $a = 1;
@@ -365,8 +365,8 @@ class ROrganisation {
             $this->setValues($totals, $area, $walk, 'hasExactMeetPlace', 'hasExactMeetPlace', '===', true);
             $this->setValues($totals, $area, $walk, 'hasExactStartPlace', 'hasExactStartPlace', '===', true);
             $this->setValues($totals, $area, $walk, 'hasNeither', 'hasNeither', '===', true);
-           $this->setValues($totals, $area, $walk, 'hasFinishPlace', 'hasFinishPlace', '===', true);
-             $this->setValues($totals, $area, $walk, 'suitability', 'suitability', '!==', null);
+            $this->setValues($totals, $area, $walk, 'hasFinishPlace', 'hasFinishPlace', '===', true);
+            $this->setValues($totals, $area, $walk, 'suitability', 'suitability', '!==', null);
             $this->setValues($totals, $area, $walk, 'strands', 'strands', '!==', null);
             $this->setValues($totals, $area, $walk, 'festivals', 'festivals', '!==', null);
             $this->setValues($totals, $area, $walk, 'surroundings', 'surroundings', '!==', null);
