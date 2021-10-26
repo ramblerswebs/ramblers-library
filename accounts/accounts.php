@@ -47,11 +47,13 @@ class RAccounts {
             foreach ($this->dbresults as $item) :
                 $adomain = strtolower(trim($item->domain));
                 $status = $item->status;
-                $webmaster = $item->web_master;
-                $account = new RAccountsAccount($adomain, $status, $webmaster);
-                $cols = $account->getColumns($format, RAccountsLogfile::DISP_NONE);
-                if ($cols <> null) {
-                    echo RHtml::addTableRow($cols);
+                if ($status !== 'DELETED') {
+                    $webmaster = $item->web_master;
+                    $account = new RAccountsAccount($adomain, $status, $webmaster);
+                    $cols = $account->getColumns($format, RAccountsLogfile::DISP_NONE);
+                    if ($cols <> null) {
+                        echo RHtml::addTableRow($cols);
+                    }
                 }
             endforeach;
             echo "</table>";

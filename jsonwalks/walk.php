@@ -718,7 +718,8 @@ class RJsonwalksWalk extends REvent {
                 break;
             case "{difficulty+}":
                 $out = $this->getWalkValue("{distance}");
-                $out .= "<div>" . $this->getGradeSpan("middle") . "</div>";
+                //  $out .= "<div>" . $this->getGradeSpan("middle") . "</div>";
+                $out .= $this->getGradeSpan("middle");
                 $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
                     $out .= $BR . $this->localGrade;
@@ -752,7 +753,7 @@ class RJsonwalksWalk extends REvent {
                 }
                 break;
             case "{grade+}":
-                $out = "<div>" . $this->getGradeSpan("middle") . "</div>";
+                $out = $this->getGradeSpan("middle");
                 $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
                     $out .= $BR . $this->localGrade;
@@ -778,7 +779,7 @@ class RJsonwalksWalk extends REvent {
                 }
                 break;
             case "{contact}":
-                 $titlePrefix = '';
+                $titlePrefix = '';
                 $out = "";
                 if ($this->isLeader) {
                     $titlePrefix = "Leader ";
@@ -985,8 +986,11 @@ class RJsonwalksWalk extends REvent {
     }
 
     private function _addWalkLink($id, $text, $class = "") {
-        $DisplayWalkFunction = "ra.walk.displayWalkID";
-        return "<span class='pointer " . $class . "' onclick=\"" . $DisplayWalkFunction . "(event," . $id . ")\">" . $text . "</span>";
+        if ($text !== '') {
+            $DisplayWalkFunction = "ra.walk.displayWalkID";
+            return "<span class='pointer " . $class . "' onclick=\"" . $DisplayWalkFunction . "(event," . $id . ")\">" . $text . "</span>";
+        }
+        return $text;
     }
 
     private function addWalkLink($id, $text, $class = "") {

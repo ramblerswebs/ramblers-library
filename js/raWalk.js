@@ -253,7 +253,7 @@ ra.walk = (function () {
         if ($walk.distanceMiles > 0) {
             $html += ra.html.addDiv("distance", "<b>Distance</b>: " + $walk.distanceMiles + "mi / " + $walk.distanceKm + "km");
         }
-        $html += ra.html.addDiv("nationalgrade", "<b>National Grade</b>: " + $walk.nationalGrade);
+        $html += ra.html.addDiv("nationalgrade", "<b>National Grade</b>: " + $walk.nationalGrade + "  " + ra.walk.grade.disp($walk.nationalGrade, 'popup'));
         if ($walk.localGrade !== "") {
             $link = $walk.localGrade;
             $html += ra.html.addDiv("localgrade", "<b>Local Grade</b>: " + $link);
@@ -564,7 +564,7 @@ ra.walk = (function () {
                 break;
             case "{grade+}":
                 out = ""; //<div>" + $walk.getGradeSpan("middle") + "</div>";
-                out += "<div>" + ra.walk.grade.disp($walk.nationalGrade, "middle") + "</div>";
+                out += ra.walk.grade.disp($walk.nationalGrade, "middle");
                 out += "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
                     out += BR + $walk.localGrade;
@@ -754,7 +754,10 @@ ra.walk = (function () {
         return options;
     };
     my._addWalkLink = function (id, $text, $class = "") {
-        return  "<span class='pointer " + $class + "' onclick=\"" + my.DisplayWalkFunction + "(event," + id + ")\">" + $text + "</span>";
+        if ($text !== '') {
+            return  "<span class='pointer " + $class + "' onclick=\"" + my.DisplayWalkFunction + "(event," + id + ")\">" + $text + "</span>";
+        }
+        return $text;
     };
     my.addWalkLink = function (id, $text, $class = "") {
         // split into text before and after span

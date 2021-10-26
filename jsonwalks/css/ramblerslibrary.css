@@ -141,7 +141,7 @@ div.walkstdfulldetails div.facilities > ul {
     margin-bottom: 0px;
 }
 div.walkstdfulldetails.walkCancelled.stdfulldetails div.reason{
-    text-decoration: none;
+    text-decoration: none !important;
     color:var(--pantone0186); 
 }
 /*div.walkstdfulldetails.walkCancelled.stdfulldetails {
@@ -644,6 +644,11 @@ span.middle.grade {
     height:30px;
     vertical-align: middle;
     display: inline;
+}
+span.popup.grade img{
+    height:24px;
+    width:24px;
+    padding-left: 8px;
 }
 
 span.left.grade {

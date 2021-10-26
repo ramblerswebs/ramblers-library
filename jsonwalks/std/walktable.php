@@ -27,8 +27,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         ['title' => 'Meet', 'items' => ["{meet}", "{,meetGR}", "{,meetPC}"]],
         ['title' => 'Start', 'items' => ["{start}", "{,startGR}", "{,startPC}"]],
         ['title' => 'Title', 'items' => ["{title}", "{mediathumbr}"]],
-        ['title' => 'Distance', 'items' => ["{distance}"]],
-        ['title' => 'Grade', 'items' => ["{grade+}"]],
+        ['title' => 'Difficulty', 'items' => ["{difficulty+}"]],
         ['title' => 'Contact', 'items' => ["{contact}"]]];
 
     public function customFormat($format) {
