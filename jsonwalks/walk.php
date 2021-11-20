@@ -702,6 +702,11 @@ class RJsonwalksWalk extends REvent {
                 break;
             case "{startMapCode}":
                 break;
+            case "{finishTime}":
+                if ($this->finishTime) {
+                    $out = $this->finishTime->format('g:ia');
+                }
+                break;
             case "{title}":
                 $out = $this->title;
                 $out = "<b>" . $out . "</b>";
