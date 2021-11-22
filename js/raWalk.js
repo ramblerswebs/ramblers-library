@@ -512,6 +512,11 @@ ra.walk = (function () {
                 break;
             case "{startMapCode}":
                 break;
+            case  "{finishTime}":
+                if ($walk.finishTime !== null) {
+                   out = ra.time.HHMMshort($walk.finishTime)   
+                }
+                break;
             case "{title}":
                 // out = ra.html.addslashes($walk.title);
                 out = $walk.title;
