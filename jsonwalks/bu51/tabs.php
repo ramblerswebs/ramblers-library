@@ -14,7 +14,7 @@ class RJsonwalksBU51Tabs extends RJsonwalksStdDisplay {
     public $feedClass = "walksfeed"; // not used?
     public $tabOrder = ['List', 'Calendar', 'Map'];
     public $listFormat = ['{gradeimg}', '{title}', '{lf}',
-        '{dowddmmyyyy}', '{[ meet at ]meetTime}', '{[ start at ]startTime}', '{[ estimated finish at ]finishTime}',
+        '{dowdd}', '{[ meet at ]meetTime}', '{[ start at ]startTime}', '{[ estimated finish at ]finishTime}',
         '{,distance}', '{,nationalGrade}','{,type}','{ walk}'];
 
     public function __construct() {
