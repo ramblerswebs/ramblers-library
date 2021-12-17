@@ -228,3 +228,26 @@ div#rainner .leaflet-popup-content-wrapper {border-radius: unset};
 .fc-event:hover{
 	color: #5b491f !important;
 }
+
+.cancelledWalks { background-color:#d7a900;
+                  border-radius: unset;
+                  padding: 5px;
+                  border-style: unset;
+                  
+}
+.cancelledWalks h3 {
+    color:#5b491f;
+}
+
+.cancelledWalk {color:#fff; }
+.cancelreason {
+    margin-left: unset;
+    color:#5b491f; 
+    font-size: 100%;
+}
+
+.nextwalkCancelled a,
+span.walkCancelled,
+div.fc a.walkCancelled{
+    color:#ccc; 
+}
