@@ -398,7 +398,7 @@ ra.walk = (function () {
             "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}", "{meet}",
             "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}", "{meetOLC}", "{meetMapCode}",
             "{start}", "{startTime}", "{startPlace}", "{startGR}", "{startPC}", "{startOLC}",
-            "{startMapCode}", "{title}", "{description}", "{difficulty}", "{difficulty+}",
+            "{startMapCode}", "{finishTime}", "{title}", "{description}", "{difficulty}", "{difficulty+}",
             "{distance}", "{distanceMi}", "{distanceKm}", "{gradeimg}", "{gradeimgRight}",
             "{grade}", "{grade+}", "{nationalGrade}", "{nationalGradeAbbr}", "{localGrade}",
             "{additionalNotes}", "{type}", "{contact}", "{contactname}", "{contactperson}", "{telephone}",
@@ -513,7 +513,7 @@ ra.walk = (function () {
             case "{startMapCode}":
                 break;
             case  "{finishTime}":
-                if ($walk.finishTime !== null) {
+                if ($walk.finishTime != null) {
                    out = ra.time.HHMMshort($walk.finishTime)   
                 }
                 break;
