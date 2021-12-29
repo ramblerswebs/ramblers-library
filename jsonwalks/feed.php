@@ -13,39 +13,32 @@ defined('_JEXEC') or die('Restricted access');
 class RJsonwalksFeed {
 
     private $walks = [];
-    private $rafeedurl;
-    private $srfr;
+    private $options;
 
     public function __construct($options) {
+
+        // see if options is a string or object
+        // if string then find the parameters and set ip a feedoptions object
+
         $okay = false;
         if (is_string($options)) {
-            $feedurl = trim($options);
-            if (!$this->startsWith(strtolower($feedurl), 'http')) {
-                $feedurl = "https://www.ramblers.org.uk/api/lbs/walks?" . $feedurl;
-            }
-            $this->rafeedurl = $feedurl;
+            $this->options = new RJsonwalksFeedoptions($options);
+
             $okay = true;
         }
         if (is_object($options)) {
-            $this->rafeedurl=$options->getGwemUrl();
+            $this->options = $options;
             $okay = true;
         }
         if (!$okay) {
-            echo "Input to RJsonwalksFeed is not valid";
+            $app = JFactory::getApplication();
+            $app->enqueueMessage('Input to RJsonwalksFeed is not valid', 'error');
             return;
         }
-
+        // now have a feed options object
         $this->walks = new RJsonwalksWalks(NULL);
-        $CacheTime = 15; // minutes
-        $time = getdate();
-        if ($time["hours"] < 7) {
-            $CacheTime = 7200; // 12 hours, rely on cache between midnight and 7am
-        }
-        $cacheLocation = $this->CacheLocation();
-        $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
-        $this->srfr->setReadTimeout(15);
-        $this->readFeed($this->rafeedurl);
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
+
+        $this->options->getWalks($this->walks);
     }
 
     private function startsWith($string, $startString) {
@@ -53,28 +46,13 @@ class RJsonwalksFeed {
         return (substr($string, 0, $len) === $startString);
     }
 
-    private function readFeed($rafeedurl) {
-        $properties = array("id", "status", "difficulty", "strands", "linkedEvent", "festivals",
-            "walkContact", "linkedWalks", "linkedRoute", "title", "description", "groupCode", "groupName",
-            "additionalNotes", "date", "distanceKM", "distanceMiles", "finishTime", "suitability",
-            "surroundings", "theme", "specialStatus", "facilities", "pace", "ascentMetres", "ascentFeet",
-            "gradeLocal", "attendanceMembers", "attendanceNonMembers", "attendanceChildren", "cancellationReason",
-            "dateUpdated", "dateCreated", "media", "points", "groupInvite", "isLinear", "url");
-
-        $result = $this->srfr->getFeed($rafeedurl, "Group Walks Programme");
-        $json = RErrors::checkJsonFeed($rafeedurl, "Walks", $result, $properties);
-        If ($json !== null) {
-            $this->walks = new RJsonwalksWalks($json);
-            unset($json);
-        }
-    }
-
     public function setNewWalks($days) {
         $this->walks->setNewWalks($days);
     }
 
     public function setDisplayLimit($no) {
-        echo "setDisplayLimit is no longer supported - please use RJsonwalksStdDisplay";
+        $app = JFactory::getApplication();
+        $app->enqueueMessage('setDisplayLimit is no longer supported - please use RJsonwalksStdDisplay', 'error');
     }
 
     public function filterCancelled() {
@@ -82,7 +60,9 @@ class RJsonwalksFeed {
     }
 
     public function filterDistanceFrom($easting, $northing, $distanceKm) {
-        $this->walks->filterDistanceFrom($easting, $northing, $distanceKm);
+        $app = JFactory::getApplication();
+        $app->enqueueMessage('filterDistanceFrom no longer supported', 'error');
+        //   $this->walks->filterDistanceFrom($easting, $northing, $distanceKm);
     }
 
     public function filterDistanceFromLatLong($lat, $lon, $distanceKm) {
@@ -167,6 +147,7 @@ class RJsonwalksFeed {
             echo "No walks found";
             return;
         }
+        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
         $version = new JVersion();
         // Joomla4 Update to use correct call.
         if (version_compare($version->getShortVersion(), '4.0', '<')) {
@@ -199,16 +180,7 @@ class RJsonwalksFeed {
     }
 
     public function clearCache() {
-        $this->srfr->clearCache();
-// reread feed
-        $this->readFeed($this->rafeedurl);
-    }
-
-    private function CacheLocation() {
-        if (!defined('DS')) {
-            define('DS', DIRECTORY_SEPARATOR);
-        }
-        return 'cache' . DS . 'ra_feed';
+        
     }
 
     public function filterFeed($filter) { // filter by component filter subform

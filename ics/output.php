@@ -67,13 +67,13 @@ class RIcsOutput {
     private function chunk_split_unicode($str, $l = 73, $e = "\r\n") {
         $tmp = array_chunk(
                 preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY), $l);
-        $str = "";
+        $str1 = "";
         $blank = "";
         foreach ($tmp as $t) {
-            $str .= $blank . join("", $t) . $e;
+            $str1 .= $blank . join("", $t) . $e;
             $blank = " ";
         }
-        return $str;
+        return $str1;
     }
 
     function __destruct() {

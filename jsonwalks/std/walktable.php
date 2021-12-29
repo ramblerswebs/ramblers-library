@@ -12,7 +12,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
     private $walksClass = "walks";
     private $walkClass = "walk";
-    private $tableClass = 'pantone5565';
+    private $tableClass = 'sunset';
     private $customFormat = null;
     private $monthlyReminderClass = null;
     private $monthlyReminderMethod = null;
@@ -71,6 +71,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $odd = !$odd;
         }
         echo "</table>" . PHP_EOL;
+        RJsScript::registerWalks(array_values($items));
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
     }

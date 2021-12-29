@@ -8,19 +8,23 @@ class RJsonwalksWalks {
     private $sortorder3;
     private $newinterval = 7;
 
-    public function __construct($json) {
+//    public function __construct($json) {
+//        $this->arrayofwalks = array();
+//        if ($json != NULL) {
+//            foreach ($json as $value) {
+//                $walk = new RJsonwalksWalk($value);
+//                $this->arrayofwalks[] = $walk;
+//            }
+//            $this->setNewWalks($this->newinterval);
+//        }
+//    }
+    public function __construct() {
         $this->arrayofwalks = array();
-        if ($json != NULL) {
-            foreach ($json as $value) {
-                $walk = new RJsonwalksWalk($value);
-                $this->arrayofwalks[] = $walk;
-            }
-            $this->setNewWalks($this->newinterval);
-        }
     }
 
     public function addWalk($walk) {
         $this->arrayofwalks[] = $walk;
+        $walk->createExtraData();
     }
 
     public function hasMeetPlace() {

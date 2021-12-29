@@ -31,13 +31,15 @@ class REventGroup {
         foreach ($arrayofwalks as $walk) {
             $this->arrayofevents[] = $walk;
         }
+
+        RJsScript::registerWalks(array_values($arrayofwalks));
     }
 
-    public function addWalksArray($arrayofwalks) {
-        foreach ($arrayofwalks as $walk) {
-            $this->arrayofevents[] = $walk;
-        }
-    }
+//    public function addWalksArray($arrayofwalks) {
+//        foreach ($arrayofwalks as $walk) {
+//            $this->arrayofevents[] = $walk;
+//        }
+//    }
 
     public function getEvents() {
         return $this->arrayofevents;
@@ -61,23 +63,23 @@ class REventGroup {
             if ($event->EventDateYYYYMMDD() === $currentDate) {
                 // echo "found";
                 if ($found == false) {
-                    self::$id+=1;
+                    self::$id += 1;
                     $ident = "ev" . strval(self::$id);
-                    $out.="<div class='event-list-cal-event'>" . PHP_EOL;
-                    $out.= "<div class='event-list-cal-day'><a onclick=\"ra.html.toggleVisibility('" . $ident . "')\">" . $text . "</a></div>" . PHP_EOL;
-                    $out.="<div class='event-list-cal-hover' id='" . $ident . "'>" . PHP_EOL;
-                    $out.= $event->EventDate()->format('l, jS');
+                    $out .= "<div class='event-list-cal-event'>" . PHP_EOL;
+                    $out .= "<div class='event-list-cal-day'><a onclick=\"ra.html.toggleVisibility('" . $ident . "')\">" . $text . "</a></div>" . PHP_EOL;
+                    $out .= "<div class='event-list-cal-hover' id='" . $ident . "'>" . PHP_EOL;
+                    $out .= $event->EventDate()->format('l, jS');
                 }
                 $found = true;
-                $out.= $event->EventList($display, $text);
+                $out .= $event->EventList($display, $text);
             }
         }
         if ($found) {
-            $out.= "</div>";
-            $out.= "</div>";
+            $out .= "</div>";
+            $out .= "</div>";
             //$out.= "</a>";
         } else {
-            $out.= "<div class='event-list-cal-day'>" . $text . "</div>";
+            $out .= "<div class='event-list-cal-day'>" . $text . "</div>";
             // $out.= $text;
         }
         return $out;

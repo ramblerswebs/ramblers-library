@@ -91,6 +91,9 @@ ra.titleCase = function (str) {
         return t.toUpperCase();
     });
 };
+ra.capitalizeFirstLetter = function (str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
 // is an equivalent item in the array
 ra.contains = function (items, item) {
     var index, len;
@@ -341,6 +344,12 @@ ra.date = (function () {
         var options = {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'};
         return value.toLocaleDateString("en-UK", options);
     };
+    date.toICSFormat = function (datetime) {
+        var value = date._setDateTime(datetime);
+        var yyyymmdd = value.getFullYear().toString() + date.MM(value) + date.DD(value);
+        var out = yyyymmdd + "T" + value.getHours().toString().padStart(2, '0') + value.getMinutes().toString().padStart(2, '0') + "00";
+        return out;
+    };
     date.dowdd = function (datetime) {
         return date.dow(datetime) + ", " + date.dd(datetime);
     };
@@ -400,6 +409,10 @@ ra.date = (function () {
         const diffTime = Math.abs(d1 - d2);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays;
+    };
+    date.secondsSinceMidnight = function (d) {
+        var e = new Date(d);
+        return d - e.setHours(0, 0, 0, 0);
     };
     date.isValidString = function (text) {
         if (typeof text === 'undefined') {
@@ -492,6 +505,9 @@ ra.time = (function () {
         strtime = hrs.toFixed() + 'hrs ' + mins.toFixed() + 'mins';
         return strtime;
     };
+    time.addMinutes = function (date, minutes) {
+        return new Date(date.getTime() + minutes * 60000);
+    };
     return time;
 }
 ());
@@ -528,6 +544,7 @@ ra.html = (function () {
                         break;
                     case 'parent':
                     case 'tag':
+                    case 'element':
                         break;
                     case 'attrs':
                         var attrs = item[key];
@@ -559,12 +576,16 @@ ra.html = (function () {
                         return obj.name === parent;
                     });
                     if (result) {
+
                         result.element.appendChild(item.element);
                     } else {
+                        alert("generateTags: no parent");
                         root.appendChild(item.element);
                     }
                 }
 
+            } else {
+                alert("generateTags: no parent");
             }
         }
         return tags;
@@ -595,6 +616,23 @@ ra.html = (function () {
     };
     html.insertAfter = function (referenceNode, newNode) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    };
+    html.getCoords = function (elem) { // crossbrowser version
+        var box = elem.getBoundingClientRect();
+
+        var body = document.body;
+        var docEl = document.documentElement;
+
+        var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+        var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+
+        var clientTop = docEl.clientTop || body.clientTop || 0;
+        var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+
+        var top = box.top + scrollTop - clientTop;
+        var left = box.left + scrollLeft - clientLeft;
+
+        return {top: Math.round(top), left: Math.round(left)};
     };
     // open window with tag content for printing
     html.printTag = function (id) {
@@ -688,6 +726,10 @@ ra.html = (function () {
         } else {
             return id;
         }
+    };
+    html.stripTags = function (dirtyString) {
+        const doc = new DOMParser().parseFromString(dirtyString, 'text/html');
+        return doc.body.textContent || '';
     };
     return html;
 }
@@ -997,17 +1039,6 @@ ra.geom = (function () {
 //        }
         return "direction error";
     };
-//    geom.directionAbbr = function ($item) {
-//
-//        var $direction = array("North", "North East", "East", "South East", "South", "South West", "West", "North West");
-//        var $dir = array("N", "NE", "E", "SE", "S", "SW", "W", "NW");
-//        //                  foreach ($direction as $key => $value) {
-//        if ($item === $value) {
-//            return $dir[$key];
-//            //          }
-//        }
-//        return "direction abbrevation error";
-//    };
     geom.test = function () {
 
         console.log(geom.distance(40.76, -73.984, 40.89, -74, "KM"));
@@ -1018,6 +1049,69 @@ ra.geom = (function () {
     return geom;
 }
 ());
+ra.help = class {
+    static targetRect = null;
+    static lastHelp = null;
+    static no = 1;
+    constructor(tag, helpFunction) {
+        this.tag = tag;
+        this.helpFunction = helpFunction;
+        this.open = false;
+        this.fred = ra.help.no;
+        ra.help.no += 1;
+        this.helpTag = document.getElementById('ra-help-helptag');
+
+        if (this.helpTag === null) {
+            var body = document.getElementsByTagName("BODY")[0];
+            this.helpTag = document.createElement('div');
+            this.helpTag.setAttribute('id', 'ra-help-helptag');
+            this.helpTag.setAttribute('class', 'ra help helpblock');
+            this.helpTag.style.display = 'none';
+            body.prepend(this.helpTag);
+            var _this = this;
+            this.helpTag.addEventListener("click", function (e) {
+                _this.helpTag.style.display = 'none';
+                var ele = e.target;
+                ele.raHelpTag.open = false;
+            }
+            );
+        }
+    }
+    add() {
+        this.helpButton = document.createElement('span');
+        this.helpButton.setAttribute('class', 'ra help icon');
+        this.helpButton.textContent = "";
+        var _this = this;
+        this.tag.appendChild(this.helpButton);
+
+        this.helpButton.addEventListener("click", function (e) {
+            if (ra.help.lastHelp !== null) {
+                if (ra.help.lastHelp !== _this) {
+                    ra.help.lastHelp.open = false;
+                }
+            }
+            _this.open = !_this.open;
+            if (_this.open) {
+                _this.helpTag.innerHTML = "<span>Help</span><div class='help-border'></div>" + _this.helpFunction();
+                _this.helpTag.style.display = 'block';
+                _this.helpTag.raHelpTag = _this;
+
+                var eleRect = ra.html.getCoords(_this.helpButton);
+                var top = eleRect.top;
+                var left = eleRect.left;
+
+                _this.helpTag.style.left = (40 + left) + 'px';
+                _this.helpTag.style.top = top + 'px';
+
+            } else {
+                _this.helpTag.style.display = 'none';
+            }
+            ra.help.lastHelp = _this;
+        });
+
+    }
+}
+
 ra.units = (function () {
     var units = {};
     // metres to Km
@@ -1031,6 +1125,212 @@ ra.units = (function () {
     return units;
 }
 ());
+ra.filter = function (settingsFilter) {
+
+    this.settingsFilter = settingsFilter;
+    this.setFilterGroup = function (items, date = false) {
+        var _this = this;
+        if (date) {
+            Object.keys(items).forEach(function (key) {
+                var item = items[key];
+                _this.settingsFilter[item.id] = item.no;
+            });
+        } else {
+            Object.keys(items).forEach(function (key) {
+                var item = items[key];
+                _this.settingsFilter[item.id] = item.no !== 0;
+            });
+    }
+
+    };
+    this.addFilter = function (tag, title, items, all = true, dates = false) {
+        //   if (!all) {
+        if (Object.keys(items).length < 2) {
+            return;
+            //       }
+        }
+        var div = document.createElement('div');
+        div.setAttribute('class', 'ra-filteritem');
+        tag.appendChild(div);
+
+        var h3 = document.createElement('h3');
+        h3.textContent = title;
+        div.appendChild(h3);
+
+        var intDiv = document.createElement('div');
+        intDiv.setAttribute('class', 'ra_filter');
+        div.appendChild(intDiv);
+        if (!dates) {
+            var ul = document.createElement('ul');
+            this.addAllNone(intDiv, '[All]', ul);
+            this.addAllNone(intDiv, '[None]', ul);
+            intDiv.appendChild(ul);
+            var _this = this;
+            Object.keys(items).forEach(function (key) {
+                var item = items[key];
+                if (item.no > 0) {
+                    _this.addFilterItem(ul, item);
+                }
+            });
+        } else {
+            var span = document.createElement('div');
+            intDiv.appendChild(span);
+            var start = items.min;
+            var end = items.max;
+            this.addFilterItemDate(span, start.name, start.id, start.no, start.no, end.no);
+            this.addFilterItemDate(span, end.name, end.id, end.no, start.no, end.no);
+    }
+    };
+    this.addFilterSelect = function (tag, title, items, ) {
+
+        if (Object.keys(items).length === 1) {
+            return;
+        }
+
+        var div = document.createElement('div');
+        div.setAttribute('class', 'ra-filteritem');
+        tag.appendChild(div);
+
+        var h3 = document.createElement('h3');
+        h3.textContent = title;
+        div.appendChild(h3);
+
+        var intDiv = document.createElement('div');
+        intDiv.setAttribute('class', 'ra_filter');
+        div.appendChild(intDiv);
+
+        var select = document.createElement('select');
+
+        intDiv.appendChild(select);
+
+        Object.keys(items).forEach(function (key) {
+            var item = items[key];
+            if (item.no > 0) {
+                var option = document.createElement('option');
+                select.appendChild(option);
+                option.setAttribute('value', item.num);
+                option.innerText = item.name + " [" + item.no + "]";
+//                if (item.num === '0') {
+//                    option.setAttribute('selected', true);
+//                }
+            }
+        });
+        var _this = this;
+        select.addEventListener("change", function (event) {
+            // only works if you have one select as 'updated' is hard coded
+            _this.settingsFilter['updated'] = event.target.value;
+            let e = new Event("reDisplayWalks", {bubbles: true});
+            document.dispatchEvent(e);
+        });
+    };
+    this.addOpenClose = function (div, title) {
+        var h3 = document.createElement('h3');
+        h3.setAttribute('class', 'ra_openclose');
+        h3.textContent = title;
+        div.appendChild(h3);
+        var span = document.createElement('span');
+        span.setAttribute('class', 'ra-closed');
+        h3.appendChild(span);
+        h3.onclick = function (event) {
+            var tag = event.target;
+            if (tag.tagName === "SPAN") {
+                var tag = tag.parentNode;
+            }
+            var next = tag.nextSibling;
+            if (next.style.display !== "none") {
+                next.style.display = "none";
+                span.classList.add('ra-closed');
+                span.classList.remove('ra-open');
+            } else {
+                next.style.display = "block";
+                span.classList.add('ra-open');
+                span.classList.remove('ra-closed');
+            }
+        };
+
+    };
+    this.addAllNone = function (tag, option, ul) {
+        var span = document.createElement('span');
+        span.setAttribute('class', 'link');
+        span.textContent = option;
+        if (option === "[All]") {
+            span.style.marginLeft = '25px';
+        }
+        tag.appendChild(span);
+        var ul_list = ul;
+        var _this = this;
+        span.addEventListener('click', function (event) {
+            var all = event.target.innerHTML === "[All]";
+            if (ul_list.tagName === "UL") {
+                var children = ul_list.children;
+                Object.keys(children).forEach(function (key) {
+                    var node = children[key].childNodes[0];
+                    var keyid = node.getAttribute('data-filter-id');
+                    node.checked = all;
+                    _this.settingsFilter[keyid] = all;
+                });
+            }
+            let e = new Event("reDisplayWalks", {bubbles: true});
+            document.dispatchEvent(e);
+        });
+
+    };
+    this.addFilterItem = function (tag, item) {
+        var li = document.createElement('li');
+        tag.appendChild(li);
+        var input = document.createElement('input');
+        input.setAttribute('type', 'checkbox');
+        input.checked = true;
+        li.appendChild(input);
+        var _this = this;
+        input.setAttribute('data-filter-id', item.id);
+        // var keyid = item.id;
+        input.addEventListener("change", function (event) {
+            var keyid = event.target.getAttribute('data-filter-id');
+            _this.settingsFilter[keyid] = event.target.checked;
+            let e = new Event("reDisplayWalks", {bubbles: true});
+            document.dispatchEvent(e);
+        });
+
+        var label = document.createElement('label');
+        label.textContent = item.name + " [" + item.no + "]";
+        li.appendChild(label);
+    };
+    this.addFilterItemDate = function (tag, name, id, value, min, max) {
+        var li = document.createElement('div');
+        tag.appendChild(li);
+        var label = document.createElement('label');
+        label.style.marginLeft = '25px';
+        label.textContent = name;
+        li.appendChild(label);
+        var input = document.createElement('input');
+        input.setAttribute('type', 'date');
+        input.setAttribute('value', value);
+        input.setAttribute('min', min);
+        input.setAttribute('max', max);
+        input.style.marginLeft = '25px';
+        input.checked = true;
+        li.appendChild(input);
+        var _this = this;
+        var keyid = id;
+        input.addEventListener("input", function (event) {
+            var input = event.target;
+            var value = input.value;
+            if (value === '') {
+                if (keyid === 'RA_DateStart') {
+                    value = input.min;
+                    input.value = min;
+                } else {
+                    value = input.max;
+                    input.value = max;
+                }
+            }
+            _this.settingsFilter[keyid] = value;
+            let e = new Event("reDisplayWalks", {bubbles: true});
+            document.dispatchEvent(e);
+        });
+    };
+};
 
 ra.jplist = function (group) {
     this.hasFilters = false;
@@ -1065,7 +1365,7 @@ ra.jplist = function (group) {
         }
         if (no < 21) {
             var tags = [
-                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'link-button small button-p4485'}, textContent: 'Print'}
+                {name: 'print', parent: 'root', tag: 'button', attrs: {class: 'link-button tiny button mintCake'}, textContent: 'Print'}
             ];
             var elements = ra.html.generateTags(tag, tags);
         } else {
@@ -1073,18 +1373,18 @@ ra.jplist = function (group) {
                 {name: 'div', parent: 'root', tag: 'div', attrs: {'data-jplist-control': 'pagination',
                         'data-group': this.group, 'data-items-per-page': itemsPerPage,
                         'data-current-page': '0', 'data-id': 'no-items',
-                        'data-name': jplistName}},
+                        'data-name': jplistName, class: 'ra pagination'}},
                 {name: 'spanitems', parent: 'div', tag: 'span'},
-                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'link-button small button-p4485'}, textContent: 'Print'},
-                {name: 'span', parent: 'spanitems', tag: 'span', attrs: {'data-type': 'info'}, textContent: '{startItem} - {endItem} of {itemsNumber}'},
+                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'ra nonmobile link-button tiny button mintCake'}, textContent: 'Print'},
+                {name: 'span', parent: 'spanitems', tag: 'span', attrs: {class: 'ra nonmobile', 'data-type': 'info'}, textContent: '{startItem} - {endItem} of {itemsNumber}'},
                 {name: 'buttons', parent: 'div', tag: 'span', attrs: {class: 'center '}},
-                {name: 'first', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'first'}, textContent: 'First'},
-                {name: 'previous', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'prev'}, textContent: 'Previous'},
+                {name: 'first', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'first'}, textContent: '|<'},
+                {name: 'previous', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'prev'}, textContent: '<'},
                 {name: 'xxx', parent: 'buttons', tag: 'span', attrs: {class: 'jplist-holder', 'data-type': 'pages'}},
                 {name: 'pageNumber', parent: 'xxx', tag: 'button', attrs: {type: 'button', 'data-type': 'page'}, textContent: '{pageNumber}'},
-                {name: 'next', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'next'}, textContent: 'Next'},
-                {name: 'last', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'last'}, textContent: 'Last'},
-                {name: 'select', parent: 'div', tag: 'select', attrs: {'data-type': 'items-per-page'}},
+                {name: 'next', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'next'}, textContent: '>'},
+                {name: 'last', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'last'}, textContent: '>|'},
+                {name: 'select', parent: 'div', tag: 'select', attrs: {class: 'ra nonmobile', 'data-type': 'items-per-page'}},
                 {parent: 'select', tag: 'option', attrs: {value: '10'}, textContent: '10 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '20'}, textContent: '20 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '50'}, textContent: '50 per page'},
@@ -1161,4 +1461,224 @@ ra.jplist = function (group) {
             }
         }
     };
+};
+if (typeof (ra.ics) === "undefined") {
+    ra.ics = {};
+    ra.ics.events = function () {
+        this.foldLength = 73;
+        this.newLineChar = '\r\n';
+        this.file = '';
+        this.dateStamp = ra.date.toICSFormat(new Date()) + 'Z';
+        var d = new Date();
+        this.createdDate = d.toISOString();
+        this.addEvent = function (event) {
+            var item = event.getItem();
+            this.addRecord('BEGIN:', 'VEVENT');
+            this.addRecord('DTSTART;VALUE=DATE-TIME:', item.startDate);
+            this.addRecord('DTEND;VALUE=DATE-TIME:', item.endDate);
+            this.addRecord('LOCATION:', item.location);
+            this.addRecord('TRANSP:', 'OPAQUE');
+            this.addRecord('SEQUENCE:', item.sequence);
+            this.addRecord('UID:', item.uid);
+            this.addRecord('ORGANIZER;CN=', item.organiser);
+            this.addRecord('SUMMARY:', item.summary);
+            this.addRecord('DESCRIPTION:', item.description);
+            this.addRecord('X-ALT-DESC;FMTTYPE=text/html:', item.altDescription, true);
+            this.addRecord('CATEGORIES:', item.categories);
+            this.addRecord('DTSTAMP;VALUE=DATE-TIME:', this.dateStamp);
+            this.addRecord('CREATED;VALUE=DATE-TIME', item.createdDate);
+            this.addRecord('LAST-MODIFIED;VALUE=DATE-TIME', item.modifiedDate);
+            this.addRecord('PRIORITY:', '1');
+            this.addRecord('URL;VALUE=URI:', item.url);
+            this.addRecord('CLASS:', 'PUBLIC');
+            this.addRecord('END:', 'VEVENT');
+        };
+        this.download = function () {
+            this.addRecord('END:', 'VCALENDAR');
+            var data = this.file;
+            try {
+                var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
+
+                var name = "walks.ics";
+                saveAs(blob, name);
+            } catch (e) {
+                alert('Your web browser does not support his option!');
+            }
+        };
+        this.addRecord = function ($command, $content = "", $html = false) {
+            if ($content === null) {
+                return;
+            }
+            if (!(typeof $content === 'string' || $content instanceof String)) {
+                $content = $content.toString();
+            }
+            //var   $text= $command + $content+this.newLineChar;
+            //  return;
+            //  var $text = mb_convert_encoding($content, "UTF-8");
+            var $text = $content;
+            if ($html) {
+                var $lines;
+                var $before = "<!DOCTYPE html><html><head><title></title></head><body>";
+                var $after = "</body></html>";
+                $text = this.decodeEntities($text);
+                $text = this.escapeString($text);
+                $lines = this.foldline($command + $before + $text + $after + this.newLineChar);
+            } else {
+                $text = $text.replace(/&nbsp;/g, " ");
+                $text = $text.replace(/<p>/g, "");
+                $text = $text.replace(/<\/p>/g, "\\n");
+                $text = $text.replace(/<br>/g, "\\n");
+                $text = $text.replace(/<br\/>/g, "\\n");
+                $text = $text.replace(/<BR>/g, "\\n");
+                $text = $text.replace(/<BR\/>/g, "\\n");
+                $text = $text.replace(/&ndash;/g, "-");
+                $text = ra.html.stripTags($text);
+                // $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
+                $text = ra.html.convertToText($text);
+                $text = this.escapeString($text);
+                $lines = this.foldline($command + $text + this.newLineChar);
+            }
+            this.file += $lines;
+        };
+        this.escapeString = function (str) {
+            var out;
+            out = str.replace(/,/g, '\\,');
+            out = out.replace(/;/g, '\\;');
+            out = out.replace(/[^\x20-\x7E]+/g, '&nbsps;');
+
+            return out;
+        };
+        this.decodeEntities = function (s) {
+            var str, temp = document.createElement('p');
+            temp.innerHTML = s;
+            str = temp.textContent || temp.innerText;
+            temp = null;
+            return str;
+        };
+        /**
+         * Performs iCalendar line folding. A line ending character is inserted and
+         * the next line begins with a whitespace.
+         *
+         * @example
+         * SUMMARY:This line will be fold
+         *  ed right in the middle of a word.
+         *
+         * @param {String} aLine      The line to fold
+         * @return {String}           The folded line
+         */
+        this.foldline = function (aLine) {
+            var result = "";
+            var line = aLine || "", pos = 0, line_length = 0;
+            //pos counts position in line for the UTF-16 presentation
+            //line_length counts the bytes for the UTF-8 presentation
+            while (line.length) {
+                var cp = line.codePointAt(pos);
+                if (cp < 128)
+                    ++line_length;
+                else if (cp < 2048)
+                    line_length += 2;//needs 2 UTF-8 bytes
+                else if (cp < 65536)
+                    line_length += 3;
+                else
+                    line_length += 4; //cp is less than 1114112
+                if (line_length < this.foldLength + 1)
+                    pos += cp > 65535 ? 2 : 1;
+                else {
+                    result += this.newLineChar + " " + line.substring(0, pos);
+                    line = line.substring(pos);
+                    pos = line_length = 0;
+                }
+            }
+            return result.substr(this.newLineChar.length + 1);
+        };
+
+
+        this.addRecord('BEGIN:', 'VCALENDAR');
+        this.addRecord('VERSION:', '2.0');
+        this.addRecord('METHOD:', 'PUBLISH');
+        this.addRecord('PRODID:', 'ramblers-webs v1.1');
+    };
+}
+;
+ra.ics.event = function () {
+    this.item = {
+        startDate: null,
+        endDate: null,
+        modifiedDate: null,
+        createdDate: null,
+        uid: null,
+        organiser: null,
+        summary: null,
+        description: null,
+        altDescription: null,
+        sequence: null,
+        location: null,
+        url: null,
+        class: null,
+        method: null
+    };
+    this.getItem = function () {
+        return this.item;
+    };
+    this.startDate = function (value) {
+        this.checkType('[object Date]', value);
+        this.item.startDate = ra.date.toICSFormat(value);
+    };
+    this.endDate = function (value) {
+        this.checkType('[object Date]', value);
+        this.item.endDate = ra.date.toICSFormat(value);
+    };
+    this.modifiedDate = function (value) {
+        this.item.modifiedDate = ra.date.toICSFormat(value) + 'Z';
+        var $date = new Date('2010-01-01');
+        var $days = ra.date.periodInDays(value, $date) - 1;
+        // Fix added to include number of seconds since midnight, forcing an update on each download. 
+        // Otherwise, the event would only update daily. 
+        this.item.sequence = $days.toString() + ra.date.secondsSinceMidnight(new Date()) % 86400;
+    };
+    this.createdDate = function (value) {
+        this.checkType('[object Date]', value);
+        this.item.createdDate = ra.date.toICSFormat(value) + 'Z';
+    };
+    this.location = function (value) {
+        this.item.location = value;
+    };
+    this.uid = function (value) {
+        this.item.uid = value;
+    };
+    this.organiser = function (value) {
+        this.item.organiser = value;
+    };
+    this.summary = function (value) {
+        this.item.summary = value;
+    };
+    this.description = function (value) {
+        this.item.description = value;
+    };
+    this.altDescription = function (value) {
+        this.item.altDescription = value;
+    };
+    this.categories = function (value) {
+        this.item.categories = value;
+    };
+    this.url = function (value) {
+        this.item.url = value;
+    };
+    this.class = function (value) {
+        this.item.class = value;
+    };
+    this.method = function (value) {
+        this.item.method = value;
+    };
+    this.checkType = function (type, value) {
+        // Object.prototype.toString.call(value) === '[object Date]';
+        var oType = Object.prototype.toString.call(value);
+        if (oType === type) {
+            return true;
+        } else {
+            alert('Incorrect type in ICS');
+        }
+        return false;
+    };
+
 };

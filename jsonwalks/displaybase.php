@@ -44,7 +44,6 @@ abstract class RJsonwalksDisplaybase {
         }
         $this->script = new RJsScript();
         $this->options = new RLeafletMapoptions();
-        $this->script = new RJsScript($this->options);
         // default map options for display of walk
         $this->options->mapHeight = "250px";
         $this->options->rightclick = true;

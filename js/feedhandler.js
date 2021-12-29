@@ -69,8 +69,8 @@ feeds = function () {
             var feed = e.target.raData.feedhelper;
             //   alert("mapLocations " + e.target.tagName); // Hello from H1
             feed.setUpSelectTagForMapSearch(selectTitle, selectTag, e.error, e.data, function (item) {
-                item.class = capitalizeFirstLetter(item.class);
-                item.type = capitalizeFirstLetter(item.type);
+                item.class = ra.capitalizeFirstLetter(item.class);
+                item.type = ra.capitalizeFirstLetter(item.type);
                 item.display_name = item.display_name.replace(", United Kingdom", "");
                 return "-  " + item.display_name;
             });
@@ -109,7 +109,7 @@ feeds = function () {
         var contentTag = document.createElement('div');
         var p = document.createElement('p');
         contentTag.appendChild(p);
-        ra.modal.display(contentTag);
+        ra.modal.display(contentTag,false);
         ////   var $html = '<div id="js-search-content"></div>';
         //  //$html += '<p></p>';
         //    var contentTag = document.getElementById("js-search-content");
@@ -236,7 +236,7 @@ feeds = function () {
                 var i;
                 for (i = 0; i < items.length; i++) {
                     var item = items[i];
-                    var nextcategory = "[" + capitalizeFirstLetter(item.class) + ": " + capitalizeFirstLetter(item.type) + "]";
+                    var nextcategory = "[" + ra.capitalizeFirstLetter(item.class) + ": " + ra.capitalizeFirstLetter(item.type) + "]";
                     if (category !== nextcategory) {
                         category = nextcategory;
                         var cat = document.createElement("optgroup");
@@ -451,8 +451,5 @@ feeds = function () {
 
         return inputTag;
     };
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
 
 };

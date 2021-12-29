@@ -10,32 +10,23 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-class RJsonwalksFeed {
+class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
 
-    private $walks = [];
-    private $rafeedurl;
+    private $rafeedurl = '';
     private $srfr;
+  
 
-    public function __construct($options) {
-        $okay = false;
-        if (is_string($options)) {
-            $feedurl = trim($options);
-            if (!$this->startsWith(strtolower($feedurl), 'http')) {
-                $feedurl = "https://www.ramblers.org.uk/api/lbs/walks?" . $feedurl;
-            }
-            $this->rafeedurl = $feedurl;
-            $okay = true;
-        }
-        if (is_object($options)) {
-            $this->rafeedurl=$options->getGwemUrl();
-            $okay = true;
-        }
-        if (!$okay) {
-            echo "Input to RJsonwalksFeed is not valid";
-            return;
-        }
+    //   private $groups;
 
-        $this->walks = new RJsonwalksWalks(NULL);
+    const TIMEFORMAT = "Y-m-d\TH:i:s";
+
+    public function __construct($groups) {
+        parent::__construct(SourceOfWalk::GWEM, $groups);
+       $this->rafeedurl = $this->getGwemUrl();
+     
+    }
+
+    public function getWalks($walks) {
         $CacheTime = 15; // minutes
         $time = getdate();
         if ($time["hours"] < 7) {
@@ -44,13 +35,17 @@ class RJsonwalksFeed {
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(15);
-        $this->readFeed($this->rafeedurl);
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
-    }
-
-    private function startsWith($string, $startString) {
-        $len = strlen($startString);
-        return (substr($string, 0, $len) === $startString);
+        $json = $this->readFeed($this->rafeedurl);
+        If ($json !== null) {
+            foreach ($json as $item) {
+                $walk = new RJsonwalksWalk();
+                $this->convertToInternalFormat($walk, $item);
+                $walks->addWalk($walk);
+              
+            }
+       
+        }
+        return;
     }
 
     private function readFeed($rafeedurl) {
@@ -63,183 +58,151 @@ class RJsonwalksFeed {
 
         $result = $this->srfr->getFeed($rafeedurl, "Group Walks Programme");
         $json = RErrors::checkJsonFeed($rafeedurl, "Walks", $result, $properties);
-        If ($json !== null) {
-            $this->walks = new RJsonwalksWalks($json);
-            unset($json);
+        return $json;
+    }
+
+    public function getGwemUrl() {
+        $gwemfeedurl = "";
+        if ($this->groups !== null) {
+            $gwemfeedurl = "https://www.ramblers.org.uk/api/lbs/walks?groups=" . $this->groups;
         }
+
+        return $gwemfeedurl;
     }
 
-    public function setNewWalks($days) {
-        $this->walks->setNewWalks($days);
-    }
+    private function convertToInternalFormat($walk, $item) {
 
-    public function setDisplayLimit($no) {
-        echo "setDisplayLimit is no longer supported - please use RJsonwalksStdDisplay";
-    }
+        try {
 
-    public function filterCancelled() {
-        $this->walks->filterCancelled();
-    }
+            $admin = new RJsonwalksWalkAdmin();
+            $admin->source = SourceOfWalk::GWEM;
+            $admin->id =  $item->id;
+            $admin->status = $item->status->value;
+            $admin->groupCode = $item->groupCode;
+            $admin->groupName = $item->groupName;
+            $dateUpdated = substr($item->dateUpdated, 0, 19);
+            $dateCreated = substr($item->dateCreated, 0, 19);
+            $admin->dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, $dateUpdated);
+            $admin->dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, $dateCreated);
+            $admin->cancellationReason = $item->cancellationReason;
+            $admin->displayUrl = $item->url;
+            $walk->setAdmin($admin);
 
-    public function filterDistanceFrom($easting, $northing, $distanceKm) {
-        $this->walks->filterDistanceFrom($easting, $northing, $distanceKm);
-    }
+            $basics = new RJsonwalksWalkBasics();
+            $basics->walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->date);
+            $basics->title = $item->title;
+            $basics->descriptionHtml = $item->description;
+            $basics->additionalNotes = $item->additionalNotes;
 
-    public function filterDistanceFromLatLong($lat, $lon, $distanceKm) {
-        $this->walks->filterDistanceFromLatLong($lat, $lon, $distanceKm);
-    }
+            $walk->setBasics($basics);
 
-    public function filterGroups($filter) {
-        $this->walks->filterGroups($filter);
-    }
 
-    public function filterStrands($filter) {
-        $this->walks->filterStrands($filter);
-    }
-
-    public function filterTitle($filter, $option = 'remove') {
-        $this->walks->filterTitle($filter, $option);
-    }
-
-    public function filterTitleContains($filter, $option = 'remove') {
-        $this->walks->filterTitleContains($filter, $option);
-    }
-
-    public function filterNationalGrade($grades) {
-        $this->walks->filterNationalGrade($grades);
-    }
-
-    public function filterFestivals($filter) {
-        $this->walks->filterFestivals($filter);
-    }
-
-    public function noFestivals() {
-        $this->walks->noFestivals();
-    }
-
-    public function allFestivals() {
-        $this->walks->allFestivals();
-    }
-
-    public function filterDateRange($datefrom, $dateto) {
-        if (!is_a($datefrom, 'DateTime')) {
-            echo "filterDateRange: first parameter is NOT Datetime";
-            return;
-        }
-        if (!is_a($dateto, 'DateTime')) {
-            echo "filterDateRange: second parameter is NOT Datetime";
-            return;
-        }
-        $dateto->setTime(0, 0, 0);
-        $datefrom->setTime(0, 0, 0);
-        $this->walks->filterDateRange($datefrom, $dateto);
-    }
-
-    public function filterDayofweek($days) {
-        $this->walks->filterDayofweek($days);
-    }
-
-    public function noWalks($no) {
-        $this->walks->noWalks($no);
-    }
-
-    public function numberWalks() {
-        return count($this->walks->allWalks());
-    }
-
-    public function walksInFuture($period) {
-        $this->walks->walksInFuture($period);
-    }
-
-    public function noCancelledWalks() {
-        $number = 0;
-        $items = $this->walks->allWalks();
-        foreach ($items as $walk) {
-            if ($walk->isCancelled()) {
-                $number += 1;
+            switch ($item->finishTime) {
+                case null:
+                    $walk->finishTime = null;
+                    break;
+                case "00:00:00":
+                    $walk->finishTime = null;
+                    break;
+                default:
+                    $day = $walk->walkDate->format('Ymd ');
+                    $walk->finishTime = DateTime::createFromFormat('Ymd H:i:s', $day . $item->finishTime);
+                    break;
             }
+
+            $singleWalk = new RJsonwalksWalkWalk();
+            if ($item->isLinear) {
+                $singleWalk->shape = ShapeOfWalk::Linear;
+            } else {
+                $singleWalk->shape = ShapeOfWalk::Circular;
+            }
+            $singleWalk->nationalGrade = $item->difficulty->text;
+            $singleWalk->localGrade = $item->gradeLocal;
+            $singleWalk->distanceKm = $item->distanceKM;
+            $singleWalk->pace = $item->pace;
+            $singleWalk->ascentMetres = $item->ascentMetres;
+            $walk->setWalk($singleWalk);
+
+// contact details
+            if ($item->walkContact != null) {
+                $contact = new RJsonwalksWalkContact();
+                $contact->isLeader = $item->walkContact->isWalkLeader == "true";
+                $contact->contactName = trim($item->walkContact->contact->displayName);
+                // $walk->emailAddr = $item->walkContact->contact->email;
+                if (strlen($item->walkContact->contact->email) > 0) {
+                    $contact->email = $item->walkContact->contact->email;
+                }
+                $contact->telephone1 = $item->walkContact->contact->telephone1;
+                $contact->telephone2 = $item->walkContact->contact->telephone2;
+                $contact->walkLeader = $item->walkLeader;
+                $walk->setContact($contact);
+            }
+//            // read strands
+//            if (count($item->strands->items) > 0) {
+//                $walk->strands = new RJsonwalksItems($item->strands);
+//            }
+//// read festivals
+//            if (count($item->festivals->items) > 0) {
+//                $walk->festivals = new RJsonwalksItems($item->festivals);
+//            }
+//// read suitability
+//            if (count($item->suitability->items) > 0) {
+//                $walk->suitability = new RJsonwalksItems($item->suitability);
+//            }
+//// read surroundings
+//            if (count($item->surroundings->items) > 0) {
+//                $walk->surroundings = new RJsonwalksItems($item->surroundings);
+//            }
+//// read theme
+//            if (count($item->theme->items) > 0) {
+//                $walk->theme = new RJsonwalksItems($item->theme);
+//            }
+//// read specialStatus
+//            if (count($item->specialStatus->items) > 0) {
+//                $walk->specialStatus = new RJsonwalksItems($item->specialStatus);
+//            }
+//            // read facilities
+//            if (count($item->facilities->items) > 0) {
+//                $walk->facilities = new RJsonwalksItems($item->facilities);
+//            }
+// process meeting and starting locations
+            $this->processPoints($walk, $item->points);
+            //  $walk->createExtraData();
+            $walk->media = $walk->getMedia($item);
+        } catch (Exception $ex) {
+            $this->errorFound = 2;
         }
-        return $number;
     }
 
-    public function display($displayclass) {
-        if ($this->walks == null) {
-            echo "No walks found";
-            return;
-        }
-        $version = new JVersion();
-        // Joomla4 Update to use correct call.
-        if (version_compare($version->getShortVersion(), '4.0', '<')) {
-            $printOn = JRequest::getVar('print') == 1;
-        } else {
-            $jinput = JFactory::getApplication()->getInput();
-            $printOn = $jinput->getVar('print') == 1;
-        }
-        if ($printOn) {
-            $style = 'BODY {color: #000000;}';
-            $document = JFactory::getDocument();
-            $document->addStyleDeclaration($style);
-        }
-        $displayclass->DisplayWalks($this->walks);
-    }
-
-    public function displayIcsDownload($name, $pretext, $linktext, $posttext) {
-        $events = new REventGroup(); // create a group of events
-        $events->addWalks($this); // add walks to the group of events
-        $display = new REventDownload();
-        $display->setPreText($pretext);
-        $display->setLinkText($linktext);
-        $display->setPostText($posttext);
-        $display->Display("de02walks", $events); // display walks information
-// is this line correct and is function used
-    }
-
-    public function getWalks() {
-        return $this->walks;
-    }
-
-    public function clearCache() {
-        $this->srfr->clearCache();
-// reread feed
-        $this->readFeed($this->rafeedurl);
-    }
-
-    private function CacheLocation() {
-        if (!defined('DS')) {
-            define('DS', DIRECTORY_SEPARATOR);
-        }
-        return 'cache' . DS . 'ra_feed';
-    }
-
-    public function filterFeed($filter) { // filter by component filter subform
-        if ($filter->titlecontains !== '') {
-            $this->filterTitleContains($filter->titlecontains, "keep");
-        }
-        if ($filter->titledoesntcontains !== '') {
-            $this->filterTitleContains($filter->titledoesntcontains, "remove");
-        }
-        if ($filter->titleequals !== '') {
-            $this->filterTitle($filter->titleequals, "keep");
-        }
-        if ($filter->titledoesntequal !== '') {
-            $this->filterTitle($filter->titledoesntequal, "remove");
-        }
-        $limit = intval($filter->limit);
-        if ($limit > 0) {
-            $this->noWalks($limit);
-        }
-        $dist = floatval($filter->filterdistance);
-        if ($dist > 0) {
-            $this->filterDistanceFromLatLong(floatval($filter->filtercentrelatitude), floatval($filter->filtercentrelongitude), $dist);
-        }
-        if (count($filter->filternationalgrades) > 0) {
-            $this->filterNationalGrade($filter->filternationalgrades);
-        }
-        if (count($filter->filterdaysofweek) > 0) {
-            $this->filterDayofweek($filter->filterdaysofweek);
-        }
-        if ($filter->filterstrand !== '') {
-            $this->filterStrands($filter->filterstrand);
+    private function processPoints($walk, $points) {
+        $walk->hasMeetPlace = false;
+        foreach ($points as $value) {
+            if ($value->typeString == "Meeting") {
+                $meet = $value;
+                $loc = new RJsonwalksWalkLocation();
+                $loc->name = $meet->description;
+                $loc->gridref = $meet->gridRef;
+                $loc->latitude = $meet->latitude;
+                $loc->longitude = $meet->longitude;
+                $meeting = new RJsonwalksWalkMeeting($meet->time, '', $loc);
+                $walk->setMeeting($meeting);
+            }
+            if ($value->typeString == "Start") {
+                $start = $value;
+                $publish = $start->showExact;
+                $time = $start->time;
+                $loc = new RJsonwalksWalkLocation();
+                $loc->name = $start->description;
+                $loc->gridref = $start->gridRef;
+                $loc->latitude = $start->latitude;
+                $loc->longitude = $start->longitude;
+                $startitem = new RJsonwalksWalkStart($time, $publish, $loc);
+                $walk->setStart($startitem);
+            }
+//            if ($value->typeString == "End") {
+//                // $walk->hasFinishPlace = true;
+//                $walk->finishLocation = new RJsonwalksLocation($value, $walk->walkDate);
+//            }
         }
     }
 

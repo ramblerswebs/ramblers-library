@@ -10,23 +10,71 @@ class RJsonwalksLocation {
     public $timeHHMM;           // time as string hh:mm am/pam or "No time"
     public $timeHHMMshort;      // time as $timeHHMM but without minutes if zero
     public $gridref;            // OS grid reference of the location
-    public $easting;            // easting of the location
-    public $northing;            // northing of the location
-    public $longitude;          // Longitude of the location
     public $latitude;           // Latitude of the location
     public $postcode;           // either a postcode or null
     public $postcodeDistance;   // Distance of postcode from location or null
     public $postcodeDirection;   // Distance of postcode from location or null
-    public $postcodeDirectionAbbr;
-    public $postcodeLatitude;   // Longitude of the postcode or null
-    public $postcodeLongitude;  // Latitude of the postcode or null
+    //   public $postcodeDirectionAbbr;
+    public $postcodeLatitude = 0;   // Longitude of the postcode or null
+    public $postcodeLongitude = 0;  // Latitude of the postcode or null
     public $type;               // type of location, meet,start,finish
     public $exact;              // true or false
 
-    function __construct($value, $walkDate) {
-        $this->description = RHtml::convertToText($value->description);
+    function __construct() {
+//        function __construct($value, $walkDate) {
+//        $this->description = RHtml::convertToText($value->description);
+//        $day = $walkDate->format('Ymd ');
+//        $this->time = DateTime::createFromFormat('Ymd H:i:s', $day . $value->time);
+//        If ($this->time === false) {
+//            $this->time = "";
+//            $this->timeHHMM = "No time";
+//            $this->timeHHMMshort = "No time";
+//        } else {
+//            $this->timeHHMM = $this->time->format('g:ia');
+//            $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
+//            if ($this->timeHHMMshort == "12am") {
+//                $this->time = "";
+//                $this->timeHHMM = "No time";
+//                $this->timeHHMMshort = "No time";
+//            }
+//        }
+//        $this->gridref = $value->gridRef;
+//        //   $this->easting = $value->easting;
+//        //   $this->northing = $value->northing;
+//        $this->latitude = $value->latitude;
+//        $this->longitude = $value->longitude;
+//        $this->postcode = $value->postcode;
+//        $this->postcodeLatitude = $value->postcodeLatitude;
+//        $this->postcodeLongitude = $value->postcodeLongitude;
+//        $this->type = $value->typeString;
+//        $this->exact = $value->showExact == "true";
+//        if ($this->postcode != null) {
+//            $lat1 = $this->postcodeLatitude;
+//            $lon1 = $this->postcodeLongitude;
+//            $lat2 = $this->latitude;
+//            $lon2 = $this->longitude;
+//            $this->postcodeDistance = 1000 * round(RGeometryGreatcircle::distance($lat1, $lon1, $lat2, $lon2, "KM"), 3); // metres
+//            $this->postcodeDirection = RGeometryGreatcircle::direction($lat1, $lon1, $lat2, $lon2);
+//        }
+    }
+
+    public function setLocation($type, $placetime, $walkDate) {
+        switch ($type) {
+            case 'Meeting':
+                $this->exact = "true";
+                $this->type = 'Meeting';
+                break;
+            case 'Start':
+                $this->exact = $placetime->publish;
+                $this->type = 'Start';
+                break;
+
+            default:
+                echo "Location error";
+                break;
+        }
         $day = $walkDate->format('Ymd ');
-        $this->time = DateTime::createFromFormat('Ymd H:i:s', $day . $value->time);
+        $this->time = DateTime::createFromFormat('Ymd H:i:s', $day . $placetime->time);
         If ($this->time === false) {
             $this->time = "";
             $this->timeHHMM = "No time";
@@ -40,24 +88,21 @@ class RJsonwalksLocation {
                 $this->timeHHMMshort = "No time";
             }
         }
-        $this->gridref = $value->gridRef;
-        $this->easting = $value->easting;
-        $this->northing = $value->northing;
-        $this->latitude = $value->latitude;
-        $this->longitude = $value->longitude;
-        $this->postcode = $value->postcode;
-        $this->postcodeLatitude = $value->postcodeLatitude;
-        $this->postcodeLongitude = $value->postcodeLongitude;
-        $this->type = $value->typeString;
-        $this->exact = $value->showExact == "true";
-        if ($this->postcode != null) {
+        $location = $placetime->location;
+        $this->description = RHtml::convertToText($location->name);
+        $this->gridref = $location->gridref;
+        $this->latitude = $location->latitude;
+        $this->longitude = $location->longitude;
+        $this->postcode = $location->postcode;
+        if ($this->postcode !== null) {
+            $this->postcodeLatitude = $location->postcodeLatitude;
+            $this->postcodeLongitude = $location->postcodeLongitude;
             $lat1 = $this->postcodeLatitude;
             $lon1 = $this->postcodeLongitude;
             $lat2 = $this->latitude;
             $lon2 = $this->longitude;
             $this->postcodeDistance = 1000 * round(RGeometryGreatcircle::distance($lat1, $lon1, $lat2, $lon2, "KM"), 3); // metres
             $this->postcodeDirection = RGeometryGreatcircle::direction($lat1, $lon1, $lat2, $lon2);
-            $this->postcodeDirectionAbbr = RGeometryGreatcircle::directionAbbr($this->postcodeDirection);
         }
     }
 
@@ -105,12 +150,12 @@ class RJsonwalksLocation {
         return "";
     }
 
-    public function distanceFrom($easting, $northing) {
-        $dele = ($this->easting - $easting) / 1000;
-        $deln = ($this->northing - $northing) / 1000;
-        $dist = sqrt($dele * $dele + $deln * $deln);
-        return $dist;
-    }
+//    public function distanceFrom($easting, $northing) {
+//        $dele = ($this->easting - $easting) / 1000;
+//        $deln = ($this->northing - $northing) / 1000;
+//        $dist = sqrt($dele * $dele + $deln * $deln);
+//        return $dist;
+//    }
 
     public function distanceFromLatLong($lat1, $lon2) {
         $lat2 = $this->latitude;

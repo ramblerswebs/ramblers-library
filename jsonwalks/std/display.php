@@ -17,7 +17,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
     public $legendposition = "top";
     public $addContacttoHeader = false;  // not used
     public $displayGroup = null;  // should the Group name be displayed
-    public $displayClass = "pantone7474white";
+    public $displayClass = "sunset";
     public $paginationTop = true;
     public $paginationBottom = true;
     public $noPagination = false;
@@ -107,6 +107,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         RLoad::addScript("libraries/ramblers/jsonwalks/std/display.js", "text/javascript");
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
     }
@@ -144,4 +145,5 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         }
         return $number;
     }
+
 }

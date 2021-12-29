@@ -79,9 +79,13 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
             $odd = !$odd;
         }
         echo "</div>" . PHP_EOL;
+        
+        RJsScript::registerWalks(array_values($items));
+
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
     }
+
     // display full walk either as popup or inline
     public function inLineDisplay() {
         $this->inLineDisplay = true;

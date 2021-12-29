@@ -5,8 +5,14 @@
     --sunset:#F08050;
     --granite:#404141;
     --rosyCheeks:#F6B09D;
-    --sunrise:--F9B104;
+    --sunrise:#F9B104;
     --cloudy:#FFFFFF;
+    --gradeEA:#ADADAD;
+    --gradeE:#9BC8AB;
+    --gradeL:#F6B09D;
+    --gradeM:#F08050;
+    --gradeS:#F9B104;
+    --gradeT:#404141;
     /* June 2017 -  */
     --pantone0110:#D7A900;
     --pantone0159:#C75B12;
@@ -64,21 +70,6 @@ div.fc a.walkCancelled{
     padding-top: 7px;
 }
 
-.walkNew.printonDELETE {
-    background:none;
-    padding-left: 0px;;
-
-}
-.updated.walkNewDELETE {
-    padding-left: 35px;
-    background: url(../../images/new.gif) no-repeat scroll 0 50% rgba(0,0,0,0);
-
-}
-.gradeNewDELETE::after {
-    content: url('../../images/newsq.gif');
-    padding-left:5px;
-}
-
 span.walkerror {
     color: var(--pantone0186);
 }
@@ -126,9 +117,9 @@ div.walkstdfulldetails div.walkitem {
 
 }
 div.walkstdfulldetails div.walkitem.map {
-    
+
     padding: 5px;
-    
+
 
 }
 div.walkstdfulldetails div.festivals > ul,
@@ -214,41 +205,41 @@ div.groupA,div.groupG,div.groupS {
 }         
 
 #grade-ea {  
-    background-color: var(--pantone5565);
+    background-color: var(--gradeEA);
 }
 #grade-e {  
-    background-color: var(--pantone0583);
+    background-color: var(--gradeE);
 }
 #grade-l {   
-    background-color: var(--pantone7474);
+    background-color: var(--gradeL);
 }
 #grade-m {   
-    background-color: var(--pantone0159);
+    background-color: var(--gradeM);
 }
 #grade-s {   
-    background-color: var(--pantone1815);
+    background-color: var(--gradeS);
 }
 #grade-t {
-    background-color: var(--pantone4485);
+    background-color: var(--gradeT);
 }
 
 .grade-ea {  
-    background-color: var(--pantone5565) !important;
+    background-color: var(--gradeEA) !important;
 }
 .grade-e {  
-    background-color: var(--pantone0583) !important;
+    background-color: var(--gradeE) !important;
 }
 .grade-l {   
-    background-color: var(--pantone7474) !important;
+    background-color: var(--gradeL) !important;
 }
 .grade-m {   
-    background-color: var(--pantone0159) !important;
+    background-color: var(--gradeM) !important;
 }
 .grade-s {   
-    background-color: var(--pantone1815) !important;
+    background-color: var(--gradeS) !important;
 }
 .grade-t {
-    background-color: var(--pantone4485) !important;
+    background-color: var(--gradeT) !important;
 }
 div.leaflet-popup-content div.walkPublished img,
 div.leaflet-popup-content div.walkNew img{
@@ -261,48 +252,48 @@ div.leaflet-popup-content div.walkCancelled img{
     display:none;
 }
 
-table.gradeTable  div.EasyAccess {
-    background: url(../../images/grades/grade-ea.jpg);
+/*table.gradeTable  div.EasyAccess {
+    background: url(../../images/grades/ea.png);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
 table.gradeTable  div.Easy {
-    background: url(../../images/grades/grade-e.jpg);
+    background: url(../../images/grades/e.png);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
 table.gradeTable  div.Leisurely {
-    background: url(../../images/grades/grade-l.jpg);
+    background: url(../../images/grades/l.png);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
 table.gradeTable  div.Moderate {
-    background: url(../../images/grades/grade-m.jpg);
+    background: url(../../images/grades/m.png);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
 table.gradeTable  div.Strenuous {
-    background: url(../../images/grades/grade-s.jpg);
+    background: url(../../images/grades/s.png);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
 }
 table.gradeTable  div.Technical  {
-    background: url(../../images/grades/grade-t.jpg);
+    background: url(../../images/grades/t.png);
     background-size:25px 25px;
     background-repeat: no-repeat;
     padding-left: 30px;
     min-height:30px;
-}
+}*/
 div.nextwalk div.walkPublished,
 div.nextwalk div.walkNew,
 div.nextwalk div.walkCancelled{
@@ -400,6 +391,40 @@ div.js-modal.ramblers {
 .btn.modal-print{
     margin-right:15px;
 }
+span.ra.help.icon {
+    cursor:pointer;
+    display: inline-block;
+    margin-left:20px;
+    width:20px;
+    height:20px;
+    bottom:-3px;
+    background-image: url("../../images/help.png");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    position:relative;
+}
+div.ra.help.helpblock{
+    position: relative;
+    max-width:150px;
+    border: 1px solid var(--granite);
+    border-radius: 10px;
+    padding:5px;
+    background-color:#EEEEEE;
+}
+div.ra.help.helpblock span{
+    color:blue;
+    
+}
+div.ra.help.helpblock div.help-border{
+    display: block;
+    width: 95%;
+    height: 3px;
+    background: blue;
+    
+}
+div#ra-help-helptag{
+    z-index: 99999;
+}
 
 .rapagination-1 {
     padding-bottom: 20px;
@@ -416,26 +441,40 @@ div.js-modal.ramblers {
         /*   width: 100%;*/
     }
 }
-
-.odd {
+/* do not use !important on the follwoing colours */
+.odd.walkPublished,
+.odd.walkNew {
     background-color:#FFFFFF !important;
 }
-.even {
+.even.walkPublished,
+.even.walkNew {
     background-color:#EEEEEE !important;
+}
+.odd.walkPublished:hover,
+.odd.walkNew:hover,
+.even.walkPublished:hover,
+.even.walkNew:hover {
+    background-color:#DDDDDD !important;
+}
+.odd {
+    background-color:#FFFFFF;
+}
+.even {
+    background-color:#EEEEEE;
 }
 div.odd ,
 div.even {
     padding:2px;
     clear:both;
 }
-.odd:hover {
-    background-color:#DDDDDD !important;
+div.odd:hover {
+    background-color:#DDDDDD;
 }
-.even:hover {
-    background-color:#DDDDDD !important;
+div.even:hover {
+    background-color:#DDDDDD;
 }
 tr.walk:hover {
-    background-color:#DDDDDD !important;
+    background-color:#DDDDDD;
 }
 
 div#rainner {
@@ -506,17 +545,15 @@ span.ra-details {
     width:100%;
     top:-5px;
 }
-span.ra-detailsXXX:after {
+.right {
     float:right;
-    content: url("../../images/close.png");
-    padding-top:3px;
 }
 img.ra-detailsimg {
     float:right;
 
     overflow:auto;
 }
-span.ra-detailsimgXXXXX {
+/*span.ra-detailsimgXXXXX {
     float:right;
     content: url("../../images/close.png");
     overflow: auto;
@@ -526,7 +563,7 @@ div.ra-detailsXXXX {
     overflow: auto;
     padding-top:0px;
     padding-bottom:0px;
-}
+}*/
 
 .jplist-selected {
     background-color: #AAAAAA;
@@ -694,32 +731,30 @@ span.middle[data-descr]:hover::after{
 span.left[data-descr]:hover::after{
     top:-15px;
 }
-span.XXXXwalkNew[data-descr] {
-    color: var(--pantone0555);
-}
+
 span[data-descr="Technical"]:hover::after {
-    background-color: var(--pantone4485);
+    background-color: var(--gradeT);
 }
 span[data-descr="Strenuous"]:hover::after {
-    background-color: var(--pantone1815);
+    background-color: var(--gradeS);
 }
 span[data-descr="Moderate"]:hover::after {
-    background-color: var(--pantone0159);
+    background-color: var(--gradeM);
 }
 span[data-descr="Leisurely"]:hover::after {
-    background-color: var(--pantone7474);
+    background-color: var(--gradeL);
 }
 span[data-descr="Easy"]:hover::after {
-    background-color: var(--pantone0583);
+    background-color: var(--gradeE);
 }
 span[data-descr="Easy Access"]:hover::after {
-    background-color: var(--pantone5565);
+    background-color: var(--gradeEA);
 }
-span.ra_selectDEL span{
+/*span.ra_selectDEL span{
     cursor:pointer;
     color: var(--pantone1815);
     font-weight: bold;
-}
+}*/
 img.mediathumbl{
     float:left;
     max-height: 70px;
@@ -802,6 +837,9 @@ div.ra_filter input{
     width:auto;
 }
 @media only screen and (max-width: 780px) {
+    .ra.nonmobile  {
+        display:none !important;
+    }
     div.filter-columns {
         column-count: 2;
         clear:right;
@@ -809,12 +847,12 @@ div.ra_filter input{
 }
 
 div.walks div.toggler.pointer  {
-    background:url(close.png) no-repeat 100% 50%;
+    background:url(../../images/close.png) no-repeat 100% 50%;
     background-position: right top;
 }
 
 div.walks div.toggler.active.pointer {
-    background:url(open.png) no-repeat 100% 50%;
+    background:url(../../images/open.png) no-repeat 100% 50%;
     background-position: right top;
 }
 div.walks div.toggler span.item {
@@ -903,7 +941,14 @@ div.walks div.toggler span.item {
     line-height: 0;
 }
 
-.jplist-slider-holder-1 {
+div.ra.pagination span button {
+    background: var(--mintCake);
+    border-width: 0px;
+    border-radius:5px;
+    margin-right: 3px;
+}
+
+jplist-slider-holder-1 {
     background: var(--pantone0110);
 }
 
@@ -1031,10 +1076,23 @@ container {
     white-space: normal;
 }
 table.fc-col-header th {
-    background-color: var(--pantone7474);
-    background-image: -moz-linear-gradient(center top , var(--pantone7474), #00A5B7);
+    background-color: var(--sunset);
+    background-image: -moz-linear-gradient(center top , var(--sunset), #FBC200);
     background-repeat: repeat-x;
 }
 table.fc-col-header th div a{
     color: #FFFFFF;
+}
+.ra.wrap{
+    white-space: initial;
+}
+div.ra.places.popup{
+    max-width:350px;
+    max-height:150px;
+    overflow: auto;
+}
+iframe.ra.contactForm {
+    width:95%;
+    height:600px;
+    border-width: 0px;
 }

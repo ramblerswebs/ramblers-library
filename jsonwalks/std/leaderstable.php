@@ -14,11 +14,11 @@ class RJsonwalksStdLeaderstable extends RJsonwalksDisplaybase {
 
     function DisplayWalks($walks) {
         $printOn = JRequest::getVar('print') == 1;
-            if ($printOn) {
-                $doc = JFactory::getDocument();
-                $style = 'table { border-collapse: collapse;} table, td, th { border: 1px solid #657291;}td { padding: 5px;}';
-                $doc->addStyleDeclaration($style);
-            }
+        if ($printOn) {
+            $doc = JFactory::getDocument();
+            $style = 'table { border-collapse: collapse;} table, td, th { border: 1px solid #657291;}td { padding: 5px;}';
+            $doc->addStyleDeclaration($style);
+        }
 
         $walks->sort(RJsonwalksWalk::SORT_CONTACT, RJsonwalksWalk::SORT_TELEPHONE1, NULL);
         $items = $walks->allWalks();
@@ -29,11 +29,8 @@ class RJsonwalksStdLeaderstable extends RJsonwalksDisplaybase {
         foreach ($items as $walk) {
             $value = $walk->contactName . " - " . $walk->telephone1;
             if (!$walk->telephone2 == NULL) {
-                $value.=" ," . $walk->telephone2;
+                $value .= " ," . $walk->telephone2;
             }
-        //    if (!$walk->getEmail() == NULL) {
-              //  $value.=" ," . $walk->getEmail();
-         //   }
             if ($value <> $last) {
                 echo RHtml::addTableRow(array($walk->contactName, $walk->telephone1, $walk->telephone2));
                 $last = $value;

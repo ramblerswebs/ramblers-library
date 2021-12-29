@@ -47,7 +47,6 @@ class RErrors {
 
         $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-
         $app = JFactory::getApplication();
         $app->enqueueMessage(JText::_($errorText . ": " . $action), $level);
         if ($status != 200) {

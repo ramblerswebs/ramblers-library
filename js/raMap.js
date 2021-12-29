@@ -370,6 +370,7 @@ ra.map = (function () {
             var out = "<span class='placelocation'>Place Grid Ref " + marker.gr + " </span>" + like + dislike + streetmap + google;
             out += "<div id=" + marker.gr + "></div>";
             out += "<div >" + gr.toString(8) + "</div>";
+            out += "<div class='ra places popup'>";
             out += "<p><b>Description</b> [Date used / Score]</p>";
             out += "<ul>";
             var items = json.records;
@@ -381,6 +382,7 @@ ra.map = (function () {
                 out += "<li>" + item.desc + " [" + item.lastread + "/" + item.score + "%]</li>";
             }
             out += "</ul>";
+              out += "</div>";
             popup.setContent(out);
             popup.update();
         };
@@ -446,6 +448,64 @@ ra.map = (function () {
             last = latlng;
         }
         return latlngs;
+    };
+      my.displayStartingPlaces= function (latlng,layers,distance,limit) {
+      
+        var grid = OsGridRef.latLonToOsGrid(latlng);
+        var gr = grid.toString(6);
+        var i;
+         layers.clearLayers();  
+         var desc = "<b><a href='https://maphelp.ramblers-webs.org.uk/startingplaces.html' target='_blanks'>Meeting/Starting Places</a><b>";
+
+        var msg = "   ";
+      //  var point = L.marker(p).bindPopup(msg);
+      //  this._mouseLayer.addLayer(point);
+      //  point.getPopup().setContent(desc);
+        if (gr !== "") {
+          //  point.getPopup().setContent(desc + "<br/><b>Searching for Ramblers meeting/starting places ...</b>");
+          //  point.openPopup();
+            var east = Math.round(grid.easting);
+            var north = Math.round(grid.northing);
+            var opts = "&dist=" + distance + "&maxpoints=" + limit;
+            var url = "https://places.walkinginfo.co.uk/get.php?easting=" + east + "&northing=" + north + opts;
+            ra.ajax.getJSON(url, function (err, items) {
+                if (err !== null) {
+                    desc += "<br/>Error: Something went wrong: " + err;
+                } else {
+                    var no = 0;
+                    for (i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        if (item.S > 0 && item.S < 6) {
+                            var marker;
+                            marker = ra.map.places.addMarker(item.GR, item.S, item.Lat, item.Lng);
+                            layers.addLayer(marker);
+                            no += 1;
+                        }
+                    }
+                    if (no === 0) {
+                        desc += "<br/>No meeting/starting places found within " + distance + "km";
+                    } else {
+                        if (no === 100) {
+                            desc += "<br/>100+ locations found within 10Km";
+                        } else {
+                            desc += "<br/>" + no + " locations found within " + distance + "km";
+                        }
+                      //  var bounds = self._getPlacesBounds();
+                      //  map.fitBounds(bounds, {padding: [50, 50]});
+                    }
+                  //  point.getPopup().setContent(desc);
+                    // point.openPopup();
+
+                }
+//                setTimeout(function (point) {
+//                    self._map.removeLayer(point);
+//                }, 10000, point);
+            });
+        } else {
+            desc += "<br/>Outside OS Grid";
+          //  point.getPopup().setContent(desc);
+           // point.openPopup();;
+        }
     };
     return my;
 }

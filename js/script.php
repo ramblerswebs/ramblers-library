@@ -140,6 +140,19 @@ class RJsScript {
         RLoad::addScript("libraries/ramblers/js/feedhandler.js", "text/javascript");
     }
 
+    static function registerWalks($walks) {
+        // register walks from php methods into raWalks.js for display
+        $data = new class {
+            
+        };
+        $data->walks = $walks;
+        $script = new RJsScript();
+        $options = new RLeafletMapoptions();
+        $script->setCommand("ra.walk.registerPHPWalks");
+        $script->setDataObject($data);
+        $script->add($options);
+    }
+
 }
 
 // need to add json error handling when converting options and data to JSON
