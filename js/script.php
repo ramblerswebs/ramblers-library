@@ -52,8 +52,8 @@ class RJsScript {
 
         RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
         // Leaflet
-        $document->addStyleSheet("libraries/ramblers/vendors/leaflet1.7/leaflet.css", "text/css");
-        $document->addScript("libraries/ramblers/vendors/leaflet1.7/leaflet.js", "text/javascript");
+        $document->addStyleSheet("libraries/ramblers/vendors/leaflet1.7.1/leaflet.css", "text/css");
+        $document->addScript("libraries/ramblers/vendors/leaflet1.7.1/leaflet.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/leaflet/ramblersleaflet.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
 
