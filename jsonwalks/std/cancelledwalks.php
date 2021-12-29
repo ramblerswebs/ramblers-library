@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Description of WalksDisplay   ..
+ * Description of WalksDisplay   .
  *
  * @author Chris Vaughan
  */
