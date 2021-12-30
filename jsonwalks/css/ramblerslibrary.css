@@ -405,7 +405,7 @@ span.ra.help.icon {
 }
 div.ra.help.helpblock{
     position: relative;
-    max-width:150px;
+    max-width:400px;
     border: 1px solid var(--granite);
     border-radius: 10px;
     padding:5px;
@@ -565,10 +565,10 @@ div.ra-detailsXXXX {
     padding-bottom:0px;
 }*/
 
-.jplist-selected {
+/*.jplist-selected {
     background-color: #AAAAAA;
     border-color: #AAAAAA;
-}
+}*/
 .jplist-disabled {
     opacity: 0.3;
     filter: alpha(opacity=30); /* For IE8 and earlier */
@@ -947,6 +947,11 @@ div.ra.pagination span button {
     border-radius:5px;
     margin-right: 3px;
 }
+div.ra.pagination span span button.jplist-selected {
+    background: var(--sunrise);
+}
+
+
 
 jplist-slider-holder-1 {
     background: var(--pantone0110);
