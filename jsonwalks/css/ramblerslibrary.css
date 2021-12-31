@@ -7,6 +7,7 @@
     --rosyCheeks:#F6B09D;
     --sunrise:#F9B104;
     --cloudy:#FFFFFF;
+    --skyBlue:#00A9FF;
     --gradeEA:#ADADAD;
     --gradeE:#9BC8AB;
     --gradeL:#F6B09D;
@@ -412,15 +413,17 @@ div.ra.help.helpblock{
     background-color:#EEEEEE;
 }
 div.ra.help.helpblock span{
-    color:blue;
-    
+    color:var(--skyBlue);
+
 }
 div.ra.help.helpblock div.help-border{
     display: block;
     width: 95%;
     height: 3px;
-    background: blue;
-    
+    background: var(--skyBlue);
+}
+div.ra.help.helpblock span.close{
+    color:black;
 }
 div#ra-help-helptag{
     z-index: 99999;
@@ -545,7 +548,7 @@ span.ra-details {
     width:100%;
     top:-5px;
 }
-.right {
+.floatright {
     float:right;
 }
 img.ra-detailsimg {

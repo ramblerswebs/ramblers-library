@@ -331,14 +331,14 @@ ra.date = (function () {
         var options = {month: 'long'};
         return value.toLocaleDateString("en-UK", options);
     };
+    date.monthShort = function (datetime) {
+        var value = date._setDateTime(datetime);
+        var options = {month: 'short'};
+        return value.toLocaleDateString("en-UK", options);
+    };
     date.dowShortddmm = function (datetime) {
         return date.dowShortdd(datetime) + ", " + date.month(datetime);
     };
-//    date.dowShortddyyyy = function (datetime) {
-//        var value = date._setDateTime(datetime);
-//        var options = {year: 'numeric', day: 'numeric', weekday: 'short'};
-//        return value.toLocaleDateString("en-UK", options);
-//    };
     date.dowShortddmmyyyy = function (datetime) {
         var value = date._setDateTime(datetime);
         var options = {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'};
@@ -367,6 +367,10 @@ ra.date = (function () {
         var options = {year: 'numeric'};
         return value.toLocaleDateString("en-UK", options);
     };
+    date.YY = function (datetime) {
+        var value = ra.date.YYYY(datetime);
+        return value.substr(2, 2);
+    };
     date.YYYYMMDD = function (datetime) {
         var value = date._setDateTime(datetime);
         return value.getFullYear() + "-" + date.MM(value) + "-" + date.DD(value);
@@ -382,10 +386,6 @@ ra.date = (function () {
     date.DD = function (datetime) {
         var value = date._setDateTime(datetime);
         return value.getDate().toString().padStart(2, '0');
-    };
-    date.Month = function (datetime) {
-        var value = date._setDateTime(datetime);
-        return value.toLocaleString('default', {month: 'long'});
     };
     date.nth = function (datetime) {
         var value = date._setDateTime(datetime);
@@ -1092,7 +1092,7 @@ ra.help = class {
             }
             _this.open = !_this.open;
             if (_this.open) {
-                _this.helpTag.innerHTML = "<span>Help</span><div class='help-border'></div>" + _this.helpFunction();
+                _this.helpTag.innerHTML = "<span>Help<span class='close'>x</span></span><div class='help-border'></div>" + _this.helpFunction();
                 _this.helpTag.style.display = 'block';
                 _this.helpTag.raHelpTag = _this;
 
