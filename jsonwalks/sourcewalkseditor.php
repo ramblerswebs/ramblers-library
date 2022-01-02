@@ -100,12 +100,12 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         // admin details
         $admin->source = SourceOfWalk::WEditor;
         $admin->id = $id;
-        $admin->status = 'Published';
+        $admin->status = $item->admin->status;
         $admin->groupCode = $this->groupCode;
         $admin->groupName = $this->groupName;
         $admin->dateUpdated = new DateTime();
         $admin->dateCreated = new DateTime();
-        $admin->cancellationReason = '';
+        $admin->cancellationReason =$item->admin->cancelledReason;
         $admin->displayUrl = '';
         $walk->setAdmin($admin);
 

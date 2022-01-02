@@ -382,7 +382,7 @@ ra.map = (function () {
                 out += "<li>" + item.desc + " [" + item.lastread + "/" + item.score + "%]</li>";
             }
             out += "</ul>";
-              out += "</div>";
+            out += "</div>";
             popup.setContent(out);
             popup.update();
         };
@@ -449,21 +449,17 @@ ra.map = (function () {
         }
         return latlngs;
     };
-      my.displayStartingPlaces= function (latlng,layers,distance,limit) {
-      
+    my.displayStartingPlaces = function (latlng, layers, distance, limit) {
+
         var grid = OsGridRef.latLonToOsGrid(latlng);
         var gr = grid.toString(6);
         var i;
-         layers.clearLayers();  
-         var desc = "<b><a href='https://maphelp.ramblers-webs.org.uk/startingplaces.html' target='_blanks'>Meeting/Starting Places</a><b>";
+        layers.clearLayers();
+        var desc = "<b><a href='https://maphelp.ramblers-webs.org.uk/startingplaces.html' target='_blanks'>Meeting/Starting Places</a><b>";
 
         var msg = "   ";
-      //  var point = L.marker(p).bindPopup(msg);
-      //  this._mouseLayer.addLayer(point);
-      //  point.getPopup().setContent(desc);
+
         if (gr !== "") {
-          //  point.getPopup().setContent(desc + "<br/><b>Searching for Ramblers meeting/starting places ...</b>");
-          //  point.openPopup();
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
             var opts = "&dist=" + distance + "&maxpoints=" + limit;
@@ -490,22 +486,16 @@ ra.map = (function () {
                         } else {
                             desc += "<br/>" + no + " locations found within " + distance + "km";
                         }
-                      //  var bounds = self._getPlacesBounds();
-                      //  map.fitBounds(bounds, {padding: [50, 50]});
                     }
-                  //  point.getPopup().setContent(desc);
-                    // point.openPopup();
-
                 }
-//                setTimeout(function (point) {
-//                    self._map.removeLayer(point);
-//                }, 10000, point);
             });
         } else {
             desc += "<br/>Outside OS Grid";
-          //  point.getPopup().setContent(desc);
-           // point.openPopup();;
         }
+    };
+    my.zoomLayer = function (map, layer, options = {padding: [20, 20]}) {
+        var bounds = layer.getBounds();
+        map.fitBounds(bounds, options);
     };
     return my;
 }
@@ -515,7 +505,7 @@ function cluster(map) {
     var body = document.getElementsByTagName("BODY")[0];
     this.progressBar = document.createElement('div');
     this.progressBar.setAttribute('class', 'ra-cluster-progress-bar');
-    body.appendChild( this.progressBar);
+    body.appendChild(this.progressBar);
 
     this._map = map;
     this.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: this.updateClusterProgressBar, disableClusteringAtZoom: 12, maxClusterRadius: 50});
