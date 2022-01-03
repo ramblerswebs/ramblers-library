@@ -1098,10 +1098,18 @@ ra.help = class {
 
                 var eleRect = ra.html.getCoords(_this.helpButton);
                 var top = eleRect.top;
-                var left = eleRect.left;
-
-                _this.helpTag.style.left = (40 + left) + 'px';
+                var left = eleRect.left + 40;
+                var body = document.getElementsByTagName('body')[0];
+                var r = body.clientWidth;
+                if (left + 400 > r) {
+                    left = r - 525;
+                    if (left < 0) {
+                        left = 0;
+                    }
+                }
+                _this.helpTag.style.left = left + 'px';
                 _this.helpTag.style.top = top + 'px';
+
 
             } else {
                 _this.helpTag.style.display = 'none';
