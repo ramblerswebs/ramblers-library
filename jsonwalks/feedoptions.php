@@ -67,7 +67,7 @@ class RJsonwalksFeedoptions {
              $source->getWalks($walks);
         }
         $walks->sort('SORT_DATE','SORT_TIME','SORT_DISTANCE');
-        // sort walks
+        
         // apply GWEM options
         // limit
         // distance

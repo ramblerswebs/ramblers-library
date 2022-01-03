@@ -21,14 +21,11 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
     const TIMEFORMAT = "Y-m-d";
 
     public function __construct($groupCode, $groupName, $site) {
+         parent::__construct(SourceOfWalk::WEditor, $groupCode);
         $this->groupCode = $groupCode;
         $this->groupName = $groupName;
         $this->site = $site;
-        if ($this->contains('http', $site)) {
-            echo "Invalid site name specified for WalkEditor feed";
-        }
-
-        $this->rafeedurl = 'http://' . $site . $this->feedPath;
+        $this->rafeedurl = $site . $this->feedPath;
     }
 
     public function getWalks($walks) {
@@ -81,11 +78,9 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
             default:
                 $json = json_decode($contents);
                 unset($contents);
-                $errors = 0;
                 $error = json_last_error();
                 if ($error == JSON_ERROR_NONE) {
                     return $json;
-                    break;
                 } else {
                     $errormsg = json_last_error_msg();
                     RErrors::notifyError('Feed is not in Json format: ' . $errormsg . ' [Error 4]', $feed, 'error');
