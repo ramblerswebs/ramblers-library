@@ -190,6 +190,11 @@ ra.walk = (function () {
     };
     // display walks 
     my.walkDetails = function ($walk) {
+        // get my location for directions
+        ra.loc.getPosition({
+            maxWait: 5000, // defaults to 10000
+            desiredAccuracy: 30 // defaults to 20
+        });
         var PHP_EOL = "\n";
         var $html = "";
         var $link, $out, $text;

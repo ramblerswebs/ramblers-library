@@ -405,7 +405,7 @@ span.ra.help.icon {
     position:relative;
 }
 div.ra.help.helpblock{
-    position: relative;
+    position: absolute;
     max-width:400px;
     border: 1px solid var(--granite);
     border-radius: 10px;

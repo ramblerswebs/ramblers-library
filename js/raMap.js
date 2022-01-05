@@ -486,6 +486,10 @@ ra.map = (function () {
                         } else {
                             desc += "<br/>" + no + " locations found within " + distance + "km";
                         }
+                        let event = new Event("start-places-loaded", {bubbles: true}); // 
+                        event.raData = {};
+                        event.raData.layer = layers;
+                        document.dispatchEvent(event);
                     }
                 }
             });

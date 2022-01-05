@@ -1072,6 +1072,9 @@ ra.help = class {
             this.helpTag.addEventListener("click", function (e) {
                 _this.helpTag.style.display = 'none';
                 var ele = e.target;
+                if ( ele.raHelpTag=='undefined'){
+                    alert('help undefined');
+                }
                 ele.raHelpTag.open = false;
             }
             );
@@ -1093,7 +1096,6 @@ ra.help = class {
             _this.open = !_this.open;
             if (_this.open) {
                 _this.helpTag.innerHTML = "<span>Help<span class='close'>x</span></span><div class='help-border'></div>" + _this.helpFunction();
-                _this.helpTag.style.display = 'block';
                 _this.helpTag.raHelpTag = _this;
 
                 var eleRect = ra.html.getCoords(_this.helpButton);
@@ -1109,7 +1111,7 @@ ra.help = class {
                 }
                 _this.helpTag.style.left = left + 'px';
                 _this.helpTag.style.top = top + 'px';
-
+                _this.helpTag.style.display = 'block';
 
             } else {
                 _this.helpTag.style.display = 'none';

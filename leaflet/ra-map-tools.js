@@ -86,12 +86,13 @@ L.Control.RA_Map_Tools = L.Control.extend({
                 _this.addMouse(mouseDiv);
             }
 
-            _this.addTabItem(container, list, 'Feedback', 'help', false);
 
-            var helpDiv = _this.addTabContentItem(content, "help", false);
-            _this.addHelp(helpDiv);
 
             if (_this._helpPage !== '') {
+                _this.addTabItem(container, list, 'Feedback', 'help', false);
+
+                var helpDiv = _this.addTabContentItem(content, "help", false);
+                _this.addHelp(helpDiv);
                 var help = document.createElement('a');
                 help.setAttribute('class', 'link-button mintCake');
                 help.setAttribute('href', _this._helpPage);
