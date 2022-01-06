@@ -106,6 +106,9 @@ ra.contains = function (items, item) {
 };
 // find all email addresses in text
 ra.fetch_mails = function ($text) {
+    if ($text.length===0){
+        return [];
+    }
     var $result = $text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
     if ($result === null) {
         return [];
