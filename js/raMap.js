@@ -449,6 +449,12 @@ ra.map = (function () {
         }
         return latlngs;
     };
+    my.addPostcodeIcon = function (pc, latlng, layer) {
+        var icon =  my.icon.postcode();
+        var marker= L.marker(latlng, {icon: icon}).addTo(layer);
+        marker.bindPopup(pc);
+        return marker;
+    };
     my.displayStartingPlaces = function (latlng, layers, distance, limit) {
 
         var grid = OsGridRef.latLonToOsGrid(latlng);
