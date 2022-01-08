@@ -416,7 +416,7 @@ class RJsonwalksWalk extends REvent {
         $img = $this->getGradeImg();
         switch ($this->nationalGrade) {
             case "Easy Access":
-                $tag = "<span data-descr='Easy Access' class='grade " . $class . "'>' onclick='ra.walk.dGH()'>" . $img . "</span>";
+                $tag = "<span data-descr='Easy Access' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Easy":
                 $tag = "<span data-descr='Easy' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";

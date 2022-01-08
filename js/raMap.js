@@ -450,8 +450,8 @@ ra.map = (function () {
         return latlngs;
     };
     my.addPostcodeIcon = function (pc, latlng, layer) {
-        var icon =  my.icon.postcode();
-        var marker= L.marker(latlng, {icon: icon}).addTo(layer);
+        var icon = my.icon.postcode();
+        var marker = L.marker(latlng, {icon: icon}).addTo(layer);
         marker.bindPopup(pc);
         return marker;
     };
@@ -461,10 +461,6 @@ ra.map = (function () {
         var gr = grid.toString(6);
         var i;
         layers.clearLayers();
-        var desc = "<b><a href='https://maphelp.ramblers-webs.org.uk/startingplaces.html' target='_blanks'>Meeting/Starting Places</a><b>";
-
-        var msg = "   ";
-
         if (gr !== "") {
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
@@ -472,7 +468,7 @@ ra.map = (function () {
             var url = "https://places.walkinginfo.co.uk/get.php?easting=" + east + "&northing=" + north + opts;
             ra.ajax.getJSON(url, function (err, items) {
                 if (err !== null) {
-                    desc += "<br/>Error: Something went wrong: " + err;
+                    alert("Sorry something went wrong fetching Meeting/Start location, Error: " + err);
                 } else {
                     var no = 0;
                     for (i = 0; i < items.length; i++) {
@@ -485,13 +481,11 @@ ra.map = (function () {
                         }
                     }
                     if (no === 0) {
-                        desc += "<br/>No meeting/starting places found within " + distance + "km";
+                        alert("No meeting/starting places found within " + distance + "km");
                     } else {
                         if (no === 100) {
-                            desc += "<br/>100+ locations found within 10Km";
-                        } else {
-                            desc += "<br/>" + no + " locations found within " + distance + "km";
-                        }
+                            alert("100+ locations found within 10Km");
+                        } 
                         let event = new Event("start-places-loaded", {bubbles: true}); // 
                         event.raData = {};
                         event.raData.layer = layers;
@@ -500,7 +494,7 @@ ra.map = (function () {
                 }
             });
         } else {
-            desc += "<br/>Outside OS Grid";
+             alert("Unable to find Meeting/Start locations outside of the UK");
         }
     };
     my.zoomLayer = function (map, layer, options = {padding: [20, 20]}) {
