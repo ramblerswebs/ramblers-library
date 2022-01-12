@@ -106,7 +106,7 @@ ra.contains = function (items, item) {
 };
 // find all email addresses in text
 ra.fetch_mails = function ($text) {
-    if ($text.length===0){
+    if ($text.length === 0) {
         return [];
     }
     var $result = $text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi);
@@ -1075,7 +1075,7 @@ ra.help = class {
             this.helpTag.addEventListener("click", function (e) {
                 _this.helpTag.style.display = 'none';
                 var ele = e.target;
-                if ( ele.raHelpTag=='undefined'){
+                if (ele.raHelpTag == 'undefined') {
                     alert('help undefined');
                 }
                 ele.raHelpTag.open = false;
@@ -1529,13 +1529,15 @@ if (typeof (ra.ics) === "undefined") {
             //  return;
             //  var $text = mb_convert_encoding($content, "UTF-8");
             var $text = $content;
+            var $line;
             if ($html) {
                 var $lines;
                 var $before = "<!DOCTYPE html><html><head><title></title></head><body>";
                 var $after = "</body></html>";
                 $text = this.decodeEntities($text);
                 $text = this.escapeString($text);
-                $lines = this.foldline($command + $before + $text + $after + this.newLineChar);
+                //     $lines = this.foldline($command + $before + $text + $after + this.newLineChar);
+                $line = $command + $before + $text + $after;
             } else {
                 $text = $text.replace(/&nbsp;/g, " ");
                 $text = $text.replace(/<p>/g, "");
@@ -1549,9 +1551,45 @@ if (typeof (ra.ics) === "undefined") {
                 // $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
                 $text = ra.html.convertToText($text);
                 $text = this.escapeString($text);
-                $lines = this.foldline($command + $text + this.newLineChar);
+                //   $lines = this.foldline($command + $text + this.newLineChar);
+                $line = $command + $text;
             }
-            this.file += $lines;
+            $lines = this.stringToChunks($line,73);
+            var _this=this;
+            $lines.forEach(myFunction);
+
+            function myFunction(value, index, array) {
+                _this.file += value + '\r\n';
+        }
+        //  this.file += $lines;
+        };
+        this.stringToChunks = function (string, chunkSize) {
+            const chunks = [];
+            while (string.length > 0) {
+                chunks.push(string.substring(0, chunkSize));
+                string = string.substring(chunkSize, string.length);
+            }
+            return chunks;
+        };
+        this.trimICSstring = function (str) {
+            var finished = false;
+            var out = str;
+            do {
+                finished = true;
+                if (out.endsWith("\\n")) {
+                    out = out.slice(0, -2);
+                    finished = false;
+                }
+                if (out.endsWith("\\r")) {
+                    out = out.slice(0, -2);
+                    finished = false;
+                }
+                if (out.endsWith(" ")) {
+                    out = out.slice(0, -1);
+                    finished = false;
+                }
+            } while (!finished);
+            return out;
         };
         this.escapeString = function (str) {
             var out;

@@ -1078,7 +1078,6 @@ ra.display.walksTabs = function (mapOptions, data) {
             $walk = $walks[index];
             if ($walk.display) {
                 this.addWalktoIcs($walk, events);
-
             }
         }
         events.download();
@@ -1124,8 +1123,6 @@ ra.display.walksTabs = function (mapOptions, data) {
     this.addWalktoIcs = function (walk, events) {
         var ev = new ra.ics.event();
         var $meetLocation, $startLocation, $before, $after, $summary, $description, $altDescription;
-
-
         if (walk.hasMeetPlace) {
             var meet = new ra.gwemLocation(walk.meetLocation);
             $meetLocation = meet.getTextDescription();
@@ -1186,7 +1183,6 @@ ra.display.walksTabs = function (mapOptions, data) {
                 //   $time.setMonth(d.getMonth());
                 //   $time.setFullYear(d.getFullYear());
                 ev.endDate(new Date($time));
-
             }
         } else {
             ev.startDate(new Date(walk.walkDate));
@@ -1227,7 +1223,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         return time;
     };
-
+   
     this.getFinishTime = function (walk) {
         if (walk.finishTime !== null) {
             return walk.finishTime;
