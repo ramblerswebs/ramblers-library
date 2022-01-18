@@ -1378,7 +1378,7 @@ ra.jplist = function (group) {
         }
         if (no < 21) {
             var tags = [
-                {name: 'print', parent: 'root', tag: 'button', attrs: {class: 'link-button tiny button mintCake'}, textContent: 'Print'}
+                {name: 'print', parent: 'root', tag: 'button', attrs: {class: 'link-button tiny button mintcake'}, textContent: 'Print'}
             ];
             var elements = ra.html.generateTags(tag, tags);
         } else {
@@ -1388,7 +1388,7 @@ ra.jplist = function (group) {
                         'data-current-page': '0', 'data-id': 'no-items',
                         'data-name': jplistName, class: 'ra pagination'}},
                 {name: 'spanitems', parent: 'div', tag: 'span'},
-                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'ra nonmobile link-button tiny button mintCake'}, textContent: 'Print'},
+                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'ra nonmobile link-button tiny button mintcake'}, textContent: 'Print'},
                 {name: 'span', parent: 'spanitems', tag: 'span', attrs: {class: 'ra nonmobile', 'data-type': 'info'}, textContent: '{startItem} - {endItem} of {itemsNumber}'},
                 {name: 'buttons', parent: 'div', tag: 'span', attrs: {class: 'center '}},
                 {name: 'first', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'first'}, textContent: '|<'},

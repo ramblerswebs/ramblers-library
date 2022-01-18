@@ -1,10 +1,10 @@
 :root {
     /* Ramblers colours */
     /* 2021  */
-    --mintCake:#9BC8AB;
+    --mintcake:#9BC8AB;
     --sunset:#F08050;
     --granite:#404141;
-    --rosyCheeks:#F6B09D;
+    --rosycheeks:#F6B09D;
     --sunrise:#F9B104;
     --cloudy:#FFFFFF;
     --skyBlue:#00A9FF;
@@ -945,7 +945,7 @@ div.walks div.toggler span.item {
 }
 
 div.ra.pagination span button {
-    background: var(--mintCake);
+    background: var(--mintcake);
     border-width: 0px;
     border-radius:5px;
     margin-right: 3px;

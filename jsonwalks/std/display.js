@@ -264,7 +264,7 @@ ra.display.walksTabs = function (mapOptions, data) {
                 this.displayMap("hidden");
                 ra.html.setTag(this.elements.rapagination1, "");
                 ra.html.setTag(this.elements.rapagination2, "");
-                this.addToDiaryButton(this.elements.rapagination2);
+             //   this.addToDiaryButton(this.elements.rapagination2);
                 ra.html.setTag(this.elements.rawalks, "");
                 this.displayWalksCalendar($walks);
                 break;
@@ -851,12 +851,12 @@ ra.display.walksTabs = function (mapOptions, data) {
                 ra.html.printTag(printTag);
             });
         }
-        this.addToDiaryButton(tag);
+      //  this.addToDiaryButton(tag);
         return;
     };
     this.addToDiaryButton = function (tag) {
         var diary = document.createElement('button');
-        diary.setAttribute('class', 'link-button tiny button mintCake right');
+        diary.setAttribute('class', 'link-button tiny button mintcake right');
         diary.textContent = 'Add to diary';
         tag.appendChild(diary);
         var _this = this;

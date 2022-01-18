@@ -94,7 +94,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
                 var helpDiv = _this.addTabContentItem(content, "help", false);
                 _this.addHelp(helpDiv);
                 var help = document.createElement('a');
-                help.setAttribute('class', 'link-button mintCake');
+                help.setAttribute('class', 'link-button mintcake');
                 help.setAttribute('href', _this._helpPage);
                 help.setAttribute('target', '_blank');
                 help.style.cssFloat = "right";
