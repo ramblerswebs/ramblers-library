@@ -1264,7 +1264,7 @@ ra.filter = function (settingsFilter) {
     };
     this.addAllNone = function (tag, option, ul) {
         var span = document.createElement('span');
-        span.setAttribute('class', 'link');
+        span.setAttribute('class', 'pointer link');
         span.textContent = option;
         if (option === "[All]") {
             span.style.marginLeft = '25px';

@@ -192,7 +192,7 @@ ra.display.gpxFolder = function (options, data) {
         }
     };
     this.displayGPXName = function (route) {
-        var link = '<b><div data-route-id="' + route.id + '">' + route.title + '</div></b>';
+        var link = '<b><div data-route-id="' + route.id + '" class="pointer">' + route.title + '</div></b>';
         return link;
     };
     this.addRouteEvents = function () {
@@ -293,7 +293,7 @@ ra.display.gpxFolder = function (options, data) {
         var header, path;
         var route = this.getRoutefromID(id);
         header = "<h2>" + route.title + "</h2>";
-        header += "<button style='float:right' class=\"link-button button-p5565 small white\" onclick=\"ra.html.showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><span>";
+        header += "<button style='float:right' class=\"link-button sunset small white\" onclick=\"ra.html.showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><span>";
         if (this.controls.displayAsPreviousWalks) {
             header += '<b>Date:</b> ' + route.date + '<br/>';
             header += '<b>Leader:</b> ' + route.author + '<br/>';

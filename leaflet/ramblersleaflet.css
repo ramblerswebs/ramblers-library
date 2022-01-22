@@ -40,18 +40,18 @@ div.leaflet-container{
     color:red;
 }
 .a-cluster-progress-bar {left: 0;
-                          line-height: 20px;
-                          margin-top: -10px;
-                          position: absolute;
-                          text-align: center;
-                          top: 50%;
-                          width: 100%;
-                          width:200px;
-                          left:-100px;
-                          font-weight: 700;font-size:125%;
-                          padding:10px;
-                          border-radius: 10px;
-                          background:#FFFFFF;
+                         line-height: 20px;
+                         margin-top: -10px;
+                         position: absolute;
+                         text-align: center;
+                         top: 50%;
+                         width: 100%;
+                         width:200px;
+                         left:-100px;
+                         font-weight: 700;font-size:125%;
+                         padding:10px;
+                         border-radius: 10px;
+                         background:#FFFFFF;
 }
 #ra-cluster-progress {
     position: fixed;
@@ -432,12 +432,8 @@ div.ra-inline label{
     background: rgba(120, 35, 39, 0.7);
 }
 .area-icon a {
- color:white;   
+    color:white;   
 }    
-div[data-route-id]{
-    cursor:pointer;
-    color:blue;
-}
 
 button.jplistsortbuttonasc,
 button.jplistsortbuttondesc {

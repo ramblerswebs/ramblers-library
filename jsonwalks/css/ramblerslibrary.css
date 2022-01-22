@@ -154,7 +154,7 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
     content: url(../images/google20.jpg);
 }
 .mappopup {
-    color:var(--pantone1815);
+    color:var(--sunset);
     cursor: pointer;
 }
 .place .mappopup {
@@ -307,6 +307,7 @@ div.nextwalk span.grade.middle{
 
 span.mappopup:hover{
     content:' ';
+    text-decoration: underline;
     background: url(../../images/new-win.png) no-repeat right ;
     padding-right:15px;
 }
@@ -458,6 +459,7 @@ div#ra-help-helptag{
 .even.walkPublished:hover,
 .even.walkNew:hover {
     background-color:#DDDDDD !important;
+     text-decoration: underline;
 }
 .odd {
     background-color:#FFFFFF;
@@ -535,14 +537,20 @@ table tr td.ra-tab:hover {
 
 .pointer {
     cursor: pointer;
+
+}
+.pointer:hover{
+    text-decoration: underline;   
+
 }
 .pointer.link {
-    cursor: pointer;
-    color: var(--pantone1815);
+    cursor: pointer; 
+    font-weight: bold;
+    color: var(--granite);
 }
 .pointer.link:hover {
     cursor: pointer;
-    color:var(--pantone0555);
+     text-decoration: underline;
 }
 span.ra-details {
     width:100%;
@@ -799,7 +807,7 @@ img.walkmedia[data-size="3"]{
 
 span.link{
     cursor:pointer;
-    color: var(--pantone1815);
+    color: var(--granite);
     font-weight: bold;
     margin-left:5px;
 }
