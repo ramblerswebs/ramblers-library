@@ -886,6 +886,31 @@ ra.modal = (function () {
         modal.fullscreenMap();
         return;
     };
+
+    modal.magnify = function (target) {
+        // save current modal
+        var savecurrentmodal = modal.elements.data.innerHTML;
+
+        // change content
+        var complete = document.createElement('div');
+        complete.classList.add("modal-outline");
+        var closeBtn = document.createElement('span');
+        closeBtn.textContent = 'x';
+        closeBtn.classList.add("close");
+        complete.appendChild(closeBtn);
+        var content = document.createElement('div');
+        complete.appendChild(content);
+
+        content.innerHTML = target.innerHTML;
+        //  content.classList.add("pointer");
+        ra.modal.elements.data.innerHTML = '';
+        ra.modal.elements.data.appendChild(complete);
+        complete.addEventListener("click", function () {
+            ra.modal.elements.data.innerHTML = '';
+            ra.modal.elements.data.innerHTML = savecurrentmodal;
+        });
+        // reset modal when it closes
+    };
     modal.fullscreen = function (isFullScreen, mapcontrol) {
         modal.isFullScreen = isFullScreen;
         modal.mapcontrol = mapcontrol;
@@ -1554,8 +1579,8 @@ if (typeof (ra.ics) === "undefined") {
                 //   $lines = this.foldline($command + $text + this.newLineChar);
                 $line = $command + $text;
             }
-            $lines = this.stringToChunks($line,73);
-            var _this=this;
+            $lines = this.stringToChunks($line, 73);
+            var _this = this;
             $lines.forEach(myFunction);
 
             function myFunction(value, index, array) {

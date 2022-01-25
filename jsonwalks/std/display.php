@@ -17,7 +17,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
     public $legendposition = "top";
     public $addContacttoHeader = false;  // not used
     public $displayGroup = null;  // should the Group name be displayed
-    public $displayClass = "sunset";
+    public $displayClass = "";
     public $paginationTop = true;
     public $paginationBottom = true;
     public $noPagination = false;

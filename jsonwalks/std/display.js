@@ -747,7 +747,7 @@ ra.display.walksTabs = function (mapOptions, data) {
     };
 
     this.displayWalksCalendar = function ($walks) {
-        var index, len, $walk, div;
+        var index, len, $walk;
         if ($walks.length === 0) {
             ra.html.setTag(this.elements.rawalks, '<h3>Sorry there are no walks at the moment.</h3>');
         }
@@ -785,8 +785,6 @@ ra.display.walksTabs = function (mapOptions, data) {
             }
         }
         var calendarTab = this.elements.rawalks;
-
-        var _this = this;
         var calendar = new FullCalendar.Calendar(calendarTab, {
             height: 'auto',
             selectable: true,

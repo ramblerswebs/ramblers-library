@@ -306,9 +306,10 @@ ra.walk = (function () {
 //        $html += my.addItemInfo("theme", "Theme", $walk.theme);
 //        $html += my.addItemInfo("specialStatus", "Special Status", $walk.specialStatus);
 //        $html += my.addItemInfo("facilities", "Facilities", $walk.facilities);
+
         if ($walk.media.length > 0) {
             if ($walk.media.length > 0) {
-                $html += "<div class='walkitem walkmedia'> ";
+                $html += "<div class='walkitem walkmedia' >";
                 var index, len;
                 for (index = 0, len = $walk.media.length; index < len; ++index) {
                     var item = $walk.media[index];
@@ -324,11 +325,13 @@ ra.walk = (function () {
                         caption += "<br/>";
                     }
                     caption += "</div>";
-                    $html += "<div class='walk-image' ><img data-size='1' class='walkmedia' src='" + item.url + "' onclick='ra.walk.mediasize(this)' >" + caption + "</div>";
+                    $html += "<div class='walk-image' onclick='ra.modal.magnify(this)'><img class='walkmedia' src='" + item.url + "'  >" + caption + "</div>";
                 }
                 $html += "</div>" + PHP_EOL;
             }
         }
+
+
         $html += "<div class='walkitem walkdates'>" + PHP_EOL;
         if ($walk.detailsPageUrl !== '') {
             $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on National Web Site</a></div>" + PHP_EOL;
@@ -836,14 +839,7 @@ ra.walk = (function () {
         }
         return $text;
     };
-    my.mediasize = function (e) {
-        var size = parseInt(e.getAttribute("data-size"));
-        size += 1;
-        if (size === 4) {
-            size = 1;
-        }
-        e.setAttribute("data-size", size);
-    };
+
     my.addYear = function ($walk) {
         var d = new Date();
         var newDate = new Date(d.getTime() + 300 * 24 * 60 * 60000);

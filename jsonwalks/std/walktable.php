@@ -12,7 +12,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
 
     private $walksClass = "walks";
     private $walkClass = "walk";
-    private $tableClass = 'sunset';
+    private $tableClass = '';
     private $customFormat = null;
     private $monthlyReminderClass = null;
     private $monthlyReminderMethod = null;

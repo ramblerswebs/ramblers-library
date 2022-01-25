@@ -8,6 +8,7 @@
     --sunrise:#F9B104;
     --cloudy:#FFFFFF;
     --skyBlue:#00A9FF;
+    --lightgrey: #A0A0A0;
     --gradeEA:#ADADAD;
     --gradeE:#9BC8AB;
     --gradeL:#F6B09D;
@@ -253,48 +254,7 @@ div.leaflet-popup-content div.walkCancelled img{
     display:none;
 }
 
-/*table.gradeTable  div.EasyAccess {
-    background: url(../../images/grades/ea.png);
-    background-size:25px 25px;
-    background-repeat: no-repeat;
-    padding-left: 30px;
-    min-height:30px;
-}
-table.gradeTable  div.Easy {
-    background: url(../../images/grades/e.png);
-    background-size:25px 25px;
-    background-repeat: no-repeat;
-    padding-left: 30px;
-    min-height:30px;
-}
-table.gradeTable  div.Leisurely {
-    background: url(../../images/grades/l.png);
-    background-size:25px 25px;
-    background-repeat: no-repeat;
-    padding-left: 30px;
-    min-height:30px;
-}
-table.gradeTable  div.Moderate {
-    background: url(../../images/grades/m.png);
-    background-size:25px 25px;
-    background-repeat: no-repeat;
-    padding-left: 30px;
-    min-height:30px;
-}
-table.gradeTable  div.Strenuous {
-    background: url(../../images/grades/s.png);
-    background-size:25px 25px;
-    background-repeat: no-repeat;
-    padding-left: 30px;
-    min-height:30px;
-}
-table.gradeTable  div.Technical  {
-    background: url(../../images/grades/t.png);
-    background-size:25px 25px;
-    background-repeat: no-repeat;
-    padding-left: 30px;
-    min-height:30px;
-}*/
+
 div.nextwalk div.walkPublished,
 div.nextwalk div.walkNew,
 div.nextwalk div.walkCancelled{
@@ -387,6 +347,16 @@ div.js-modal.ramblers {
     overflow-y: auto;
     max-height:85%;
 }
+.modal-outline{
+    margin: 2px;
+    border-radius: 10px 10px 10px 10px;
+    padding: 15px;
+    border: 2px solid #cccccc;
+    background-color: #eeeeee;
+}
+.modal-outline img{
+    border-radius: 10px;
+}
 
 /* The Close Button */
 .btn.modal-close,
@@ -459,7 +429,7 @@ div#ra-help-helptag{
 .even.walkPublished:hover,
 .even.walkNew:hover {
     background-color:#DDDDDD !important;
-     text-decoration: underline;
+    text-decoration: underline;
 }
 .odd {
     background-color:#FFFFFF;
@@ -550,7 +520,7 @@ table tr td.ra-tab:hover {
 }
 .pointer.link:hover {
     cursor: pointer;
-     text-decoration: underline;
+    text-decoration: underline;
 }
 span.ra-details {
     width:100%;
@@ -564,22 +534,7 @@ img.ra-detailsimg {
 
     overflow:auto;
 }
-/*span.ra-detailsimgXXXXX {
-    float:right;
-    content: url("../../images/close.png");
-    overflow: auto;
-}
 
-div.ra-detailsXXXX {
-    overflow: auto;
-    padding-top:0px;
-    padding-bottom:0px;
-}*/
-
-/*.jplist-selected {
-    background-color: #AAAAAA;
-    border-color: #AAAAAA;
-}*/
 .jplist-disabled {
     opacity: 0.3;
     filter: alpha(opacity=30); /* For IE8 and earlier */
@@ -761,11 +716,7 @@ span[data-descr="Easy"]:hover::after {
 span[data-descr="Easy Access"]:hover::after {
     background-color: var(--gradeEA);
 }
-/*span.ra_selectDEL span{
-    cursor:pointer;
-    color: var(--pantone1815);
-    font-weight: bold;
-}*/
+
 img.mediathumbl{
     float:left;
     max-height: 70px;
@@ -785,17 +736,12 @@ img.mediathumbr{
     margin-left:5px;
 }
 div.walk-image{
-    display: inline-block;
-}
-img.walkmedia {
-    -webkit-border-radius: 6px 6px 6px 6px;
-    -moz-border-radius: 6px 6px 6px 6px;
-    border-radius: 6px 6px 6px 6px;
-    max-height: 100px;
-    max-width: 150px;
-    margin-right:8px;
+    display: inline-block; 
+    max-width:40%;
+    padding:8px;
     cursor: pointer;
 }
+
 img.walkmedia[data-size="2"]{
     max-height: 250px;
     max-width: 400px;
@@ -965,16 +911,16 @@ div.ra.pagination span span button.jplist-selected {
 
 
 jplist-slider-holder-1 {
-    background: var(--pantone0110);
+    background: var(--mintcake);
 }
 
 .jplist-slider-holder-2 {
-    background: var(--pantone0159);
+    background: var(--sunrise);
 }
 
 .jplist-slider-holder-1:active,
 .jplist-slider-holder-2:active{
-    background: #00448c;
+    background: var(--mintcake);
     box-shadow: 0px 0px 10px #fff;
 }
 
@@ -1091,11 +1037,7 @@ container {
     padding: 0 1px;
     white-space: normal;
 }
-table.fc-col-header th {
-    background-color: var(--sunset);
-    background-image: -moz-linear-gradient(center top , var(--sunset), #FBC200);
-    background-repeat: repeat-x;
-}
+
 table.fc-col-header th div a{
     color: #FFFFFF;
 }
