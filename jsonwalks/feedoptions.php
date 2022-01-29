@@ -51,9 +51,15 @@ class RJsonwalksFeedoptions {
             echo "No groups supplied in GWEM feed";
             return false;
         }
-        $this->distance = $queryParts['distance'];
-        $this->limit = $queryParts['limit'];
-        $this->days = $queryParts['days'];
+        if (array_key_exists('distance', $queryParts)) {
+            $this->distance = $queryParts['distance'];
+        }
+        if (array_key_exists('limit', $queryParts)) {
+            $this->limit = $queryParts['limit'];
+        }
+        if (array_key_exists('days', $queryParts)) {
+            $this->days = $queryParts['days'];
+        }
 
         return $groups;
     }
@@ -80,7 +86,7 @@ class RJsonwalksFeedoptions {
     }
 
     public function getDistance() {
-          if ($this->distance !== null) {
+        if ($this->distance !== null) {
             $distance = explode('-', $this->distance);
             return $distance;
         }
