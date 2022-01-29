@@ -889,8 +889,13 @@ ra.modal = (function () {
 
     modal.magnify = function (target) {
         // save current modal
-        var savecurrentmodal = modal.elements.data.innerHTML;
-
+        var savecurrentmodal = '';
+        if (modal.elements.modaltag === null) {
+            // not in a modal
+              modal.display(target.innerHTML);
+              return;
+        }
+        savecurrentmodal = modal.elements.data.innerHTML;
         // change content
         var complete = document.createElement('div');
         complete.classList.add("modal-outline");

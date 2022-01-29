@@ -120,7 +120,7 @@ class RJsonwalksWalk extends REvent {
         $this->pace = $walk->pace;
         if ($walk->ascentMetres !== null) {
             $this->ascentMetres = $walk->ascentMetres;
-            $this->ascentFeet = $walk->ascentMetres * 3.28084;
+            $this->ascentFeet = round($walk->ascentMetres * 3.28084);
         }
     }
 
