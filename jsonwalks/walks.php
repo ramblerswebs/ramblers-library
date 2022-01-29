@@ -237,7 +237,7 @@ class RJsonwalksWalks {
         return true;
     }
 
-    public function noWalks($no) {
+    public function limitNumberWalks($no) {
         $i = 0;
         foreach ($this->arrayofwalks as $key => $value) {
             $i += 1;
@@ -245,6 +245,10 @@ class RJsonwalksWalks {
                 unset($this->arrayofwalks[$key]);
             }
         }
+    }
+     public function noWalks($no) {
+         // deprecated
+        $this->limitNumberWalks($no);
     }
 
     public function walksInFuture($period) {

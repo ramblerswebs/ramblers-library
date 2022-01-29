@@ -21,7 +21,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
     const TIMEFORMAT = "Y-m-d";
 
     public function __construct($groupCode, $groupName, $site) {
-         parent::__construct(SourceOfWalk::WEditor, $groupCode);
+        parent::__construct(SourceOfWalk::WEditor, $groupCode);
         $this->groupCode = $groupCode;
         $this->groupName = $groupName;
         $this->site = $site;
@@ -100,7 +100,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $admin->groupName = $this->groupName;
         $admin->dateUpdated = new DateTime();
         $admin->dateCreated = new DateTime();
-        $admin->cancellationReason =$item->admin->cancelledReason;
+        $admin->cancellationReason = $item->admin->cancelledReason;
         $admin->displayUrl = '';
         $walk->setAdmin($admin);
 

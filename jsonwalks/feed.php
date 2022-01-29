@@ -47,7 +47,7 @@ class RJsonwalksFeed {
             }
             $distance = $this->options->getDistance();
             if ($distance !== null) {
-                $this->filterWalksDistance($distance[0],$distance[1]);
+                $this->filterWalksDistance($distance[0], $distance[1]);
             }
             $limit = $this->options->getLimit();
             if ($limit !== null) {
@@ -74,8 +74,8 @@ class RJsonwalksFeed {
         $this->walks->filterCancelled();
     }
 
-    public function filterWalksDistance($minDistance,$maxDistance) {
-        $this->walks->filterDistance(floatval($minDistance),floatval($maxDistance));
+    public function filterWalksDistance($minDistance, $maxDistance) {
+        $this->walks->filterDistance(floatval($minDistance), floatval($maxDistance));
     }
 
     public function filterDistanceFrom($easting, $northing, $distanceKm) {
@@ -138,8 +138,13 @@ class RJsonwalksFeed {
         $this->walks->filterDayofweek($days);
     }
 
+    public function limitNumberWalks($no) {
+        $this->walks->limitNumberWalks($no);
+    }
+
     public function noWalks($no) {
-        $this->walks->noWalks($no);
+        // deprecated
+        $this->limitNumberWalks($no);
     }
 
     public function numberWalks() {

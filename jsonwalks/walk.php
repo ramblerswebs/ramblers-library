@@ -102,6 +102,7 @@ class RJsonwalksWalk extends REvent {
         $this->description = RHtml::convert_mails($this->description);
         $this->descriptionHtml = $basics->descriptionHtml;
         $this->descriptionHtml = RHtml::convert_mails($this->descriptionHtml);
+        $this->additionalNotes = $basics->additionalNotes;
     }
 
     public function setWalk($walk) {

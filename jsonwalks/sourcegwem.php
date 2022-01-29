@@ -14,7 +14,6 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
 
     private $rafeedurl = '';
     private $srfr;
-  
 
     //   private $groups;
 
@@ -22,8 +21,7 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
 
     public function __construct($groups) {
         parent::__construct(SourceOfWalk::GWEM, $groups);
-       $this->rafeedurl = $this->getGwemUrl();
-     
+        $this->rafeedurl = $this->getGwemUrl();
     }
 
     public function getWalks($walks) {
@@ -41,9 +39,7 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
                 $walk = new RJsonwalksWalk();
                 $this->convertToInternalFormat($walk, $item);
                 $walks->addWalk($walk);
-              
             }
-       
         }
         return;
     }
@@ -76,7 +72,7 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
 
             $admin = new RJsonwalksWalkAdmin();
             $admin->source = SourceOfWalk::GWEM;
-            $admin->id =  $item->id;
+            $admin->id = $item->id;
             $admin->status = $item->status->value;
             $admin->groupCode = $item->groupCode;
             $admin->groupName = $item->groupName;
@@ -184,6 +180,11 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
                 $loc->gridref = $meet->gridRef;
                 $loc->latitude = $meet->latitude;
                 $loc->longitude = $meet->longitude;
+                if (property_exists($meet, 'postcode')) {
+                    $loc->postcode = $meet->postcode;
+                    $loc->postcodeLatitude = $meet->postcodeLatitude;
+                    $loc->postcodeLongitude = $meet->postcodeLongitude;
+                }
                 $meeting = new RJsonwalksWalkMeeting($meet->time, '', $loc);
                 $walk->setMeeting($meeting);
             }
@@ -196,13 +197,14 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
                 $loc->gridref = $start->gridRef;
                 $loc->latitude = $start->latitude;
                 $loc->longitude = $start->longitude;
+                if (property_exists($start, 'postcode')) {
+                    $loc->postcode = $start->postcode;
+                    $loc->postcodeLatitude = $start->postcodeLatitude;
+                    $loc->postcodeLongitude = $start->postcodeLongitude;
+                }
                 $startitem = new RJsonwalksWalkStart($time, $publish, $loc);
                 $walk->setStart($startitem);
             }
-//            if ($value->typeString == "End") {
-//                // $walk->hasFinishPlace = true;
-//                $walk->finishLocation = new RJsonwalksLocation($value, $walk->walkDate);
-//            }
         }
     }
 
