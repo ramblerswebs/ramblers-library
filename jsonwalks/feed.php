@@ -19,11 +19,12 @@ class RJsonwalksFeed {
 
         // see if options is a string or object
         // if string then find the parameters and set ip a feedoptions object
+        $isURL = false;
 
         $okay = false;
         if (is_string($options)) {
             $this->options = new RJsonwalksFeedoptions($options);
-
+            $isURL = true;
             $okay = true;
         }
         if (is_object($options)) {
@@ -39,6 +40,20 @@ class RJsonwalksFeed {
         $this->walks = new RJsonwalksWalks(NULL);
 
         $this->options->getWalks($this->walks);
+        if ($isURL) {
+            $days = $this->options->getDays();
+            if ($days !== null) {
+                $this->filterDayofweek($days);
+            }
+            $distance = $this->options->getDistance();
+            if ($distance !== null) {
+                $this->filterWalksDistance($distance[0],$distance[1]);
+            }
+            $limit = $this->options->getLimit();
+            if ($limit !== null) {
+                $this->noWalks($limit);
+            }
+        }
     }
 
     private function startsWith($string, $startString) {
@@ -57,6 +72,10 @@ class RJsonwalksFeed {
 
     public function filterCancelled() {
         $this->walks->filterCancelled();
+    }
+
+    public function filterWalksDistance($minDistance,$maxDistance) {
+        $this->walks->filterDistance(floatval($minDistance),floatval($maxDistance));
     }
 
     public function filterDistanceFrom($easting, $northing, $distanceKm) {

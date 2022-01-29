@@ -7,10 +7,8 @@
  */
 class RJsonwalksFeedoptions {
 
-    private $groups = null;
     private $limit = null;
-    private $minDistance = null;
-    private $maxDistance = null;
+    private $distance = null;
     private $days = null;
     private $sources = [];
 
@@ -21,7 +19,7 @@ class RJsonwalksFeedoptions {
         if ($value === '') {
             return;
         }
-        $value=strtolower($value);
+        $value = strtolower($value);
         if ($this->startsWith(strtolower($value), 'http')) {
             $groups = $this->processGWEMurl($value);
             If ($groups === false) {
@@ -46,13 +44,16 @@ class RJsonwalksFeedoptions {
             return false;
         }
         $query = $parts['query'];
-        $queryParts=null;
+        $queryParts = null;
         parse_str($query, $queryParts);
         $groups = $queryParts['groups'];
         If ($groups === null or $groups === '') {
             echo "No groups supplied in GWEM feed";
             return false;
         }
+        $this->distance = $queryParts['distance'];
+        $this->limit = $queryParts['limit'];
+        $this->days = $queryParts['days'];
 
         return $groups;
     }
@@ -64,21 +65,34 @@ class RJsonwalksFeedoptions {
 
     public function getWalks($walks) {
         foreach ($this->sources as $source) {
-             $source->getWalks($walks);
+            $source->getWalks($walks);
         }
-        $walks->sort('SORT_DATE','SORT_TIME','SORT_DISTANCE');
-        
-        // apply GWEM options
-        // limit
-        // distance
-        // day of week
-        
-       //  $this->setNewWalks($this->newinterval);
+        $walks->sort('SORT_DATE', 'SORT_TIME', 'SORT_DISTANCE');
         return;
     }
 
     public function setLimit($limit) {
         $this->limit = $limit;
+    }
+
+    public function getLimit() {
+        return $this->limit;
+    }
+
+    public function getDistance() {
+          if ($this->distance !== null) {
+            $distance = explode('-', $this->distance);
+            return $distance;
+        }
+        return $this->distance;
+    }
+
+    public function getDays() {
+        if ($this->days !== null) {
+            $days = explode(',', $this->days);
+            return $days;
+        }
+        return $this->days;
     }
 
     private function startsWith($string, $startString) {
