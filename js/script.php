@@ -38,7 +38,7 @@ class RJsScript {
             $text .= "var data=null;" . PHP_EOL;
         }
 
-        $text .= "ra.bootstrapper('" . $this->command . "',mapOptions,data)});" . PHP_EOL;
+        $text .= "ra.bootstrapper('" . $this->command . "',mapOptions,data);});" . PHP_EOL;
         $document->addScriptDeclaration($text, "text/javascript");
 
         $this->addScriptsandStyles($options);

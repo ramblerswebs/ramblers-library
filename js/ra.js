@@ -65,7 +65,6 @@ ra.bootstrapper = function (displayClass, mapOptions, _data) {
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
-        var display;
         var myclass;
         //  var load = true;
         if (displayClass !== 'noDirectAction') {
@@ -276,12 +275,12 @@ ra.ajax = (function () {
 ra.cookie = (function () {
     var cookie = {};
     cookie.create = function (raobject, name, days) {
+        var expires = "";
         if (days) {
             var date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            var expires = "; expires=" + date.toGMTString();
-        } else
-            var expires = "";
+            expires = "; expires=" + date.toGMTString();
+        }
         document.cookie = name + "=" + raobject + expires + "; path=/;samesite=Strict";
     };
     cookie.read = function (name) {
@@ -535,8 +534,9 @@ ra.html = (function () {
     html.generateTags = function (root, items) {
         var index;
         var tags = {};
+        var item;
         for (index = 0; index < items.length; ++index) {
-            var item = items[index];
+            item = items[index];
             item.element = document.createElement(item.tag);
             Object.keys(item).forEach(function (key, i) {
                 // key: the name of the object key
@@ -567,19 +567,19 @@ ra.html = (function () {
 
             });
         }
+        function findItem(obj) {
+            return obj.name === parent;
+        }
         // put tags into structure
         for (index = 0; index < items.length; ++index) {
-            var item = items[index];
+            item = items[index];
             if (item.hasOwnProperty('parent')) {
                 var parent = item.parent;
                 if (parent === 'root') {
                     root.appendChild(item.element);
                 } else {
-                    var result = items.find(obj => {
-                        return obj.name === parent;
-                    });
+                    var result = items.find(findItem);
                     if (result) {
-
                         result.element.appendChild(item.element);
                     } else {
                         alert("generateTags: no parent");
@@ -868,9 +868,9 @@ ra.modal = (function () {
     modal.isFullScreen = false;
     modal.mapcontrol = null;
     modal.elements = {modaltag: null};
-    modal.display = function ($html, print = true) {
+    modal.display = function ($html, printButton = true) {
 
-        modal._createModalTag(print);
+        modal._createModalTag(printButton);
         ra.html.setTag(modal.elements.data, $html);
         modal.elements.modaltag.style.display = "block";
         modal.elements.close.addEventListener("click", function () {
@@ -892,8 +892,8 @@ ra.modal = (function () {
         var savecurrentmodal = '';
         if (modal.elements.modaltag === null) {
             // not in a modal
-              modal.display(target.innerHTML);
-              return;
+            modal.display(target.innerHTML);
+            return;
         }
         savecurrentmodal = modal.elements.data.innerHTML;
         // change content
@@ -975,7 +975,6 @@ ra.math = (function () {
             var h = Math.floor(time / 60);
             var m = (time % 60);
             return  h + 'hrs ' + m.toFixed(0) + 'mins';
-            ;
         }
     };
     return math;
@@ -985,7 +984,7 @@ ra.geom = (function () {
     var geom = {};
     var KM = 6371.009;
     var MI = 3958.761;
-    var NM = 3440.070;
+    // var NM = 3440.070;
     // var YD = 6967420;
     // var FT = 20902260;
     var directions = [
@@ -1082,78 +1081,79 @@ ra.geom = (function () {
     return geom;
 }
 ());
-ra.help = class {
-    static targetRect = null;
-    static lastHelp = null;
-    static no = 1;
-    constructor(tag, helpFunction) {
-        this.tag = tag;
-        this.helpFunction = helpFunction;
-        this.open = false;
-        this.fred = ra.help.no;
-        ra.help.no += 1;
-        this.helpTag = document.getElementById('ra-help-helptag');
-
-        if (this.helpTag === null) {
-            var body = document.getElementsByTagName("BODY")[0];
-            this.helpTag = document.createElement('div');
-            this.helpTag.setAttribute('id', 'ra-help-helptag');
-            this.helpTag.setAttribute('class', 'ra help helpblock');
-            this.helpTag.style.display = 'none';
-            body.prepend(this.helpTag);
-            var _this = this;
-            this.helpTag.addEventListener("click", function (e) {
-                _this.helpTag.style.display = 'none';
-                var ele = e.target;
-                if (ele.raHelpTag == 'undefined') {
-                    alert('help undefined');
-                }
-                ele.raHelpTag.open = false;
-            }
-            );
-        }
-    }
-    add() {
-        this.helpButton = document.createElement('span');
-        this.helpButton.setAttribute('class', 'ra help icon');
-        this.helpButton.textContent = "";
-        var _this = this;
-        this.tag.appendChild(this.helpButton);
-
-        this.helpButton.addEventListener("click", function (e) {
-            if (ra.help.lastHelp !== null) {
-                if (ra.help.lastHelp !== _this) {
-                    ra.help.lastHelp.open = false;
-                }
-            }
-            _this.open = !_this.open;
-            if (_this.open) {
-                _this.helpTag.innerHTML = "<span>Help<span class='close'>x</span></span><div class='help-border'></div>" + _this.helpFunction();
-                _this.helpTag.raHelpTag = _this;
-
-                var eleRect = ra.html.getCoords(_this.helpButton);
-                var top = eleRect.top;
-                var left = eleRect.left + 40;
-                var body = document.getElementsByTagName('body')[0];
-                var r = body.clientWidth;
-                if (left + 400 > r) {
-                    left = r - 525;
-                    if (left < 0) {
-                        left = 0;
-                    }
-                }
-                _this.helpTag.style.left = left + 'px';
-                _this.helpTag.style.top = top + 'px';
-                _this.helpTag.style.display = 'block';
-
-            } else {
-                _this.helpTag.style.display = 'none';
-            }
-            ra.help.lastHelp = _this;
-        });
-
-    }
-}
+//ra.help = class {
+//    var targetRect = null;
+//    var lastHelp = null;
+//    var no = 1;
+//    constructor(tag, helpFunction) {
+//        this.tag = tag;
+//        this.helpFunction = helpFunction;
+//        this.open = false;
+//        this.fred = ra.help.no;
+//        ra.help.no += 1;
+//        this.helpTag = document.getElementById('ra-help-helptag');
+//
+//        if (this.helpTag === null) {
+//            var body = document.getElementsByTagName("BODY")[0];
+//            this.helpTag = document.createElement('div');
+//            this.helpTag.setAttribute('id', 'ra-help-helptag');
+//            this.helpTag.setAttribute('class', 'ra help helpblock');
+//            this.helpTag.style.display = 'none';
+//            body.prepend(this.helpTag);
+//            var _this = this;
+//            this.helpTag.addEventListener("click", function (e) {
+//                _this.helpTag.style.display = 'none';
+//                var ele = e.target;
+//                if (ele.raHelpTag === 'undefined') {
+//                    alert('help undefined');
+//                }
+//                ele.raHelpTag.open = false;
+//            }
+//            );
+//        }
+//    }
+//    ;
+//            add() {
+//        this.helpButton = document.createElement('span');
+//        this.helpButton.setAttribute('class', 'ra help icon');
+//        this.helpButton.textContent = "";
+//        var _this = this;
+//        this.tag.appendChild(this.helpButton);
+//
+//        this.helpButton.addEventListener("click", function (e) {
+//            if (ra.help.lastHelp !== null) {
+//                if (ra.help.lastHelp !== _this) {
+//                    ra.help.lastHelp.open = false;
+//                }
+//            }
+//            _this.open = !_this.open;
+//            if (_this.open) {
+//                _this.helpTag.innerHTML = "<span>Help<span class='close'>x</span></span><div class='help-border'></div>" + _this.helpFunction();
+//                _this.helpTag.raHelpTag = _this;
+//
+//                var eleRect = ra.html.getCoords(_this.helpButton);
+//                var top = eleRect.top;
+//                var left = eleRect.left + 40;
+//                var body = document.getElementsByTagName('body')[0];
+//                var r = body.clientWidth;
+//                if (left + 400 > r) {
+//                    left = r - 525;
+//                    if (left < 0) {
+//                        left = 0;
+//                    }
+//                }
+//                _this.helpTag.style.left = left + 'px';
+//                _this.helpTag.style.top = top + 'px';
+//                _this.helpTag.style.display = 'block';
+//
+//            } else {
+//                _this.helpTag.style.display = 'none';
+//            }
+//            ra.help.lastHelp = _this;
+//        });
+//
+//    }
+//}
 
 ra.units = (function () {
     var units = {};
@@ -1224,7 +1224,7 @@ ra.filter = function (settingsFilter) {
             this.addFilterItemDate(span, end.name, end.id, end.no, start.no, end.no);
     }
     };
-    this.addFilterSelect = function (tag, title, items, ) {
+    this.addFilterSelect = function (tag, title, items ) {
 
         if (Object.keys(items).length === 1) {
             return;
