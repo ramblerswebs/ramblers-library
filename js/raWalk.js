@@ -87,7 +87,9 @@ ra.walk = (function () {
             callback(event, walk);
             return;
         }
-        alert('Program error, unable to display walk details, please contact webmaster');
+        alert('Program error, unable to display walk details, please contact webmaster, we will attempt to view walk on National Site');
+        $url = "https://www.ramblers.org.uk/go-walking/find-a-walk-or-route/walk-detail.aspx?walkID=" + id;
+        window.open($url);
     };
     my._addMaptoWalk = function (walk) {
         if (my.isCancelled(walk)) {

@@ -35,11 +35,12 @@ class REventGroup {
         RJsScript::registerWalks(array_values($arrayofwalks));
     }
 
-//    public function addWalksArray($arrayofwalks) {
-//        foreach ($arrayofwalks as $walk) {
-//            $this->arrayofevents[] = $walk;
-//        }
-//    }
+    // used by Download ICS
+    public function addWalksArray($arrayofwalks) {
+        foreach ($arrayofwalks as $walk) {
+            $this->arrayofevents[] = $walk;
+        }
+    }
 
     public function getEvents() {
         return $this->arrayofevents;

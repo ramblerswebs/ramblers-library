@@ -28,7 +28,7 @@ class RJsonwalksAddschema {
                 # Google don't like markup which doesn't appear on page so description must be as on page and image should  be excluded from next walks summary listing
                 $schemawalk->startdate = $walk->walkDate->format('Y-m-d');
                 $schemawalk->enddate = $schemawalk->startdate;
-                $schemawalk->image = "http://www.ramblers-webs.org.uk/images/ra-images/logos/standard/logo92.png";
+                $schemawalk->image = "https://www.ramblers-webs.org.uk/images/ra-images/2022brand/Logo%2090px.png";
                 $schemawalk->url = $walk->detailsPageUrl;
                 $schemawalks[] = $schemawalk;
             }
