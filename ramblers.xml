@@ -3,12 +3,12 @@
     <name>RamblersLibrary</name>
     <libraryname>ramblers</libraryname>
     <author>Chris Vaughan Derby and South Derbyshire</author>
-    <creationDate>31 January 2022</creationDate>
+    <creationDate>2 February 2022</creationDate>
     <copyright>Copyright (C) 2016/2021</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>https://github.com/ramblerswebs/ramblers-library/wiki</authorUrl>
-    <version>4.2.6</version>
+    <version>4.2.7</version>
     <description>Ramblers Library to provide diplay walks, GPX routes etc</description>
     
     <files>
