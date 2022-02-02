@@ -15,7 +15,7 @@ class RLeafletMap {
     public $mapHeight = "100%";
     public $mapWidth = "500px";
     public $options;
-    public $help_page = "https://maphelp.ramblers-webs.org.uk/";
+    public $help_page = "";
     private $helpBase = "https://maphelp.ramblers-webs.org.uk/";
     public $leafletLoad = true;
 

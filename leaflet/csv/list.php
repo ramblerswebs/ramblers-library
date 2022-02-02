@@ -31,7 +31,7 @@ class RLeafletCsvList extends RLeafletMap {
             return;
         }
 
-        $this->options->helpPage = "listofitemsm.html";
+        $this->help_page = "listofitemsm.html";
         $this->options->cluster = true;
         $this->options->fullscreen = true;
         $this->options->filter = true;
