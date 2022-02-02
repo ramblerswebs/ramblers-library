@@ -174,10 +174,6 @@ ra.isES6 = function () {
 };
 
 
-
-//    return ra;
-//}
-//());
 ra.ajax = (function () {
     var ajax = {};
     // request url and call function
@@ -272,6 +268,8 @@ ra.ajax = (function () {
     return ajax;
 }
 ());
+
+
 ra.cookie = (function () {
     var cookie = {};
     cookie.create = function (raobject, name, days) {
@@ -301,6 +299,8 @@ ra.cookie = (function () {
     return cookie;
 }
 ());
+
+
 ra.date = (function () {
     var date = {};
 
@@ -478,6 +478,8 @@ ra.date = (function () {
     return date;
 }
 ());
+
+
 ra.time = (function () {
     var time = {};
     time.HHMM = function (datetime) {
@@ -513,6 +515,8 @@ ra.time = (function () {
     return time;
 }
 ());
+
+
 ra.html = (function () {
     var html = {};
     // add HTML Div tag with class and text
@@ -737,6 +741,8 @@ ra.html = (function () {
     return html;
 }
 ());
+
+
 ra.link = (function () {
     var link = {};
     link.getOSMap = function (lat, long, text) {
@@ -775,6 +781,8 @@ ra.link = (function () {
     return link;
 }
 ());
+
+
 ra.loading = (function () {
     var loading = {};
     loading.start = function () {
@@ -804,6 +812,7 @@ ra.loading = (function () {
     return loading;
 }
 ());
+
 
 ra.w3w = (function () {
     var w3w = {};
@@ -863,6 +872,8 @@ ra.w3w = (function () {
     return w3w;
 }
 ());
+
+
 ra.modal = (function () {
     var modal = {};
     modal.isFullScreen = false;
@@ -953,6 +964,8 @@ ra.modal = (function () {
     return modal;
 }
 ());
+
+
 ra.math = (function () {
     var math = {};
     math.deg2rad = function (value) {
@@ -980,6 +993,8 @@ ra.math = (function () {
     return math;
 }
 ());
+
+
 ra.geom = (function () {
     var geom = {};
     var KM = 6371.009;
@@ -1081,79 +1096,7 @@ ra.geom = (function () {
     return geom;
 }
 ());
-//ra.help = class {
-//    var targetRect = null;
-//    var lastHelp = null;
-//    var no = 1;
-//    constructor(tag, helpFunction) {
-//        this.tag = tag;
-//        this.helpFunction = helpFunction;
-//        this.open = false;
-//        this.fred = ra.help.no;
-//        ra.help.no += 1;
-//        this.helpTag = document.getElementById('ra-help-helptag');
-//
-//        if (this.helpTag === null) {
-//            var body = document.getElementsByTagName("BODY")[0];
-//            this.helpTag = document.createElement('div');
-//            this.helpTag.setAttribute('id', 'ra-help-helptag');
-//            this.helpTag.setAttribute('class', 'ra help helpblock');
-//            this.helpTag.style.display = 'none';
-//            body.prepend(this.helpTag);
-//            var _this = this;
-//            this.helpTag.addEventListener("click", function (e) {
-//                _this.helpTag.style.display = 'none';
-//                var ele = e.target;
-//                if (ele.raHelpTag === 'undefined') {
-//                    alert('help undefined');
-//                }
-//                ele.raHelpTag.open = false;
-//            }
-//            );
-//        }
-//    }
-//    ;
-//            add() {
-//        this.helpButton = document.createElement('span');
-//        this.helpButton.setAttribute('class', 'ra help icon');
-//        this.helpButton.textContent = "";
-//        var _this = this;
-//        this.tag.appendChild(this.helpButton);
-//
-//        this.helpButton.addEventListener("click", function (e) {
-//            if (ra.help.lastHelp !== null) {
-//                if (ra.help.lastHelp !== _this) {
-//                    ra.help.lastHelp.open = false;
-//                }
-//            }
-//            _this.open = !_this.open;
-//            if (_this.open) {
-//                _this.helpTag.innerHTML = "<span>Help<span class='close'>x</span></span><div class='help-border'></div>" + _this.helpFunction();
-//                _this.helpTag.raHelpTag = _this;
-//
-//                var eleRect = ra.html.getCoords(_this.helpButton);
-//                var top = eleRect.top;
-//                var left = eleRect.left + 40;
-//                var body = document.getElementsByTagName('body')[0];
-//                var r = body.clientWidth;
-//                if (left + 400 > r) {
-//                    left = r - 525;
-//                    if (left < 0) {
-//                        left = 0;
-//                    }
-//                }
-//                _this.helpTag.style.left = left + 'px';
-//                _this.helpTag.style.top = top + 'px';
-//                _this.helpTag.style.display = 'block';
-//
-//            } else {
-//                _this.helpTag.style.display = 'none';
-//            }
-//            ra.help.lastHelp = _this;
-//        });
-//
-//    }
-//}
+
 
 ra.units = (function () {
     var units = {};
@@ -1168,6 +1111,80 @@ ra.units = (function () {
     return units;
 }
 ());
+
+ra.help = function (tag, helpFunction) {
+    // var targetRect = null;
+    var lastHelp = null;
+    var no = 1;
+    this.tag = tag;
+    this.helpFunction = helpFunction;
+    this.open = false;
+    this.fred = ra.help.no;
+    ra.help.no += 1;
+    this.helpTag = document.getElementById('ra-help-helptag');
+
+    if (this.helpTag === null) {
+        var body = document.getElementsByTagName("BODY")[0];
+        this.helpTag = document.createElement('div');
+        this.helpTag.setAttribute('id', 'ra-help-helptag');
+        this.helpTag.setAttribute('class', 'ra help helpblock');
+        this.helpTag.style.display = 'none';
+        body.prepend(this.helpTag);
+        var _this = this;
+        this.helpTag.addEventListener("click", function (e) {
+            _this.helpTag.style.display = 'none';
+            var ele = e.target;
+            if (ele.raHelpTag === 'undefined') {
+                alert('help undefined');
+            }
+            ele.raHelpTag.open = false;
+        }
+        );
+    }
+    this.add = function () {
+        this.helpButton = document.createElement('span');
+        this.helpButton.setAttribute('class', 'ra help icon');
+        this.helpButton.textContent = "";
+        var _this = this;
+        this.tag.appendChild(this.helpButton);
+
+        this.helpButton.addEventListener("click", function (e) {
+            if (lastHelp !== null) {
+                if (lastHelp !== _this) {
+                    lastHelp.open = false;
+                }
+            }
+            _this.open = !_this.open;
+            if (_this.open) {
+                _this.helpTag.innerHTML = "<span>Help<span class='close'>x</span></span><div class='help-border'></div>" + _this.helpFunction();
+                _this.helpTag.raHelpTag = _this;
+
+                var eleRect = ra.html.getCoords(_this.helpButton);
+                var top = eleRect.top;
+                var left = eleRect.left + 40;
+                var body = document.getElementsByTagName('body')[0];
+                var r = body.clientWidth;
+                if (left + 400 > r) {
+                    left = r - 525;
+                    if (left < 0) {
+                        left = 0;
+                    }
+                }
+                _this.helpTag.style.left = left + 'px';
+                _this.helpTag.style.top = top + 'px';
+                _this.helpTag.style.display = 'block';
+
+            } else {
+                _this.helpTag.style.display = 'none';
+            }
+            lastHelp = _this;
+        });
+    };
+
+
+};
+
+
 ra.filter = function (settingsFilter) {
 
     this.settingsFilter = settingsFilter;
@@ -1224,7 +1241,7 @@ ra.filter = function (settingsFilter) {
             this.addFilterItemDate(span, end.name, end.id, end.no, start.no, end.no);
     }
     };
-    this.addFilterSelect = function (tag, title, items ) {
+    this.addFilterSelect = function (tag, title, items) {
 
         if (Object.keys(items).length === 1) {
             return;
@@ -1505,6 +1522,8 @@ ra.jplist = function (group) {
         }
     };
 };
+
+
 if (typeof (ra.ics) === "undefined") {
     ra.ics = {};
     ra.ics.events = function () {
@@ -1679,87 +1698,87 @@ if (typeof (ra.ics) === "undefined") {
         this.addRecord('METHOD:', 'PUBLISH');
         this.addRecord('PRODID:', 'ramblers-webs v1.1');
     };
-}
-;
-ra.ics.event = function () {
-    this.item = {
-        startDate: null,
-        endDate: null,
-        modifiedDate: null,
-        createdDate: null,
-        uid: null,
-        organiser: null,
-        summary: null,
-        description: null,
-        altDescription: null,
-        sequence: null,
-        location: null,
-        url: null,
-        class: null,
-        method: null
-    };
-    this.getItem = function () {
-        return this.item;
-    };
-    this.startDate = function (value) {
-        this.checkType('[object Date]', value);
-        this.item.startDate = ra.date.toICSFormat(value);
-    };
-    this.endDate = function (value) {
-        this.checkType('[object Date]', value);
-        this.item.endDate = ra.date.toICSFormat(value);
-    };
-    this.modifiedDate = function (value) {
-        this.item.modifiedDate = ra.date.toICSFormat(value) + 'Z';
-        var $date = new Date('2010-01-01');
-        var $days = ra.date.periodInDays(value, $date) - 1;
-        // Fix added to include number of seconds since midnight, forcing an update on each download. 
-        // Otherwise, the event would only update daily. 
-        this.item.sequence = $days.toString() + ra.date.secondsSinceMidnight(new Date()) % 86400;
-    };
-    this.createdDate = function (value) {
-        this.checkType('[object Date]', value);
-        this.item.createdDate = ra.date.toICSFormat(value) + 'Z';
-    };
-    this.location = function (value) {
-        this.item.location = value;
-    };
-    this.uid = function (value) {
-        this.item.uid = value;
-    };
-    this.organiser = function (value) {
-        this.item.organiser = value;
-    };
-    this.summary = function (value) {
-        this.item.summary = value;
-    };
-    this.description = function (value) {
-        this.item.description = value;
-    };
-    this.altDescription = function (value) {
-        this.item.altDescription = value;
-    };
-    this.categories = function (value) {
-        this.item.categories = value;
-    };
-    this.url = function (value) {
-        this.item.url = value;
-    };
-    this.class = function (value) {
-        this.item.class = value;
-    };
-    this.method = function (value) {
-        this.item.method = value;
-    };
-    this.checkType = function (type, value) {
-        // Object.prototype.toString.call(value) === '[object Date]';
-        var oType = Object.prototype.toString.call(value);
-        if (oType === type) {
-            return true;
-        } else {
-            alert('Incorrect type in ICS');
-        }
-        return false;
-    };
 
-};
+
+    ra.ics.event = function () {
+        this.item = {
+            startDate: null,
+            endDate: null,
+            modifiedDate: null,
+            createdDate: null,
+            uid: null,
+            organiser: null,
+            summary: null,
+            description: null,
+            altDescription: null,
+            sequence: null,
+            location: null,
+            url: null,
+            class: null,
+            method: null
+        };
+        this.getItem = function () {
+            return this.item;
+        };
+        this.startDate = function (value) {
+            this.checkType('[object Date]', value);
+            this.item.startDate = ra.date.toICSFormat(value);
+        };
+        this.endDate = function (value) {
+            this.checkType('[object Date]', value);
+            this.item.endDate = ra.date.toICSFormat(value);
+        };
+        this.modifiedDate = function (value) {
+            this.item.modifiedDate = ra.date.toICSFormat(value) + 'Z';
+            var $date = new Date('2010-01-01');
+            var $days = ra.date.periodInDays(value, $date) - 1;
+            // Fix added to include number of seconds since midnight, forcing an update on each download. 
+            // Otherwise, the event would only update daily. 
+            this.item.sequence = $days.toString() + ra.date.secondsSinceMidnight(new Date()) % 86400;
+        };
+        this.createdDate = function (value) {
+            this.checkType('[object Date]', value);
+            this.item.createdDate = ra.date.toICSFormat(value) + 'Z';
+        };
+        this.location = function (value) {
+            this.item.location = value;
+        };
+        this.uid = function (value) {
+            this.item.uid = value;
+        };
+        this.organiser = function (value) {
+            this.item.organiser = value;
+        };
+        this.summary = function (value) {
+            this.item.summary = value;
+        };
+        this.description = function (value) {
+            this.item.description = value;
+        };
+        this.altDescription = function (value) {
+            this.item.altDescription = value;
+        };
+        this.categories = function (value) {
+            this.item.categories = value;
+        };
+        this.url = function (value) {
+            this.item.url = value;
+        };
+        this.class = function (value) {
+            this.item.class = value;
+        };
+        this.method = function (value) {
+            this.item.method = value;
+        };
+        this.checkType = function (type, value) {
+            // Object.prototype.toString.call(value) === '[object Date]';
+            var oType = Object.prototype.toString.call(value);
+            if (oType === type) {
+                return true;
+            } else {
+                alert('Incorrect type in ICS');
+            }
+            return false;
+        };
+    };
+}

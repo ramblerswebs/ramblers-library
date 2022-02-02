@@ -263,7 +263,7 @@ class RJsonwalksWalk extends REvent {
     }
 
     public function EventLink($display, $text) {
-        return $this->_addWalkLink(null, $this->id, $text);
+        return $this->_addWalkLink($this->id, $text);
     }
 
     public function EventLinks() {
