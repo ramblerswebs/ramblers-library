@@ -205,6 +205,21 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
                 $startitem = new RJsonwalksWalkStart($time, $publish, $loc);
                 $walk->setStart($startitem);
             }
+              if ($value->typeString == "End") {
+                $end = $value;
+                $loc = new RJsonwalksWalkLocation();
+                $loc->name = $end->description;
+                $loc->gridref = $end->gridRef;
+                $loc->latitude = $end->latitude;
+                $loc->longitude = $end->longitude;
+                if (property_exists($end, 'postcode')) {
+                    $loc->postcode = $end->postcode;
+                    $loc->postcodeLatitude = $end->postcodeLatitude;
+                    $loc->postcodeLongitude = $end->postcodeLongitude;
+                }
+                $finish = new RJsonwalksWalkFinish($end->time, '', $loc);
+                $walk->setFinish($finish);
+            }
         }
     }
 

@@ -134,6 +134,11 @@ class RJsonwalksWalk extends REvent {
         $this->startLocation = new RJsonwalksLocation();
         $this->startLocation->setLocation('Start', $start, $this->walkDate);
     }
+    
+      public function setFinish($finish) {
+        $this->finishLocation = new RJsonwalksLocation();
+        $this->finishLocation->setLocation('End', $finish, $this->walkDate);
+    }
 
     public function setContact($walk) {
 

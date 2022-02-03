@@ -68,6 +68,10 @@ class RJsonwalksLocation {
                 $this->exact = $placetime->publish;
                 $this->type = 'Start';
                 break;
+            case 'End':
+                $this->exact = true;
+                $this->type = 'End';
+                break;
 
             default:
                 echo "Location error";

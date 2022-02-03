@@ -160,6 +160,7 @@ ra.walk = (function () {
             switch (location.type) {
                 case "Meeting":
                 case "Finishing":
+                case "End":
                     return;
                     break;
                 case "Start":
