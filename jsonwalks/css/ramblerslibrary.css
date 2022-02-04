@@ -910,17 +910,17 @@ div.ra.pagination span span button.jplist-selected {
 
 
 
-jplist-slider-holder-1 {
+.jplist-slider-holder-1 {
     background: var(--mintcake);
 }
 
 .jplist-slider-holder-2 {
-    background: var(--sunrise);
+    background: var(--mintcake);
 }
 
 .jplist-slider-holder-1:active,
 .jplist-slider-holder-2:active{
-    background: var(--mintcake);
+    background: var(--sunrise);
     box-shadow: 0px 0px 10px #fff;
 }
 

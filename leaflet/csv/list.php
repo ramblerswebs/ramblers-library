@@ -60,7 +60,7 @@ class RLeafletCsvList extends RLeafletMap {
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
-        $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js", "text/javascript");
+        $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1a/polyfill.min.js", "text/javascript");
     }
 
     private function readCSV() {
