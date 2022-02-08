@@ -787,23 +787,17 @@ ra.loading = (function () {
     var loading = {};
     loading.start = function () {
         var tags = [
-            {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'container'}},
-            {name: 'loader', parent: 'container', tag: 'div', attrs: {class: 'loader'}},
-            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
-            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
-            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
-            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
-            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
-            {parent: 'loader', tag: 'div', attrs: {class: 'loader--dot'}},
-            {parent: 'loader', tag: 'div', attrs: {class: 'loader--text'}}
+            {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'loadingcontainer'}},
+            {name: 'loader', parent: 'container', tag: 'div', attrs: {class: 'loading'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'circle'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'circle'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'circle'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'shadow'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'shadow'}},
+            {parent: 'loader', tag: 'div', attrs: {class: 'shadow'}},
+            {parent: 'loader', tag: 'span',textContent:'LOADING'}
         ];
         loading.elements = ra.html.generateTags(document.body, tags);
-//        setTimeout(function () {
-//            if (loading.elements.container !== null) {
-//                alert("Sorry - There seems to be a problem in displaying the information you requesterd\n\
-//Please contact the web master");
-//            }
-//        }, 30000);
     };
     loading.stop = function () {
         loading.elements.container.remove();

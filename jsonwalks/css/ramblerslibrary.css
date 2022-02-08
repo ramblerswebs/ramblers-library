@@ -9,6 +9,7 @@
     --cloudy:#FFFFFF;
     --skyBlue:#00A9FF;
     --lightgrey: #A0A0A0;
+    --cancelled:#C60C30;
     --gradeEA:#ADADAD;
     --gradeE:#9BC8AB;
     --gradeL:#F6B09D;
@@ -18,18 +19,22 @@
     /* June 2017 -  */
     --pantone0110:#D7A900;
     --pantone0159:#C75B12;
-    --pantone0186:#C60C30;           
-    --pantone0555:#206C49;           
-    --pantone0583:#A8B400;           
-    --pantone1815:#782327;           
-    --pantone4485:#5B491F;           
-    --pantone5565:#8BA69C;           
-    --pantone7474:#007A87;           
+    --pantone0186:#C60C30;
+    --pantone0555:#206C49;
+    --pantone0583:#A8B400;
+    --pantone1815:#782327;
+    --pantone4485:#5B491F;
+    --pantone5565:#8BA69C;
+    --pantone7474:#007A87;
 }
 
 /* Ramblers additions */
-.cancelled {color:var(--pantone0186);}
-.oldBrowser {color:var(--pantone0186);}
+.cancelled {
+    color:var(--cancelled);
+}
+.oldBrowser {
+    color:var(--cancelled);
+}
 
 /* css code to handle json walk feeds */
 span.walksummary img{
@@ -39,41 +44,39 @@ span.walksummary img{
 }
 
 /* Ramblers additions */
-.cancelledWalks { background-color: var(--pantone5565);
-                  border-radius: 10px 10px 10px 10px;
-                  padding: 10px;
-                  border-width: 2px;
-                  border-style: solid;
-                  border-color: #69897E
+.cancelledWalks {
+    background-color: var(--cloudy);
+    border-radius: 10px 10px 10px 10px;
+    padding: 10px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #69897E
 }
 .cancelledWalks h3 {
-    color:var(--pantone1815);
+    color:var(--cancelled);
     border-bottom: 1px solid #d1d1d1;
     box-shadow: 0 1px 0 #ffffff;
     margin-top: 0px;
 }
 
-.cancelledWalk {color:#000000; }
+.cancelledWalk {
+    color:#000000;
+}
 .cancelreason {
     margin-left: 30px;
-    color:var(--pantone0186); 
+    color:var(--cancelled);
     font-size: 110%;
 }
 
 .nextwalkCancelled a,
 span.walkCancelled,
 div.fc a.walkCancelled{
-    color:var(--pantone0186); 
+    color:var(--cancelled);
     text-decoration: line-through;
 }
 
-.nextwalkNewDELETE {
-    background: url('../../images/new.gif') no-repeat scroll 0 0%;
-    padding-top: 7px;
-}
-
 span.walkerror {
-    color: var(--pantone0186);
+    color: var(--cancelled);
 }
 
 div.walkstdfulldetails div.description p{
@@ -135,7 +138,7 @@ div.walkstdfulldetails div.facilities > ul {
 }
 div.walkstdfulldetails.walkCancelled.stdfulldetails div.reason{
     text-decoration: none !important;
-    color:var(--pantone0186); 
+    color:var(--cancelled);
 }
 /*div.walkstdfulldetails.walkCancelled.stdfulldetails {
         color:var(--pantone0186);
@@ -169,14 +172,18 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
 abbr[title] {
     border-bottom: 1px dotted #d5d5d5;
 }
-.distnear { color:   var(--pantone0159) }
-.distfar { color:   #8a1727;
-           font-weight: bold;}
+.distnear {
+    color:   var(--pantone0159)
+}
+.distfar {
+    color:   #8a1727;
+    font-weight: bold;
+}
 
 table.fc-scrollgrid tbody {
     background-color: white;
 }
-div.groupA,div.groupG,div.groupS { 
+div.groupA,div.groupG,div.groupS {
     font-weight: bold;
 }
 
@@ -204,40 +211,40 @@ div.groupA,div.groupG,div.groupS {
         min-width: 200px;
 
     }
-}         
+}
 
-#grade-ea {  
+#grade-ea {
     background-color: var(--gradeEA);
 }
-#grade-e {  
+#grade-e {
     background-color: var(--gradeE);
 }
-#grade-l {   
+#grade-l {
     background-color: var(--gradeL);
 }
-#grade-m {   
+#grade-m {
     background-color: var(--gradeM);
 }
-#grade-s {   
+#grade-s {
     background-color: var(--gradeS);
 }
 #grade-t {
     background-color: var(--gradeT);
 }
 
-.grade-ea {  
+.grade-ea {
     background-color: var(--gradeEA) !important;
 }
-.grade-e {  
+.grade-e {
     background-color: var(--gradeE) !important;
 }
-.grade-l {   
+.grade-l {
     background-color: var(--gradeL) !important;
 }
-.grade-m {   
+.grade-m {
     background-color: var(--gradeM) !important;
 }
-.grade-s {   
+.grade-s {
     background-color: var(--gradeS) !important;
 }
 .grade-t {
@@ -328,7 +335,7 @@ div.js-modal.ramblers {
     max-height:85%;
     background-color:#ffffff;
     border-radius: 25px;
-    padding: 20px; 
+    padding: 20px;
     content: "";
     display: table;
     clear: both;
@@ -465,7 +472,7 @@ div#rainner {
     min-width:360px;
 }
 div.gpxouter {
-    background-color:#D8D8D8;;
+    background-color:#D8D8D8;
     border-radius: 0px 10px 10px 10px;
     padding:10px;
 }
@@ -473,16 +480,16 @@ div.gpxouter {
 */
 table.ra-tab-options{
     table-layout: auto;
-    border-width: 0px !important; 
-    margin-bottom:0px !important; 
+    border-width: 0px !important;
+    margin-bottom:0px !important;
     background-color:rgba(0, 0, 0, 0) !important;
 }
 table.ra-tab-options{
     background-color:transparent;
-    margin-bottom:0px;;
+    margin-bottom:0px;
     border-width: 0px;
 }
-table tr td.ra-tab { 
+table tr td.ra-tab {
     cursor: pointer;
     font-weight: normal;
     background-color: #bbb;
@@ -497,24 +504,24 @@ table tr td.active {
     background-color: #D8D8D8;
     font-size:135%;
     font-weight: bold;
-} 
+}
 
 table tr td.ra-tab:hover {
     background-color: #D8D8D8;
     font-size:135%;
     font-weight: bold;
-} 
+}
 
 .pointer {
     cursor: pointer;
 
 }
 .pointer:hover{
-    text-decoration: underline;   
+    text-decoration: underline;
 
 }
 .pointer.link {
-    cursor: pointer; 
+    cursor: pointer;
     font-weight: bold;
     color: var(--granite);
 }
@@ -566,7 +573,7 @@ img.ra-grade.pointer {
 }
 
 #ra_filter_dates span input[type="date"] {
-    margin-left:30px !important;   
+    margin-left:30px !important;
 }
 
 span.ra-closed {
@@ -688,7 +695,7 @@ span[data-descr]:hover::after {
     z-index: 9999;
 }
 span[data-descr].walkCancelled:hover::after {
-    background-color: var(--pantone0186);
+    background-color: var(--cancelled);
 }
 span.middle[data-descr]:hover::after{
     left:40px;
@@ -736,7 +743,7 @@ img.mediathumbr{
     margin-left:5px;
 }
 div.walk-image{
-    display: inline-block; 
+    display: inline-block;
     max-width:40%;
     padding:8px;
     cursor: pointer;
@@ -813,7 +820,7 @@ div.walks div.toggler.active.pointer {
     background-position: right top;
 }
 div.walks div.toggler span.item {
-    display: inline-block; 
+    display: inline-block;
     padding-right:40px;
 }
 
@@ -936,101 +943,105 @@ div.ra.pagination span span button.jplist-selected {
     background-size: 1rem 1rem;
 }
 
-container {
-    height: 100vh;
-    width: 100vw;
+.loadingcontainer {
     font-family: Helvetica;
+    z-index: 20000; /* Sit on top */
+    position:fixed;
+    
+    width:200px;
+    height:150px;
+    left:50%;
+    top:50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255,255,255,.7);
 }
 
-.loader {
-    height: 20px;
-    width: 250px;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
+.loading{
+
 }
-.loader--dot {
-    animation-name: loader;
-    animation-timing-function: ease-in-out;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    height: 20px;
-    width: 20px;
-    border-radius: 100%;
-    background-color: black;
+.circle{
+    margin-top: 30px;
+    width:20px;
+    height:20px;
     position: absolute;
-    border: 2px solid white;
-}
-.loader--dot:first-child {
-    background-color: var(--pantone5565);
-    animation-delay: 0.5s;
-}
-.loader--dot:nth-child(2) {
-    background-color: var(--pantone0583);
-    animation-delay: 0.4s;
-}
-.loader--dot:nth-child(3) {
-    background-color: var(--pantone7474);
-    animation-delay: 0.3s;
-}
-.loader--dot:nth-child(4) {
-    background-color: var(--pantone0159);
-    animation-delay: 0.2s;
-}
-.loader--dot:nth-child(5) {
-    background-color: var(--pantone1815);
-    animation-delay: 0.1s;
-}
-.loader--dot:nth-child(6) {
-    background-color: var(--pantone4485);
-    animation-delay: 0s;
-}
-.loader--text {
-    position: absolute;
-    top: 200%;
-    left: 0;
-    right: 0;
-    width: 4rem;
-    margin: auto;
-}
-.loader--text:after {
-    content: "Loading";
-    font-weight: bold;
-    animation-name: loading-text;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
+    border-radius: 50%;
+    background-color: red;
+    left:15%;
+    transform-origin: 50%;
+    animation: circle .5s alternate infinite ease;
 }
 
-@keyframes loader {
-    15% {
-        transform: translateX(0);
+@keyframes circle{
+    0%{
+        top:60px;
+        height:5px;
+        border-radius: 50px 50px 25px 25px;
+        transform: scaleX(1.7);
     }
-    45% {
-        transform: translateX(230px);
+    40%{
+        height:20px;
+        border-radius: 50%;
+        transform: scaleX(1);
     }
-    65% {
-        transform: translateX(230px);
-    }
-    95% {
-        transform: translateX(0);
+    100%{
+        top:0%;
     }
 }
-@keyframes loading-text {
-    0% {
-        content: "Loading";
+.circle:nth-child(2){
+    left:45%;
+    animation-delay: .2s;
+}
+.circle:nth-child(3){
+    left:auto;
+    right:15%;
+    animation-delay: .3s;
+}
+.shadow{
+    margin-top: 30px;
+    width:20px;
+    height:4px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,.5);
+    position: absolute;
+    top:62px;
+    transform-origin: 50%;
+    z-index: -1;
+    left:15%;
+    filter: blur(1px);
+    animation: shadow .5s alternate infinite ease;
+}
+
+@keyframes shadow{
+    0%{
+        transform: scaleX(1.5);
     }
-    25% {
-        content: "Loading.";
+    40%{
+        transform: scaleX(1);
+        opacity: .7;
     }
-    50% {
-        content: "Loading..";
+    100%{
+        transform: scaleX(.2);
+        opacity: .4;
     }
-    75% {
-        content: "Loading...";
-    }
+}
+.shadow:nth-child(4){
+    left: 45%;
+    animation-delay: .2s
+}
+.shadow:nth-child(5){
+    left:auto;
+    right:15%;
+    animation-delay: .3s;
+}
+.loadingcontainer span{
+    margin-top: 30px;
+    position: absolute;
+    top:75px;
+    font-family: 'Assistant';
+    font-size: 20px;
+    letter-spacing: 10px;
+    color: red;
+    left:15%;
 }
 
 .fc-event-time, .fc-event-title {
