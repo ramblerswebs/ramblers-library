@@ -8,11 +8,12 @@
     --sunrise:#F9B104;
     --cloudy:#FFFFFF;
     --skyBlue:#00A9FF;
-    --lightgrey: #A0A0A0;
+    --lightgrey: #C0C0C0;
+    --midgrey: #808080;
     --cancelled:#C60C30;
-    --gradeEA:#ADADAD;
-    --gradeE:#9BC8AB;
-    --gradeL:#F6B09D;
+    --gradeEA:#808080;
+    --gradeE:#A0A0A0;
+    --gradeL:#9BC8AB;
     --gradeM:#F08050;
     --gradeS:#F9B104;
     --gradeT:#404141;
@@ -34,6 +35,10 @@
 }
 .oldBrowser {
     color:var(--cancelled);
+}
+.ra.error {
+     color:var(--cancelled);
+     font-weight: bold;
 }
 
 /* css code to handle json walk feeds */
@@ -96,7 +101,7 @@ div.walkstdfulldetails div.group
     width:97%;
     border: 0px;
     background-color: var(--pantone1815);
-    color: #eeeeee;
+    color: #000000;
 }
 div.walkstdfulldetails div.walkitem.walkdates {
     font-size: 80%;
@@ -947,7 +952,7 @@ div.ra.pagination span span button.jplist-selected {
     font-family: Helvetica;
     z-index: 20000; /* Sit on top */
     position:fixed;
-    
+
     width:200px;
     height:150px;
     left:50%;
@@ -1062,6 +1067,6 @@ div.ra.places.popup{
 }
 iframe.ra.contactForm {
     width:95%;
-    height:600px;
+    height:480px;
     border-width: 0px;
 }

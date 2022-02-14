@@ -38,9 +38,10 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
         $this->id = uniqid(rand());
         if ($this->printOn) {
-            echo "<p>Web master please disable this print option</p>";
-            echo "<p>User: Please use the Print option next to the pagination controls</p>";
-            return;
+             echo "<p>User: Please use the Print option next to the pagination controls</p>";
+             echo "<p></p>";
+             echo "<p>Web master please disable this print option</p>";
+          return;
         }
         $this->map = new RLeafletMap();
         $this->map->setCommand("ra.display.walksTabs");

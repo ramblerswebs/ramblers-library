@@ -156,6 +156,33 @@ ra.isEquivalent = function (a, b) {
     // are considered equivalent
     return true;
 };
+// sort object so listed in order of a value
+ra.sortObject = function (obj, property) {
+    var sortedObj = {};
+    var done = false;
+    do {
+        var first = null;
+        var key = null;
+        for (var prop in obj) {
+            var item = obj[prop];
+            if (first === null) {
+                first = item;
+                key = prop;
+            }
+            if (item[property] < first[property]) {
+                first = item;
+                key = prop;
+            }
+        }
+        if (key == null) {
+            done = true;
+        } else {
+            delete obj[key];
+            sortedObj[first.id] = first;
+        }
+    } while (!done);
+    return sortedObj;
+};
 // test to see if ES6 or not
 ra.isES6 = function () {
     if (ra._isES6 !== null) {
@@ -795,7 +822,7 @@ ra.loading = (function () {
             {parent: 'loader', tag: 'div', attrs: {class: 'shadow'}},
             {parent: 'loader', tag: 'div', attrs: {class: 'shadow'}},
             {parent: 'loader', tag: 'div', attrs: {class: 'shadow'}},
-            {parent: 'loader', tag: 'span',textContent:'LOADING'}
+            {parent: 'loader', tag: 'span', textContent: 'LOADING'}
         ];
         loading.elements = ra.html.generateTags(document.body, tags);
     };
@@ -879,8 +906,10 @@ ra.modal = (function () {
         ra.html.setTag(modal.elements.data, $html);
         modal.elements.modaltag.style.display = "block";
         modal.elements.close.addEventListener("click", function () {
-            modal.elements.modaltag.remove();
-            modal.elements = {modaltag: null};
+            if (modal.elements.modaltag !== null) {
+                modal.elements.modaltag.remove();
+                modal.elements = {modaltag: null};
+            }
         });
         var print = modal.elements.print;
         if (print !== null) {

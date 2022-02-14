@@ -959,6 +959,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         var result = this.getWalksStats(walks);
         var filter = new ra.filter(this.settings.filter)
+        result.groups=ra.sortObject(result.groups,"name");
         filter.setFilterGroup(result.groups);
         filter.setFilterGroup(result.updates);
         filter.setFilterGroup(result.dates, true);

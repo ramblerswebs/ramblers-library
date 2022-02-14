@@ -16,6 +16,9 @@ L.Control.RAContainer = L.Control.extend({
     },
     setText: function (text) {
         this.container.innerHTML = text;
+    },
+    setErrorText: function (text) {
+        this.container.innerHTML = "<span class='ra error'>" + text + "</span>";
     }
 });
 L.control.racontainer = function (options) {

@@ -20,15 +20,10 @@ L.Control.RA_Map_Tools = L.Control.extend({
         var _this = this;
         // OS Grid Display
         map.on('zoomend', function () {
-            _this.osZoomLevel();
             _this.displayOSGrid();
         });
         map.on('moveend', function () {
             _this.displayOSGrid();
-        });
-        map.on('baselayerchange', function (e) {
-            _this.baseTiles = e.name;
-            _this.osZoomLevel();
         });
         this.OSGrid.basicgrid = false;
         this.displayOSGrid();
@@ -86,8 +81,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
                 _this.addMouse(mouseDiv);
             }
 
-
-
             if (_this._helpPage !== '') {
                 _this.addTabItem(container, list, 'Feedback', 'help', false);
 
@@ -108,9 +101,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
     },
     userOptions: function (value) {
         this._userOptions = value;
-    },
-    setErrorDiv: function (value) {
-        this._errorDiv = value;
     },
     helpPage: function (value) {
         this._helpPage = value;
@@ -137,18 +127,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
             helpcomment.setAttribute('class', 'help map-tools');
             helpcomment.textContent = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via the HELP web site.";
             tag.appendChild(helpcomment);
-        }
-    },
-    osZoomLevel: function () {
-        this._errorDiv.setText("");
-        if (this.baseTiles === 'Ordnance Survey') {
-            var zoom = this._map.getZoom();
-            if (zoom <= 11) {
-                this._errorDiv.setText("Info: Zoom in to see Ordnance Survey Maps");
-            }
-            if (zoom > 17) {
-                this._errorDiv.setText("Info: Zoom out to see Ordnance Survey Maps");
-            }
         }
     },
     addOSMaps: function (tag) {

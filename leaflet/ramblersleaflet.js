@@ -140,12 +140,20 @@ function leafletMap(tag, options) {
             this.controls.tools = L.control.ra_map_tools();
             this.controls.tools.userOptions(this.userOptions);
             this.controls.tools.helpPage(options.helpPage);
-            this.controls.tools.setErrorDiv(this.errorDivControl());
             this.controls.tools.addTo(this.map);
         } catch (err) {
             this.controls.errorDiv.setText("ERROR: " + err.message);
         }
     }
+    // this.controls.tools.setErrorDiv(this.errorDivControl());
+    this.map.on('zoomend', function () {
+        _this.osZoomLevel();
+    });
+    this.map.on('baselayerchange', function (e) {
+        _this.baseTiles = e.name;
+        _this.osZoomLevel();
+    });
+
     // bottom left controls
     if (options.startingplaces) {
         L.control.usageAgreement().addTo(this.map);
@@ -195,6 +203,19 @@ function leafletMap(tag, options) {
     }
 
 }
+leafletMap.prototype.osZoomLevel = function () {
+    this.controls.errorDiv.setText("");
+    if (this.baseTiles === 'Ordnance Survey') {
+        var zoom = this.map.getZoom();
+        //  this.controls.errorDiv.setErrorText("Info: Zoom "+zoom);
+        if (zoom <= 11) {
+            this.controls.errorDiv.setErrorText("Info: Zoom in to see Ordnance Survey Maps");
+        }
+        if (zoom > 17) {
+            this.controls.errorDiv.setErrorText("Info: Zoom out to see Ordnance Survey Maps");
+        }
+    }
+};
 
 leafletMap.prototype.SetPlotUserOptions = function (value) {
     this.userOptions.plotroute = value;

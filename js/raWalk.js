@@ -407,7 +407,8 @@ ra.walk = (function () {
     my.emailContact = function ($id) {
 
         var url = 'https://sendemail.ramblers-webs.org.uk';
-        // var url = 'http://localhost/contactForm';
+        //var url = 'https://sendemail02.ramblers-webs.org.uk';
+        //var url = 'http://localhost/contactForm';
 
         var $walk = my.getWalk($id);
         var data = {};
@@ -423,7 +424,21 @@ ra.walk = (function () {
         frame.setAttribute('src', url);
         frame.setAttribute('title', 'Contact group about group walk');
         div.appendChild(frame);
+        // Create IE + others compatible event handler
+        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+        // Listen to message from child window
+        eventer(messageEvent, function (e) {
+            var height = parseInt(e.data);
+            if (height > 0) {
+                frame.style.height = height + "px";
+            }
+            //console.log('parent received message!:  ', e.data);
+        }, false);
         frame.onload = function () {
+            //console.log(" frame.onload ");
             var sentThis = JSON.stringify(data);
             frame.contentWindow.postMessage(sentThis, url);
         };
@@ -885,14 +900,14 @@ ra.walk = (function () {
                 $out += "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
                 $out += ra.map.getMapLink($location.latitude, $location.longitude, "Map of area");
                 $out += "<br/>Contact group if you wish to meet at the start";
-                //            if ($location.type === "Start") {
-//                // if ($this.displayStartTime) {
-//                $out += "<div class='starttime'>Start time: " + $location.timeHHMMshort + "</div>";
-//                // }
-//                // if ($this.displayStartDescription) {
-//                $out += "<div class='startdescription'>" + $location.description + "</div>";
-//                // }
-//            }
+
+                if ($location.timeHHMMshort !== '') {
+                    $out += "<div class='starttime'>Start time: " + $location.timeHHMMshort + "</div>";
+                }
+                //  if ($this.displayStartDescription) {
+                $out += "<div class='startdescription'>" + $location.description + "</div>";
+                //  }
+
                 $out += "</div>";
             }
         }

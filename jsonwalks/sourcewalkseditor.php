@@ -134,14 +134,13 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $publish = null;
         $time = null;
         $start = $item->start;
+        $location = $start->location;
+        $time = $location->time . ":00";
         switch ($start->type) {
             case 'start':
-                $location = $start->location;
                 $publish = true;
-                $time = $location->time . ":00";
                 break;
             case 'area':
-                $location = $start->location;
                 $publish = false;
                 break;
         }
