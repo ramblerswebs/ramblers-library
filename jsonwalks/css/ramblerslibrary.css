@@ -100,8 +100,11 @@ div.walkstdfulldetails div.group
     display: table;
     width:97%;
     border: 0px;
-    background-color: var(--pantone1815);
+    background-color: #FFFFFF;
     color: #000000;
+}
+div.walkstdfulldetails div.group.grade-t {
+    color: var(--cloudy) !important;
 }
 div.walkstdfulldetails div.walkitem.walkdates {
     font-size: 80%;

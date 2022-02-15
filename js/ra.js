@@ -379,6 +379,13 @@ ra.date = (function () {
         var out = yyyymmdd + "T" + value.getHours().toString().padStart(2, '0') + value.getMinutes().toString().padStart(2, '0') + "00";
         return out;
     };
+    date.toYYYYMMDDmmhhssFormat = function (datetime) {
+        var value = date._setDateTime(datetime);
+        var yyyymmdd = value.getFullYear().toString() + '-' + date.MM(value) + '-' + date.DD(value);
+        var time = value.getHours().toString().padStart(2, '0') + ':' + value.getMinutes().toString().padStart(2, '0') + ':' + "00";
+        var out = yyyymmdd + " " + time+'.000000';
+        return out;
+    };
     date.dowdd = function (datetime) {
         return date.dow(datetime) + ", " + date.dd(datetime);
     };

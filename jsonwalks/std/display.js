@@ -264,7 +264,7 @@ ra.display.walksTabs = function (mapOptions, data) {
                 this.displayMap("hidden");
                 ra.html.setTag(this.elements.rapagination1, "");
                 ra.html.setTag(this.elements.rapagination2, "");
-             //   this.addToDiaryButton(this.elements.rapagination2);
+                //   this.addToDiaryButton(this.elements.rapagination2);
                 ra.html.setTag(this.elements.rawalks, "");
                 this.displayWalksCalendar($walks);
                 break;
@@ -760,12 +760,13 @@ ra.display.walksTabs = function (mapOptions, data) {
 
                 event.id = $walk.id;
                 event.start = $walk.walkDate;
-                if ($walk.startLocation.exact) {
-                    event.start = $walk.startLocation.time;
-                }
-                if ($walk.hasMeetPlace) {
-                    event.start = $walk.meetLocation.time;
-                }
+                // code removed so it works on old IOS systems!
+//                if ($walk.startLocation.exact) {
+//                    event.start = ra.date.toYYYYMMDDmmhhssFormat($walk.startLocation.time);
+//                }
+//                if ($walk.hasMeetPlace) {
+//                    event.start = ra.date.toYYYYMMDDmmhhssFormat($walk.meetLocation.time);
+//                }
                 event.raContent = '<div><span class="ra wrap">' + ra.walk.getWalkValues($walk, $items, false) + '</span></div>';
 
                 event.textColor = '#111111';
@@ -849,7 +850,7 @@ ra.display.walksTabs = function (mapOptions, data) {
                 ra.html.printTag(printTag);
             });
         }
-      //  this.addToDiaryButton(tag);
+        //  this.addToDiaryButton(tag);
         return;
     };
     this.addToDiaryButton = function (tag) {
@@ -959,7 +960,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         var result = this.getWalksStats(walks);
         var filter = new ra.filter(this.settings.filter)
-        result.groups=ra.sortObject(result.groups,"name");
+        result.groups = ra.sortObject(result.groups, "name");
         filter.setFilterGroup(result.groups);
         filter.setFilterGroup(result.updates);
         filter.setFilterGroup(result.dates, true);
@@ -1083,42 +1084,6 @@ ra.display.walksTabs = function (mapOptions, data) {
         var a = 1;
 
     };
-//       this.getTextDescription =function () {
-//        $textdescription = "";
-//        switch ($this'->'type) {
-//            case "Meeting":
-//                $textdescription = "Meet: ";
-//                break;
-//            case "Start":
-//                if ($this'->'exact) {
-//                    $textdescription = "Start: ";
-//                } else {
-//                    $textdescription = "Walking area: ";
-//                }
-//                break;
-//            case "End":
-//                $textdescription = "Finish: ";
-//                break;
-//        }
-//        if ($this->exact) {
-//            if ($this->time != "") {
-//                $textdescription .= $this->timeHHMMshort . " @ ";
-//            }
-//        }
-//        // CHANGE REQUIRED , remove postcode and reduce GR to two figures if not exact
-//        // CHANGE REQUIRED , remove postcode and reduce GR to two figures if not exact
-//        // CHANGE REQUIRED , remove postcode and reduce GR to two figures if not exact
-//        $place = $this->gridref;
-//        if ($this->postcode <> null) {
-//            $place .= ", " . $this->postcode;
-//        }
-//        if ($this->description != '') {
-//            $textdescription .= $this->description . ' (' . $place . ')';
-//        } else {
-//            $textdescription .= $place;
-//        }
-//        return $textdescription;
-//    };
     this.addWalktoIcs = function (walk, events) {
         var ev = new ra.ics.event();
         var $meetLocation, $startLocation, $before, $after, $summary, $description, $altDescription;
@@ -1222,7 +1187,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         return time;
     };
-   
+
     this.getFinishTime = function (walk) {
         if (walk.finishTime !== null) {
             return walk.finishTime;
