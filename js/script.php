@@ -52,8 +52,8 @@ class RJsScript {
 
         RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
         // Leaflet
-        $document->addStyleSheet("libraries/ramblers/vendors/leaflet1.7.1/leaflet.css", "text/css");
-        $document->addScript("libraries/ramblers/vendors/leaflet1.7.1/leaflet.js", "text/javascript");
+        $document->addStyleSheet("libraries/ramblers/vendors/leaflet1.7.1/leaflet.css", array("type" => "text/css"));
+        $document->addScript("libraries/ramblers/vendors/leaflet1.7.1/leaflet.js", array("type" => "text/javascript"));
         RLoad::addScript("libraries/ramblers/leaflet/ramblersleaflet.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
 
@@ -75,26 +75,28 @@ class RJsScript {
 
         if ($options->displayElevation) {
             // elevation
-            $document->addScript("https://d3js.org/d3.v3.min.js", "text/javascript");
+            $document->addScript("https://d3js.org/d3.v3.min.js", array("type" => "text/javascript"));
             $path = "libraries/ramblers/vendors/Leaflet.Elevation-0.0.4-ra/";
-            $document->addScript($path . "leaflet.elevation-0.0.4.src.js", "text/javascript");
-            $document->addStyleSheet($path . "elevation.css", "text/css");
-            $document->addScript("libraries/ramblers/vendors/leaflet-gpx-1.3.1/gpx.js", "text/javascript");
+            $document->addScript($path . "leaflet.elevation-0.0.4.src.js", array("type" => "text/javascript"));
+            $document->addStyleSheet($path . "elevation.css", array("type" => "text/css"));
+            $document->addScript("libraries/ramblers/vendors/leaflet-gpx-1.3.1/gpx.js", array("type" => "text/javascript"));
         }
         if (RLicense::isGoogleKeyMapSet()) {
             // Google
-            $document->addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), "text/javascript", true, true);
-            $document->addScript("libraries/ramblers/vendors/Leaflet.GridLayer.GoogleMutant/Leaflet.GoogleMutant.js", "text/javascript");
-            $document->addScript("libraries/ramblers/vendors/es6-promise-vv4.2.3/dist/es6-promise.auto.js", "text/javascript");
+            //$document->addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), array("type"=>"text/javascript"), true, true);
+            $document->addScript("libraries/ramblers/vendors/Leaflet.GridLayer.GoogleMutant/Leaflet.GoogleMutant.js", array("type" => "text/javascript"));
+            $document->addScript("libraries/ramblers/vendors/es6-promise-vv4.2.3/dist/es6-promise.auto.js", array("type" => "text/javascript"));
             //    $document->map->replaceString("// [set addGoogle]", "ramblersMap.options.google=true;");
         }
-        if ($options->cluster) {
-            // clustering
-            $path = "libraries/ramblers/vendors/Leaflet.markercluster-1.4.1/dist/";
-            $document->addStyleSheet($path . "MarkerCluster.css", "text/css");
-            $document->addStyleSheet($path . "MarkerCluster.Default.css", "text/css");
-            $document->addScript($path . "leaflet.markercluster.js", "text/javascript");
-        }
+
+        // clustering
+        $path = "libraries/ramblers/vendors/Leaflet.markercluster-1.5.3/dist/";
+        $document->addStyleSheet($path . "MarkerCluster.css", array("type" => "text/css"));
+        $document->addStyleSheet($path . "MarkerCluster.Default.css", array("type" => "text/css"));
+        $document->addScript($path . "leaflet.markercluster.js", array("type" => "text/javascript"));
+        $document->addScript("libraries/ramblers/vendors/Leaflet.FeatureGroup.SubGroup-1.0.2/src/subgroup.js", array("type" => "text/javascript"));
+
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Places.js", "text/javascript");
         if ($options->mouseposition or $options->rightclick) {
             RLoad::addScript("libraries/ramblers/leaflet/L.Control.Mouse.js", "text/javascript");
             RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Mouse.css", "text/css");
@@ -102,21 +104,21 @@ class RJsScript {
 
         if ($options->mouseposition or $options->osgrid or $options->rightclick) {
             // grid ref to/from lat/long
-            $document->addScript("libraries/ramblers/vendors/geodesy/vector3d.js", "text/javascript");
-            $document->addScript("libraries/ramblers/vendors/geodesy/latlon-ellipsoidal.js", "text/javascript");
-            $document->addScript("libraries/ramblers/vendors/geodesy/osgridref.js", "text/javascript");
+            $document->addScript("libraries/ramblers/vendors/geodesy/vector3d.js", array("type" => "text/javascript"));
+            $document->addScript("libraries/ramblers/vendors/geodesy/latlon-ellipsoidal.js", array("type" => "text/javascript"));
+            $document->addScript("libraries/ramblers/vendors/geodesy/osgridref.js", array("type" => "text/javascript"));
         }
 
         if (RLicense::isBingKeyMapSet()) {
             // Bing maps
-            $document->addScript("libraries/ramblers/vendors/bing/bing.js", "text/javascript");
+            $document->addScript("libraries/ramblers/vendors/bing/bing.js", array("type" => "text/javascript"));
         }
 
         if ($options->print) {
             $path = "libraries/ramblers/vendors/leaflet.browser.print-1/src/";
-            $document->addScript($path . "leaflet.browser.print.js", "text/javascript");
-            $document->addScript($path . "leaflet.browser.print.sizes.js", "text/javascript");
-            $document->addScript($path . "leaflet.browser.print.utils.js", "text/javascript");
+            $document->addScript($path . "leaflet.browser.print.js", array("type" => "text/javascript"));
+            $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
+            $document->addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
         }
 
         if ($options->calendar) {
@@ -133,14 +135,13 @@ class RJsScript {
 
         RLoad::addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
 
-
         // tools
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-map-tools.css", "text/css");
         RLoad::addScript("libraries/ramblers/leaflet/ra-map-tools.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/js/feedhandler.js", "text/javascript");
     }
 
-    static function registerWalks($walks) {
+    public static function registerWalks($walks) {
         // register walks from php methods into raWalks.js for display
         $data = new class {
             

@@ -14,7 +14,8 @@ function leafletMap(tag, options) {
         scale: null,
         mouse: null,
         rightclick: null,
-        plotroute: null};
+        plotroute: null,
+        zoomlevelOSMsg: null};
 
     this.userOptions = {layers: null,
         tools: null,
@@ -44,7 +45,7 @@ function leafletMap(tag, options) {
     if (options.copyright) {
         ra.html.generateTags(elements.copyright, tagcopy);
     }
-
+    var self = this;
     this.map = new L.Map(this.mapDiv, {
         center: new L.LatLng(54.221592, -3.355007),
         zoom: 5,
@@ -67,6 +68,7 @@ function leafletMap(tag, options) {
     }
     // top right control for error messages
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
+    this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
     // top left controls
     if (options.displayElevation) {
         this.controls.elevation = L.control.elevation({
@@ -97,7 +99,6 @@ function leafletMap(tag, options) {
     this.controls.zoom = this.map.addControl(new L.Control.Zoom());
     if (options.fullscreen) {
         this.controls.fullscreen = this.map.addControl(new L.Control.Fullscreen());
-        var self = this;
         this.map.addEventListener('fullscreenchange', function () {
             // let modal know if map full screen;
             ra.modal.fullscreen(self.map.isFullscreen(), self.map);
@@ -142,7 +143,7 @@ function leafletMap(tag, options) {
             this.controls.tools.helpPage(options.helpPage);
             this.controls.tools.addTo(this.map);
         } catch (err) {
-            this.controls.errorDiv.setText("ERROR: " + err.message);
+            self.controls.errorDiv.setErrorText("ERROR: " + err.message);
         }
     }
     // this.controls.tools.setErrorDiv(this.errorDivControl());
@@ -167,7 +168,7 @@ function leafletMap(tag, options) {
             this.controls.rightclick.mapControl(this.controls.layers);
             this.userOptions.rightclick = this.controls.rightclick.userOptions();
         } catch (err) {
-            this.controls.errorDiv.setText("ERROR: " + err.message);
+            self.controls.errorDiv.setErrorText("ERROR: " + err.message);
         }
     }
 
@@ -176,7 +177,7 @@ function leafletMap(tag, options) {
             this.controls.mouse = L.control.mouse().addTo(this.map);
             this.userOptions.mouse = this.controls.mouse.userOptions();
         } catch (err) {
-            this.controls.errorDiv.setText("ERROR: " + err.message);
+            self.controls.errorDiv.setErrorText("ERROR: " + err.message);
         }
 
     }
@@ -204,15 +205,15 @@ function leafletMap(tag, options) {
 
 }
 leafletMap.prototype.osZoomLevel = function () {
-    this.controls.errorDiv.setText("");
+    this.controls.zoomlevelOSMsg.setText("");
     if (this.baseTiles === 'Ordnance Survey') {
         var zoom = this.map.getZoom();
-        //  this.controls.errorDiv.setErrorText("Info: Zoom "+zoom);
+        //  this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom "+zoom);
         if (zoom <= 11) {
-            this.controls.errorDiv.setErrorText("Info: Zoom in to see Ordnance Survey Maps");
+            this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom in to see Ordnance Survey Maps");
         }
         if (zoom > 17) {
-            this.controls.errorDiv.setErrorText("Info: Zoom out to see Ordnance Survey Maps");
+            this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom out to see Ordnance Survey Maps");
         }
     }
 };

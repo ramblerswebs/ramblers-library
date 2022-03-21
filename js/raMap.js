@@ -311,101 +311,8 @@ ra.map = (function () {
         return os;
     }
     ());
-    my.places = (function () {
-        var places = {};
-        // starting or meeting place markers
-        places.addMarker = function ($gr, $no, $lat, $long) {
-            var $icon;
-            switch ($no) {
-                case 0:
-                    $icon = ra.map.icon.s0();
-                    break;
-                case 1:
-                    $icon = ra.map.icon.s1();
-                    break;
-                case 2:
-                    $icon = ra.map.icon.s2();
-                    break;
-                case 3:
-                    $icon = ra.map.icon.s3();
-                    break;
-                case 4:
-                    $icon = ra.map.icon.s4();
-                    break;
-                case 5:
-                    $icon = ra.map.icon.s5();
-                    break;
-            }
-
-            var marker = L.marker([$lat, $long], {icon: $icon, gridref: $gr, no: $no, lat: $lat, long: $long, riseOnHover: true});
-            marker.gr = $gr;
-            var text = "<br/><b>Searching for usage details ...</b>";
-            marker.bindPopup("<b>Grid Ref " + $gr + "</b><br/>Lat/Long " + $lat + " " + $long + text, {maxWidth: 800});
-            marker.on('click', places.onClickPlaceMarker, marker);
-            return marker;
-        };
-        places.onClickPlaceMarker = function (e) {
-            var marker = e.target;
-            var $url = "https://places.walkinginfo.co.uk/details.php?gr=" + this.options.gridref;
-            ra.ajax.getUrl($url, "", marker, places.displayDetails);
-        };
-        places.displayDetails = function (marker, result) {
-            var popup = marker.getPopup();
-            var ll = marker.getLatLng();
-            var gr = new LatLon(ll.lat, ll.lng);
-            gr = OsGridRef.latLonToOsGrid(gr);
-            var json = JSON.parse(result);
-            var nolikes = "";
-            if (json.likes > 0) {
-                nolikes = "<sup>" + json.likes + "</sup>";
-            }
-            var nodislikes = "";
-            if (json.dislikes > 0) {
-                nodislikes = "<sup>" + json.dislikes + "</sup>";
-            }
-            var like = "<span class=\"agreebutton hasTip\" title=\"VOTE: This location is correct\"><a href=\"javascript:ra.map.places.correct('" + marker.gr + "') \"> &#9745;</a>" + nolikes + " </span>";
-            var dislike = "<span class=\"agreebutton hasTip\" title=\"VOTE: This location is INCORRECT\"><a href=\"javascript:ra.map.places.incorrect('" + marker.gr + "') \"> &#9746;</a>" + nodislikes + " </span>";
-            var streetmap = "<span class=\"placebutton-green hasTip\" title=\"View location in streetmap.co.uk\"><a href=\"javascript:ra.link.streetmap('" + ll.lat + "," + ll.lng + "') \">Streetmap</a></span>";
-            var google = "<span class=\"placebutton-green hasTip\" title=\"View location in Google maps\"><a href=\"javascript:googlemap(" + ll.lat + "," + ll.lng + ") \">Google Map</a></span>";
-            var out = "<span class='placelocation'>Place Grid Ref " + marker.gr + " </span>" + like + dislike + streetmap + google;
-            out += "<div id=" + marker.gr + "></div>";
-            out += "<div >" + gr.toString(8) + "</div>";
-            out += "<div class='ra places popup'>";
-            out += "<p><b>Description</b> [Date used / Score]</p>";
-            out += "<ul>";
-            var items = json.records;
-            for (i = 0; i < items.length; i++) {
-                var item = items[i];
-                if (item.desc === "") {
-                    item.desc = "<i>no description</i>";
-                }
-                out += "<li>" + item.desc + " [" + item.lastread + "/" + item.score + "%]</li>";
-            }
-            out += "</ul>";
-            out += "</div>";
-            popup.setContent(out);
-            popup.update();
-        };
-
-        places.correct = function (gr) {
-            var $url = "https://places.walkinginfo.co.uk/report.php?gr=" + gr + "&type=like";
-            ra.ajax.getUrl($url, "", gr, places.votelike);
-        };
-        places.incorrect = function (gr) {
-            var $url = "https://places.walkinginfo.co.uk/report.php?gr=" + gr + "&type=dislike";
-            ra.ajax.getUrl($url, "", gr, places.votedislike);
-        };
-        places.votelike = function (gr, result) {
-            document.getElementById(gr).innerHTML = "Correct vote recorded";
-        };
-        places.votedislike = function (gr, result) {
-            document.getElementById(gr).innerHTML = "Incorrect vote recorded";
-        };
-        return places;
-    }
-    ());
-    // distance in metres
-    my.getGPXDistance = function (distance) {
+   
+    my.getGPXDistance = function (distance) { // distance in metres
         var dist, miles;
         dist = ra.units.metresTokm(distance);
         miles = ra.units.metresToMi(distance);
@@ -455,52 +362,7 @@ ra.map = (function () {
         marker.bindPopup(pc);
         return marker;
     };
-    my.displayStartingPlaces = function (latlng, layers, distance, limit) {
-
-        var grid = OsGridRef.latLonToOsGrid(latlng);
-        var gr = grid.toString(6);
-        var i;
-        layers.clearLayers();
-        if (gr !== "") {
-            var east = Math.round(grid.easting);
-            var north = Math.round(grid.northing);
-            var opts = "&dist=" + distance + "&maxpoints=" + limit;
-            var url = "https://places.walkinginfo.co.uk/get.php?easting=" + east + "&northing=" + north + opts;
-            ra.ajax.getJSON(url, function (err, items) {
-                if (err !== null) {
-                    alert("Sorry something went wrong fetching Meeting/Start location, Error: " + err);
-                } else {
-                    var no = 0;
-                    for (i = 0; i < items.length; i++) {
-                        var item = items[i];
-                        if (item.S > 0 && item.S < 6) {
-                            var marker;
-                            marker = ra.map.places.addMarker(item.GR, item.S, item.Lat, item.Lng);
-                            layers.addLayer(marker);
-                            no += 1;
-                        }
-                    }
-                    if (no === 0) {
-                        alert("No meeting/starting places found within " + distance + "km");
-                    } else {
-                        if (no === 100) {
-                            alert("100+ locations found within 10Km");
-                        } 
-                        let event = new Event("start-places-loaded", {bubbles: true}); // 
-                        event.raData = {};
-                        event.raData.layer = layers;
-                        document.dispatchEvent(event);
-                    }
-                }
-            });
-        } else {
-             alert("Unable to find Meeting/Start locations outside of the UK");
-        }
-    };
-    my.zoomLayer = function (map, layer, options = {padding: [20, 20]}) {
-        var bounds = layer.getBounds();
-        map.fitBounds(bounds, options);
-    };
+   
     return my;
 }
 ());

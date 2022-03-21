@@ -116,11 +116,14 @@ L.control.mouse = function (options) {
 };
 L.Control.Rightclick = L.Control.extend({
     options: {
-        position: 'bottomleft'
+        position: 'bottomleft',
+        separator: ', '
     },
     displaymap: null,
+    _places: null,
     apiUrl2: "http://overpass-api.de/api/interpreter?data=",
     apiUrl: "https://overpass.kumi.systems/api/interpreter?data=",
+    _placesEnabled: true,
     _userOptions: {
         postcodes: {
             number: 20,
@@ -140,7 +143,6 @@ L.Control.Rightclick = L.Control.extend({
     },
     onAdd: function (map) {
         this._map = map;
-        this._placeslayer = null;
         this._mouseLayer = L.featureGroup([]);
         this._mouseLayer.addTo(this._map);
         this.enabled = true;
@@ -165,11 +167,13 @@ L.Control.Rightclick = L.Control.extend({
             '<option value="toilets">Right click/tap hold to see nearby Toilets</option>',
             '</optgroup>'];
         this.selectOptions = ra.html.createElement(this._container, 'select', 'class', 'ra-mouse-options');
+        this._places = new L.Control.Places({cluster: false});
+        this._places.addTo(map);
         var self = this;
         this.selectOptions.innerHTML = options.join('');
         this.selectOptions.addEventListener("focus", function () {
             self._mouseLayer.clearLayers();
-            self._clearPlacesLayers();
+            self._places.clearLayers();
         });
         //   this._container.innerHTML = text + options.join('') + '</select>';
         var osmOptions = [];
@@ -190,6 +194,9 @@ L.Control.Rightclick = L.Control.extend({
     Enabled: function (status) {
         this.enabled = status === true;
     },
+    disablePlaces: function () {
+        this._placesEnabled = false;
+    },
     mapControl: function (value) {
         this._mapControl = value;
     },
@@ -198,7 +205,6 @@ L.Control.Rightclick = L.Control.extend({
     },
     _onRightClick: function (e) {
         this._mouseLayer.clearLayers();
-        this._clearPlacesLayers();
         var ele = this.selectOptions;
         var option = ele.options[ele.selectedIndex].value;
         if (this.enabled) {
@@ -213,10 +219,15 @@ L.Control.Rightclick = L.Control.extend({
                     this._displayOsMaps(e);
                     break;
                 case "starting":
-                    if (this._placeslayer === null) {
-                        this._addPlacesLayers();
+                    if ( !this._placesEnabled){
+                        alert('This option is not valid, all meeting and starting places are displayed');
+                        break;
                     }
-                    this._displayPlaces(e);
+                    var options = {
+                        location: e.latlng,
+                        distance: this._userOptions.starting.distance,
+                        limit: this._userOptions.starting.number};
+                    this._places.displayPlaces(options);
                     break;
                 case "groups":
                     this._displayGroups(e);
@@ -241,6 +252,12 @@ L.Control.Rightclick = L.Control.extend({
                     break;
             }
         }
+    },
+    rightClickDisplayPlaces: function (options) {
+        this._places.displayPlaces(options);
+    },
+    rightClickClearPlaces: function () {
+        this._places.clearLayers();
     },
     _onZoomEnd: function (e) {
 //        var zoom = this._map.getZoom();
@@ -698,125 +715,8 @@ L.Control.Rightclick = L.Control.extend({
     getRadius: function () {
         return this._userOptions.osm.distance * 1000;
     },
-    _addPlacesLayers: function () {
-        this._placeslayer = [];
-        for (var i = 1; i < 6; i++) {
-            this._placeslayer[i] = L.featureGroup([]);
-            this._placeslayer[i].addTo(this._map);
-            this._mapControl.addOverlay(this._placeslayer[i], "<span class='ramblers-places-icon'><img src='libraries/ramblers/leaflet/images/" + i + "star.png' alt='" + i + " Star'> places</span>");
-        }
-    },
-    _clearPlacesLayers: function () {
-        if (this._placeslayer !== null) {
-            for (i = 1; i < 6; i++) {
-                this._placeslayer[i].clearLayers();
-            }
-        }
-    },
-    _getPlacesBounds: function () {
-        var bounds;
-        var bnds;
-        bounds = this._placeslayer[1].getBounds();
-        for (var i = 2; i < 6; i++) {
-            bnds = this._placeslayer[i].getBounds();
-            bounds = bounds.extend(bnds);
-        }
-        return bounds;
-    },
-    _displayPlaces: function (e) {
-        var self = this;
-        var p = new LatLon(e.latlng.lat, e.latlng.lng);
-        var grid = OsGridRef.latLonToOsGrid(p);
-        var gr = grid.toString(6);
-        var i;
-        var desc = "<b><a href='https://maphelp.ramblers-webs.org.uk/startingplaces.html' target='_blanks'>Meeting/Starting Places</a><b>";
-        this._clearPlacesLayers();
-        this._mouseLayer.clearLayers();
-        var msg = "   ";
-        var point = L.marker(p).bindPopup(msg);
-        this._mouseLayer.addLayer(point);
-        point.getPopup().setContent(desc);
-        if (gr !== "") {
-            point.getPopup().setContent(desc + "<br/><b>Searching for Ramblers meeting/starting places ...</b>");
-            point.openPopup();
-            var east = Math.round(grid.easting);
-            var north = Math.round(grid.northing);
-            var limit = "&dist=" + self._userOptions.starting.distance + "&maxpoints=" + self._userOptions.starting.number;
-            var url = "https://places.walkinginfo.co.uk/get.php?easting=" + east + "&northing=" + north + limit;
-            ra.ajax.getJSON(url, function (err, items) {
-                if (err !== null) {
-                    desc += "<br/>Error: Something went wrong: " + err;
-                } else {
-                    var no = 0;
-                    for (i = 0; i < items.length; i++) {
-                        var item = items[i];
-                        if (item.S > 0 && item.S < 6) {
-                            var marker;
-                            marker = ra.map.places.addMarker(item.GR, item.S, item.Lat, item.Lng);
-                            self._placeslayer[item.S].addLayer(marker);
-                            no += 1;
-                        }
-                    }
-                    if (no === 0) {
-                        desc += "<br/>No meeting/starting places found within " + self._userOptions.starting.distance + "km";
-                    } else {
-                        if (no === 100) {
-                            desc += "<br/>100+ locations found within 10Km";
-                        } else {
-                            desc += "<br/>" + no + " locations found within " + self._userOptions.starting.distance + "km";
-                        }
-                        var bounds = self._getPlacesBounds();
-                        self._map.fitBounds(bounds, {padding: [50, 50]});
-                    }
-                    point.getPopup().setContent(desc);
-                    // point.openPopup();
-
-                }
-                setTimeout(function (point) {
-                    self._map.removeLayer(point);
-                }, 10000, point);
-            });
-        } else {
-            desc += "<br/>Outside OS Grid";
-            point.getPopup().setContent(desc);
-            point.openPopup();
-        }
-    },
-//    displayOSMap: function (map, layer) {
-//        var boundstr = "Bounds: <br/>";
-//        for (j = 0; j < map.bounds.length; j++) {
-//            var rect;
-//            var bounds = map.bounds[j];
-//            var pt1 = this._getPointInfo(bounds.eastingmin, bounds.northingmin);
-//            var pt2 = this._getPointInfo(bounds.eastingmax, bounds.northingmax);
-//            var area = [pt1.latlng, pt2.latlng];
-//            boundstr += pt1.gr + " to " + pt2.gr + "<br/>";
-//        }
-//        //  console.log(map.type + " " + map.number);
-//        //  console.log(boundstr);
-//        for (j = 0; j < map.bounds.length; j++) {
-//            var rect;
-//            var bounds = map.bounds[j];
-//            var pt1 = this._getPointInfo(bounds.eastingmin, bounds.northingmin);
-//            var pt2 = this._getPointInfo(bounds.eastingmin, bounds.northingmax);
-//            var pt3 = this._getPointInfo(bounds.eastingmax, bounds.northingmax);
-//            var pt4 = this._getPointInfo(bounds.eastingmax, bounds.northingmin);
-//            var area = [pt1.latlng, pt2.latlng, pt3.latlng, pt4.latlng];
-//            if (map.scale === "50000") {
-//                rect = L.polygon(area, {color: "#ff0000", weight: 1});
-//            } else {
-//                rect = L.polygon(area, {color: "#ff7800", weight: 1});
-//            }
-//            var msg = "<h4>" + map.type + " " + map.number + "</h4>";
-//            msg += "<p>" + map.title + "</p>";
-//            msg += "<p>Scale: 1:" + map.scale.substr(0, 2) + "k</p>";
-//            msg += boundstr;
-//            rect.bindPopup(msg);
-//            layer.addLayer(rect);
-//        }
-//    },
-
 });
+
 L.control.rightclick = function (options) {
     return new L.Control.Rightclick(options);
 };

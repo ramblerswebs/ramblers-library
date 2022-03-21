@@ -22,7 +22,7 @@ div.ra-map-container{
 div#rt-header {
     z-index: 1000;
 }
-div.leaflet-container{
+divREMOVE.leaflet-container{
     z-index:0;
 }
 
@@ -467,4 +467,40 @@ table th {
     background-image: -moz-linear-gradient(center top , #8BA69C, #A3B8B0);
     background-repeat: repeat-x;
     color: #000000;
+}
+
+.leaflet-control-places {
+    background-color:white;
+    padding:10px;
+    border:3px;
+     border-radius:5px;
+      border: 2px solid #AAAAAA;
+}
+.ramblers-places-options {
+    
+}
+.ramblers-places-options img{
+    width:18px;
+    height:18px;
+}
+
+#ra-cluster-progress-bar {left: 0;
+                          line-height: 20px;
+                          margin-top: -10px;
+                          position: absolute;
+                          text-align: center;
+                          top: 50%;
+                          width: 100%;
+                          width:200px;
+                          left:-100px;
+                          font-weight: 700;font-size:125%;
+                          padding:10px;
+                          border-radius: 10px;
+                          background:#FFFFFF;
+}
+#ra-cluster-progress {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index:2000;
 }

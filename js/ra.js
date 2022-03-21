@@ -383,7 +383,7 @@ ra.date = (function () {
         var value = date._setDateTime(datetime);
         var yyyymmdd = value.getFullYear().toString() + '-' + date.MM(value) + '-' + date.DD(value);
         var time = value.getHours().toString().padStart(2, '0') + ':' + value.getMinutes().toString().padStart(2, '0') + ':' + "00";
-        var out = yyyymmdd + " " + time+'.000000';
+        var out = yyyymmdd + " " + time + '.000000';
         return out;
     };
     date.dowdd = function (datetime) {

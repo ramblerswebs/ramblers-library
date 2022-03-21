@@ -42,7 +42,7 @@
     font-weight: bold;
     border-radius: 4px;
 }
-.ramblers-places-icon img{
+.ramblers-places-iconDELETE img{
     width:18px;
     height:18px;
 }
@@ -77,8 +77,8 @@ select.ra-mouse-options {
 select.ra-mouse-options::-ms-expand {
     display: none;
 }
-select.ra-mouse-options:hover {
-    border-color: #888;
+selectDELETE.ra-mouse-options:hover {
+    border-color: red;
 }
 
 select.ra-mouse-options option {
