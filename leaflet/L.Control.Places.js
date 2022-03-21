@@ -21,7 +21,7 @@ L.Control.Places = L.Control.extend({
         for (var i = 1; i < 6; i++) {
             this._numberOfMarkers[i].textContent = "xxx";
         }
-        var self=this;
+        var self = this;
         this._container.addEventListener("display-item-numbers", function (e) {
             for (var i = 1; i < 6; i++) {
                 self._numberOfMarkers[i].textContent = "  [" + self._placeslayer[i].getLayers().length + "]";
@@ -117,7 +117,7 @@ L.Control.Places = L.Control.extend({
             div.appendChild(check);
             var img = document.createElement('img');
             div.appendChild(img);
-            img.setAttribute('src', 'libraries/ramblers/leaflet/images/' + i + 'star.png');
+            img.setAttribute('src', ra.baseDirectory() + 'libraries/ramblers/leaflet/images/' + i + 'star.png');
             var desc = document.createElement('span');
             div.appendChild(desc);
             desc.textContent = '  ' + i + ' stars';
