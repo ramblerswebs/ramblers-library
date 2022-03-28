@@ -16,7 +16,7 @@ class RLeafletMapplaces extends RLeafletMap {
     public function display() {
         parent::setCommand('ra.display.places');
 
-        $this->help_page = "draw-walking-route.html";
+        $this->help_page = "places-help-home.html";
         $this->options->fullscreen = true;
         $this->options->search = true;
         $this->options->locationsearch = true;

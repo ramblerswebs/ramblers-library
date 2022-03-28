@@ -220,7 +220,7 @@ L.Control.Rightclick = L.Control.extend({
                     break;
                 case "starting":
                     if ( !this._placesEnabled){
-                        alert('This option is not valid, all meeting and starting places are displayed');
+                        alert('The current map is already displaying all meeting and starting places and hence this option is currently disabled');
                         break;
                     }
                     var options = {

@@ -19,7 +19,7 @@ L.Control.Places = L.Control.extend({
         this._addProgressBar();
         this._createPlacesLayers();
         for (var i = 1; i < 6; i++) {
-            this._numberOfMarkers[i].textContent = "xxx";
+            this._numberOfMarkers[i].textContent = "  [0]";
         }
         var self = this;
         this._container.addEventListener("display-item-numbers", function (e) {
@@ -127,11 +127,11 @@ L.Control.Places = L.Control.extend({
         }
         var extra = document.createElement('div');
         div.appendChild(extra);
-        var a = document.createElement('a');
-        a.setAttribute('href', 'https://maphelp.ramblers-webs.org.uk');
-        a.setAttribute('target', '_blank');
-        a.textContent = 'Help';
-        extra.appendChild(a);
+//        var a = document.createElement('a');
+//        a.setAttribute('href', 'https://maphelp.ramblers-webs.org.uk');
+//        a.setAttribute('target', '_blank');
+//        a.textContent = 'Help';
+//        extra.appendChild(a);
     },
     clearLayers: function () {
         this._clearPlacesLayers();
@@ -214,7 +214,7 @@ L.Control.Places = L.Control.extend({
                 self._closeProgressBar();
             } else {
                 self._addClusteredPlaces();
-                self._processItems(items, 750);
+                self._processItems(items, 1000);
             }
         });
     },
@@ -225,7 +225,7 @@ L.Control.Places = L.Control.extend({
             self._processItemChucks(items, i * chunk, chunk);
             i++; // Increment the position
             if (i * chunk < items.length) { // If there are more items, schedule another
-                setTimeout(processChunk, 25);
+                setTimeout(processChunk, 20);
             }
         }
         processChunk(); // Print the first entry/char
