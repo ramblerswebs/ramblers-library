@@ -7,7 +7,7 @@ L.Control.Places = L.Control.extend({
         cluster: false
     },
     _urlbase: 'https://placestest.walkinginfo.co.uk/',
-    _test: true,
+    _test: false,
     _diagnosticslayer: null,
     _masterlayer: null,
     _placeslayer: null,
