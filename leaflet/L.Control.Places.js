@@ -7,10 +7,15 @@ L.Control.Places = L.Control.extend({
         cluster: false
     },
     _urlbase: 'https://placestest.walkinginfo.co.uk/',
+    _test: true,
+    _diagnosticslayer: null,
     _masterlayer: null,
     _placeslayer: null,
     _numberOfMarkers: [],
     onAdd: function (map) {
+        if (this._test) {
+            this._urlbase = 'http://localhost/mapplacesv4/';
+        }
         this._map = map;
         this._container = L.DomUtil.create('div', 'leaflet-control-places');
         this._container.style.display = 'none';
@@ -69,6 +74,8 @@ L.Control.Places = L.Control.extend({
         }
     },
     _createPlacesLayers: function () {
+        this._diagnosticslayer = L.featureGroup([]);
+        this._diagnosticslayer.addTo(this._map);
         if (this.options.cluster) {
             this._masterlayer = L.markerClusterGroup({
                 disableClusteringAtZoom: 15,
@@ -237,7 +244,7 @@ L.Control.Places = L.Control.extend({
             var item = items[i];
             if (item.S > 0 && item.S < 6) {
                 var marker;
-                marker = this.addMarker(item.GR, item.S, item.Lat, item.Lng);
+                marker = this._getMarker(item.GR, item.S, item.Lat, item.Lng);
                 this._placeslayer[item.S].addLayer(marker);
             }
             no += 1;
@@ -250,7 +257,7 @@ L.Control.Places = L.Control.extend({
         this._container.dispatchEvent(event);
     },
     // starting or meeting place markers
-    addMarker: function ($gr, $no, $lat, $long) {
+    _getMarker: function ($gr, $no, $lat, $long) {
         var $icon;
         var self = this;
         switch ($no) {
@@ -280,12 +287,27 @@ L.Control.Places = L.Control.extend({
         marker.bindPopup("<b>Grid Ref " + $gr + "</b><br/>Lat/Long " + $lat + " " + $long + text, {maxWidth: 800});
         marker.on('click', function (e) {
             var marker = e.target;
+            var alt = e.originalEvent.altKey;
             var $url = self._urlbase + "details.php?gr=" + marker.gr;
-            ra.ajax.getUrl($url, "", {marker: marker, places: self, gr: $gr}, self.displayDetails);
+            if (alt) {
+                ra.ajax.getUrl($url, "", {marker: marker, places: self, gr: $gr}, self._displayDetailsDiagnostics);
+            } else {
+                ra.ajax.getUrl($url, "", {marker: marker, places: self, gr: $gr}, self._displayDetails);
+            }
         }, marker);
         return marker;
     },
-    displayDetails: function (data, result) {
+    _displayDetailsDiagnostics: function (data, result) {
+        var _this = data.places;
+        var json = JSON.parse(result);
+        var items = json.records;
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            var circle = L.circleMarker([item.latitude, item.longitude], {radius: 5});
+            _this._diagnosticslayer.addLayer(circle);
+        }
+    },
+    _displayDetails: function (data, result) {
         var marker = data.marker;
         var starsUrl = marker.options.icon.options.iconUrl;
         var self = data.places;
