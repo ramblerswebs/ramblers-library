@@ -305,6 +305,12 @@ L.Control.Places = L.Control.extend({
             var item = items[i];
             var circle = L.circleMarker([item.latitude, item.longitude], {radius: 5});
             _this._diagnosticslayer.addLayer(circle);
+            var latlngs = [
+                data.marker.getLatLng(),
+                [item.latitude, item.longitude]
+            ];
+            var line = L.polyline(latlngs, {color: 'red'});
+            _this._diagnosticslayer.addLayer(line);
         }
     },
     _displayDetails: function (data, result) {
