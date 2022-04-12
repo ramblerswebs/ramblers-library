@@ -51,15 +51,12 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $options->cluster = true;
         $options->displayElevation = false;
         $options->fullscreen = true;
-        $options->search = true;
-        $options->locationsearch = true;
         $options->mylocation = true;
-        $options->osgrid = true;
         $options->mouseposition = true;
         $options->postcodes = true;
         $options->fitbounds = false;
         $options->copyright = true;
-        $options->maptools = true;
+        $options->settings = true;
         $options->rightclick = true;
         $options->print = true;
         $options->calendar = true;

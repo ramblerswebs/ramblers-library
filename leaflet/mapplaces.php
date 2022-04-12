@@ -18,19 +18,16 @@ class RLeafletMapplaces extends RLeafletMap {
 
         $this->help_page = "places-help-home.html";
         $this->options->fullscreen = true;
-        $this->options->search = true;
-        $this->options->locationsearch = true;
-        $this->options->osgrid = true;
         $this->options->mouseposition = true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
         $this->options->cluster = false;
         $this->options->mylocation = true;
-        $this->options->maptools = true;
+        $this->options->settings = true;
         $this->options->draw = false;
         $this->options->print = true;
-        $this->options->ramblersPlaces = true;
+       // $this->options->ramblersPlaces = true;
     
         parent::display();
 

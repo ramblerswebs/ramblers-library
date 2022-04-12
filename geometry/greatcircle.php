@@ -99,7 +99,7 @@ Class RGeometryGreatcircle {
 
     static function test() {
 
-        echo RGeometryGreatcircle::distance(40.76, -73.984, 40.89, -74, "KM") . " <br>";
+        echo RGeometryGreatcircle::distance(40.76000, -73.98400, 40.76001, -73.98401, "KM") . " <br>";
         echo RGeometryGreatcircle::bearing(40.76, -73.984, 40.89, -74) . " <br>";
         echo RGeometryGreatcircle::direction(40.76, -73.984, 40.89, -74) . " <br>";
     }

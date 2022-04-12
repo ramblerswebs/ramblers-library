@@ -5,7 +5,7 @@ function leafletMap(tag, options) {
     this.options = options;
 
     this.controls = {layers: null,
-        tools: null,
+        settins: null,
         zoom: null,
         elevation: null,
         errorDiv: null,
@@ -18,7 +18,7 @@ function leafletMap(tag, options) {
         zoomlevelOSMsg: null};
 
     this.userOptions = {layers: null,
-        tools: null,
+        settings: null,
         zoom: null,
         elevation: null,
         print: null,
@@ -60,7 +60,7 @@ function leafletMap(tag, options) {
     this.mapLayers["Open Topo Map"] = new L.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
         maxNativeZoom: 16,
         attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
-    if (options.bing) {
+    if (options.bingkey !== null) {
         this.mapLayers["Bing Aerial"] = new L.BingLayer(options.bingkey, {type: 'Aerial'});
         this.mapLayers["Bing Aerial (Labels)"] = new L.BingLayer(options.bingkey, {type: 'AerialWithLabels'});
         this.mapLayers["Ordnance Survey"] = new L.BingLayer(options.bingkey, {type: 'ordnanceSurvey',
@@ -99,12 +99,8 @@ function leafletMap(tag, options) {
     this.controls.zoom = this.map.addControl(new L.Control.Zoom());
     if (options.fullscreen) {
         this.controls.fullscreen = this.map.addControl(new L.Control.Fullscreen());
-        this.map.addEventListener('fullscreenchange', function () {
-            // let modal know if map full screen;
-            ra.modal.fullscreen(self.map.isFullscreen(), self.map);
-        });
     }
-    if (options.print) {
+    if (options.print !== null) {
         var self = this;
         this.controls.print = L.control.browserPrint({
             title: 'Print',
@@ -112,7 +108,7 @@ function leafletMap(tag, options) {
             printModes: ["Portrait", "Landscape"],
             closePopupsOnPrint: false
         }).addTo(this.map);
-        if (options.bing) {
+        if (options.bingkey ) {
             L.Control.BrowserPrint.Utils.registerLayer(
                     L.BingLayer,
                     "L.BingLayer",
@@ -125,7 +121,7 @@ function leafletMap(tag, options) {
             );
         }
     }
-    if (options.mylocation) {
+    if (options.mylocation !== null) {
         this.controls.mylocation = L.control.mylocation().addTo(this.map);
     }
     // top right controls
@@ -136,17 +132,17 @@ function leafletMap(tag, options) {
         this.map.addLayer(this.mapLayers["Open Street Map"]);
     }
     var _this = this;
-    if (options.maptools) {
+    if (options.settings !== null) {
         try {
-            this.controls.tools = L.control.ra_map_tools();
-            this.controls.tools.userOptions(this.userOptions);
-            this.controls.tools.helpPage(options.helpPage);
-            this.controls.tools.addTo(this.map);
+            this.controls.settings = L.control.ra_map_settings();
+            this.controls.settings.userOptions(this.userOptions);
+            this.controls.settings.helpPage(options.helpPage);
+            this.controls.settings.addTo(this.map);
         } catch (err) {
             self.controls.errorDiv.setErrorText("ERROR: " + err.message);
         }
     }
-    // this.controls.tools.setErrorDiv(this.errorDivControl());
+    // this.controls.settings.setErrorDiv(this.errorDivControl());
     this.map.on('zoomend', function () {
         _this.osZoomLevel();
     });
@@ -156,10 +152,7 @@ function leafletMap(tag, options) {
     });
 
     // bottom left controls
-    if (options.startingplaces) {
-        L.control.usageAgreement().addTo(this.map);
-    }
-    if (options.rightclick) {
+    if (options.rightclick !== null) {
         try {
             this.controls.rightclick = L.control.rightclick().addTo(this.map);
             if (this.controls.layers === null) {
@@ -172,7 +165,7 @@ function leafletMap(tag, options) {
         }
     }
 
-    if (options.mouseposition && !L.Browser.mobile) {
+    if (options.mouseposition !== null && !L.Browser.mobile) {
         try {
             this.controls.mouse = L.control.mouse().addTo(this.map);
             this.userOptions.mouse = this.controls.mouse.userOptions();
@@ -202,7 +195,41 @@ function leafletMap(tag, options) {
         var pt = L.latLng(options.initialview.latitude, options.initialview.longitude);
         this.map.setView(pt, options.initialview.zoom);
     }
+    this.map.addEventListener('fullscreenchange', function () {
+        // let modal know if map full screen;
+        ra.modal.fullscreen(self.map.isFullscreen(), self.map);
+        // display of not controls in full screen
+        self.setOptionalControls();
 
+    });
+    this.setOptionalControls = function () {
+        var display = "none";
+        if (self.map.isFullscreen()) {
+            display = '';
+        }
+        if (options.mouseposition === false) {
+            self.controls.mouse.changeDisplay(display);
+        }
+        if (options.mylocation === false) {
+            self.controls.mylocation.changeDisplay(display);
+        }
+        if (options.print === false) {
+            self.controls.print._container.style.display = display;
+        }
+        if (options.settings === false) {
+            self.controls.settings.changeDisplay(display);
+        }
+        if (options.rightclick === false) {
+            self.controls.rightclick.changeDisplay(display);
+        }
+//        if (options.mouseposition === false) {
+//            self.controls.mouseposition.changeDisplay(display);
+//        }
+        if (options.mylocation === false) {
+            self.controls.mylocation.changeDisplay(display);
+        }
+    };
+    this.setOptionalControls();
 }
 leafletMap.prototype.osZoomLevel = function () {
     this.controls.zoomlevelOSMsg.setText("");
@@ -224,8 +251,8 @@ leafletMap.prototype.SetPlotUserOptions = function (value) {
 leafletMap.prototype.layersControl = function () {
     return this.controls.layers;
 };
-leafletMap.prototype.toolsControl = function () {
-    return this.controls.tools;
+leafletMap.prototype.settingsControl = function () {
+    return this.controls.settings;
 };
 leafletMap.prototype.zoomControl = function () {
     return this.controls.zoom;

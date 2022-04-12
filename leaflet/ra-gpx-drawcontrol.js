@@ -23,10 +23,10 @@ ra.display.plotRoute = function (options, data) {
     this.controls = {
         rightclick: lmap.rightclickControl(),
         mouse: lmap.mouseControl(),
-        tools: lmap.toolsControl(),
+        settingsControl: lmap.settingsControl(),
         elevation: lmap.elevationControl()};
     lmap.SetPlotUserOptions(this.userOptions);
-    this.controls.tools.getDrawSettings();
+    this.controls.settingsControl.getDrawSettings();
     this.mapDiv = lmap.mapDiv;
     this.detailsDiv = document.createElement('div');
     this.mapDiv.parentNode.insertBefore(this.detailsDiv, this.mapDiv);
@@ -138,7 +138,7 @@ ra.display.plotRoute = function (options, data) {
         this.drawnItems.on("upload:addline", function (e) {
             var bounds = self.drawnItems.getBounds();
             self._map.fitBounds(bounds);
-            setGpxToolStatus('auto');
+            setGpxtoolsControlStatus('auto');
             self.addElevations(false);
         });
         this.drawnItems.on('upload:addpoint', function (e) {

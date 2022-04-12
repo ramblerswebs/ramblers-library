@@ -25,6 +25,9 @@ L.Control.MyLocation = L.Control.extend({
         this.link.title = this.options.title;
         return this.link;
     },
+      changeDisplay: function (display) {
+        this._container.style.display = display;
+    },
     _displaymylocationEvent: function (evt) {
         this._map.myLocationLayer.clearLayers();
         if (this.active) {

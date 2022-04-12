@@ -1,14 +1,15 @@
 var L, ra, document, OsGridRef;
-L.Control.RA_Map_Tools = L.Control.extend({
+L.Control.RA_Map_Settings = L.Control.extend({
     options: {
         id: null,
-        title: 'Mapping Tools',
+        title: 'Settings&Help',
         position: 'topright',
         osgrid: {
             color: '#0080C0',
             weight: 2,
             opacity: 0.5}
     },
+    helpBase: "https://maphelp5.ramblers-webs.org.uk/",
     _userOptions: null,
     onAdd: function (map) {
         this._map = map;
@@ -30,21 +31,23 @@ L.Control.RA_Map_Tools = L.Control.extend({
         this.searchLayer = L.featureGroup([]);
         this.searchLayer.addTo(this._map);
         var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-display-tools');
+        this._container = container;
         if (this.options.id !== null) {
             container.setAttribute('id', this.options.id);
         }
         container.title = this.options.title;
         //  this.getDrawSettings();
         container.addEventListener("click", function (e) {
-            var forms = document.createElement('div');
-            ra.modal.display(forms, false);
+            _this.forms = document.createElement('div');
+            _this.forms.setAttribute('class', 'xxxx');
+            ra.modal.display(_this.forms, false);
             var title = document.createElement('h4');
-            title.textContent = "Mapping Tools";
-            forms.appendChild(title);
+            title.textContent = "Settings & Help";
+            _this.forms.appendChild(title);
             // tabs
             var container = document.createElement('div');
             container.setAttribute('class', 'tabs');
-            forms.appendChild(container);
+            _this.forms.appendChild(container);
             var tabs = document.createElement('div');
             tabs.setAttribute('class', 'ra-tabs-left ');
             container.appendChild(tabs);
@@ -57,7 +60,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
             var first = true;
 
             if (_this._userOptions.plotroute !== null) {
-                _this.addTabItem(container, list, 'Plot Walking Route', 'route', first);
+                _this._addTabItem(container, list, 'Plot Walking Route', 'route', first);
                 var drawDiv = _this.addTabContentItem(content, "route", first);
                 _this.addDrawOptions(drawDiv);
                 _this.saveDrawOptions = false;
@@ -66,38 +69,34 @@ L.Control.RA_Map_Tools = L.Control.extend({
             }
 
             var searchDiv;
-            _this.addTabItem(container, list, 'Search', 'search', first);
+            _this._addTabItem(container, list, 'Search', 'search', first);
             searchDiv = _this.addTabContentItem(content, "search", first);
             first = false;
             _this.addSearch(searchDiv);
 
             var osmapsDiv = _this.addTabContentItem(content, "osmaps", false);
-            _this.addTabItem(container, list, 'Ordnance Survey', 'osmaps', false);
+            _this._addTabItem(container, list, 'Ordnance Survey', 'osmaps', false);
             _this.addOSMaps(osmapsDiv);
 
             if (_this._userOptions.rightclick !== null) {
-                _this.addTabItem(container, list, 'Mouse Right Click', 'mouse', false);
+                _this._addTabItem(container, list, 'Mouse Right Click', 'mouse', false);
                 var mouseDiv = _this.addTabContentItem(content, "mouse", false);
                 _this.addMouse(mouseDiv);
             }
 
             if (_this._helpPage !== '') {
-                _this.addTabItem(container, list, 'Feedback', 'help', false);
+                _this._addTabItem(container, list, 'Help/Feedback', 'help', false);
 
                 var helpDiv = _this.addTabContentItem(content, "help", false);
                 _this.addHelp(helpDiv);
-                var help = document.createElement('a');
-                help.setAttribute('class', 'link-button mintcake');
-                help.setAttribute('href', _this._helpPage);
-                help.setAttribute('target', '_blank');
-                help.style.cssFloat = "right";
-                help.textContent = "Visit our Mapping Help Site";
-                forms.appendChild(help);
             }
             var padding = document.createElement('p');
             container.appendChild(padding);
         });
         return container;
+    },
+    changeDisplay: function (display) {
+        this._container.style.display = display;
     },
     userOptions: function (value) {
         this._userOptions = value;
@@ -125,8 +124,25 @@ L.Control.RA_Map_Tools = L.Control.extend({
         if (this._helpPage !== '') {
             var helpcomment = document.createElement('div');
             helpcomment.setAttribute('class', 'help map-tools');
-            helpcomment.textContent = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via the HELP web site.";
+            helpcomment.innerHTML = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via the mapping HELP below.</br></br>";
             tag.appendChild(helpcomment);
+            var help = document.createElement('div');
+            help.setAttribute('class', 'link-button mintcake');
+            //  help.setAttribute('href', this._helpPage);
+            //  help.setAttribute('target', '_blank');
+            //  help.style.cssFloat = "center";
+            help.textContent = "View Mapping Help";
+            tag.appendChild(help);
+            var _this = this;
+            help.addEventListener("click", function (e) {
+                _this.forms.innerHTML = "";
+                ra.loading.start();
+                var iframe = document.createElement('iframe');
+                iframe.onload = function() { ra.loading.stop(); };
+                iframe.setAttribute('src', _this.helpBase + _this._helpPage);
+                iframe.setAttribute('class', 'ra maphelp-modal');
+                _this.forms.appendChild(iframe);
+            });
         }
     },
     addOSMaps: function (tag) {
@@ -297,7 +313,7 @@ L.Control.RA_Map_Tools = L.Control.extend({
     _changePolyline: function (polyline) {
         polyline.setStyle(this._userOptions.plotroute.style);
     },
-    addTabItem: function (container, list, name, id, active) {
+    _addTabItem: function (container, list, name, id, active) {
         var listItem;
         listItem = document.createElement('div');
         // listItem.setAttribute('data-toggle', 'tab');
@@ -620,6 +636,6 @@ L.Control.RA_Map_Tools = L.Control.extend({
         tag.click();
     }
 });
-L.control.ra_map_tools = function (options) {
-    return new L.Control.RA_Map_Tools(options);
+L.control.ra_map_settings = function (options) {
+    return new L.Control.RA_Map_Settings(options);
 };

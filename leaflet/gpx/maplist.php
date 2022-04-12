@@ -44,11 +44,8 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $this->options->cluster = true;
         $this->options->displayElevation = true;
         $this->options->fullscreen = true;
-        $this->options->search = true;
-        $this->options->locationsearch = true;
-        $this->options->osgrid = true;
         $this->options->mouseposition = true;
-        $this->options->maptools = true;
+        $this->options->settings = true;
         $this->options->mylocation = true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;

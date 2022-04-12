@@ -7,35 +7,40 @@
  */
 class RLeafletMapoptions {
 
+    // Map options
+
     public $divId = "";
     public $base = "";
     public $mapHeight = "500px";
     public $mapWidth = "100%";
-    public $helpPage = "";
-    public $cluster = false;
-    public $fullscreen = false;
-    public $google = false;
-    public $search = false;
-    public $locationsearch = false;
-    public $osgrid = false;
-    public $mouseposition = false;
-    public $rightclick = false;
-    public $maptools = false;
-    public $mylocation = false;
-    public $fitbounds = false;
-    public $draw = false;
-    public $print = false;
-    public $displayElevation = false;
-    public $smartRoute = false;
-    public $bing = false;
     public $bingkey = null;
     public $ORSkey = null;
-    public $ramblersPlaces = false;
-    public $topoMapDefault = false;
-    public $controlcontainer = false; // used by Walks Editor
-    public $copyright = true;
-    public $initialview = null;
+    public $helpPage = "";
+    // the following can be true of false
+    public $cluster = false;
+    public $fitbounds = false;
+    public $displayElevation = false;
     public $calendar = false;
+    public $topoMapDefault = false;
+    public $initialview = null;
+    public $fullscreen = false;
+    public $copyright = true;
+    public $controlcontainer = false; // used by Walks Editor
+    // ************** these options have three values
+    // null never display option
+    // true always display option
+    // false only display option on full screen
+    public $mouseposition = false;
+    public $rightclick = false;
+    public $settings = false;
+    public $mylocation = false;
+    public $print = false;
+    // ************** END these options have three values
+
+
+
+   // public $ramblersPlaces = false;
+   
 
     public function __construct() {
         $this->divId = uniqid(rand());

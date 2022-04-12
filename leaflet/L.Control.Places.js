@@ -315,7 +315,7 @@ L.Control.Places = L.Control.extend({
     },
     _displayDetails: function (data, result) {
         var marker = data.marker;
-        var starsUrl = marker.options.icon.options.iconUrl;
+       // var starsUrl = marker.options.icon.options.iconUrl;
         var self = data.places;
         var gr = data.gr;
         var latlng = marker.getLatLng();
@@ -323,7 +323,7 @@ L.Control.Places = L.Control.extend({
         var gr8 = OsGridRef.latLonToOsGrid(ll).toString(8);
         var json = JSON.parse(result);
         var div = document.createElement('div');
-        div.appendChild(self._getMarkerHeading(starsUrl, gr));
+        div.appendChild(self._getMarkerHeading(marker.options, gr));
         div.appendChild(self._getCorrectElement(gr, json.likes));
         div.appendChild(self._getIncorrectElement(gr, json.dislikes));
         div.appendChild(self._getResultDiv(gr));
@@ -331,20 +331,23 @@ L.Control.Places = L.Control.extend({
         div.appendChild(self._getDetails(json.records));
         div.appendChild(self._getStreetMapLink(latlng));
         div.appendChild(self._getGoogleMapLink(latlng));
+        div.appendChild(self._displayAgreement());
 
         var popup = marker.getPopup();
         popup.setContent(div);
         popup.update();
     },
-    _getMarkerHeading: function (starsUrl, gr) {
+    _getMarkerHeading: function (options, gr) {
         var element = document.createElement('span');
         element.setAttribute('class', 'placelocation');
-        var img = document.createElement('img');
-        img.setAttribute('src', starsUrl);
-        img.setAttribute('alt', 'Stars');
-        img.setAttribute('height', '30px');
-        img.setAttribute('width', '30px');
-        element.appendChild(img);
+        for (let i = 0; i < options.no; i++) {
+            var img = document.createElement('img');
+            img.setAttribute('src', options.icon.options.iconUrl);
+            img.setAttribute('alt', 'Stars');
+            img.setAttribute('height', '20px');
+            img.setAttribute('width', '20px');
+            element.appendChild(img);
+        }
         var title = document.createElement('span');
         title.textContent = ' Place Grid Ref  ' + gr;
         element.appendChild(title);
@@ -445,5 +448,16 @@ L.Control.Places = L.Control.extend({
             ul.appendChild(li);
         }
         return element;
+    },
+    _displayAgreement: function (items) {
+        var element = document.createElement('div');
+        element.setAttribute('class', 'ra places popup');
+        var desc = document.createElement('p');
+        desc.innerHTML = "<b><small>By using this information you are agreeing that you will check the suitability of locations before you use them.</small></b>";
+        element.appendChild(desc);
+        return element;
     }
+
+    //    
+
 });

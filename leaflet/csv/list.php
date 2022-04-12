@@ -38,7 +38,7 @@ class RLeafletCsvList extends RLeafletMap {
         $this->options->locationsearch = true;
         $this->options->osgrid = true;
         $this->options->mouseposition = true;
-        $this->options->maptools = true;
+        $this->options->settings = true;
         $this->options->mylocation = true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;

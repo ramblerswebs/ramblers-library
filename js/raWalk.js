@@ -1,4 +1,4 @@
-var ra, displayCustomValues;
+var ra, displayCustomValues, OsGridRef;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -10,15 +10,49 @@ ra.walk = (function () {
     my.DisplayWalkFunction = "ra.walk.displayWalkID";
     my.mapFormat = ["{dowddmm}", "{;title}", "{,distance}"];
     my.mapLinks = ["{startOSMap}", "{startDirections}"];
-
     my.walks = {};
-    my.registerWalks = function (walks) {
-        var i, no, walk;
-        for (i = 0, no = walks.length; i < no; ++i) {
-            walk = walks[i];
-            my.walks[walk.id] = walks[i];
-        }
-    };
+    my.testcsv = function () {
+        var allText = [];
+        var allTextLines = [];
+        //var Lines = [];
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "places.csv", true);
+        xhttp.onload = function () {
+            allText = xhttp.responseText;
+            allTextLines = allText.split(/\r\n|\n/);
+            var arrayLength = allTextLines.length;
+            for (var i = 1; i < arrayLength; i++) {
+                var line = allTextLines[i];
+                var items = line.split(',');
+                var gr = items[3];
+                var lat = items[7];
+                var lng = items[6];
+
+                var latlng = LatLon(lat, lng, LatLon.datum.WGS84);
+                var gr2 = OsGridRef.latLonToOsGrid(latlng);
+                var gridref2 = gr2.toString(6);
+
+                if (gridref2 !== gr) {
+                    console.log("GR from lat.long not equal to supplied value: " + gr + "/" + gridref2 + ' : ' + line + '\n');
+                }
+            }
+
+        };
+        xhttp.send();
+
+    },
+            my.registerWalks = function (walks) {
+               // my.testcsv();
+                var i, no, walk;
+                for (i = 0, no = walks.length; i < no; ++i) {
+                    walk = walks[i];
+                    my.walks[walk.id] = walks[i];
+                    var error = my._locationDiagnostics(walks[i]);
+                    if (error !== '') {
+                        console.log(error);
+                    }
+                }
+            };
     my.registerPHPWalks = function (mapOptions, data) {
         // stores walks for php walks displays
         var _allwalks = null;
@@ -110,7 +144,6 @@ ra.walk = (function () {
         }
         var bounds = layer.getBounds();
         map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
-
 //        fix contact link does not work if popup is underneath it and it is in coloumn two
 //        var elems = document.getElementsByClassName("walkcontact");
 //        elems[0].addEventListener('mouseover', function () {
@@ -191,7 +224,7 @@ ra.walk = (function () {
     my.displayWalkURL = function (url) {
         window.open(url);
     };
-    // display walks 
+// display walks 
     my.walkDetails = function ($walk) {
         // get my location for directions
         ra.loc.getPosition({
@@ -355,7 +388,6 @@ ra.walk = (function () {
         for (index = 0, len = $items.length; index < len; ++index) {
 
             options = getPrefix($items[index]);
-
             thisItem = my.getWalkValue($walk, options.walkValue);
             if (lastItem !== '' && thisItem !== '') {
                 out += options.previousPrefix;
@@ -428,7 +460,6 @@ ra.walk = (function () {
         var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
         var eventer = window[eventMethod];
         var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-
         // Listen to message from child window
         eventer(messageEvent, function (e) {
             var height = parseInt(e.data);
@@ -442,9 +473,7 @@ ra.walk = (function () {
             var sentThis = JSON.stringify(data);
             frame.contentWindow.postMessage(sentThis, url);
         };
-
     };
-
     my.walkDiagnostics = function ($walk) {
         var options = ["{lf}", "{group}", "{dowShortdd}", "{dowShortddmm}", "{dowShortddyyyy}",
             "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}", "{meet}",
@@ -467,7 +496,30 @@ ra.walk = (function () {
             +"</td>";
             $html += "</tr>";
         }
-        return $html;
+        $html += "</table>";
+        return  my._locationDiagnostics($walk) + $html;
+    };
+    my._locationDiagnostics = function ($walk) {
+        var out = "";
+        if ($walk.hasMeetPlace) {
+            out += my._locationAccuray('Meet', $walk.meetLocation);
+        }
+        if ($walk.startLocation.exact) {
+            out += my._locationAccuray('Start', $walk.startLocation);
+        }
+        return out;
+    };
+    my._locationAccuray = function (type, location) {
+        var out = "";
+        var gridref1 = OsGridRef.parse(location.gridref).toString(6);
+        var latlng = LatLon(location.latitude, location.longitude, LatLon.datum.WGS84);
+        var gr = OsGridRef.latLonToOsGrid(latlng);
+        var gridref2 = gr.toString(6);
+        var gridref3 = gr.toString(8);
+        if (gridref2 !== location.gridref) {
+            out = "<p>Error in " + type + "GR from lat.long not equal to supplied value: " + gridref1 + "/" + gridref2 + '/' + gridref3 + '</p>\n';
+        }
+        return out;
     };
     my.getWalkValue = function ($walk, $option) {
         var BR = '<br/>';
@@ -850,14 +902,12 @@ ra.walk = (function () {
         }
         if ($walk.status.toLowerCase() === "cancelled") {
             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
-
         }
         if ($walk.status === "New") {
             return "<span data-descr='Walk updated " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";
         }
         return $text;
     };
-
     my.addYear = function ($walk) {
         var d = new Date();
         var newDate = new Date(d.getTime() + 300 * 24 * 60 * 60000);
@@ -900,7 +950,6 @@ ra.walk = (function () {
                 $out += "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
                 $out += ra.map.getMapLink($location.latitude, $location.longitude, "Map of area");
                 $out += "<br/>Contact group if you wish to meet at the start";
-
                 if ($location.timeHHMMshort !== '') {
                     $out += "<div class='starttime'>Start time: " + $location.timeHHMMshort + "</div>";
                 }
@@ -1019,16 +1068,12 @@ ra.walk = (function () {
         $popup.appendChild(grade);
         $popup.appendChild(summary);
         $popup.appendChild(link);
-
-
         var dist = '';
         if ($walk.distanceMiles > 0) {
             dist = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
         }
         var title = ra.date.dowShortddmm($walk.walkDate) + ra.walk.addYear($walk) + ", " + dist;
         $class = walkClass + $walk.status;
-
-
         cluster.addMarker($popup, $lat, $long, {icon: $icon, title: title, riseOnHover: true});
         return;
     };

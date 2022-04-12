@@ -22,6 +22,9 @@ L.Control.Mouse = L.Control.extend({
                 {color: "#884000", weight: 1}).addTo(map);
         return this._container;
     },
+    changeDisplay: function (display) {
+        this._container.style.display = display;
+    },
     onRemove: function (map) {
         map.off('mousemove', this._update);
     },
@@ -191,6 +194,9 @@ L.Control.Rightclick = L.Control.extend({
         this._map.off('zoomend', this._onZoomEnd);
         this._map.off('contextmenu', this._onRightClick);
     },
+    changeDisplay: function (display) {
+        this._container.style.display = display;
+    },
     Enabled: function (status) {
         this.enabled = status === true;
     },
@@ -219,7 +225,7 @@ L.Control.Rightclick = L.Control.extend({
                     this._displayOsMaps(e);
                     break;
                 case "starting":
-                    if ( !this._placesEnabled){
+                    if (!this._placesEnabled) {
                         alert('The current map is already displaying all meeting and starting places and hence this option is currently disabled');
                         break;
                     }
@@ -719,24 +725,4 @@ L.Control.Rightclick = L.Control.extend({
 
 L.control.rightclick = function (options) {
     return new L.Control.Rightclick(options);
-};
-L.Control.UsageAgreement = L.Control.extend({
-    options: {
-        position: 'bottomleft',
-        defaultString: 'You have agreed that you will check the suitability of locations before you use them.'
-    },
-    onAdd: function (map) {
-        this._container = L.DomUtil.create('div', 'leaflet-control-usageagreement');
-        L.DomEvent.disableClickPropagation(this._container);
-        this._container.innerHTML = this.options.defaultString;
-        return this._container;
-    },
-    onRemove: function (map) {
-        map.off('zoomend', this._onZoomEnd);
-        map.off('contextmenu', this._onClick);
-    }
-
-});
-L.control.usageAgreement = function (options) {
-    return new L.Control.UsageAgreement(options);
 };

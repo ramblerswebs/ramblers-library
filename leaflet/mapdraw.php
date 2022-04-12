@@ -32,21 +32,19 @@ class RLeafletMapdraw extends RLeafletMap {
             echo "</div>";
         }
 
-        $this->help_page = "draw-walking-route.html";
+        $this->help_page = "plot-walking-route.html";
         $this->options->fullscreen = true;
-        $this->options->search = true;
-        $this->options->locationsearch = true;
-        $this->options->osgrid = true;
-        $this->options->mouseposition = true;
+      
+        $this->options->mouseposition = false;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;
-        $this->options->cluster = false;
+        $this->options->cluster = null;
         $this->options->mylocation = true;
-        $this->options->maptools = true;
-        $this->options->draw = true;
+        $this->options->settings = true;
+    //    $this->options->draw = true;
         $this->options->print = true;
-        $this->options->ramblersPlaces = true;
+      //  $this->options->ramblersPlaces = true;
         $this->options->latitude = $this->lat;
         $this->options->longitude = $this->long;
         $this->options->zoom = $this->zoom;

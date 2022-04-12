@@ -61,19 +61,19 @@ class RJsScript {
 //            $document->addStyleSheet("libraries/ramblers/leaflet/Control.Locationsearch.css", "text/css");
 //            $document->addScript("libraries/ramblers/leaflet/Control.Locationsearch.js", "text/javascript");
 //        }
-        if ($options->fullscreen) {
+        if ($options->fullscreen!==null) {
             $path = "libraries/ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
             RLoad::addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
             RLoad::addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
         }
 
-        if ($options->rightclick) {
+        if ($options->rightclick!==null) {
             // Mapcodes        
             //     $document->addScript("libraries/ramblers/vendors/mapcode-js-2.4.1/mapcode.js", "text/javascript");
             //     $document->addScript("libraries/ramblers/vendors/mapcode-js-2.4.1/ndata.js", "text/javascript");
         }
 
-        if ($options->displayElevation) {
+        if ($options->displayElevation!==null) {
             // elevation
             $document->addScript("https://d3js.org/d3.v3.min.js", array("type" => "text/javascript"));
             $path = "libraries/ramblers/vendors/Leaflet.Elevation-0.0.4-ra/";
@@ -102,7 +102,7 @@ class RJsScript {
             RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Mouse.css", "text/css");
         }
 
-        if ($options->mouseposition or $options->osgrid or $options->rightclick) {
+        if ($options->mouseposition!==null or $options->osgrid!==null or $options->rightclick!==null) {
             // grid ref to/from lat/long
             $document->addScript("libraries/ramblers/vendors/geodesy/vector3d.js", array("type" => "text/javascript"));
             $document->addScript("libraries/ramblers/vendors/geodesy/latlon-ellipsoidal.js", array("type" => "text/javascript"));
@@ -114,7 +114,7 @@ class RJsScript {
             $document->addScript("libraries/ramblers/vendors/bing/bing.js", array("type" => "text/javascript"));
         }
 
-        if ($options->print) {
+        if ($options->print!==null) {
             $path = "libraries/ramblers/vendors/leaflet.browser.print-1/src/";
             $document->addScript($path . "leaflet.browser.print.js", array("type" => "text/javascript"));
             $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
@@ -135,9 +135,9 @@ class RJsScript {
 
         RLoad::addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
 
-        // tools
-        RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-map-tools.css", "text/css");
-        RLoad::addScript("libraries/ramblers/leaflet/ra-map-tools.js", "text/javascript");
+        // settings
+        RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-map-settings.css", "text/css");
+        RLoad::addScript("libraries/ramblers/leaflet/ra-map-settings.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/js/feedhandler.js", "text/javascript");
     }
 

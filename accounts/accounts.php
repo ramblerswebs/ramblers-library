@@ -90,18 +90,15 @@ class RAccounts {
         RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
         $map->setCommand('ra.display.accountsMap');
         $map->options->fullscreen = true;
-        $map->options->search = true;
-        $map->options->locationsearch = true;
-        $map->options->osgrid = true;
         $map->options->mouseposition = true;
         $map->options->displayElevation = false;
         $map->options->rightclick = true;
         $map->options->fitbounds = true;
         $map->options->cluster = true;
-        $map->options->maptools = true;
+        $map->options->settings = true;
         $map->options->draw = false;
         $map->options->print = true;
-        $map->options->ramblersPlaces = true;
+      //  $map->options->ramblersPlaces = true;
         $this->readAccounts();
 
         $data = new class {

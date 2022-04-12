@@ -18,11 +18,8 @@ class RLeafletGpxMap extends RLeafletMap {
         $this->help_page = "singleroute.html";
         $this->options->fullscreen = true;
         $this->options->cluster = false;
-        $this->options->search = true;
-        $this->options->locationsearch = true;
-        $this->options->osgrid = true;
         $this->options->mouseposition = true;
-        $this->options->maptools = true;
+        $this->options->settings = true;
         $this->options->mylocation = true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;

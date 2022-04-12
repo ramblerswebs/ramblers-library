@@ -16,7 +16,6 @@ class RLeafletMap {
     public $mapWidth = "500px";
     public $options;
     public $help_page = "";
-    private $helpBase = "https://maphelp.ramblers-webs.org.uk/";
     public $leafletLoad = true;
 
     function __construct() {
@@ -33,7 +32,7 @@ class RLeafletMap {
     }
 
     public function display() {
-        $this->options->helpPage = $this->helpBase . $this->help_page;
+        $this->options->helpPage = $this->help_page;
         $options = $this->options;
         // set mapping options
         if ($this->defaultMap == "Topo") {
@@ -41,4 +40,5 @@ class RLeafletMap {
         }
         $this->script->add($options);
     }
+
 }

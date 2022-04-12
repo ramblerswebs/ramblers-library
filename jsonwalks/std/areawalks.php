@@ -96,9 +96,6 @@ class RJsonwalksStdAreawalks extends RJsonwalksDisplaybase{
         $this->map->setCommand("loadDisplayAreaWalks");
         $map->options->fullscreen = true;
         $map->options->cluster = false;
-        $map->options->search = false;
-        $map->options->locationsearch = false;
-        $map->options->osgrid = true;
         $map->options->mouseposition = false;
         $map->options->postcodes = false;
         $map->options->fitbounds = false;

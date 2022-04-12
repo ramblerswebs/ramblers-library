@@ -169,19 +169,16 @@ class ROrganisation {
             $map->setCommand('ra.display.organisationMap');
             $map->help_page = "";
             $map->options->fullscreen = true;
-            $map->options->search = true;
-            $map->options->locationsearch = true;
-            $map->options->osgrid = true;
             $map->options->mouseposition = true;
             $map->options->rightclick = true;
             $map->options->fitbounds = true;
             $map->options->displayElevation = false;
             $map->options->cluster = true;
             $map->options->mylocation = true;
-            $map->options->maptools = true;
+            $map->options->settings = true;
             $map->options->draw = true;
             $map->options->print = true;
-            $map->options->ramblersPlaces = true;
+         //   $map->options->ramblersPlaces = true;
 
             $data = new class {
                 
@@ -202,16 +199,13 @@ class ROrganisation {
         $map->setCommand('ra.display.organisationMyGroup');
         $map->help_page = "";
         $map->options->fullscreen = true;
-        $map->options->search = false;
-        $map->options->locationsearch = false;
-        $map->options->osgrid = true;
         $map->options->mouseposition = false;
         $map->options->rightclick = false;
         $map->options->fitbounds = true;
         $map->options->displayElevation = false;
         $map->options->cluster = false;
         $map->options->mylocation = false;
-        $map->options->maptools = false;
+        $map->options->settings = false;
         $map->options->draw = true;
         $map->options->print = false;
         $map->options->ramblersPlaces = true;

@@ -20,11 +20,8 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $options->cluster = true;
         // $options->displayElevation = true;
         $options->fullscreen = true;
-        $options->search = true;
-        $options->locationsearch = true;
         $options->mylocation = true;
-        $options->maptools = true;
-        $options->osgrid = true;
+        $options->settings = true;
         $options->mouseposition = true;
         $options->rightclick = true;
         $options->fitbounds = true;
