@@ -17,16 +17,16 @@ function leafletMap(tag, options) {
         plotroute: null,
         zoomlevelOSMsg: null};
 
-    this.userOptions = {layers: null,
-        settings: null,
-        zoom: null,
-        elevation: null,
-        print: null,
-        mylocation: null,
-        scale: null,
-        mouse: null,
-        rightclick: null,
-        plotroute: null};
+//    this.userOptions = {layers: null,
+//        settings: null,
+//        zoom: null,
+//        elevation: null,
+//        print: null,
+//        mylocation: null,
+//        scale: null,
+//        mouse: null,
+//        rightclick: null,
+//        plotroute: null};
     this.mapDiv = null;
     var tags = [
         {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra-map-container'}},
@@ -108,7 +108,7 @@ function leafletMap(tag, options) {
             printModes: ["Portrait", "Landscape"],
             closePopupsOnPrint: false
         }).addTo(this.map);
-        if (options.bingkey ) {
+        if (options.bingkey) {
             L.Control.BrowserPrint.Utils.registerLayer(
                     L.BingLayer,
                     "L.BingLayer",
@@ -123,55 +123,30 @@ function leafletMap(tag, options) {
     }
     if (options.mylocation !== null) {
         this.controls.mylocation = L.control.mylocation().addTo(this.map);
+     //   this.userOptions.mylocation = this.controls.mylocation.userOptions();
     }
-    // top right controls
-    this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
-    if (options.topoMapDefault) {
-        this.map.addLayer(this.mapLayers["Open Topo Map"]);
-    } else {
-        this.map.addLayer(this.mapLayers["Open Street Map"]);
-    }
-    var _this = this;
-    if (options.settings !== null) {
-        try {
-            this.controls.settings = L.control.ra_map_settings();
-            this.controls.settings.userOptions(this.userOptions);
-            this.controls.settings.helpPage(options.helpPage);
-            this.controls.settings.addTo(this.map);
-        } catch (err) {
-            self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-        }
-    }
-    // this.controls.settings.setErrorDiv(this.errorDivControl());
-    this.map.on('zoomend', function () {
-        _this.osZoomLevel();
-    });
-    this.map.on('baselayerchange', function (e) {
-        _this.baseTiles = e.name;
-        _this.osZoomLevel();
-    });
 
     // bottom left controls
     if (options.rightclick !== null) {
-        try {
+      //  try {
             this.controls.rightclick = L.control.rightclick().addTo(this.map);
-            if (this.controls.layers === null) {
-                alert('Program error in rambler leaflet map');
-            }
-            this.controls.rightclick.mapControl(this.controls.layers);
-            this.userOptions.rightclick = this.controls.rightclick.userOptions();
-        } catch (err) {
-            self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-        }
+         //   if (this.controls.layers === null) {
+         //       alert('Program error in rambler leaflet map');
+          //  }
+          //  this.controls.rightclick.mapControl(this.controls.layers);
+        //    this.userOptions.rightclick = this.controls.rightclick.userOptions();
+       // } catch (err) {
+      //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
+      //  }
     }
 
     if (options.mouseposition !== null && !L.Browser.mobile) {
-        try {
+      //  try {
             this.controls.mouse = L.control.mouse().addTo(this.map);
-            this.userOptions.mouse = this.controls.mouse.userOptions();
-        } catch (err) {
-            self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-        }
+      //      this.userOptions.mouse = this.controls.mouse.userOptions();
+      //  } catch (err) {
+      //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
+      //  }
 
     }
 
@@ -202,6 +177,41 @@ function leafletMap(tag, options) {
         self.setOptionalControls();
 
     });
+      // top right controls
+    this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
+    if (options.topoMapDefault) {
+        this.map.addLayer(this.mapLayers["Open Topo Map"]);
+    } else {
+        this.map.addLayer(this.mapLayers["Open Street Map"]);
+    }
+    var _this = this;
+    if (options.settings !== null) {
+      //  try {
+            this.controls.settings = L.control.ra_map_settings();
+                   this.controls.settings.helpPage(options.helpPage);
+            this.controls.settings.addTo(this.map);
+            this.controls.settings.setLeafletMap(this);
+      //  } catch (err) {
+      //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
+      //  }
+    }
+    // this.controls.settings.setErrorDiv(this.errorDivControl());
+    this.map.on('zoomend', function () {
+        _this.osZoomLevel();
+    });
+    this.map.on('baselayerchange', function (e) {
+        _this.baseTiles = e.name;
+        _this.osZoomLevel();
+    });
+     if (options.rightclick !== null) {
+      //  try {
+            this.controls.rightclick.mapControl(this.controls.layers);
+        //    this.userOptions.rightclick = this.controls.rightclick.userOptions();
+      //  } catch (err) {
+       //     self.controls.errorDiv.setErrorText("ERROR: " + err.message);
+       // }
+    }
+
     this.setOptionalControls = function () {
         var display = "none";
         if (self.map.isFullscreen()) {
@@ -222,9 +232,6 @@ function leafletMap(tag, options) {
         if (options.rightclick === false) {
             self.controls.rightclick.changeDisplay(display);
         }
-//        if (options.mouseposition === false) {
-//            self.controls.mouseposition.changeDisplay(display);
-//        }
         if (options.mylocation === false) {
             self.controls.mylocation.changeDisplay(display);
         }
@@ -245,8 +252,11 @@ leafletMap.prototype.osZoomLevel = function () {
     }
 };
 
-leafletMap.prototype.SetPlotUserOptions = function (value) {
-    this.userOptions.plotroute = value;
+leafletMap.prototype.SetPlotUserControl = function (value) {
+    this.controls.plotroute = value;
+};
+leafletMap.prototype.plotControl = function () {
+    return this.controls.plotroute;
 };
 leafletMap.prototype.layersControl = function () {
     return this.controls.layers;

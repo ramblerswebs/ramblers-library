@@ -35,7 +35,7 @@ class RLeafletMapdraw extends RLeafletMap {
         $this->help_page = "plot-walking-route.html";
         $this->options->fullscreen = true;
       
-        $this->options->mouseposition = false;
+        $this->options->mouseposition = true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;
         $this->options->displayElevation = true;

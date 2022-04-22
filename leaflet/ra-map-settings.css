@@ -1,11 +1,11 @@
 
-/* Map Tools */
+/* Map Settings */
 
-.leaflet-control-display-tools{
+.leaflet-control-display-settings{
     width:30px;
     height:30px;
     border-radius:5px;
-    background:#fff url(images/maptools.png) no-repeat 0 0;
+    background:#fff url(images/mapsettings.png) no-repeat 0 0;
     background-size:28px 28px;
     background-position: center;
     cursor: pointer;
@@ -14,11 +14,14 @@
 
 div.ra-tab-item{
     background-color: #EEEEEE;
-    padding:10px;
+    padding:5px;
     cursor: pointer;
     border-radius: 25px 0px 0px 25px;
     border: 1px solid #DDDDDD;
 
+}
+div.ra-tab-item:hover{
+    background-color: #AAAAAA;
 }
 div.ra-tab-item.active{
     background-color: #DDDDDD;
@@ -41,9 +44,4 @@ div.tab-panel.active{
 }
 div.tab-panel {
     display:none;
-}
-iframe.ra.maphelp-modal{
-    width:100%;
-    height:600px;
-    border-width:0px;
 }

@@ -5,7 +5,11 @@ L.Control.Mouse = L.Control.extend({
         separator: ', ',
         emptyString: 'Outside OS Grid',
         lngFirst: false,
-        numDigits: 5
+        numDigits: 5,
+        osgrid: {
+            color: '#0080C0',
+            weight: 2,
+            opacity: 0.5}
     },
     _userOptions: {
         displayMouseGridSquare: true
@@ -20,6 +24,19 @@ L.Control.Mouse = L.Control.extend({
                 {color: "#ff7800", weight: 1}).addTo(map);
         this.gridsquare10 = L.rectangle([[84, -89], [84.00001, -89.000001]],
                 {color: "#884000", weight: 1}).addTo(map);
+        this.osMapLayer = L.featureGroup([]).addTo(map);
+        this.OSGrid = {};
+        this.OSGrid.display = false;
+        this.OSGrid.basicgrid = false;
+        this.OSGrid.layer = L.layerGroup().addTo(map);
+        var _this = this;
+        map.on('zoomend', function () {
+            _this.displayOSGrid();
+        });
+        map.on('moveend', function () {
+            _this.displayOSGrid();
+        });
+        this.displayOSGrid();
         return this._container;
     },
     changeDisplay: function (display) {
@@ -28,9 +45,9 @@ L.Control.Mouse = L.Control.extend({
     onRemove: function (map) {
         map.off('mousemove', this._update);
     },
-    userOptions: function () {
-        return this._userOptions;
-    },
+//    userOptions: function () {
+//        return this._userOptions;
+//    },
     gridSquarePause: function () {
         this.SAVEdisplayMouseGridSquare = this._userOptions.displayMouseGridSquare;
         this._userOptions.displayMouseGridSquare = false;
@@ -103,6 +120,176 @@ L.Control.Mouse = L.Control.extend({
         var lat = latlng.lat.toFixed(5);
         var value = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
         return  gridref + value;
+    },
+    displayOSGrid: function () {
+        if (!this.OSGrid.display) {
+            this.OSGrid.layer.clearLayers();
+            return;
+        }
+        var gs = 100000;
+        var zoom = this._map.getZoom();
+        if (zoom > 10) {
+            gs = 10000;
+        }
+        if (zoom > 12.5) {
+            gs = 1000;
+        }
+        var bounds = this._map.getBounds();
+        var pNE = new LatLon(bounds._northEast.lat, bounds._northEast.lng);
+        var pSW = new LatLon(bounds._southWest.lat, bounds._southWest.lng);
+        var ne = OsGridRef.latLonToOsGrid(pNE);
+        var sw = OsGridRef.latLonToOsGrid(pSW);
+        var grne = ne.toString(6);
+        var grsw = sw.toString(6);
+        if (grne === "" & grne === "") {
+            gs = 100000;
+        }
+        ne.easting = Math.floor(ne.easting / gs + 2) * gs;
+        ne.northing = Math.floor(ne.northing / gs + 2) * gs;
+        sw.easting = Math.floor(sw.easting / gs) * gs;
+        sw.northing = Math.floor(sw.northing / gs) * gs;
+        if (grsw === "") {
+            sw.easting = 0;
+            sw.northing = 0;
+        }
+        if (grne === "") {
+            ne.easting = 700000;
+            ne.northing = 1400000;
+        }
+
+        if (gs === 100000) {
+            if (this.OSGrid.basicgrid) {
+                return;
+            } else {
+                sw.easting = 0;
+                sw.northing = 0;
+                ne.easting = 700000;
+                ne.northing = 1400000;
+                this.OSGrid.basicgrid = true;
+            }
+        } else {
+            this.OSGrid.basicgrid = false;
+        }
+        this.OSGrid.layer.clearLayers();
+        this.drawOSMapGrid(ne, sw, gs, this.OSGrid.layer);
+    },
+    drawOSMapGrid: function (ne, sw, gs, layer) {
+        var style;
+        var color = this.options.osgrid.color;
+        var weight = this.options.osgrid.weight;
+        var opacity = this.options.osgrid.opacity;
+        switch (gs) {
+            case 1000:
+                style = {color: color, weight: weight, opacity: opacity};
+                break;
+            case 10000:
+                style = {color: color, weight: weight, opacity: opacity};
+                break;
+            default:
+                style = {color: color, weight: weight, opacity: opacity};
+        }
+        var lines;
+        for (east = sw.easting; east < ne.easting + 1000; east += gs) {
+            lines = new Array();
+            i = 0;
+            for (north = sw.northing; north < ne.northing; north += gs) {
+                var gr = new OsGridRef(east, north);
+                var latlong = OsGridRef.osGridToLatLon(gr);
+                lines[i] = new L.latLng(latlong.lat, latlong.lon);
+                i++;
+            }
+            layer.addLayer(L.polyline(lines, style));
+        }
+        for (var north = sw.northing; north < ne.northing; north += gs) {
+            lines = new Array();
+            i = 0;
+            for (var east = sw.easting; east < ne.easting + 1000; east += gs / 3) {
+                gr = new OsGridRef(east, north);
+                latlong = OsGridRef.osGridToLatLon(gr);
+                lines[i] = new L.latLng(latlong.lat, latlong.lon);
+                i++;
+            }
+            layer.addLayer(L.polyline(lines, style));
+        }
+    },
+    displayOSMapOutlines: function (type, tag) {
+        // type should be '25K' or '50K'
+        var self = this;
+        var url = "https://osmaps.theramblers.org.uk/index.php?mapscale=" + type;
+        ra.ajax.getJSON(url, function (err, items) {
+            if (err !== null) {
+                var msg = "Error: Something went wrong: " + err;
+            } else {
+                if (items.length !== 0) {
+                    for (i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        ra.map.os.display(item, self.osMapLayer);
+                    }
+
+                    tag.classList.remove("mintcake");
+                    tag.classList.add("sunrise");
+                }
+            }
+        });
+    },
+    settingsForm: function (tag) {
+        var _this = this;
+        this.osMapLayer.clearLayers();
+
+        var title = document.createElement('h4');
+        title.textContent = 'Ordnance Survey Grid';
+        tag.appendChild(title);
+        var osGrid = ra.html.input.yesNo(tag, '', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", this.OSGrid, 'display');
+        var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this.options.osgrid);
+        if (_this.OSGrid.display) {
+            line.style.display = 'inherit';
+        } else {
+            line.style.display = 'none';
+        }
+        osGrid.addEventListener("change", function (e) {
+
+            if (_this.OSGrid.display) {
+                line.style.display = 'inherit';
+            } else {
+                line.style.display = 'none';
+            }
+            _this.OSGrid.basicgrid = false;
+            _this.displayOSGrid();
+        });
+        tag.appendChild(document.createElement('hr'));
+
+        title = document.createElement('h4');
+        title.textContent = 'Mouse Operation';
+        tag.appendChild(title);
+        title = document.createElement('p');
+        title.textContent = 'As you zoom in, the mouse can display a 100m and a 10m square showing the area covered by a 6 or 8 figure grid reference.';
+        tag.appendChild(title);
+        ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
+
+        line.addEventListener("change", function (e) {
+            _this.OSGrid.basicgrid = false;
+            _this.displayOSGrid();
+        });
+
+        tag.appendChild(document.createElement('hr'));
+        var title = document.createElement('h4');
+        title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
+        tag.appendChild(title);
+
+        var comment = document.createElement('div');
+        comment.innerHTML = 'Display the areas covered by Ordnance Survey Landranger or Explorer Maps.';
+        comment.innerHTML += '<br/> Please note that this information is unofficial and may be incorrect. Please check before buying a map.';
+        comment.innerHTML += '<br/>If you notice any errors then do contact us via the help option on the left.';
+        comment.innerHTML += '<br/>Click an option below and then close popup panel.';
+        tag.appendChild(comment);
+        var explorer = ra.html.input.action(tag, '', 'OS Explorer ', '1:25K');
+        explorer.addEventListener("action", function (e) {
+            _this.displayOSMapOutlines('25K', explorer);
+        });
+        var landranger = ra.html.input.action(tag, '', 'OS Landranger ', '1:50K');
+        landranger.addEventListener("action", function (e) {
+            _this.displayOSMapOutlines('50K', landranger);
+        });
     }
 });
 L.Map.mergeOptions({
@@ -117,6 +304,8 @@ L.Map.addInitHook(function () {
 L.control.mouse = function (options) {
     return new L.Control.Mouse(options);
 };
+
+
 L.Control.Rightclick = L.Control.extend({
     options: {
         position: 'bottomleft',
@@ -721,6 +910,56 @@ L.Control.Rightclick = L.Control.extend({
     getRadius: function () {
         return this._userOptions.osm.distance * 1000;
     },
+    settingsForm: function (tag) {
+        var comment;
+        // var mouse = this._ramblersMap.PostcodeStatus;
+        var title = document.createElement('h4');
+        title.textContent = 'Mouse right click/tap and hold';
+        tag.appendChild(title);
+        var comments = document.createElement('p');
+        comments.innerHTML = 'Use right click, or tap and hold, to view location information, select what is displayed by using the control at the bottom left of the map. ';
+        comments.innerHTML += "You can display postcodes, Ramblers' Areas and Groups, meeting/starting places and information from <a href='https://www.openstreetmap.org/about' target='_blank'>Open Street Map</a>, see below ";
+        comments.innerHTML += "<br/>Please remember that the more information you ask for the more time it will take.";
+        tag.appendChild(comments);
+        var hdg2 = document.createElement('h5');
+        hdg2.textContent = 'Ramblers Area / Group Options';
+        tag.appendChild(hdg2);
+        comment = document.createElement('p');
+        comment.setAttribute('class', 'smaller');
+        comment.textContent = 'Find a Ramblers walking group in your area';
+        tag.appendChild(comment);
+        ra.html.input.number(tag, 'divClass', 'Display groups/area within %n km', this._userOptions.groups, 'distance', 0.5, 500, 0.5);
+        ra.html.input.number(tag, 'divClass', 'Display nearest %n groups/area.', this._userOptions.groups, 'number', 1, 500, 1);
+        tag.appendChild(document.createElement('hr'));
+        var hdg1 = document.createElement('h5');
+        hdg1.textContent = 'Postcode Options';
+        tag.appendChild(hdg1);
+        comment = document.createElement('p');
+        comment.setAttribute('class', 'smaller');
+        comment.textContent = 'Useful for finding correct postcode for your satnav';
+        tag.appendChild(comment);
+        ra.html.input.number(tag, 'divClass', 'Display postcodes within %n km', this._userOptions.postcodes, 'distance', 0.5, 20, 0.5);
+        ra.html.input.number(tag, 'divClass', 'Display nearest %n postcodes', this._userOptions.postcodes, 'number', 1, 50, 1);
+        tag.appendChild(document.createElement('hr'));
+        var hdg3 = document.createElement('h5');
+        hdg3.textContent = 'Meeting/Starting Locations Options';
+        tag.appendChild(hdg3);
+        comment = document.createElement('p');
+        comment.setAttribute('class', 'smaller');
+        comment.textContent = 'Find locations Ramblers Groups have used to meet or start a walk';
+        tag.appendChild(comment);
+        ra.html.input.number(tag, 'divClass', 'Display locations within %n km', this._userOptions.starting, 'distance', 0.5, 20, 0.5);
+        ra.html.input.number(tag, 'divClass', 'Display nearest %n locations', this._userOptions.starting, 'number', 5, 500, 5);
+        tag.appendChild(document.createElement('hr'));
+        var hdg4 = document.createElement('h5');
+        hdg4.textContent = 'Open Street Map Options';
+        tag.appendChild(hdg4);
+        comment = document.createElement('p');
+        comment.setAttribute('class', 'smaller');
+        comment.textContent = 'This option affects the display of parking, bus stops, cafes, public housea and toilets.';
+        tag.appendChild(comment);
+        ra.html.input.number(tag, 'divClass', 'Display items within %n km', this._userOptions.osm, 'distance', 0.5, 5, 0.5);
+    }
 });
 
 L.control.rightclick = function (options) {

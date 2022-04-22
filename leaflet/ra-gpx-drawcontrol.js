@@ -6,7 +6,8 @@ if (typeof (ra.display) === "undefined") {
     ra.display = {};
 }
 ra.display.plotRoute = function (options, data) {
-    this.userOptions = {
+    this._userOptions = {
+        userOptionsDEL: false,
         draw: {
             panToNewPoint: true,
             joinSegments: true
@@ -16,6 +17,11 @@ ra.display.plotRoute = function (options, data) {
             weight: 3,
             opacity: 1
         }};
+    this.defaultStyle = {
+        color: '#782327',
+        weight: 3,
+        opacity: 1
+    };
     this.options = options;  //public
     this.masterdiv = document.getElementById(options.divId);
     var lmap = new leafletMap(this.masterdiv, options);
@@ -25,22 +31,19 @@ ra.display.plotRoute = function (options, data) {
         mouse: lmap.mouseControl(),
         settingsControl: lmap.settingsControl(),
         elevation: lmap.elevationControl()};
-    lmap.SetPlotUserOptions(this.userOptions);
-    this.controls.settingsControl.getDrawSettings();
+    lmap.SetPlotUserControl(this);
     this.mapDiv = lmap.mapDiv;
     this.detailsDiv = document.createElement('div');
     this.mapDiv.parentNode.insertBefore(this.detailsDiv, this.mapDiv);
     this.SmartRouteControl = null;
-    this.rightclick = null; // need to change
     this.drawnItems = new L.FeatureGroup();
     this._map.addLayer(this.drawnItems);
 
 // code for drawing route/track
     this.load = function () {
 
-        // add elevation display
-        var imperial = false;
         var self = this;
+        this._readDrawSettings();
         L.drawLocal.draw.toolbar.buttons.polyline = 'Plot a walking route(s)';
         L.drawLocal.draw.toolbar.buttons.marker = 'Add a marker';
         L.drawLocal.edit.toolbar.buttons.edit = 'Edit walking route(s) and markers';
@@ -56,13 +59,16 @@ ra.display.plotRoute = function (options, data) {
         download.setRouteItems(this.drawnItems);
         this._map.addControl(download);
         var upload = new L.Control.GpxUpload();
+        this.upload = upload;
         upload.setRouteItems(this.drawnItems);
         this._map.addControl(upload);
-        upload.set_polyline_style(this.userOptions.style);
+        upload.set_polyline_style(this._userOptions.style);
         var reverse = new L.Control.ReverseRoute();
+        this.reverse = reverse;
         reverse.setRouteItems(this.drawnItems);
         this._map.addControl(reverse);
         var simplify = new L.Control.GpxSimplify();
+        this.simplify = simplify;
         simplify.setRouteItems(this.drawnItems);
         this._map.addControl(simplify);
         this.drawControl = new L.Control.Draw({
@@ -71,9 +77,9 @@ ra.display.plotRoute = function (options, data) {
                 polyline: {
                     metric: true,
                     shapeOptions: {
-                        color: this.userOptions.style.color,
-                        opacity: this.userOptions.style.opacity,
-                        weight: this.userOptions.style.weight
+                        color: this._userOptions.style.color,
+                        opacity: this._userOptions.style.opacity,
+                        weight: this._userOptions.style.weight
                     }
                 },
                 polygon: false,
@@ -100,7 +106,7 @@ ra.display.plotRoute = function (options, data) {
             // add smart route layer
             this.SmartRouteControl = new L.Control.SmartRoute();
             this.SmartRouteControl.routingKey(options.ORSkey);
-            this.SmartRouteControl.userOptions(this.userOptions);
+            this.SmartRouteControl.userOptions(this._userOptions);
             this.SmartRouteControl.drawControl(this.drawControl);
             this.SmartRoute = this.SmartRouteControl;
             this.SmartRoute.setRouteItems(this.drawnItems);
@@ -138,7 +144,7 @@ ra.display.plotRoute = function (options, data) {
         this.drawnItems.on("upload:addline", function (e) {
             var bounds = self.drawnItems.getBounds();
             self._map.fitBounds(bounds);
-            setGpxtoolsControlStatus('auto');
+            self.setGpxToolStatus('auto');
             self.addElevations(false);
         });
         this.drawnItems.on('upload:addpoint', function (e) {
@@ -148,7 +154,9 @@ ra.display.plotRoute = function (options, data) {
                 ra.map.icon.setMarker(marker, sSymbol);
             }
         });
+
         this.drawnItems.on('upload:loaded', function (e) {
+            var download = self.download;
             download.set_name(upload.get_name());
             download.set_desc(upload.get_desc());
             download.set_author(upload.get_author());
@@ -159,21 +167,22 @@ ra.display.plotRoute = function (options, data) {
         this.drawnItems.on("reverse:reversed", function (e) {
             self.addElevations(false);
         });
-        var _this = this;
+
         this._map.on('draw:color-change', function (e) {
             // var drawnItems = this.drawnItems;
 
             self.drawnItems.eachLayer(function (layer) {
                 if (layer instanceof L.Polyline) {
-                    _this.controls.tools._changePolyline(layer);
+                    // update style of lines
+                    layer.setStyle(self._userOptions.style);
                 }
             });
             self.drawControl.setDrawingOptions({
-                polyline: {shapeOptions: self.userOptions.style}});
+                polyline: {shapeOptions: self._userOptions.style}});
             if (self.SmartRoute.enabled) {
                 self.SmartRoute.setOpacityZero();
             }
-            upload.set_polyline_style(self.userOptions.style);
+            upload.set_polyline_style(self._userOptions.style);
 
         });
         this._map.on(L.Draw.Event.DRAWSTART, function (e) {
@@ -192,7 +201,7 @@ ra.display.plotRoute = function (options, data) {
 
             self.gridSquarePause();
             self.enableMapMoveDrawing();
-            setGpxToolStatus('off');
+            self.setGpxToolStatus('off');
         });
         this._map.on(L.Draw.Event.DRAWVERTEX, function (e) {
             var layer = e.layers._layers;
@@ -200,7 +209,7 @@ ra.display.plotRoute = function (options, data) {
                 // console.log('DRAW VERTEX');
                 self.SmartRouteControl.displaySmartPoints(layer);
             }
-            if (self.userOptions.draw.panToNewPoint) {
+            if (self._userOptions.draw.panToNewPoint) {
                 var latlong; //= new L.LatLng(lat, long);
                 for (const property in layer) {
                     latlong = layer[property]._latlng;
@@ -208,7 +217,7 @@ ra.display.plotRoute = function (options, data) {
 
                 self._map.panTo(latlong);
             }
-            if (self.userOptions.draw.joinSegments) {
+            if (self._userOptions.draw.joinSegments) {
 
             }
         });
@@ -231,12 +240,12 @@ ra.display.plotRoute = function (options, data) {
             self.gridSquareResume();
             self.disableMapMoveDrawing();
             if (!self.SmartRoute.enabled) {
-                if (self.userOptions.draw.joinSegments) {
+                if (self._userOptions.draw.joinSegments) {
                     self._map.fire('join:attach', null);
                 }
             }
             self.addElevations(false);
-            setGpxToolStatus('auto');
+            self.setGpxToolStatus('auto');
             //  console.log('DRAW EXIT');
         });
         this._map.on('join:attach', function () {
@@ -250,7 +259,7 @@ ra.display.plotRoute = function (options, data) {
             //   useGridSquare = false;
             self.gridSquarePause();
             self.enableMapMoveDrawing();
-            setGpxToolStatus('off');
+            self.setGpxToolStatus('off');
         });
         this._map.on(L.Draw.Event.EDITED, function (e) {
             self._map.setMaxZoom(18);
@@ -258,7 +267,7 @@ ra.display.plotRoute = function (options, data) {
             self.gridSquareResume();
             self.disableMapMoveDrawing();
             self.addElevations(true);
-            setGpxToolStatus('auto');
+            self.setGpxToolStatus('auto');
         });
         this._map.on(L.Draw.Event.EDITSTOP, function (e) {
             self._map.setMaxZoom(18);
@@ -266,7 +275,7 @@ ra.display.plotRoute = function (options, data) {
             self.gridSquareResume();
             self.disableMapMoveDrawing();
             self.addElevations(true);
-            setGpxToolStatus('auto');
+            self.setGpxToolStatus('auto');
         });
         this._map.on(L.Draw.Event.EDITMOVE, function (e) {
         });
@@ -277,7 +286,7 @@ ra.display.plotRoute = function (options, data) {
             //   self.displayMouseGridSquare = false;
             self.gridSquarePause();
             self.enableMapMoveDrawing();
-            setGpxToolStatus('off');
+            self.setGpxToolStatus('off');
             if (self.SmartRoute.enabled) {
                 self.SmartRouteControl.setOpacityZero();
             }
@@ -287,8 +296,8 @@ ra.display.plotRoute = function (options, data) {
             self.gridSquareResume();
             self.disableMapMoveDrawing();
             self.listDrawnItems();
-            resetMetadata();
-            setGpxToolStatus('auto');
+            self.resetMetadata();
+            self.setGpxToolStatus('auto');
             if (self.SmartRoute.enabled) {
                 self.SmartRouteControl.setOpacityZero();
             }
@@ -298,23 +307,23 @@ ra.display.plotRoute = function (options, data) {
             self.gridSquareResume();
             self.disableMapMoveDrawing();
             self.listDrawnItems();
-            resetMetadata();
-            setGpxToolStatus('auto');
+            self.resetMetadata();
+            self.setGpxToolStatus('auto');
             if (self.SmartRoute.enabled) {
                 self.SmartRouteControl.setOpacityZero();
             }
         });
         this._map.on('simplify:started', function () {
-            setGpxToolStatus('off');
+            self.setGpxToolStatus('off');
             self.disableDraw();
         });
         this._map.on('simplify:saved', function () {
-            setGpxToolStatus('auto');
+            self.setGpxToolStatus('auto');
             self.addElevations(true);
             self.enableDraw();
         });
         this._map.on('simplify:cancelled', function () {
-            setGpxToolStatus('auto');
+            self.setGpxToolStatus('auto');
             self.enableDraw();
         });
 
@@ -359,30 +368,31 @@ ra.display.plotRoute = function (options, data) {
             }
         });
         this.listDrawnItems();
-        setGpxToolStatus = function (status) {
-            self.processPopups = status;
-            reverse.setStatus(status);
-            download.setStatus(status);
-            simplify.setStatus(status);
-            upload.setStatus(status);
-            if (self.rightclick !== null) {
-                self.rightclick.Enabled(status !== 'off');
-            }
-        };
-        resetMetadata = function () {
-            if (self.drawnItems.getLayers().length === 0) {
-                download.set_name('');
-                download.set_desc('');
-                download.set_author('');
-                download.set_copyright('');
-                download.set_date('');
-                download.set_links([]);
-            }
-        };
+
     };
 //    this._map.on('popupclose', function (e) {
 //        download._popupclose(e);
 //    });
+    this.setGpxToolStatus = function (status) {
+        this.processPopups = status;
+        this.reverse.setStatus(status);
+        this.download.setStatus(status);
+        this.simplify.setStatus(status);
+        this.upload.setStatus(status);
+        if (this.controls.rightclick !== null) {
+            this.controls.rightclick.Enabled(status !== 'off');
+        }
+    };
+    this.resetMetadata = function () {
+        if (this.drawnItems.getLayers().length === 0) {
+            this.download.set_name('');
+            this.download.set_desc('');
+            this.download.set_author('');
+            this.download.set_copyright('');
+            this.download.set_date('');
+            this.download.set_links([]);
+        }
+    };
     this.gridSquarePause = function () {
         if (this.controls.mouseControl) {
             this.controls.mouseControl.gridSquarePause();
@@ -504,7 +514,7 @@ ra.display.plotRoute = function (options, data) {
 
             latlngs = this.getMergedLinePoints(l1, l2);
 
-            var line = new L.Polyline(latlngs, this.userOptions.style);
+            var line = new L.Polyline(latlngs, this._userOptions.style);
 
             this.drawnItems.removeLayer(l1.line);
             this.drawnItems.removeLayer(l2.line);
@@ -696,6 +706,75 @@ ra.display.plotRoute = function (options, data) {
             if (Math.abs(latlngs[i].lat - item[0]) < .000001 & Math.abs(latlngs[i].lng - item[1]) < .000001) {
                 latlngs[i].alt = item[2];
             }
+        }
+    };
+    this.settingsForm = function (tag) {
+        var _this = this;
+        var title = document.createElement('h4');
+        title.textContent = 'Plot Walking Route';
+        tag.appendChild(title);
+        var titleoptions = document.createElement('h5');
+        titleoptions.textContent = 'Options';
+        tag.appendChild(titleoptions);
+        var pan = ra.html.input.yesNo(tag, 'divClass', "Pan: Centre map on last point added to route", this._userOptions.draw, 'panToNewPoint');
+        var join = ra.html.input.yesNo(tag, 'divClass', "Join: Join new route to nearest existing route", this._userOptions.draw, 'joinSegments');
+        tag.appendChild(document.createElement('hr'));
+        var titlestyle = document.createElement('h5');
+        titlestyle.textContent = 'Display: Style of route';
+        tag.appendChild(titlestyle);
+        var line = ra.html.input.lineStyle(tag, '', 'Track style', this._userOptions.style);
+        tag.appendChild(document.createElement('hr'));
+        var cookies = ra.html.input.yesNo(tag, '', "Save settings between sessions/future visits to web site (you accept cookies)", this._userOptions, 'saveDrawOptions');
+        var reset = ra.html.input.action(tag, '', "Reset Plot Walking Route options to default values", 'Reset');
+        reset.addEventListener("action", function (e) {
+            ra.html.input.lineStyleReset(line, _this.defaultStyle);
+            ra.html.input.yesNoReset(pan, true);
+            ra.html.input.yesNoReset(join, true);
+            _this._saveDrawSettings();
+        });
+        pan.addEventListener("change", function (e) {
+            _this._saveDrawSettings();
+        });
+        join.addEventListener("change", function (e) {
+            _this._saveDrawSettings();
+        });
+        line.addEventListener("change", function (e) {
+            _this._map.fire("draw:color-change", null);
+            _this._saveDrawSettings();
+            ra.html.input.actionReset(reset);
+        });
+        cookies.addEventListener("click", function (e) {
+            _this._saveDrawSettings();
+        });
+
+
+    };
+    this._readDrawSettings = function () {
+
+        var scookie = ra.cookie.read('raDraw2');
+        if (scookie !== null) {
+            try {
+                var cookie = JSON.parse(scookie);
+                this._userOptions.saveDrawOptions = cookie.saveDrawOptions;
+                if (this._userOptions.saveDrawOptions) {
+                    this._userOptions.draw.panToNewPoint = cookie.draw.panToNewPoint;
+                    this._userOptions.draw.joinSegments = cookie.draw.joinSegments;
+                    this._userOptions.style.weight = cookie.style.weight;
+                    this._userOptions.style.opacity = cookie.style.opacity;
+                    this._userOptions.style.color = cookie.style.color;
+                }
+            } catch (err) {
+                alert("Unable to set Route draw options from previous session");
+            }
+            this._map.fire("draw:color-change", null);
+        }
+
+    };
+    this._saveDrawSettings = function () {
+        if (this._userOptions.saveDrawOptions) {
+            ra.cookie.create(JSON.stringify(this._userOptions), 'raDraw2', 365);
+        } else {
+            ra.cookie.erase('raDraw2');
         }
     };
 

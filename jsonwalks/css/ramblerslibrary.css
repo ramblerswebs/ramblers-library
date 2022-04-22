@@ -286,6 +286,37 @@ span.mappopup:hover{
     background: url(../../images/new-win.png) no-repeat right ;
     padding-right:15px;
 }
+input.slider {
+  -webkit-appearance: none;
+  width: 50%;
+  height: 15px;
+  background: #BBBBBB;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+input.slider:hover {
+  opacity: 1;
+}
+
+input.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+input.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
 div.ra_filter  div input,
 div.ra_filter  div label{
     display:inline;
@@ -1045,7 +1076,6 @@ div.ra.pagination span span button.jplist-selected {
     margin-top: 30px;
     position: absolute;
     top:75px;
-    font-family: 'Assistant';
     font-size: 20px;
     letter-spacing: 10px;
     color: red;

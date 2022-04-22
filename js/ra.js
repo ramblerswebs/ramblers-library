@@ -12,9 +12,9 @@ ra.defaultMapOptions = {
     "helpPage": "single-led-walk.html",
     "cluster": null,
     "fullscreen": true,
-  //  "google": false,
-  //  "search": false,
-  //  "locationsearch": false,
+    //  "google": false,
+    //  "search": false,
+    //  "locationsearch": false,
     "osgrid": true,
     "mouseposition": false,
     "rightclick": false,
@@ -24,11 +24,11 @@ ra.defaultMapOptions = {
     "draw": false,
     "print": false,
     "displayElevation": null,
-  //  "smartRoute": false,
+    //  "smartRoute": false,
     "bing": false,
     "bingkey": "",
     "ORSkey": null,
- //   "ramblersPlaces": false,
+    //   "ramblersPlaces": false,
     "topoMapDefault": false,
     "controlcontainer": false,
     "copyright": null,
@@ -315,8 +315,13 @@ ra.cookie = (function () {
             var c = ca[i];
             while (c.charAt(0) === ' ')
                 c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0)
-                return c.substring(nameEQ.length, c.length);
+            if (c.indexOf(nameEQ) === 0) {
+                var item = c.substring(nameEQ.length, c.length);
+                if (item === '') {
+                    item = null;
+                }
+                return item;
+            }
         }
         return null;
     };
@@ -776,6 +781,235 @@ ra.html = (function () {
 }
 ());
 
+if (typeof (ra.html.input) === "undefined") {
+    ra.html.input = {};
+    ra.html.input.action = function (tag, divClass, label, name) {
+        var itemDiv = document.createElement('div');
+        if (divClass !== '') {
+            itemDiv.setAttribute('class', divClass);
+        }
+        tag.appendChild(itemDiv);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        _label.style.display = "inline";
+        var inputTag = document.createElement('button');
+        inputTag.setAttribute('class', 'small link-button white');
+        inputTag.style.display = "inline";
+        inputTag.style.marginLeft = "10px";
+        inputTag.textContent = name;
+        inputTag.classList.add("button-p0555");
+        inputTag.ra = {};
+        inputTag.ra.name = name;
+
+        inputTag.addEventListener("click", function (e) {
+            inputTag.textContent = 'Done';
+            inputTag.classList.remove("button-p0555");
+            inputTag.classList.add("button-p5565");
+            let event = new Event("action", {bubbles: true}); // (2)
+            inputTag.dispatchEvent(event);
+        });
+        itemDiv.appendChild(_label);
+        itemDiv.appendChild(inputTag);
+        return inputTag;
+    };
+    ra.html.input.actionReset = function (inputTag) {
+        inputTag.textContent = inputTag.ra.name;
+        inputTag.classList.add("button-p0555");
+        inputTag.classList.remove("button-p5565");
+    };
+    ra.html.input.yesNo = function (tag, divClass, label, raobject, property, options = ['Yes', 'No']) {
+        var itemDiv = document.createElement('div');
+        if (divClass !== '') {
+            itemDiv.setAttribute('class', divClass);
+        }
+        tag.appendChild(itemDiv);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        _label.style.display = "inline";
+        var inputTag = document.createElement('button');
+        inputTag.setAttribute('class', 'small link-button white');
+        inputTag.style.display = "inline";
+        inputTag.style.marginLeft = "10px";
+        if (raobject[property]) {
+            inputTag.textContent = options[0];
+            inputTag.classList.add("button-p0555");
+            inputTag.classList.remove("button-p0186");
+        } else {
+            inputTag.textContent = options[1];
+            inputTag.classList.add("button-p0186");
+            inputTag.classList.remove("button-p0555");
+        }
+        inputTag.ra = {};
+        inputTag.ra.object = raobject;
+        inputTag.ra.property = property;
+        inputTag.ra.options = options;
+        inputTag.addEventListener("click", function (e) {
+            inputTag.ra.object[inputTag.ra.property] = !inputTag.ra.object[inputTag.ra.property];
+            ra.html.input.yesNoReset(inputTag, inputTag.ra.object[inputTag.ra.property]);
+        });
+        itemDiv.appendChild(_label);
+        itemDiv.appendChild(inputTag);
+        return inputTag;
+    };
+    ra.html.input.yesNoReset = function (inputTag, value) {
+        var ra = inputTag.ra;
+        ra.object[ra.property] = value;
+        if (value) {
+            inputTag.textContent = ra.options[0];
+            inputTag.classList.add("button-p0555");
+            inputTag.classList.remove("button-p0186");
+        } else {
+            inputTag.textContent = ra.options[1];
+            inputTag.classList.add("button-p0186");
+            inputTag.classList.remove("button-p0555");
+        }
+        let event = new Event("change", {bubbles: true}); // (2)
+        inputTag.dispatchEvent(event);
+    };
+    ra.html.input.number = function (tag, divClass, label, raobject, property, minval, maxval, step) {
+        var itemDiv = document.createElement('div');
+        if (divClass !== '') {
+            itemDiv.setAttribute('class', divClass);
+        }
+        tag.appendChild(itemDiv);
+        var _label = document.createElement('label');
+        _label.setAttribute('class', 'help-label');
+        _label.textContent = label;
+        var inputTag = document.createElement('input');
+        //  inputTag.setAttribute('class', ' form-control-range');
+        inputTag.setAttribute('type', 'range');
+        inputTag.setAttribute('class', 'slider');
+        inputTag.setAttribute('min', minval);
+        inputTag.setAttribute('max', maxval);
+        inputTag.setAttribute('step', step);
+        inputTag.ra = {};
+        inputTag.ra.object = raobject;
+        inputTag.ra.property = property;
+        if (raobject.hasOwnProperty(property)) {  // Initialise value
+            inputTag.setAttribute('value', raobject[property]);
+            _label.textContent = label.replace("%n", inputTag.value);
+        }
+        inputTag.addEventListener("input", function (e) {
+            e.target.ra.object[e.target.ra.property] = e.target.value;
+            _label.textContent = label.replace("%n", e.target.value);
+            let event = new Event("change", {bubbles: true}); // (2)
+            tag.dispatchEvent(event);
+        });
+        itemDiv.appendChild(inputTag);
+        itemDiv.appendChild(_label);
+        return inputTag;
+    };
+    ra.html.input.numberReset = function (inputTag, value) {
+        var ra = inputTag.ra;
+        ra.object[ra.property] = value;
+        inputTag.setAttribute('value', value);
+        let event = new Event("change", {bubbles: true}); // (2)
+        inputTag.dispatchEvent(event);
+    };
+    ra.html.input.colour = function (tag, divClass, labeltext, raobject, property) {
+        var itemDiv = document.createElement('div');
+        if (divClass !== '') {
+            itemDiv.setAttribute('class', divClass);
+        }
+        tag.appendChild(itemDiv);
+        var inputColor = document.createElement('input');
+        inputColor.setAttribute('type', 'color');
+        inputColor.setAttribute('class', 'pointer');
+        inputColor.setAttribute('value', raobject[property]);
+        itemDiv.appendChild(inputColor);
+        inputColor.ra = {};
+        inputColor.ra.object = raobject;
+        inputColor.ra.property = property;
+        inputColor.style.height = "30px";
+        inputColor.style.width = "150px";
+        inputColor.style.backgroundColor = "#DDDDDD";
+
+        inputColor.addEventListener("change", function (e) {
+            e.target.ra.object[e.target.ra.property] = e.target.value;
+            let event = new Event("change", {bubbles: true}); // (2)
+            tag.dispatchEvent(event);
+        });
+        var label = document.createElement('label');
+        label.textContent = labeltext;
+        label.setAttribute('class', 'help-label');
+        itemDiv.appendChild(label);
+
+        return inputColor;
+    };
+    ra.html.input.colourReset = function (inputTag, value) {
+        var ra = inputTag.ra;
+        ra.object[ra.property] = value;
+        inputTag.setAttribute('value', value);
+        let event = new Event("change", {bubbles: true}); // (2)
+        inputTag.dispatchEvent(event);
+    };
+    ra.html.input.lineStyle = function (tag, divClass, labeltext, raobject) {
+        var itemDiv = document.createElement('div');
+        if (divClass !== '') {
+            itemDiv.setAttribute('class', divClass);
+        }
+        tag.appendChild(itemDiv);
+        var titlestyle = document.createElement('h5');
+        titlestyle.textContent = labeltext;
+        itemDiv.appendChild(titlestyle);
+        var color = ra.html.input.colour(itemDiv, 'divClass', 'Line colour', raobject, 'color');
+        var weight = ra.html.input.number(itemDiv, 'divClass', 'Line weight %n pixels', raobject, 'weight', 1, 10, 0.5);
+        var opacity = ra.html.input.number(itemDiv, 'divClass', 'Line opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
+        var example = ra.html.input._addExampleLine(itemDiv, "300px", "Line Example: ");
+        itemDiv.ra = {};
+        itemDiv.ra.color = color;
+        itemDiv.ra.weight = weight;
+        itemDiv.ra.opacity = opacity;
+        itemDiv.ra.example = example;
+        ra.html.input._addExampleLineStyle(example, raobject);
+        color.addEventListener("change", function (e) {
+            ra.html.input._addExampleLineStyle(example, raobject);
+            let event = new Event("change", {bubbles: true}); // (2)
+            itemDiv.dispatchEvent(event);
+        });
+        weight.addEventListener("change", function (e) {
+            ra.html.input._addExampleLineStyle(example, raobject);
+            let event = new Event("change", {bubbles: true}); // (2)
+            itemDiv.dispatchEvent(event);
+        });
+        opacity.addEventListener("change", function (e) {
+            ra.html.input._addExampleLineStyle(example, raobject);
+            let event = new Event("change", {bubbles: true}); // (2)
+            itemDiv.dispatchEvent(event);
+        });
+        return itemDiv;
+    };
+    ra.html.input.lineStyleReset = function (itemDiv, style) {
+        ra.html.input.colourReset(itemDiv.ra.color, style.color);
+        ra.html.input.numberReset(itemDiv.ra.weight, style.weight);
+        ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity);
+    };
+    ra.html.input._addExampleLine = function (tag, length, comment) {
+        var com = document.createElement('div');
+        com.style.display = 'inline-block';
+        com.textContent = comment;
+        com.style.marginRight = '20px';
+        com.style.marginTop = '20px';
+        tag.appendChild(com);
+        var itemDiv = document.createElement('div');
+        itemDiv.style.display = 'inline-block';
+        itemDiv.style.width = length;
+        itemDiv.style.height = "1px";
+        tag.appendChild(itemDiv);
+        return itemDiv;
+    };
+    ra.html.input._addExampleLineStyle = function (line, style) {
+        if (style.hasOwnProperty("color")) {
+            line.style.backgroundColor = style.color;
+        }
+        if (style.hasOwnProperty("weight")) {
+            line.style.height = style.weight + "px";
+        }
+        if (style.hasOwnProperty("opacity")) {
+            line.style.opacity = style.opacity;
+        }
+    };
+}
 
 ra.link = (function () {
     var link = {};
