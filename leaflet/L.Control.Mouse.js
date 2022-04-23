@@ -233,63 +233,66 @@ L.Control.Mouse = L.Control.extend({
         });
     },
     settingsForm: function (tag) {
-        var _this = this;
-        this.osMapLayer.clearLayers();
-
-        var title = document.createElement('h4');
-        title.textContent = 'Ordnance Survey Grid';
-        tag.appendChild(title);
-        var osGrid = ra.html.input.yesNo(tag, '', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", this.OSGrid, 'display');
-        var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this.options.osgrid);
-        if (_this.OSGrid.display) {
-            line.style.display = 'inherit';
-        } else {
-            line.style.display = 'none';
-        }
-        osGrid.addEventListener("change", function (e) {
-
+        try {
+            var _this = this;
+            this.osMapLayer.clearLayers();
+            var title = document.createElement('h4');
+            title.textContent = 'Ordnance Survey Grid';
+            tag.appendChild(title);
+            var osGrid = ra.html.input.yesNo(tag, '', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", this.OSGrid, 'display');
+            var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this.options.osgrid);
             if (_this.OSGrid.display) {
                 line.style.display = 'inherit';
             } else {
                 line.style.display = 'none';
             }
-            _this.OSGrid.basicgrid = false;
-            _this.displayOSGrid();
-        });
-        tag.appendChild(document.createElement('hr'));
+            osGrid.addEventListener("change", function (e) {
 
-        title = document.createElement('h4');
-        title.textContent = 'Mouse Operation';
-        tag.appendChild(title);
-        title = document.createElement('p');
-        title.textContent = 'As you zoom in, the mouse can display a 100m and a 10m square showing the area covered by a 6 or 8 figure grid reference.';
-        tag.appendChild(title);
-        ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
+                if (_this.OSGrid.display) {
+                    line.style.display = 'inherit';
+                } else {
+                    line.style.display = 'none';
+                }
+                _this.OSGrid.basicgrid = false;
+                _this.displayOSGrid();
+            });
+            tag.appendChild(document.createElement('hr'));
 
-        line.addEventListener("change", function (e) {
-            _this.OSGrid.basicgrid = false;
-            _this.displayOSGrid();
-        });
+            title = document.createElement('h4');
+            title.textContent = 'Mouse Operation';
+            tag.appendChild(title);
+            title = document.createElement('p');
+            title.textContent = 'As you zoom in, the mouse can display a 100m and a 10m square showing the area covered by a 6 or 8 figure grid reference.';
+            tag.appendChild(title);
+            ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
 
-        tag.appendChild(document.createElement('hr'));
-        var title = document.createElement('h4');
-        title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
-        tag.appendChild(title);
+            line.addEventListener("change", function (e) {
+                _this.OSGrid.basicgrid = false;
+                _this.displayOSGrid();
+            });
 
-        var comment = document.createElement('div');
-        comment.innerHTML = 'Display the areas covered by Ordnance Survey Landranger or Explorer Maps.';
-        comment.innerHTML += '<br/> Please note that this information is unofficial and may be incorrect. Please check before buying a map.';
-        comment.innerHTML += '<br/>If you notice any errors then do contact us via the help option on the left.';
-        comment.innerHTML += '<br/>Click an option below and then close popup panel.';
-        tag.appendChild(comment);
-        var explorer = ra.html.input.action(tag, '', 'OS Explorer ', '1:25K');
-        explorer.addEventListener("action", function (e) {
-            _this.displayOSMapOutlines('25K', explorer);
-        });
-        var landranger = ra.html.input.action(tag, '', 'OS Landranger ', '1:50K');
-        landranger.addEventListener("action", function (e) {
-            _this.displayOSMapOutlines('50K', landranger);
-        });
+            tag.appendChild(document.createElement('hr'));
+            var title = document.createElement('h4');
+            title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
+            tag.appendChild(title);
+
+            var comment = document.createElement('div');
+            comment.innerHTML = 'Display the areas covered by Ordnance Survey Landranger or Explorer Maps.';
+            comment.innerHTML += '<br/> Please note that this information is unofficial and may be incorrect. Please check before buying a map.';
+            comment.innerHTML += '<br/>If you notice any errors then do contact us via the help option on the left.';
+            comment.innerHTML += '<br/>Click an option below and then close popup panel.';
+            tag.appendChild(comment);
+            var explorer = ra.html.input.action(tag, '', 'OS Explorer ', '1:25K');
+            explorer.addEventListener("action", function (e) {
+                _this.displayOSMapOutlines('25K', explorer);
+            });
+            var landranger = ra.html.input.action(tag, '', 'OS Landranger ', '1:50K');
+            landranger.addEventListener("action", function (e) {
+                _this.displayOSMapOutlines('50K', landranger);
+            });
+        } catch (err) {
+            alert(err.message);
+        }
     }
 });
 L.Map.mergeOptions({
