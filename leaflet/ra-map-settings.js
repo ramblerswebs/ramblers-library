@@ -51,9 +51,13 @@ L.Control.RA_Map_Settings = L.Control.extend({
             searchDiv = _this.addTabContentItem(content, "search", first);
             first = false;
             _this.addSearch(searchDiv);
-            var osmapsDiv = _this.addTabContentItem(content, "osmaps", false);
-            _this._addTabItem(cont, list, 'Ordnance Survey', 'osmaps', false);
-            _this.leafletMap.mouseControl().settingsForm(osmapsDiv);
+
+            control = _this.leafletMap.mouseControl();
+            if (control !== null) {
+                _this._addTabItem(cont, list, 'Ordnance Survey', 'osmaps', false);
+                var osmapsDiv = _this.addTabContentItem(content, "osmaps", false);
+                control.settingsForm(osmapsDiv);
+            }
 
             control = _this.leafletMap.rightclickControl();
             if (control !== null) {

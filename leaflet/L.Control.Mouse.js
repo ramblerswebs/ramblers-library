@@ -37,10 +37,15 @@ L.Control.Mouse = L.Control.extend({
             _this.displayOSGrid();
         });
         this.displayOSGrid();
+        if (L.Browser.mobile) {
+            this._container.style.display = 'none';
+        }
         return this._container;
     },
     changeDisplay: function (display) {
-        this._container.style.display = display;
+        if (!L.Browser.mobile) {
+            this._container.style.display = display;
+        }
     },
     onRemove: function (map) {
         map.off('mousemove', this._update);
@@ -256,20 +261,21 @@ L.Control.Mouse = L.Control.extend({
                 _this.OSGrid.basicgrid = false;
                 _this.displayOSGrid();
             });
-            tag.appendChild(document.createElement('hr'));
-
-            title = document.createElement('h4');
-            title.textContent = 'Mouse Operation';
-            tag.appendChild(title);
-            title = document.createElement('p');
-            title.textContent = 'As you zoom in, the mouse can display a 100m and a 10m square showing the area covered by a 6 or 8 figure grid reference.';
-            tag.appendChild(title);
-            ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
-
             line.addEventListener("change", function (e) {
                 _this.OSGrid.basicgrid = false;
                 _this.displayOSGrid();
             });
+
+            if (!L.Browser.mobile) {
+                tag.appendChild(document.createElement('hr'));
+                title = document.createElement('h4');
+                title.textContent = 'Mouse Operation';
+                tag.appendChild(title);
+                title = document.createElement('p');
+                title.textContent = 'As you zoom in, the mouse can display a 100m and a 10m square showing the area covered by a 6 or 8 figure grid reference.';
+                tag.appendChild(title);
+                ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
+            }
 
             tag.appendChild(document.createElement('hr'));
             var title = document.createElement('h4');
