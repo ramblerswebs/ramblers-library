@@ -140,7 +140,7 @@ function leafletMap(tag, options) {
       //  }
     }
 
-    if (options.mouseposition !== null && !L.Browser.mobile) {
+    if (options.mouseposition !== null) {
       //  try {
             this.controls.mouse = L.control.mouse().addTo(this.map);
       //      this.userOptions.mouse = this.controls.mouse.userOptions();
