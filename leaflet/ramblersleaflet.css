@@ -56,6 +56,9 @@ divREMOVE.leaflet-container{
     border-radius: 10px;
     background:#FFFFFF;
 }
+div.inlineBlock{
+    display:inline-block;
+}
 #ra-cluster-progress {
     position: fixed;
     top: 50%;
@@ -268,26 +271,32 @@ select.map-select {
 select.map-select optgroup{
     font-weight: bold;
 }
-div.leaflet-control-my-location a.single{
-    background:#fff url(images/mylocation.png) no-repeat 0 0;
+
+div.leaflet-control-my-location div.leaflet-bar.leaflet-control{
+    margin-left: 0px !important;
+    margin-top: 0px !important;
+}
+div.leaflet-control-my-location div.leaflet-bar.leaflet-control a{
+    background:#fff url(images/mylocationsingle.png) no-repeat 0 0;
     background-size:27px 27px;
     background-position: center;
 }
-div.leaflet-control-my-location a.continuous{
-    background:#fff url(images/mylocationcontinuous.png) no-repeat 0 0;
+
+div.leaflet-control-my-location  div.leaflet-bar.leaflet-control a.active{
+    background:#fff url(images/mylocationsingleactive.png) no-repeat 0 0;
     background-size:27px 27px;
     background-position: center;
 }
-div.leaflet-control-my-location a.active.single{
-    background:#fff url(images/mylocationactive.png) no-repeat 0 0;
-    background-size:27px 27px;
-    background-position: center;
+div.leaflet-my-location div.status{
+    background-color: #a7ffa7;
+    color: #000000;
+    display: inline-block;
 }
-div.leaflet-control-my-location a.active.continuous{
-    background:#fff url(images/mylocationcontinuousactive.png) no-repeat 0 0;
-    background-size:27px 27px;
-    background-position: center;
+div.leaflet-control.leaflet-control-my-location div {
+    margin-bottom: 0px !important;
+    display: inline-block;
 }
+
 
 
 input.map-select {

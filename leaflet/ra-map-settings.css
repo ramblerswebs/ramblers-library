@@ -29,14 +29,14 @@ div.ra-tab-item.active{
 }
 div.ra-tabs-left{
     float:left;
-    width:150px;
+    width:170px;
 }
 div.tab-content{
     margin:0px;
-    margin-left: 150px;
+    margin-left: 170px;
     background-color: #DDDDDD;
     padding: 15px;
-    min-height: 220px;
+    min-height: 250px;
     border-radius: 0px 25px 25px 25px;
 }
 div.tab-panel.active{

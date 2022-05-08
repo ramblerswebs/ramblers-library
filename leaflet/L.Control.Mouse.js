@@ -5,14 +5,20 @@ L.Control.Mouse = L.Control.extend({
         separator: ', ',
         emptyString: 'Outside OS Grid',
         lngFirst: false,
-        numDigits: 5,
+        numDigits: 5
+    },
+    _userOptions: {
+        displayMouseGridSquare: true,
+        OSGridDisplay: false,
         osgrid: {
             color: '#0080C0',
             weight: 2,
             opacity: 0.5}
     },
-    _userOptions: {
-        displayMouseGridSquare: true
+    _controls: {
+        displayMouseGridSquare: null,
+        OSGridDisplay: null,
+        osgridline: null
     },
     onAdd: function (map) {
         this._map = map;
@@ -26,7 +32,6 @@ L.Control.Mouse = L.Control.extend({
                 {color: "#884000", weight: 1}).addTo(map);
         this.osMapLayer = L.featureGroup([]).addTo(map);
         this.OSGrid = {};
-        this.OSGrid.display = false;
         this.OSGrid.basicgrid = false;
         this.OSGrid.layer = L.layerGroup().addTo(map);
         var _this = this;
@@ -40,6 +45,7 @@ L.Control.Mouse = L.Control.extend({
         if (L.Browser.mobile) {
             this._container.style.display = 'none';
         }
+        this._readSettings();
         return this._container;
     },
     changeDisplay: function (display) {
@@ -50,9 +56,6 @@ L.Control.Mouse = L.Control.extend({
     onRemove: function (map) {
         map.off('mousemove', this._update);
     },
-//    userOptions: function () {
-//        return this._userOptions;
-//    },
     gridSquarePause: function () {
         this.SAVEdisplayMouseGridSquare = this._userOptions.displayMouseGridSquare;
         this._userOptions.displayMouseGridSquare = false;
@@ -127,7 +130,7 @@ L.Control.Mouse = L.Control.extend({
         return  gridref + value;
     },
     displayOSGrid: function () {
-        if (!this.OSGrid.display) {
+        if (!this._userOptions.OSGridDisplay) {
             this.OSGrid.layer.clearLayers();
             return;
         }
@@ -180,9 +183,9 @@ L.Control.Mouse = L.Control.extend({
     },
     drawOSMapGrid: function (ne, sw, gs, layer) {
         var style;
-        var color = this.options.osgrid.color;
-        var weight = this.options.osgrid.weight;
-        var opacity = this.options.osgrid.opacity;
+        var color = this._userOptions.osgrid.color;
+        var weight = this._userOptions.osgrid.weight;
+        var opacity = this._userOptions.osgrid.opacity;
         switch (gs) {
             case 1000:
                 style = {color: color, weight: weight, opacity: opacity};
@@ -244,16 +247,18 @@ L.Control.Mouse = L.Control.extend({
             var title = document.createElement('h4');
             title.textContent = 'Ordnance Survey Grid';
             tag.appendChild(title);
-            var osGrid = ra.html.input.yesNo(tag, '', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", this.OSGrid, 'display');
-            var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this.options.osgrid);
-            if (_this.OSGrid.display) {
+            var osGrid = ra.html.input.yesNo(tag, '', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", this._userOptions, 'OSGridDisplay');
+            var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this._userOptions.osgrid);
+            this._controls.OSGridDisplay = osGrid;
+            this._controls.osgridline = line;
+            if (_this._userOptions.OSGridDisplay) {
                 line.style.display = 'inherit';
             } else {
                 line.style.display = 'none';
             }
-            osGrid.addEventListener("change", function (e) {
-
-                if (_this.OSGrid.display) {
+            osGrid.addEventListener("ra-input-change", function (e) {
+                ra.settings.changed();
+                if (_this._userOptions.OSGridDisplay) {
                     line.style.display = 'inherit';
                 } else {
                     line.style.display = 'none';
@@ -261,7 +266,8 @@ L.Control.Mouse = L.Control.extend({
                 _this.OSGrid.basicgrid = false;
                 _this.displayOSGrid();
             });
-            line.addEventListener("change", function (e) {
+            line.addEventListener("ra-input-change", function (e) {
+                ra.settings.changed();
                 _this.OSGrid.basicgrid = false;
                 _this.displayOSGrid();
             });
@@ -274,7 +280,11 @@ L.Control.Mouse = L.Control.extend({
                 title = document.createElement('p');
                 title.textContent = 'As you zoom in, the mouse can display a 100m and a 10m square showing the area covered by a 6 or 8 figure grid reference.';
                 tag.appendChild(title);
-                ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
+                var osMouse = ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
+                this._controls.displayMouseGridSquare = osMouse;
+                osMouse.addEventListener("ra-input-change", function (e) {
+                    ra.settings.changed();
+                });
             }
 
             tag.appendChild(document.createElement('hr'));
@@ -283,10 +293,10 @@ L.Control.Mouse = L.Control.extend({
             tag.appendChild(title);
 
             var comment = document.createElement('div');
-            comment.innerHTML = 'Display the areas covered by Ordnance Survey Landranger or Explorer Maps.';
+            comment.innerHTML = 'Display the areas covered by all Ordnance Survey Landranger or Explorer Maps.';
             comment.innerHTML += '<br/> Please note that this information is unofficial and may be incorrect. Please check before buying a map.';
             comment.innerHTML += '<br/>If you notice any errors then do contact us via the help option on the left.';
-            comment.innerHTML += '<br/>Click an option below and then close popup panel.';
+            comment.innerHTML += '<br/>Click an option below and then close this popup panel.';
             tag.appendChild(comment);
             var explorer = ra.html.input.action(tag, '', 'OS Explorer ', '1:25K');
             explorer.addEventListener("action", function (e) {
@@ -299,6 +309,22 @@ L.Control.Mouse = L.Control.extend({
         } catch (err) {
             alert(err.message);
         }
+    },
+    resetSettings: function () {
+        ra.html.input.yesNoReset(this._controls.OSGridDisplay, false);
+        ra.html.input.lineStyleReset(this._controls.osgridline, {
+            color: '#0080C0',
+            weight: 2,
+            opacity: 0.5});
+        if (this._controls.displayMouseGridSquare !== null) {
+            ra.html.input.yesNoReset(this._controls.displayMouseGridSquare, true);
+        }
+    },
+    _readSettings: function () {
+        ra.settings.read('__mouseosmap', this._userOptions);
+    },
+    saveSettings: function (save) {
+        ra.settings.save(save, '__mouseosmap', this._userOptions);
     }
 });
 L.Map.mergeOptions({
@@ -342,8 +368,26 @@ L.Control.Rightclick = L.Control.extend({
             distance: 2
         }
     },
+    controls: {
+        postcodes: {
+            number: null,
+            distance: null
+        },
+        groups: {
+            number: null,
+            distance: null
+        },
+        starting: {
+            number: null,
+            distance: null
+        },
+        osm: {
+            distance: null
+        }
+    },
     onAdd: function (map) {
         this._map = map;
+        this._readSettings();
         this._mouseLayer = L.featureGroup([]);
         this._mouseLayer.addTo(this._map);
         this.enabled = true;
@@ -385,7 +429,7 @@ L.Control.Rightclick = L.Control.extend({
         osmOptions["toilets"] = {tag: "amenity", type: "toilets", title: "Toilets", single: "Toilets"};
         osmOptions["bus_stops"] = {tag: "highway", type: "bus_stop", title: "Bus Stops", single: "Bus Stop"};
         this.osmOptions = osmOptions;
-
+        
         return this._container;
     },
     onRemove: function () {
@@ -937,8 +981,8 @@ L.Control.Rightclick = L.Control.extend({
         comment.setAttribute('class', 'smaller');
         comment.textContent = 'Find a Ramblers walking group in your area';
         tag.appendChild(comment);
-        ra.html.input.number(tag, 'divClass', 'Display groups/area within %n km', this._userOptions.groups, 'distance', 0.5, 500, 0.5);
-        ra.html.input.number(tag, 'divClass', 'Display nearest %n groups/area.', this._userOptions.groups, 'number', 1, 500, 1);
+        this.controls.groups.distance = ra.html.input.number(tag, '', 'Display groups/area within %n km', this._userOptions.groups, 'distance', 0.5, 500, 0.5);
+        this.controls.groups.number = ra.html.input.number(tag, '', 'Display nearest %n groups/area.', this._userOptions.groups, 'number', 1, 500, 1);
         tag.appendChild(document.createElement('hr'));
         var hdg1 = document.createElement('h5');
         hdg1.textContent = 'Postcode Options';
@@ -947,8 +991,8 @@ L.Control.Rightclick = L.Control.extend({
         comment.setAttribute('class', 'smaller');
         comment.textContent = 'Useful for finding correct postcode for your satnav';
         tag.appendChild(comment);
-        ra.html.input.number(tag, 'divClass', 'Display postcodes within %n km', this._userOptions.postcodes, 'distance', 0.5, 20, 0.5);
-        ra.html.input.number(tag, 'divClass', 'Display nearest %n postcodes', this._userOptions.postcodes, 'number', 1, 50, 1);
+        this.controls.postcodes.distance = ra.html.input.number(tag, '', 'Display postcodes within %n km', this._userOptions.postcodes, 'distance', 0.5, 20, 0.5);
+        this.controls.postcodes.number = ra.html.input.number(tag, '', 'Display nearest %n postcodes', this._userOptions.postcodes, 'number', 1, 50, 1);
         tag.appendChild(document.createElement('hr'));
         var hdg3 = document.createElement('h5');
         hdg3.textContent = 'Meeting/Starting Locations Options';
@@ -957,8 +1001,8 @@ L.Control.Rightclick = L.Control.extend({
         comment.setAttribute('class', 'smaller');
         comment.textContent = 'Find locations Ramblers Groups have used to meet or start a walk';
         tag.appendChild(comment);
-        ra.html.input.number(tag, 'divClass', 'Display locations within %n km', this._userOptions.starting, 'distance', 0.5, 20, 0.5);
-        ra.html.input.number(tag, 'divClass', 'Display nearest %n locations', this._userOptions.starting, 'number', 5, 500, 5);
+        this.controls.starting.distance = ra.html.input.number(tag, '', 'Display locations within %n km', this._userOptions.starting, 'distance', 0.5, 20, 0.5);
+        this.controls.starting.number = ra.html.input.number(tag, '', 'Display nearest %n locations', this._userOptions.starting, 'number', 5, 500, 5);
         tag.appendChild(document.createElement('hr'));
         var hdg4 = document.createElement('h5');
         hdg4.textContent = 'Open Street Map Options';
@@ -967,7 +1011,46 @@ L.Control.Rightclick = L.Control.extend({
         comment.setAttribute('class', 'smaller');
         comment.textContent = 'This option affects the display of parking, bus stops, cafes, public housea and toilets.';
         tag.appendChild(comment);
-        ra.html.input.number(tag, 'divClass', 'Display items within %n km', this._userOptions.osm, 'distance', 0.5, 5, 0.5);
+        this.controls.osm.distance = ra.html.input.number(tag, '', 'Display items within %n km', this._userOptions.osm, 'distance', 0.5, 5, 0.5);
+
+        this.controls.groups.distance.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+        this.controls.groups.number.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+        this.controls.postcodes.distance.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+        this.controls.postcodes.number.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+        this.controls.starting.distance.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+        this.controls.starting.number.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+
+        this.controls.osm.distance.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+    },
+    resetSettings: function () {
+       
+        ra.html.input.numberReset(this.controls.groups.number, 60);
+        ra.html.input.numberReset(this.controls.groups.distance, 50);
+         ra.html.input.numberReset(this.controls.postcodes.number, 20); 
+         ra.html.input.numberReset(this.controls.postcodes.distance, 10);
+            ra.html.input.numberReset(this.controls.starting.number, 300);
+        ra.html.input.numberReset(this.controls.starting.distance, 10);
+        ra.html.input.numberReset(this.controls.osm.distance, 2);
+    },
+    _readSettings: function () {
+        ra.settings.read('__rightclick', this._userOptions);
+    },
+    saveSettings: function (save) {
+        ra.settings.save(save, '__rightclick', this._userOptions);
     }
 });
 

@@ -5,6 +5,11 @@ L.Control.RA_Map_Settings = L.Control.extend({
         title: 'Settings&Help',
         position: 'topright'
     },
+    saveOptions: {
+        saveSettings: false
+    },
+    controlsWithSettings: [],
+    cookieName: '__settingsSave',
     helpBase: "https://maphelp5.ramblers-webs.org.uk/",
     onAdd: function (map) {
         this._map = map;
@@ -19,7 +24,7 @@ L.Control.RA_Map_Settings = L.Control.extend({
         container.title = this.options.title;
         container.addEventListener("click", function (e) {
             var settings = document.createElement('div');
-            settings.setAttribute('class', 'settings'); // not needed
+            settings.setAttribute('class', 'settings');
             ra.modal.display(settings, false);
             var title = document.createElement('h4');
             title.textContent = "Settings & Help";
@@ -38,61 +43,78 @@ L.Control.RA_Map_Settings = L.Control.extend({
             content.setAttribute('class', 'tab-content');
             cont.appendChild(content);
             var first = true;
+            ra.settings.read(_this.cookieName, _this.saveOptions);
+            _this.controlsWithSettings = [];
             var control = _this.leafletMap.plotControl();
             if (control !== null) {
                 _this._addTabItem(cont, list, 'Plot Walking Route', 'route', first);
-                var drawDiv = _this.addTabContentItem(content, "route", first);
+                var drawDiv = _this._addTabContentItem(content, "route", first);
                 control.settingsForm(drawDiv);
+                _this.controlsWithSettings.push(control);
                 first = false;
             }
 
             var searchDiv;
             _this._addTabItem(cont, list, 'Search', 'search', first);
-            searchDiv = _this.addTabContentItem(content, "search", first);
+            searchDiv = _this._addTabContentItem(content, "search", first);
             first = false;
-            _this.addSearch(searchDiv);
+            _this._addSearch(searchDiv);
 
             control = _this.leafletMap.mouseControl();
             if (control !== null) {
                 _this._addTabItem(cont, list, 'Ordnance Survey', 'osmaps', false);
-                var osmapsDiv = _this.addTabContentItem(content, "osmaps", false);
+                var osmapsDiv = _this._addTabContentItem(content, "osmaps", false);
                 control.settingsForm(osmapsDiv);
+                _this.controlsWithSettings.push(control);
             }
 
             control = _this.leafletMap.rightclickControl();
             if (control !== null) {
                 _this._addTabItem(cont, list, 'Mouse Right Click', 'mouse', false);
-                var mouseDiv = _this.addTabContentItem(content, "mouse", false);
+                var mouseDiv = _this._addTabContentItem(content, "mouse", false);
                 control.settingsForm(mouseDiv);
+                _this.controlsWithSettings.push(control);
             }
 
             control = _this.leafletMap.mylocationControl();
             if (control !== null) {
                 _this._addTabItem(cont, list, 'My Location', 'mylocation', false);
-                var mylocation = _this.addTabContentItem(content, "mylocation", false);
+                var mylocation = _this._addTabContentItem(content, "mylocation", false);
                 control.settingsForm(mylocation);
+                // _this.controlsWithSettings.push(control);
             }
 
-            if (_this._helpPage !== '') {
+            _this.saveTab = _this._addTabItem(cont, list, 'Save<sup>ON</sup>/Reset Settings', 'save', false);
+            var saveDiv = _this._addTabContentItem(content, "save", false);
+            _this._addSave(saveDiv);
+
+            if (_this._helpPageUrl !== '') {
                 _this._addTabItem(cont, list, 'Help/Feedback', 'help', false);
-                var helpDiv = _this.addTabContentItem(content, "help", false);
-                _this.addHelp(helpDiv);
+                var helpDiv = _this._addTabContentItem(content, "help", false);
+                _this._addHelp(helpDiv);
             }
-            var padding = document.createElement('p');
-            cont.appendChild(padding);
+            _this._saveSettings();
+            document.addEventListener("ra-setting-changed", function (e) {
+                _this._saveSettings();
+
+            });
+
         });
+
+
         return container;
     },
+
     changeDisplay: function (display) {
         this._container.style.display = display;
     },
-    helpPage: function (value) {
-        this._helpPage = value;
+    setHelpPage: function (value) {
+        this._helpPageUrl = value;
     },
     setLeafletMap: function (value) {
         this.leafletMap = value;
     },
-    addSearch: function (tag) {
+    _addSearch: function (tag) {
         var _this = this;
         var feed = new feeds();
         feed.getSearchTags(tag, tag);
@@ -108,8 +130,43 @@ L.Control.RA_Map_Settings = L.Control.extend({
             _this._map.setView(result.center, 16);
         });
     },
-    addHelp: function (tag) {
-        if (this._helpPage !== '') {
+    _addSave: function (tag) {
+        var save = ra.html.input.yesNo(tag, '', "Save settings between sessions/future visits to web site (you accept cookies)", this.saveOptions, 'saveSettings');
+        var reset = ra.html.input.action(tag, '', "Reset all settings to default values", 'Reset');
+//        var comment = document.createElement('p');
+//        comment.innerHTML = '<small>between sessions/future visitsfuture visits to web site (you accept cookies)</small>';
+//        tag.appendChild(comment);
+        var _this = this;
+        reset.addEventListener("action", function (e) {
+            _this.controlsWithSettings.forEach(function (control) {
+                control.resetSettings();
+            });
+            setTimeout(function () {
+                ra.html.input.actionReset(reset);
+            }, 500);
+        });
+        save.addEventListener("click", function (e) {
+            _this._saveSettings();
+
+        });
+
+    },
+
+    _saveSettings: function () {
+        var saveValues = this.saveOptions.saveSettings;
+        if (saveValues) {
+            this.saveTab.innerHTML = 'Save<sup>ON</sup>/Reset Settings';
+        } else {
+            this.saveTab.innerHTML = 'Save<sup>OFF</sup>/Reset Settings';
+        }
+        ra.settings.save(saveValues, this.cookieName, this.saveOptions);
+        this.controlsWithSettings.forEach(function (control) {
+            control.saveSettings(saveValues);
+        });
+    },
+
+    _addHelp: function (tag) {
+        if (this._helpPageUrl !== '') {
             var helpcomment = document.createElement('div');
             helpcomment.setAttribute('class', 'help map-tools');
             helpcomment.innerHTML = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via the mapping HELP below.</br></br>";
@@ -117,7 +174,7 @@ L.Control.RA_Map_Settings = L.Control.extend({
 
             var help = document.createElement('a');
             help.setAttribute('class', 'link-button mintcake');
-            help.setAttribute('href', this.helpBase + this._helpPage);
+            help.setAttribute('href', this.helpBase + this._helpPageUrl);
             help.setAttribute('target', '_blank');
             help.style.cssFloat = "center";
             help.textContent = "View Mapping Help";
@@ -133,7 +190,7 @@ L.Control.RA_Map_Settings = L.Control.extend({
         if (active) {
             listItem.classList.add('active');
         }
-        listItem.textContent = name;
+        listItem.innerHTML = name;
         listItem.setAttribute('data-tab', id);
         list.appendChild(listItem);
         listItem.addEventListener('click', (function (e) {
@@ -147,8 +204,9 @@ L.Control.RA_Map_Settings = L.Control.extend({
             ele.classList.add('active');
             tab.classList.add('active');
         }));
+        return listItem;
     },
-    addTabContentItem: function (content, id, active) {
+    _addTabContentItem: function (content, id, active) {
         var item;
         item = document.createElement('div');
         item.setAttribute('id', id);

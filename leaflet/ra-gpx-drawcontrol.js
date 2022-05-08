@@ -31,6 +31,8 @@ ra.display.plotRoute = function (options, data) {
         mouse: lmap.mouseControl(),
         settingsControl: lmap.settingsControl(),
         elevation: lmap.elevationControl()};
+    this.pan = null;
+    this.join = null;
     lmap.SetPlotUserControl(this);
     this.mapDiv = lmap.mapDiv;
     this.detailsDiv = document.createElement('div');
@@ -43,7 +45,6 @@ ra.display.plotRoute = function (options, data) {
     this.load = function () {
 
         var self = this;
-        this._readDrawSettings();
         L.drawLocal.draw.toolbar.buttons.polyline = 'Plot a walking route(s)';
         L.drawLocal.draw.toolbar.buttons.marker = 'Add a marker';
         L.drawLocal.edit.toolbar.buttons.edit = 'Edit walking route(s) and markers';
@@ -368,7 +369,7 @@ ra.display.plotRoute = function (options, data) {
             }
         });
         this.listDrawnItems();
-
+        this._readSettings();
     };
 //    this._map.on('popupclose', function (e) {
 //        download._popupclose(e);
@@ -716,66 +717,42 @@ ra.display.plotRoute = function (options, data) {
         var titleoptions = document.createElement('h5');
         titleoptions.textContent = 'Options';
         tag.appendChild(titleoptions);
-        var pan = ra.html.input.yesNo(tag, 'divClass', "Pan: Centre map on last point added to route", this._userOptions.draw, 'panToNewPoint');
-        var join = ra.html.input.yesNo(tag, 'divClass', "Join: Join new route to nearest existing route", this._userOptions.draw, 'joinSegments');
+        this.pan = ra.html.input.yesNo(tag, 'divClass', "Pan: Centre map on last point added to route", this._userOptions.draw, 'panToNewPoint');
+        this.join = ra.html.input.yesNo(tag, 'divClass', "Join: Join new route to nearest existing route", this._userOptions.draw, 'joinSegments');
         tag.appendChild(document.createElement('hr'));
         var titlestyle = document.createElement('h5');
         titlestyle.textContent = 'Display: Style of route';
         tag.appendChild(titlestyle);
-        var line = ra.html.input.lineStyle(tag, '', 'Track style', this._userOptions.style);
+        this.line = ra.html.input.lineStyle(tag, '', 'Track style', this._userOptions.style);
         tag.appendChild(document.createElement('hr'));
-        var cookies = ra.html.input.yesNo(tag, '', "Save settings between sessions/future visits to web site (you accept cookies)", this._userOptions, 'saveDrawOptions');
-        var reset = ra.html.input.action(tag, '', "Reset Plot Walking Route options to default values", 'Reset');
-        reset.addEventListener("action", function (e) {
-            ra.html.input.lineStyleReset(line, _this.defaultStyle);
-            ra.html.input.yesNoReset(pan, true);
-            ra.html.input.yesNoReset(join, true);
-            _this._saveDrawSettings();
+
+        this.pan.addEventListener("change", function (e) {
+            ra.settings.changed();
         });
-        pan.addEventListener("change", function (e) {
-            _this._saveDrawSettings();
+        this.join.addEventListener("change", function (e) {
+            ra.settings.changed();
         });
-        join.addEventListener("change", function (e) {
-            _this._saveDrawSettings();
-        });
-        line.addEventListener("change", function (e) {
+        this.line.addEventListener("change", function (e) {
+            ra.settings.changed();
             _this._map.fire("draw:color-change", null);
-            _this._saveDrawSettings();
-            ra.html.input.actionReset(reset);
-        });
-        cookies.addEventListener("click", function (e) {
-            _this._saveDrawSettings();
         });
 
 
-    };
-    this._readDrawSettings = function () {
-
-        var scookie = ra.cookie.read('raDraw2');
-        if (scookie !== null) {
-            try {
-                var cookie = JSON.parse(scookie);
-                this._userOptions.saveDrawOptions = cookie.saveDrawOptions;
-                if (this._userOptions.saveDrawOptions) {
-                    this._userOptions.draw.panToNewPoint = cookie.draw.panToNewPoint;
-                    this._userOptions.draw.joinSegments = cookie.draw.joinSegments;
-                    this._userOptions.style.weight = cookie.style.weight;
-                    this._userOptions.style.opacity = cookie.style.opacity;
-                    this._userOptions.style.color = cookie.style.color;
-                }
-            } catch (err) {
-                alert("Unable to set Route draw options from previous session");
-            }
-            this._map.fire("draw:color-change", null);
-        }
 
     };
-    this._saveDrawSettings = function () {
-        if (this._userOptions.saveDrawOptions) {
-            ra.cookie.create(JSON.stringify(this._userOptions), 'raDraw2', 365);
-        } else {
-            ra.cookie.erase('raDraw2');
-        }
+
+    this.resetSettings = function () {
+        ra.html.input.lineStyleReset(this.line, this.defaultStyle);
+        ra.html.input.yesNoReset(this.pan, true);
+        ra.html.input.yesNoReset(this.join, true);
+        this._map.fire("draw:color-change", null);
+    };
+    this._readSettings = function () {
+        ra.settings.read('__raDraw', this._userOptions);
+        this._map.fire("draw:color-change", null);
+    };
+    this.saveSettings = function (save) {
+        ra.settings.save(save, '__raDraw', this._userOptions);
     };
 
 };

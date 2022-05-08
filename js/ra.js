@@ -332,6 +332,51 @@ ra.cookie = (function () {
 }
 ());
 
+ra.settings = (function () {
+    var settings = {};
+    settings.read = function (name, settings) {
+        var scookie = ra.cookie.read(name);
+        if (scookie !== null) {
+            try {
+                var cookie = JSON.parse(scookie);
+                if (typeof cookie === 'object' && cookie !== null) {
+                    ra.settings._transferValues(cookie, settings);
+                }
+            } catch (err) {
+                alert("Unable to retrieve settings from previous session [" + name + ']');
+            }
+        }
+    };
+    settings._transferValues = function (from, to) {
+        // tranfer values from one object to another
+        Object.keys(to).forEach(key => {
+            var toItem = to[key];
+            if (from.hasOwnProperty(key)) {
+                var fromItem = from[key];
+                if (typeof toItem === 'object' && typeof fromItem === 'object') {
+                    ra.settings._transferValues(fromItem, toItem);
+                } else {
+                    to[key] = from[key];
+                }
+                //  console.log("\n" + key + ": " + to[key]);
+            }
+        });
+    };
+    settings.changed = function () {
+        let event = new Event("ra-setting-changed");
+        document.dispatchEvent(event);
+    };
+    settings.save = function (save, name, settings) {
+        if (save) {
+            ra.cookie.create(JSON.stringify(settings), name, 365);
+        } else {
+            ra.cookie.erase(name);
+        }
+    };
+    return settings;
+}
+());
+
 
 ra.date = (function () {
     var date = {};
@@ -805,7 +850,7 @@ if (typeof (ra.html.input) === "undefined") {
             inputTag.textContent = 'Done';
             inputTag.classList.remove("button-p0555");
             inputTag.classList.add("button-p5565");
-            let event = new Event("action", {bubbles: true}); // (2)
+            let event = new Event("action");
             inputTag.dispatchEvent(event);
         });
         itemDiv.appendChild(_label);
@@ -846,6 +891,8 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.addEventListener("click", function (e) {
             inputTag.ra.object[inputTag.ra.property] = !inputTag.ra.object[inputTag.ra.property];
             ra.html.input.yesNoReset(inputTag, inputTag.ra.object[inputTag.ra.property]);
+            let event = new Event("ra-input-change");
+            inputTag.dispatchEvent(event);
         });
         itemDiv.appendChild(_label);
         itemDiv.appendChild(inputTag);
@@ -863,7 +910,7 @@ if (typeof (ra.html.input) === "undefined") {
             inputTag.classList.add("button-p0186");
             inputTag.classList.remove("button-p0555");
         }
-        let event = new Event("change", {bubbles: true}); // (2)
+        let event = new Event("ra-input-change");
         inputTag.dispatchEvent(event);
     };
     ra.html.input.number = function (tag, divClass, label, raobject, property, minval, maxval, step) {
@@ -892,7 +939,7 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.addEventListener("input", function (e) {
             e.target.ra.object[e.target.ra.property] = e.target.value;
             _label.textContent = label.replace("%n", e.target.value);
-            let event = new Event("change", {bubbles: true}); // (2)
+            let event = new Event("ra-input-change");
             tag.dispatchEvent(event);
         });
         itemDiv.appendChild(inputTag);
@@ -902,15 +949,21 @@ if (typeof (ra.html.input) === "undefined") {
     ra.html.input.numberReset = function (inputTag, value) {
         var ra = inputTag.ra;
         ra.object[ra.property] = value;
-        inputTag.setAttribute('value', value);
-        let event = new Event("change", {bubbles: true}); // (2)
+        inputTag.value = value;
+        //   if (raiseEvent) {
+        let event = new Event("ra-input-change");
         inputTag.dispatchEvent(event);
+        // }
     };
     ra.html.input.colour = function (tag, divClass, labeltext, raobject, property) {
         var itemDiv = document.createElement('div');
         if (divClass !== '') {
             itemDiv.setAttribute('class', divClass);
         }
+        var label = document.createElement('label');
+        label.textContent = labeltext;
+        label.setAttribute('class', 'help-label');
+        itemDiv.appendChild(label);
         tag.appendChild(itemDiv);
         var inputColor = document.createElement('input');
         inputColor.setAttribute('type', 'color');
@@ -921,27 +974,28 @@ if (typeof (ra.html.input) === "undefined") {
         inputColor.ra.object = raobject;
         inputColor.ra.property = property;
         inputColor.style.height = "30px";
-        inputColor.style.width = "150px";
+        inputColor.style.width = "50px";
         inputColor.style.backgroundColor = "#DDDDDD";
 
-        inputColor.addEventListener("change", function (e) {
+        inputColor.addEventListener("input", function (e) {
             e.target.ra.object[e.target.ra.property] = e.target.value;
-            let event = new Event("change", {bubbles: true}); // (2)
+            let event = new Event("ra-input-change"); // (2)
             tag.dispatchEvent(event);
         });
-        var label = document.createElement('label');
-        label.textContent = labeltext;
-        label.setAttribute('class', 'help-label');
-        itemDiv.appendChild(label);
+
+
 
         return inputColor;
     };
     ra.html.input.colourReset = function (inputTag, value) {
         var ra = inputTag.ra;
         ra.object[ra.property] = value;
-        inputTag.setAttribute('value', value);
-        let event = new Event("change", {bubbles: true}); // (2)
+        inputTag.value = value;
+//        if (raiseEvent) {
+        let event = new Event("ra-input-change"); // (2)
         inputTag.dispatchEvent(event);
+//    }
+
     };
     ra.html.input.lineStyle = function (tag, divClass, labeltext, raobject) {
         var itemDiv = document.createElement('div');
@@ -952,53 +1006,71 @@ if (typeof (ra.html.input) === "undefined") {
         var titlestyle = document.createElement('h5');
         titlestyle.textContent = labeltext;
         itemDiv.appendChild(titlestyle);
-        var color = ra.html.input.colour(itemDiv, 'divClass', 'Line colour', raobject, 'color');
-        var weight = ra.html.input.number(itemDiv, 'divClass', 'Line weight %n pixels', raobject, 'weight', 1, 10, 0.5);
-        var opacity = ra.html.input.number(itemDiv, 'divClass', 'Line opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
-        var example = ra.html.input._addExampleLine(itemDiv, "300px", "Line Example: ");
+        var color = ra.html.input.colour(itemDiv, 'inlineBlock', 'Colour', raobject, 'color');
+        var example = ra.html.input._addExampleLine(itemDiv, "150px", "Example: ");
+        var weight = ra.html.input.number(itemDiv, 'divClass', 'Weight %n pixels', raobject, 'weight', 1, 10, 0.5);
+        var opacity = ra.html.input.number(itemDiv, 'divClass', 'Opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
         itemDiv.ra = {};
         itemDiv.ra.color = color;
         itemDiv.ra.weight = weight;
         itemDiv.ra.opacity = opacity;
         itemDiv.ra.example = example;
-        ra.html.input._addExampleLineStyle(example, raobject);
+        ra.html.input._setExampleLineStyle(example, raobject);
         color.addEventListener("change", function (e) {
-            ra.html.input._addExampleLineStyle(example, raobject);
-            let event = new Event("change", {bubbles: true}); // (2)
+            ra.html.input._setExampleLineStyle(example, raobject);
+            let event = new Event("ra-input-change"); // (2)
             itemDiv.dispatchEvent(event);
         });
         weight.addEventListener("change", function (e) {
-            ra.html.input._addExampleLineStyle(example, raobject);
-            let event = new Event("change", {bubbles: true}); // (2)
+            ra.html.input._setExampleLineStyle(example, raobject);
+            let event = new Event("ra-input-change"); // (2)
             itemDiv.dispatchEvent(event);
         });
         opacity.addEventListener("change", function (e) {
-            ra.html.input._addExampleLineStyle(example, raobject);
-            let event = new Event("change", {bubbles: true}); // (2)
+            ra.html.input._setExampleLineStyle(example, raobject);
+            let event = new Event("ra-input-change"); // (2)
             itemDiv.dispatchEvent(event);
         });
+        color.addEventListener("ra-input-change", function (e) {
+            ra.html.input._setExampleLineStyle(example, raobject);
+        });
+        weight.addEventListener("ra-input-change", function (e) {
+            ra.html.input._setExampleLineStyle(example, raobject);
+        });
+        opacity.addEventListener("ra-input-change", function (e) {
+            ra.html.input._setExampleLineStyle(example, raobject);
+        });
+
+//        itemDiv.addEventListener("ra-input-change", function (e) {
+//            ra.html.input._setExampleLineStyle(example, raobject);
+//        });
         return itemDiv;
     };
     ra.html.input.lineStyleReset = function (itemDiv, style) {
-        ra.html.input.colourReset(itemDiv.ra.color, style.color);
-        ra.html.input.numberReset(itemDiv.ra.weight, style.weight);
-        ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity);
+        ra.html.input.colourReset(itemDiv.ra.color, style.color, false);
+        ra.html.input.numberReset(itemDiv.ra.weight, style.weight, false);
+        ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity, false);
+        // ra.html.input._setExampleLineStyle(itemDiv,style);
+        //     let event = new Event("ra-input-change");
+        //    itemDiv.dispatchEvent(event);
     };
     ra.html.input._addExampleLine = function (tag, length, comment) {
         var com = document.createElement('div');
         com.style.display = 'inline-block';
         com.textContent = comment;
-        com.style.marginRight = '20px';
+        com.style.marginRight = '10px';
         com.style.marginTop = '20px';
+        com.style.marginLeft = "10px";
         tag.appendChild(com);
         var itemDiv = document.createElement('div');
         itemDiv.style.display = 'inline-block';
         itemDiv.style.width = length;
         itemDiv.style.height = "1px";
         tag.appendChild(itemDiv);
+
         return itemDiv;
     };
-    ra.html.input._addExampleLineStyle = function (line, style) {
+    ra.html.input._setExampleLineStyle = function (line, style) {
         if (style.hasOwnProperty("color")) {
             line.style.backgroundColor = style.color;
         }
@@ -1007,6 +1079,63 @@ if (typeof (ra.html.input) === "undefined") {
         }
         if (style.hasOwnProperty("opacity")) {
             line.style.opacity = style.opacity;
+        }
+    };
+    ra.html.input.fillStyle = function (tag, divClass, labeltext, raobject) {
+        var itemDiv = document.createElement('div');
+        if (divClass !== '') {
+            itemDiv.setAttribute('class', divClass);
+        }
+        tag.appendChild(itemDiv);
+        var titlestyle = document.createElement('h5');
+        titlestyle.textContent = labeltext;
+        itemDiv.appendChild(titlestyle);
+        var color = ra.html.input.colour(itemDiv, 'inlineBlock', 'Colour', raobject, 'color');
+        var example = ra.html.input._addExampleFill(itemDiv, "Example: ");
+        var opacity = ra.html.input.number(itemDiv, 'divClass', 'Opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
+        itemDiv.ra = {};
+        itemDiv.ra.color = color;
+        itemDiv.ra.opacity = opacity;
+        itemDiv.ra.example = example;
+        ra.html.input._addExampleFillStyle(example, raobject);
+        color.addEventListener("change", function (e) {
+            ra.html.input._addExampleFillStyle(example, raobject);
+            let event = new Event("ra-input-change");
+            itemDiv.dispatchEvent(event);
+        });
+        opacity.addEventListener("change", function (e) {
+            ra.html.input._addExampleFillStyle(example, raobject);
+            let event = new Event("ra-input-change");
+            itemDiv.dispatchEvent(event);
+        });
+        return itemDiv;
+    };
+    ra.html.input.fillStyleReset = function (itemDiv, style) {
+        ra.html.input.colourReset(itemDiv.ra.color, style.color);
+        ra.html.input.numberReset(itemDiv.ra.weight, style.weight);
+        ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity);
+    };
+    ra.html.input._addExampleFill = function (tag, comment) {
+        var com = document.createElement('div');
+        com.style.display = 'inline-block';
+        com.textContent = comment;
+        com.style.marginTop = '20px';
+        com.style.marginRight = '10px';
+        com.style.marginLeft = "10px";
+        tag.appendChild(com);
+        var itemDiv = document.createElement('div');
+        itemDiv.style.display = 'inline-block';
+        itemDiv.style.width = "30px";
+        itemDiv.style.height = "30px";
+        tag.appendChild(itemDiv);
+        return itemDiv;
+    };
+    ra.html.input._addExampleFillStyle = function (fill, style) {
+        if (style.hasOwnProperty("color")) {
+            fill.style.backgroundColor = style.color;
+        }
+        if (style.hasOwnProperty("opacity")) {
+            fill.style.opacity = style.opacity;
         }
     };
 }
@@ -1099,7 +1228,7 @@ ra.w3w = (function () {
     w3w.toLocation = function (tag, words) {
         var url = "https://api.what3words.com/v3/convert-to-coordinates?words=" + words + "&key=6AZYMY7P";
         ra.ajax.getJSON(url, function (err, item) {
-            let event = new Event("what3wordsfound", {bubbles: true}); // (2)
+            let event = new Event("what3wordsfound");
             event.raData = {};
             event.raData.err = err;
             if (err === null) {
@@ -1115,7 +1244,7 @@ ra.w3w = (function () {
         var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
         var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
         ra.ajax.getJSON(url, function (err, item) {
-            let event = new Event("what3wordsfound", {bubbles: true}); // (2)
+            let event = new Event("what3wordsfound");
             event.raData = {};
             event.raData.err = err;
             event.raData.dataObject = dataObject;
@@ -1543,7 +1672,7 @@ ra.filter = function (settingsFilter) {
         select.addEventListener("change", function (event) {
             // only works if you have one select as 'updated' is hard coded
             _this.settingsFilter['updated'] = event.target.value;
-            let e = new Event("reDisplayWalks", {bubbles: true});
+            let e = new Event("reDisplayWalks");
             document.dispatchEvent(e);
         });
     };
@@ -1594,7 +1723,7 @@ ra.filter = function (settingsFilter) {
                     _this.settingsFilter[keyid] = all;
                 });
             }
-            let e = new Event("reDisplayWalks", {bubbles: true});
+            let e = new Event("reDisplayWalks");
             document.dispatchEvent(e);
         });
 
@@ -1612,7 +1741,7 @@ ra.filter = function (settingsFilter) {
         input.addEventListener("change", function (event) {
             var keyid = event.target.getAttribute('data-filter-id');
             _this.settingsFilter[keyid] = event.target.checked;
-            let e = new Event("reDisplayWalks", {bubbles: true});
+            let e = new Event("reDisplayWalks");
             document.dispatchEvent(e);
         });
 
@@ -1650,7 +1779,7 @@ ra.filter = function (settingsFilter) {
                 }
             }
             _this.settingsFilter[keyid] = value;
-            let e = new Event("reDisplayWalks", {bubbles: true});
+            let e = new Event("reDisplayWalks");
             document.dispatchEvent(e);
         });
     };

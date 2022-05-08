@@ -123,30 +123,29 @@ function leafletMap(tag, options) {
     }
     if (options.mylocation !== null) {
         this.controls.mylocation = L.control.mylocation().addTo(this.map);
-     //   this.userOptions.mylocation = this.controls.mylocation.userOptions();
+        //   this.userOptions.mylocation = this.controls.mylocation.userOptions();
     }
 
     // bottom left controls
     if (options.rightclick !== null) {
-      //  try {
-            this.controls.rightclick = L.control.rightclick().addTo(this.map);
-         //   if (this.controls.layers === null) {
-         //       alert('Program error in rambler leaflet map');
-          //  }
-          //  this.controls.rightclick.mapControl(this.controls.layers);
+        //  try {
+        this.controls.rightclick = L.control.rightclick().addTo(this.map);
+        //   if (this.controls.layers === null) {
+        //       alert('Program error in rambler leaflet map');
+        //  }
+        //  this.controls.rightclick.mapControl(this.controls.layers);
         //    this.userOptions.rightclick = this.controls.rightclick.userOptions();
-       // } catch (err) {
-      //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-      //  }
+        // } catch (err) {
+        //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
+        //  }
     }
 
     if (options.mouseposition !== null) {
-      //  try {
-            this.controls.mouse = L.control.mouse().addTo(this.map);
-      //      this.userOptions.mouse = this.controls.mouse.userOptions();
-      //  } catch (err) {
-      //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-      //  }
+        //  try {
+        this.controls.mouse = L.control.mouse().addTo(this.map);
+        //  } catch (err) {
+        //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
+        //  }
 
     }
 
@@ -177,7 +176,7 @@ function leafletMap(tag, options) {
         self.setOptionalControls();
 
     });
-      // top right controls
+    // top right controls
     this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
     if (options.topoMapDefault) {
         this.map.addLayer(this.mapLayers["Open Topo Map"]);
@@ -186,14 +185,14 @@ function leafletMap(tag, options) {
     }
     var _this = this;
     if (options.settings !== null) {
-      //  try {
-            this.controls.settings = L.control.ra_map_settings();
-                   this.controls.settings.helpPage(options.helpPage);
-            this.controls.settings.addTo(this.map);
-            this.controls.settings.setLeafletMap(this);
-      //  } catch (err) {
-      //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-      //  }
+        //  try {
+        this.controls.settings = L.control.ra_map_settings();
+        this.controls.settings.setHelpPage(options.helpPage);
+        this.controls.settings.addTo(this.map);
+        this.controls.settings.setLeafletMap(this);
+        //  } catch (err) {
+        //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
+        //  }
     }
     // this.controls.settings.setErrorDiv(this.errorDivControl());
     this.map.on('zoomend', function () {
@@ -203,13 +202,13 @@ function leafletMap(tag, options) {
         _this.baseTiles = e.name;
         _this.osZoomLevel();
     });
-     if (options.rightclick !== null) {
-      //  try {
-            this.controls.rightclick.mapControl(this.controls.layers);
+    if (options.rightclick !== null) {
+        //  try {
+        this.controls.rightclick.mapControl(this.controls.layers);
         //    this.userOptions.rightclick = this.controls.rightclick.userOptions();
-      //  } catch (err) {
-       //     self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-       // }
+        //  } catch (err) {
+        //     self.controls.errorDiv.setErrorText("ERROR: " + err.message);
+        // }
     }
 
     this.setOptionalControls = function () {
