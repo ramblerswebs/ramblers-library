@@ -1112,7 +1112,6 @@ if (typeof (ra.html.input) === "undefined") {
     };
     ra.html.input.fillStyleReset = function (itemDiv, style) {
         ra.html.input.colourReset(itemDiv.ra.color, style.color);
-        ra.html.input.numberReset(itemDiv.ra.weight, style.weight);
         ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity);
     };
     ra.html.input._addExampleFill = function (tag, comment) {

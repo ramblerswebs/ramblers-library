@@ -52,14 +52,14 @@ class RJsScript {
 
         RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
         // Leaflet
-        $document->addStyleSheet("https://unpkg.com/leaflet@1.8.0/dist/leaflet.css", 
+        $document->addStyleSheet("https://unpkg.com/leaflet@1.8.0/dist/leaflet.css",
                 array("type" => "text/css"),
-                array('integrity'=>'sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==',
-                    'crossorigin'=>''));
-        $document->addScript("https://unpkg.com/leaflet@1.8.0/dist/leaflet.js", 
+                array('integrity' => 'sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==',
+                    'crossorigin' => ''));
+        $document->addScript("https://unpkg.com/leaflet@1.8.0/dist/leaflet.js",
                 array("type" => "text/javascript"),
-                array('integrity'=>'sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==',
-                    'crossorigin'=>''));
+                array('integrity' => 'sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==',
+                    'crossorigin' => ''));
         RLoad::addScript("libraries/ramblers/leaflet/ramblersleaflet.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
 
@@ -67,19 +67,19 @@ class RJsScript {
 //            $document->addStyleSheet("libraries/ramblers/leaflet/Control.Locationsearch.css", "text/css");
 //            $document->addScript("libraries/ramblers/leaflet/Control.Locationsearch.js", "text/javascript");
 //        }
-        if ($options->fullscreen!==null) {
+        if ($options->fullscreen !== null) {
             $path = "libraries/ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
             RLoad::addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
             RLoad::addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
         }
 
-        if ($options->rightclick!==null) {
+        if ($options->rightclick !== null) {
             // Mapcodes        
             //     $document->addScript("libraries/ramblers/vendors/mapcode-js-2.4.1/mapcode.js", "text/javascript");
             //     $document->addScript("libraries/ramblers/vendors/mapcode-js-2.4.1/ndata.js", "text/javascript");
         }
 
-        if ($options->displayElevation!==null) {
+        if ($options->displayElevation !== null) {
             // elevation
             $document->addScript("https://d3js.org/d3.v3.min.js", array("type" => "text/javascript"));
             $path = "libraries/ramblers/vendors/Leaflet.Elevation-0.0.4-ra/";
@@ -108,7 +108,7 @@ class RJsScript {
             RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Mouse.css", "text/css");
         }
 
-        if ($options->mouseposition!==null or $options->osgrid!==null or $options->rightclick!==null) {
+        if ($options->mouseposition !== null or $options->osgrid !== null or $options->rightclick !== null) {
             // grid ref to/from lat/long
             $document->addScript("libraries/ramblers/vendors/geodesy/vector3d.js", array("type" => "text/javascript"));
             $document->addScript("libraries/ramblers/vendors/geodesy/latlon-ellipsoidal.js", array("type" => "text/javascript"));
@@ -120,7 +120,7 @@ class RJsScript {
             $document->addScript("libraries/ramblers/vendors/bing/bing.js", array("type" => "text/javascript"));
         }
 
-        if ($options->print!==null) {
+        if ($options->print !== null) {
             $path = "libraries/ramblers/vendors/leaflet.browser.print-1/src/";
             $document->addScript($path . "leaflet.browser.print.js", array("type" => "text/javascript"));
             $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
@@ -138,6 +138,7 @@ class RJsScript {
         RLoad::addScript("libraries/ramblers/js/raWalk.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/js/raLocation.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/leaflet/ra-map-mylocation.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/vendors/ArrowCircle/ArrowCircle.js", "text/javascript");
 
         RLoad::addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
 

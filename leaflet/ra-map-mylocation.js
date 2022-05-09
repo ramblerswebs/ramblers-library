@@ -4,14 +4,14 @@ L.Control.MyLocation = L.Control.extend({
         title: 'Display my location',
         position: 'topleft'
     },
-    mylocationOptions: {
+    _userOptions: {
         panToLocation: true,
         marker: {
             radius: 5,
             color: '#0044DD'
         },
         accuracy: {
-            display: true,
+            display: false,
             fill: {
                 color: '#550000',
                 opacity: .5
@@ -136,30 +136,37 @@ L.Control.MyLocation = L.Control.extend({
         }
     },
 
-//            if (self.first) {
-//                self.first = false;
-//                self._map.setZoom(16);
-//            }
-//        });
-
     displayLocation: function (location) {
         if (this.active) {
             var pos = location.position.coords;
             var latlng = L.latLng(pos.latitude, pos.longitude);
-
+            pos.heading = 42;
             var popup = "Current location<br/>Accuracy is " + Math.ceil(pos.accuracy) + " metres";
-            var options = {radius: this.mylocationOptions.marker.radius, color: this.mylocationOptions.marker.color};
-            var circleMarker = new L.CircleMarker(latlng, options);
-            this._map.myLocationLayer.addLayer(circleMarker);
-            circleMarker.bindPopup(popup);
+            if (pos.heading === null || isNaN(pos.heading)) {
+                var options = {radius: this._userOptions.marker.radius, color: this._userOptions.marker.color};
+                var circleMarker = new L.CircleMarker(latlng, options);
+                this._map.myLocationLayer.addLayer(circleMarker);
+                circleMarker.bindPopup(popup);
+            }
+            if (pos.heading !== null && isNaN(pos.heading) === false) {
+                var circleMarker = L.marker.arrowCircle(latlng, {
+                    iconOptions: {color: this._userOptions.marker.color, rotation: 45}});
+                this._map.myLocationLayer.addLayer(circleMarker);
+                circleMarker.bindPopup(popup);
+            }
 
-            if (this.mylocationOptions.accuracy.display) {
-                var options = {radius: pos.accuracy, color: this.mylocationOptions.accuracy.fill.color, opacity: this.mylocationOptions.accuracy.fill.opacity, interactive: false, fill: true};
+            if (this._userOptions.accuracy.display) {
+                var options = {radius: pos.accuracy, color: this._userOptions.accuracy.fill.color, opacity: this._userOptions.accuracy.fill.opacity, interactive: false, fill: true};
                 var circle = new L.Circle(latlng, options);
                 this._map.myLocationLayer.addLayer(circle);
             }
-            if (this.mylocationOptions.panToLocation) {
+            if (this._userOptions.panToLocation) {
                 this._map.panTo(latlng);
+                if (this.first) {
+                    this.first = false;
+                    this._map.setZoom(16);
+                }
+
             }
 
             console.log("Location displayed");
@@ -170,20 +177,25 @@ L.Control.MyLocation = L.Control.extend({
         var hdg1 = document.createElement('h5');
         hdg1.textContent = 'My Location Options';
         tag.appendChild(hdg1);
-        this._controls.marker = ra.html.input.colour(tag, '', 'Colour of My Location marker', this.mylocationOptions.marker, 'color');
-        this._controls.panToLocation = ra.html.input.yesNo(tag, '', "Pan to location", this.mylocationOptions, 'panToLocation');
+        this._controls.marker = ra.html.input.colour(tag, '', 'Colour of My Location marker', this._userOptions.marker, 'color');
+        this._controls.panToLocation = ra.html.input.yesNo(tag, '', "Pan to location", this._userOptions, 'panToLocation');
         tag.appendChild(document.createElement('hr'));
-        this._controls.accuracy.display = ra.html.input.yesNo(tag, '', "Display circle showing accuracy of location", this.mylocationOptions.accuracy, 'display');
+        this._controls.accuracy.display = ra.html.input.yesNo(tag, '', "Display circle showing accuracy of location", this._userOptions.accuracy, 'display');
         var accuracy = document.createElement('div');
         tag.appendChild(accuracy);
+        if (_this._userOptions.accuracy.display) {
+            accuracy.style.display = 'inherit';
+        } else {
+            accuracy.style.display = 'none';
+        }
         this._controls.accuracy.display.addEventListener("ra-input-change", function (e) {
-            if (_this.mylocationOptions.accuracy.display) {
+            if (_this._userOptions.accuracy.display) {
                 accuracy.style.display = 'inherit';
             } else {
                 accuracy.style.display = 'none';
             }
         });
-        this._controls.accuracy.fill = ra.html.input.fillStyle(accuracy, '', '', this.mylocationOptions.accuracy.fill);
+        this._controls.accuracy.fill = ra.html.input.fillStyle(accuracy, '', '', this._userOptions.accuracy.fill);
         tag.appendChild(document.createElement('hr'));
         var comment = document.createElement('p');
         comment.innerHTML = 'Unfortunately browser technology does not allow the location to be found if the browser is not active. ' +
@@ -192,19 +204,18 @@ L.Control.MyLocation = L.Control.extend({
 
     },
     resetSettings: function () {
-
-
-        //     ra.html.input.yesNoReset(this._controls.continuous, true);
-        //     ra.html.input.yesNoReset(this._controls.accuracy.display, true);
-        //  ra.html.input.yesNoReset(this.join, true);
-        //  this._map.fire("draw:color-change", null);
+        ra.html.input.yesNoReset(this._controls.panToLocation, true);
+        ra.html.input.yesNoReset(this._controls.accuracy.display, true);
+        ra.html.input.fillStyleReset(this._controls.accuracy.fill, {
+            color: '#550000',
+            opacity: 0.5});
     },
     _readSettings: function () {
-        //  ra.settings.read('__raDraw', this._userOptions);
-        //   this._map.fire("draw:color-change", null);
+        ra.settings.read('__mylocation', this._userOptions);
+
     },
     saveSettings: function (save) {
-        //   ra.settings.save(save, '__raDraw', this._userOptions);
+        ra.settings.save(save, '__mylocation', this._userOptions);
     }
 });
 L.control.mylocation = function (options) {
