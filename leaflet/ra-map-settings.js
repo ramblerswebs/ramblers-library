@@ -143,7 +143,7 @@ L.Control.RA_Map_Settings = L.Control.extend({
             });
             setTimeout(function () {
                 ra.html.input.actionReset(reset);
-            }, 500);
+            }, 300);
         });
         save.addEventListener("click", function (e) {
             _this._saveSettings();

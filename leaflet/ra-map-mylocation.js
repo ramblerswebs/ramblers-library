@@ -138,7 +138,6 @@ L.Control.MyLocation = L.Control.extend({
                 if (location.position !== undefined) {
                     var pos = location.position.coords;
                     var latlng = L.latLng(pos.latitude, pos.longitude);
-                    pos.heading = 42;
                     var popup = "Current location<br/>Accuracy is " + Math.ceil(pos.accuracy) + " metres";
                     if (pos.heading === null || isNaN(pos.heading)) {
                         var options = {radius: this._userOptions.marker.radius, color: this._userOptions.marker.color};
@@ -148,7 +147,7 @@ L.Control.MyLocation = L.Control.extend({
                     }
                     if (pos.heading !== null && isNaN(pos.heading) === false) {
                         var circleMarker = L.marker.arrowCircle(latlng, {
-                            iconOptions: {color: this._userOptions.marker.color, rotation: 45}});
+                            iconOptions: {color: this._userOptions.marker.color, rotation: pos.heading}});
                         this._map.myLocationLayer.addLayer(circleMarker);
                         circleMarker.bindPopup(popup);
                     }
