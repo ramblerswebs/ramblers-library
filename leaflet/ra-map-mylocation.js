@@ -50,13 +50,13 @@ L.Control.MyLocation = L.Control.extend({
         document.addEventListener('accuratepositionprogress', function (e) {
             //console.log('GPX Progress');
             self._map.myLocationLayer.clearLayers();
-            self.displayLocation(e.result);
+            self.displayLocation(e.result, false);
         });
         document.addEventListener('accuratepositionfound', function (e) {
             // console.log('GPS position found');
             self._map.myLocationLayer.clearLayers();
             self.locationfound = true;
-            self.displayLocation(e.result);
+            self.displayLocation(e.result, true);
         });
         document.addEventListener('accuratepositionerror', function (e) {
             //console.log('Location error');
@@ -132,38 +132,51 @@ L.Control.MyLocation = L.Control.extend({
         }
     },
 
-    displayLocation: function (location) {
+    displayLocation: function (location, accurate) {
         if (this.active) {
             try {
-                if (location.position !== undefined) {
-                    var pos = location.position.coords;
-                    var latlng = L.latLng(pos.latitude, pos.longitude);
-                    var popup = "Current location<br/>Accuracy is " + Math.ceil(pos.accuracy) + " metres";
-                    if (pos.heading === null || isNaN(pos.heading)) {
-                        var options = {radius: this._userOptions.marker.radius, color: this._userOptions.marker.color};
+                if (!accurate) {
+                    if (location.position !== undefined) {
+                        var pos = location.position.coords;
+                        var latlng = L.latLng(pos.latitude, pos.longitude);
+                        //console.log('lat ' + pos.latitude + ' long ' + pos.longitude);
+                        var options = {radius: this._userOptions.marker.radius * 2, color: '#FF0000'};
                         var circleMarker = new L.CircleMarker(latlng, options);
                         this._map.myLocationLayer.addLayer(circleMarker);
                         circleMarker.bindPopup(popup);
                     }
-                    if (pos.heading !== null && isNaN(pos.heading) === false) {
-                        var circleMarker = L.marker.arrowCircle(latlng, {
-                            iconOptions: {color: this._userOptions.marker.color, rotation: pos.heading}});
-                        this._map.myLocationLayer.addLayer(circleMarker);
-                        circleMarker.bindPopup(popup);
-                    }
+                } else {
+                    if (location.position !== undefined) {
+                        var pos = location.position.coords;
+                        var latlng = L.latLng(pos.latitude, pos.longitude);
+                        //console.log('Lat ' + pos.latitude + ' Long ' + pos.longitude);
+                        var popup = "Current location<br/>Accuracy is " + Math.ceil(pos.accuracy) + " metres";
+                        if (pos.heading === null || isNaN(pos.heading)) {
+                            var options = {radius: this._userOptions.marker.radius, color: this._userOptions.marker.color};
+                            var circleMarker = new L.CircleMarker(latlng, options);
+                            this._map.myLocationLayer.addLayer(circleMarker);
+                            circleMarker.bindPopup(popup);
+                        }
+                        if (pos.heading !== null && isNaN(pos.heading) === false) {
+                            var circleMarker = L.marker.arrowCircle(latlng, {
+                                iconOptions: {color: this._userOptions.marker.color, rotation: pos.heading}});
+                            this._map.myLocationLayer.addLayer(circleMarker);
+                            circleMarker.bindPopup(popup);
+                        }
 
-                    if (this._userOptions.accuracy.display) {
-                        var options = {radius: pos.accuracy, color: this._userOptions.accuracy.fill.color, opacity: this._userOptions.accuracy.fill.opacity, interactive: false, fill: true};
-                        var circle = new L.Circle(latlng, options);
-                        this._map.myLocationLayer.addLayer(circle);
-                    }
-                    if (this.first) {
-                        this.first = false;
-                        this._map.panTo(latlng);
-                        this._map.setZoom(16);
-                    }
-                    if (this._userOptions.panToLocation) {
-                        this._map.panTo(latlng);
+                        if (this._userOptions.accuracy.display) {
+                            var options = {radius: pos.accuracy, color: this._userOptions.accuracy.fill.color, opacity: this._userOptions.accuracy.fill.opacity, interactive: false, fill: true};
+                            var circle = new L.Circle(latlng, options);
+                            this._map.myLocationLayer.addLayer(circle);
+                        }
+                        if (this.first) {
+                            this.first = false;
+                              this._map.setZoom(16);    
+                              this._map.panTo(latlng);
+                        }
+                        if (this._userOptions.panToLocation) {
+                            this._map.panTo(latlng);
+                        }
                     }
                 }
             } catch (err) {
