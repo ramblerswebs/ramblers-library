@@ -5,7 +5,7 @@ L.Control.MyLocation = L.Control.extend({
         position: 'topleft'
     },
     _userOptions: {
-        panToLocation: true,
+        panToLocation: false,
         marker: {
             radius: 5,
             color: '#0044DD'
@@ -13,7 +13,7 @@ L.Control.MyLocation = L.Control.extend({
         accuracy: {
             display: false,
             fill: {
-                color: '#550000',
+                color: '#F75E5E',
                 opacity: .5
             }}
     },
@@ -48,25 +48,19 @@ L.Control.MyLocation = L.Control.extend({
         this.statusoff.style.display = "none";
         var self = this;
         document.addEventListener('accuratepositionprogress', function (e) {
-            console.log('GPX Progress');
+            //console.log('GPX Progress');
             self._map.myLocationLayer.clearLayers();
             self.displayLocation(e.result);
         });
         document.addEventListener('accuratepositionfound', function (e) {
-            console.log('GPS position found');
+            // console.log('GPS position found');
             self._map.myLocationLayer.clearLayers();
             self.locationfound = true;
             self.displayLocation(e.result);
-            //  self._closeMyLocation();
-            if (self.first) {
-                self.first = false;
-                self._map.setZoom(16);
-            }
         });
         document.addEventListener('accuratepositionerror', function (e) {
-            console.log('Location error');
+            //console.log('Location error');
             self.locationfound = false;
-            //  self._closeMyLocation();
         });
         return containerAll;
     },
@@ -99,6 +93,7 @@ L.Control.MyLocation = L.Control.extend({
 
     _turnOnPositioning: function () {
         clearInterval(this.process);
+        this.first = true;
         this.link.classList.add("active");
         ra.loc.getPosition({
             maxWait: 5000, // defaults to 10closem000
@@ -120,6 +115,7 @@ L.Control.MyLocation = L.Control.extend({
     },
     _turnOffPositioning: function () {
         clearInterval(this.process);
+        this.first = false;
         this.link.classList.remove("active");
         this.statuson.style.display = 'none';
         this.statusoff.style.display = 'inline-block';
@@ -138,38 +134,44 @@ L.Control.MyLocation = L.Control.extend({
 
     displayLocation: function (location) {
         if (this.active) {
-            var pos = location.position.coords;
-            var latlng = L.latLng(pos.latitude, pos.longitude);
-            pos.heading = 42;
-            var popup = "Current location<br/>Accuracy is " + Math.ceil(pos.accuracy) + " metres";
-            if (pos.heading === null || isNaN(pos.heading)) {
-                var options = {radius: this._userOptions.marker.radius, color: this._userOptions.marker.color};
-                var circleMarker = new L.CircleMarker(latlng, options);
-                this._map.myLocationLayer.addLayer(circleMarker);
-                circleMarker.bindPopup(popup);
-            }
-            if (pos.heading !== null && isNaN(pos.heading) === false) {
-                var circleMarker = L.marker.arrowCircle(latlng, {
-                    iconOptions: {color: this._userOptions.marker.color, rotation: 45}});
-                this._map.myLocationLayer.addLayer(circleMarker);
-                circleMarker.bindPopup(popup);
-            }
+            try {
+                if (location.position !== undefined) {
+                    var pos = location.position.coords;
+                    var latlng = L.latLng(pos.latitude, pos.longitude);
+                    pos.heading = 42;
+                    var popup = "Current location<br/>Accuracy is " + Math.ceil(pos.accuracy) + " metres";
+                    if (pos.heading === null || isNaN(pos.heading)) {
+                        var options = {radius: this._userOptions.marker.radius, color: this._userOptions.marker.color};
+                        var circleMarker = new L.CircleMarker(latlng, options);
+                        this._map.myLocationLayer.addLayer(circleMarker);
+                        circleMarker.bindPopup(popup);
+                    }
+                    if (pos.heading !== null && isNaN(pos.heading) === false) {
+                        var circleMarker = L.marker.arrowCircle(latlng, {
+                            iconOptions: {color: this._userOptions.marker.color, rotation: 45}});
+                        this._map.myLocationLayer.addLayer(circleMarker);
+                        circleMarker.bindPopup(popup);
+                    }
 
-            if (this._userOptions.accuracy.display) {
-                var options = {radius: pos.accuracy, color: this._userOptions.accuracy.fill.color, opacity: this._userOptions.accuracy.fill.opacity, interactive: false, fill: true};
-                var circle = new L.Circle(latlng, options);
-                this._map.myLocationLayer.addLayer(circle);
-            }
-            if (this._userOptions.panToLocation) {
-                this._map.panTo(latlng);
-                if (this.first) {
-                    this.first = false;
-                    this._map.setZoom(16);
+                    if (this._userOptions.accuracy.display) {
+                        var options = {radius: pos.accuracy, color: this._userOptions.accuracy.fill.color, opacity: this._userOptions.accuracy.fill.opacity, interactive: false, fill: true};
+                        var circle = new L.Circle(latlng, options);
+                        this._map.myLocationLayer.addLayer(circle);
+                    }
+                    if (this.first) {
+                        this.first = false;
+                        this._map.panTo(latlng);
+                        this._map.setZoom(16);
+                    }
+                    if (this._userOptions.panToLocation) {
+                        this._map.panTo(latlng);
+                    }
                 }
-
+            } catch (err) {
+                this.statusoff.innerHTML = err.message;
+                this.statusoff.style.display = 'inline-block';
             }
-
-            console.log("Location displayed");
+            // console.log("Location displayed");
         }
     },
     settingsForm: function (tag) {
@@ -178,7 +180,7 @@ L.Control.MyLocation = L.Control.extend({
         hdg1.textContent = 'My Location Options';
         tag.appendChild(hdg1);
         this._controls.marker = ra.html.input.colour(tag, '', 'Colour of My Location marker', this._userOptions.marker, 'color');
-        this._controls.panToLocation = ra.html.input.yesNo(tag, '', "Pan to location", this._userOptions, 'panToLocation');
+        this._controls.panToLocation = ra.html.input.yesNo(tag, '', "Keep location at centre of map", this._userOptions, 'panToLocation');
         tag.appendChild(document.createElement('hr'));
         this._controls.accuracy.display = ra.html.input.yesNo(tag, '', "Display circle showing accuracy of location", this._userOptions.accuracy, 'display');
         var accuracy = document.createElement('div');
@@ -204,10 +206,11 @@ L.Control.MyLocation = L.Control.extend({
 
     },
     resetSettings: function () {
-        ra.html.input.yesNoReset(this._controls.panToLocation, true);
-        ra.html.input.yesNoReset(this._controls.accuracy.display, true);
+        ra.html.input.colorReset(this._controls.marker, '#0044DD');
+        ra.html.input.yesNoReset(this._controls.panToLocation, false);
+        ra.html.input.yesNoReset(this._controls.accuracy.display, false);
         ra.html.input.fillStyleReset(this._controls.accuracy.fill, {
-            color: '#550000',
+            color: '#F75E5E',
             opacity: 0.5});
     },
     _readSettings: function () {

@@ -987,7 +987,7 @@ if (typeof (ra.html.input) === "undefined") {
 
         return inputColor;
     };
-    ra.html.input.colourReset = function (inputTag, value) {
+    ra.html.input.colorReset = function (inputTag, value) {
         var ra = inputTag.ra;
         ra.object[ra.property] = value;
         inputTag.value = value;
@@ -1047,7 +1047,7 @@ if (typeof (ra.html.input) === "undefined") {
         return itemDiv;
     };
     ra.html.input.lineStyleReset = function (itemDiv, style) {
-        ra.html.input.colourReset(itemDiv.ra.color, style.color, false);
+        ra.html.input.colorReset(itemDiv.ra.color, style.color, false);
         ra.html.input.numberReset(itemDiv.ra.weight, style.weight, false);
         ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity, false);
         // ra.html.input._setExampleLineStyle(itemDiv,style);
@@ -1108,10 +1108,17 @@ if (typeof (ra.html.input) === "undefined") {
             let event = new Event("ra-input-change");
             itemDiv.dispatchEvent(event);
         });
+        color.addEventListener("ra-input-change", function (e) {
+            ra.html.input._setExampleLineStyle(example, raobject);
+        });
+
+        opacity.addEventListener("ra-input-change", function (e) {
+            ra.html.input._setExampleLineStyle(example, raobject);
+        });
         return itemDiv;
     };
     ra.html.input.fillStyleReset = function (itemDiv, style) {
-        ra.html.input.colourReset(itemDiv.ra.color, style.color);
+        ra.html.input.colorReset(itemDiv.ra.color, style.color);
         ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity);
     };
     ra.html.input._addExampleFill = function (tag, comment) {

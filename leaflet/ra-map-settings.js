@@ -81,7 +81,7 @@ L.Control.RA_Map_Settings = L.Control.extend({
                 _this._addTabItem(cont, list, 'My Location', 'mylocation', false);
                 var mylocation = _this._addTabContentItem(content, "mylocation", false);
                 control.settingsForm(mylocation);
-                // _this.controlsWithSettings.push(control);
+                _this.controlsWithSettings.push(control);
             }
 
             _this.saveTab = _this._addTabItem(cont, list, 'Save<sup>ON</sup>/Reset Settings', 'save', false);
