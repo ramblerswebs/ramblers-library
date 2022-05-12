@@ -62,21 +62,10 @@ class RJsScript {
                     'crossorigin' => ''));
         RLoad::addScript("libraries/ramblers/leaflet/ramblersleaflet.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
-
-//        if ($options->locationsearch) {
-//            $document->addStyleSheet("libraries/ramblers/leaflet/Control.Locationsearch.css", "text/css");
-//            $document->addScript("libraries/ramblers/leaflet/Control.Locationsearch.js", "text/javascript");
-//        }
         if ($options->fullscreen !== null) {
             $path = "libraries/ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
             RLoad::addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
             RLoad::addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
-        }
-
-        if ($options->rightclick !== null) {
-            // Mapcodes        
-            //     $document->addScript("libraries/ramblers/vendors/mapcode-js-2.4.1/mapcode.js", "text/javascript");
-            //     $document->addScript("libraries/ramblers/vendors/mapcode-js-2.4.1/ndata.js", "text/javascript");
         }
 
         if ($options->displayElevation !== null) {

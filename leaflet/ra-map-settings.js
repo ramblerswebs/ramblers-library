@@ -1,4 +1,4 @@
-var L, ra, document, OsGridRef;
+var L, ra, document;
 L.Control.RA_Map_Settings = L.Control.extend({
     options: {
         id: null,
@@ -10,7 +10,6 @@ L.Control.RA_Map_Settings = L.Control.extend({
     },
     controlsWithSettings: [],
     cookieName: '__settingsSave',
-    helpBase: "https://maphelp5.ramblers-webs.org.uk/",
     onAdd: function (map) {
         this._map = map;
         var _this = this;
@@ -100,8 +99,6 @@ L.Control.RA_Map_Settings = L.Control.extend({
             });
 
         });
-
-
         return container;
     },
 
@@ -133,9 +130,6 @@ L.Control.RA_Map_Settings = L.Control.extend({
     _addSave: function (tag) {
         var save = ra.html.input.yesNo(tag, '', "Save settings between sessions/future visits to web site (you accept cookies)", this.saveOptions, 'saveSettings');
         var reset = ra.html.input.action(tag, '', "Reset all settings to default values", 'Reset');
-//        var comment = document.createElement('p');
-//        comment.innerHTML = '<small>between sessions/future visitsfuture visits to web site (you accept cookies)</small>';
-//        tag.appendChild(comment);
         var _this = this;
         reset.addEventListener("action", function (e) {
             _this.controlsWithSettings.forEach(function (control) {
@@ -149,7 +143,6 @@ L.Control.RA_Map_Settings = L.Control.extend({
             _this._saveSettings();
 
         });
-
     },
 
     _saveSettings: function () {
@@ -174,12 +167,11 @@ L.Control.RA_Map_Settings = L.Control.extend({
 
             var help = document.createElement('a');
             help.setAttribute('class', 'link-button mintcake');
-            help.setAttribute('href', this.helpBase + this._helpPageUrl);
+            help.setAttribute('href', ra.map.helpBase + this._helpPageUrl);
             help.setAttribute('target', '_blank');
             help.style.cssFloat = "center";
             help.textContent = "View Mapping Help";
             tag.appendChild(help);
-
         }
     },
     _addTabItem: function (container, list, name, id, active) {
@@ -217,9 +209,8 @@ L.Control.RA_Map_Settings = L.Control.extend({
         }
         content.appendChild(item);
         return item;
-    },
-}
-);
+    }
+});
 L.control.ra_map_settings = function (options) {
     return new L.Control.RA_Map_Settings(options);
 };

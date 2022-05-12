@@ -10,7 +10,7 @@ L.Control.Mouse = L.Control.extend({
     _userOptions: {
         displayMouseGridSquare: true,
         OSGridDisplay: false,
-        osgrid: {
+        osgridline: {
             color: '#0080C0',
             weight: 2,
             opacity: 0.5}
@@ -183,9 +183,9 @@ L.Control.Mouse = L.Control.extend({
     },
     drawOSMapGrid: function (ne, sw, gs, layer) {
         var style;
-        var color = this._userOptions.osgrid.color;
-        var weight = this._userOptions.osgrid.weight;
-        var opacity = this._userOptions.osgrid.opacity;
+        var color = this._userOptions.osgridline.color;
+        var weight = this._userOptions.osgridline.weight;
+        var opacity = this._userOptions.osgridline.opacity;
         switch (gs) {
             case 1000:
                 style = {color: color, weight: weight, opacity: opacity};
@@ -248,7 +248,7 @@ L.Control.Mouse = L.Control.extend({
             title.textContent = 'Ordnance Survey Grid';
             tag.appendChild(title);
             var osGrid = ra.html.input.yesNo(tag, '', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", this._userOptions, 'OSGridDisplay');
-            var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this._userOptions.osgrid);
+            var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this._userOptions.osgridline);
             this._controls.OSGridDisplay = osGrid;
             this._controls.osgridline = line;
             if (_this._userOptions.OSGridDisplay) {
@@ -423,7 +423,7 @@ L.Control.Rightclick = L.Control.extend({
         //   this._container.innerHTML = text + options.join('') + '</select>';
         var osmOptions = [];
         osmOptions["cafes"] = {};
-        osmOptions["cafes"] = {tag: "amenity", type: "cafe", title: "Cafes", single: "Cafe"};
+        osmOptions["cafes"] = {tag: "amenity", type: "cafes", title: "Cafes", single: "Cafe"};
         osmOptions["parking"] = {tag: "amenity", type: "parking", title: "Car Parks", single: "Car Park"};
         osmOptions["pubs"] = {tag: "amenity", type: "pub", title: "Pubs", single: "Pub"};
         osmOptions["toilets"] = {tag: "amenity", type: "toilets", title: "Toilets", single: "Toilets"};

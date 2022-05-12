@@ -923,7 +923,6 @@ if (typeof (ra.html.input) === "undefined") {
         _label.setAttribute('class', 'help-label');
         _label.textContent = label;
         var inputTag = document.createElement('input');
-        //  inputTag.setAttribute('class', ' form-control-range');
         inputTag.setAttribute('type', 'range');
         inputTag.setAttribute('class', 'slider');
         inputTag.setAttribute('min', minval);
@@ -950,10 +949,8 @@ if (typeof (ra.html.input) === "undefined") {
         var ra = inputTag.ra;
         ra.object[ra.property] = value;
         inputTag.value = value;
-        //   if (raiseEvent) {
         let event = new Event("ra-input-change");
         inputTag.dispatchEvent(event);
-        // }
     };
     ra.html.input.colour = function (tag, divClass, labeltext, raobject, property) {
         var itemDiv = document.createElement('div');
@@ -982,20 +979,14 @@ if (typeof (ra.html.input) === "undefined") {
             let event = new Event("ra-input-change"); // (2)
             tag.dispatchEvent(event);
         });
-
-
-
         return inputColor;
     };
     ra.html.input.colorReset = function (inputTag, value) {
         var ra = inputTag.ra;
         ra.object[ra.property] = value;
         inputTag.value = value;
-//        if (raiseEvent) {
         let event = new Event("ra-input-change"); // (2)
         inputTag.dispatchEvent(event);
-//    }
-
     };
     ra.html.input.lineStyle = function (tag, divClass, labeltext, raobject) {
         var itemDiv = document.createElement('div');
@@ -1008,8 +999,8 @@ if (typeof (ra.html.input) === "undefined") {
         itemDiv.appendChild(titlestyle);
         var color = ra.html.input.colour(itemDiv, 'inlineBlock', 'Colour', raobject, 'color');
         var example = ra.html.input._addExampleLine(itemDiv, "150px", "Example: ");
-        var weight = ra.html.input.number(itemDiv, 'divClass', 'Weight %n pixels', raobject, 'weight', 1, 10, 0.5);
-        var opacity = ra.html.input.number(itemDiv, 'divClass', 'Opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
+        var weight = ra.html.input.number(itemDiv, '', 'Weight %n pixels', raobject, 'weight', 1, 10, 0.5);
+        var opacity = ra.html.input.number(itemDiv, '', 'Opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
         itemDiv.ra = {};
         itemDiv.ra.color = color;
         itemDiv.ra.weight = weight;
@@ -1040,19 +1031,12 @@ if (typeof (ra.html.input) === "undefined") {
         opacity.addEventListener("ra-input-change", function (e) {
             ra.html.input._setExampleLineStyle(example, raobject);
         });
-
-//        itemDiv.addEventListener("ra-input-change", function (e) {
-//            ra.html.input._setExampleLineStyle(example, raobject);
-//        });
         return itemDiv;
     };
     ra.html.input.lineStyleReset = function (itemDiv, style) {
         ra.html.input.colorReset(itemDiv.ra.color, style.color, false);
         ra.html.input.numberReset(itemDiv.ra.weight, style.weight, false);
         ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity, false);
-        // ra.html.input._setExampleLineStyle(itemDiv,style);
-        //     let event = new Event("ra-input-change");
-        //    itemDiv.dispatchEvent(event);
     };
     ra.html.input._addExampleLine = function (tag, length, comment) {
         var com = document.createElement('div');
@@ -1092,7 +1076,7 @@ if (typeof (ra.html.input) === "undefined") {
         itemDiv.appendChild(titlestyle);
         var color = ra.html.input.colour(itemDiv, 'inlineBlock', 'Colour', raobject, 'color');
         var example = ra.html.input._addExampleFill(itemDiv, "Example: ");
-        var opacity = ra.html.input.number(itemDiv, 'divClass', 'Opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
+        var opacity = ra.html.input.number(itemDiv, '', 'Opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
         itemDiv.ra = {};
         itemDiv.ra.color = color;
         itemDiv.ra.opacity = opacity;

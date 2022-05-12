@@ -171,8 +171,7 @@ L.Control.MyLocation = L.Control.extend({
                         }
                         if (this.first) {
                             this.first = false;
-                              this._map.setZoom(16);    
-                              this._map.panTo(latlng);
+                            this._map.setView(latlng, 16);
                         }
                         if (this._userOptions.panToLocation) {
                             this._map.panTo(latlng);

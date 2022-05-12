@@ -9,6 +9,8 @@ class RGpxFile {
 
     public $longitude = 0;
     public $latitude = 0;
+    public $endLongitude = 0;
+    public $endLatitude = 0;
     public $distance = 0;
     public $cumulativeElevationGain = 0;
     public $minAltitude = 0;
@@ -86,6 +88,8 @@ class RGpxFile {
                         $this->latitude = $pt->latitude;
                         $firstpointset = true;
                     }
+                    $this->endLongitude = $pt->longitude;
+                    $this->endLatitude = $pt->latitude;
                 }
             }
         }
@@ -110,6 +114,10 @@ class RGpxFile {
                 $pt = $route->points[0];
                 $this->longitude = $pt->longitude;
                 $this->latitude = $pt->latitude;
+                $noEnd = count($route->points) - 1;
+                $ptEnd = $route->points[$noEnd];
+                $this->endLongitude = $ptEnd->longitude;
+                $this->endLatitude = $ptEnd->latitude;
             }
         }
     }

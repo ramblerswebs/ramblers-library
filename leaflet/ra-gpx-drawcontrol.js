@@ -423,7 +423,7 @@ ra.display.plotRoute = function (options, data) {
         var text = "";
         if (!hasItems) {
             text = '<p><b>Plot a walking Route:</b> No routes or markers defined ';
-            text += '<br/>If you need help to get started please visit our <b><a href="' + this.options.helpPage + '" target="_blank">Mapping Help Site</a></b></p>';
+            text += '<br/>If you need help to get started please visit our <b><a href="' + ra.map.helpBase + this.options.helpPage + '" target="_blank">Mapping Help Site</a></b></p>';
         } else {
             text += "<table>";
             text += "<tr><th>Segment</th><th>Length</th><th>Elevation Gain</th><th>Est Time</th><th>Number of points</th></tr>";
@@ -436,7 +436,7 @@ ra.display.plotRoute = function (options, data) {
                 }
             });
             text += "</table>";
-            text += '<p>If you need help to get started please visit our <b><a href="' + this.options.helpPage + '" target="_blank">Mapping Help Site</a></b></p>';
+            text += '<p>If you need help to get started please visit our <b><a href="' + ra.map.helpBase + this.options.helpPage + '" target="_blank">Mapping Help Site</a></b></p>';
 
         }
         this.detailsDiv.innerHTML = text;

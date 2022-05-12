@@ -1,4 +1,4 @@
-var L, ra, jplist;
+var L, ra, jplist, OsGridRef;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -301,6 +301,16 @@ ra.display.gpxFolder = function (options, data) {
         header += '<b>Distance:</b> ' + ra.map.getGPXDistance(route.distance) + '<br/>';
         if (route.description !== '') {
             header += '<b>Description:</b> ' + route.description + '<br/>';
+        }
+        var p = new LatLon(route.latitude, route.longitude);
+        var grid = OsGridRef.latLonToOsGrid(p);
+        header += '<b>Start:</b> ' + grid.toString(6) + '<br/>';
+        if (route.endLatitude !== undefined && route.endLongitude !== undefined) {
+            if (route.endLatitude !== 0 && route.endLongitude !== 0) {
+                var p = new LatLon(route.endLatitude, route.endLongitude);
+                var grid = OsGridRef.latLonToOsGrid(p);
+                header += '<b>End:</b> ' + grid.toString(6) + '<br/>';
+            }
         }
         header += this.formatAltitude(route);
         header += "<b>Est time <a href=\"https://maphelp.ramblers-webs.org.uk/naismith.html\" target='_blank'>(Naismith)</a>:</b> " + ra.math.naismith(route.distance, route.cumulativeElevationGain) + '<br/>';

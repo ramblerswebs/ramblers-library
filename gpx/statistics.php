@@ -94,6 +94,8 @@ class RGpxStatistics {
         //       $stat->copyright = $gpx->copyright;
         $stat->longitude = $gpx->longitude;
         $stat->latitude = $gpx->latitude;
+        $stat->endLongitude = $gpx->endLongitude;
+        $stat->endLatitude = $gpx->endLatitude;
         $stat->distance = $gpx->distance;
         if ($gpx->cumulativeElevationGain !== null) {
             $stat->cumulativeElevationGain = $gpx->cumulativeElevationGain;

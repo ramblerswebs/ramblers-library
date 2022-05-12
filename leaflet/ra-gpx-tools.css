@@ -88,7 +88,7 @@ div.leaflet-gpx-options div input{
 }
 
 /* The slider itself */
-.slider {
+.XXXXslider {
     -webkit-appearance: none;  /* Override default CSS styles */
     appearance: none;
     width: 100%; /* Full-width */
@@ -101,12 +101,12 @@ div.leaflet-gpx-options div input{
 }
 
 /* Mouse-over effects */
-.slider:hover {
+.XXXXslider:hover {
     opacity: 1; /* Fully shown on mouse-over */
 }
 
 /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
-.slider::-webkit-slider-thumb {
+.XXXXslider::-webkit-slider-thumb {
     -webkit-appearance: none; /* Override default look */
     appearance: none;
     width: 15px; /* Set a specific slider handle width */
@@ -115,7 +115,7 @@ div.leaflet-gpx-options div input{
     cursor: pointer; /* Cursor on hover */
 }
 
-.slider::-moz-range-thumb {
+.XXXXslider::-moz-range-thumb {
     width: 15px; /* Set a specific slider handle width */
     height: 20px; /* Slider handle height */
     background: #4CAF50; /* Green background */
