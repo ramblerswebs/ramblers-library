@@ -96,16 +96,16 @@ L.Control.MyLocation = L.Control.extend({
         this.first = true;
         this.link.classList.add("active");
         ra.loc.getPosition({
-            maxWait: 5000, // defaults to 10closem000
+            maxWait: 1000, // defaults to 10closem000
             desiredAccuracy: 20 // defaults to 20
         });
         this.process = null;
         this.process = setInterval(function () {
             ra.loc.getPosition({
-                maxWait: 5000, // defaults to 10000
+                maxWait: 2000, // defaults to 10000
                 desiredAccuracy: 20 // defaults to 20
             });
-        }, 10000);
+        }, 3000);
         var _this = this;
         this.statuson.style.display = 'inline-block';
         this.statusoff.style.display = 'none';

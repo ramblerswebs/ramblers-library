@@ -28,8 +28,8 @@ class RJsonwalksWalk extends REvent {
     public $isLeader = false;       // is the contact info for the leader of the walk
     public $walkLeader = "";        // walk leader if isLeader is false
     public $contactName = "";       // contact name
-    public $email = "";             // email address for contac
-    public $key = "";             // email address for contac
+    public $email = "";             // email address for contact
+    public $key = "";             // email address for contact
     public $telephone1 = "";        // first telephone number of contact
     public $telephone2 = "";        // second telephone number of contact
 // meeting place
