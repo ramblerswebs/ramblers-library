@@ -499,7 +499,7 @@ tr.walk:hover {
 }
 
 div#rainner {
-    padding-top:25px;
+    padding-top:10px;
     padding-left:10px;
     padding-bottom:10px;
     padding-right:10px;
@@ -514,6 +514,10 @@ div.gpxouter {
     background-color:#D8D8D8;
     border-radius: 0px 10px 10px 10px;
     padding:10px;
+}
+div.ra.pagination {
+  margin:  0;
+  padding: 0;
 }
 /*div#raoptions table, table.ra-tab-options{
 */
@@ -587,8 +591,8 @@ img.ra-detailsimg {
     cursor: default;
 }
 [data-page] {
-    min-height: 30px;
-    min-width: 30px;
+    min-height: 25px;
+    min-width: 25px;
 }
 img.ra-grade.pointer {
     padding-right:10px;

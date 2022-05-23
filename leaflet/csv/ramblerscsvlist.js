@@ -346,13 +346,9 @@ ra.display.csvList = (function () {
             }
         };
         this.addPagination = function (no, tag) {
-            var printTag = this.elements.dataTab;
-            var printButton = this.myjplist.addPagination(no, tag, "pagination1", 20, false);
-            if (printButton !== null) {
-                printButton.addEventListener('click', function () {
-                    ra.html.printTag(printTag);
-                });
-            }
+          
+            this.myjplist.addPagination(no, tag, "pagination1", 20);
+            
         };
         this.jplistFilter = function (item) {
             var min, max;

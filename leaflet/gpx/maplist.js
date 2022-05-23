@@ -505,7 +505,7 @@ ra.display.gpxFolder = function (options, data) {
 
     };
     this.addPagination = function (no, tag) {
-        this.myjplist.addPagination(no, tag, "pagination1", 20, false);
+        this.myjplist.addPagination(no, tag, "pagination1", 20);
         return;
     };
 

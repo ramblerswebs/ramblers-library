@@ -42,7 +42,7 @@ ra.walk = (function () {
 
     },
             my.registerWalks = function (walks) {
-               // my.testcsv();
+                // my.testcsv();
                 var i, no, walk;
                 for (i = 0, no = walks.length; i < no; ++i) {
                     walk = walks[i];
@@ -114,6 +114,20 @@ ra.walk = (function () {
         }
         ra.modal.display(html);
         my._addMaptoWalk(walk);
+        var tag = document.getElementById("ra-diary-button");
+        if (tag !== null) {
+            my._addDiaryButton(tag, walk);
+        }
+    };
+    my._addDiaryButton = function (tag, walk) {
+        var diary = document.createElement('button');
+        diary.setAttribute('class', 'link-button tiny button mintcake right');
+        diary.textContent = 'Add to Calendar';
+        tag.appendChild(diary);
+        diary.addEventListener('click', function () {
+            var $walks = [walk];
+            ra.walk.icsfile.create($walks);
+        });
     };
     my._getWalkObject = function (event, id, callback) {
         var walk = my.getWalk(id);
@@ -375,6 +389,7 @@ ra.walk = (function () {
         $html += "<div class='updated'>Walk ID " + $walk.id + "</div>" + PHP_EOL;
         $html += "<div class='updated walk" + $walk.status + "'>Last update: " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
+        $html += "<div id='ra-diary-button'></div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
         //    var mapdiv = "div" + $walk.id;
         //    $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;
@@ -1113,6 +1128,130 @@ ra.walk = (function () {
         $html = $html.replace(/basedirectory/g, ra.baseDirectory());
         ra.modal.display($html);
     };
+    my.icsfile = (function () {
+        var icsfile = {};
+        icsfile.create = function ($walks) {
+
+            var index, len, $walk;
+            var events = new ra.ics.events();
+
+            for (index = 0, len = $walks.length; index < len; ++index) {
+                $walk = $walks[index];
+                if ($walk.display) {
+                    ra.walk.icsfile._addWalktoIcs($walk, events);
+                }
+            }
+            events.download();
+        };
+        icsfile._addWalktoIcs = function (walk, events) {
+            var ev = new ra.ics.event();
+            var $meetLocation, $startLocation, $before, $after, $summary, $description, $altDescription;
+            if (walk.hasMeetPlace) {
+                var meet = new ra.gwemLocation(walk.meetLocation);
+                $meetLocation = meet.getTextDescription();
+                $meetLocation += "; <br/>";
+            } else {
+                $meetLocation = "";
+            }
+            var start = new ra.gwemLocation(walk.startLocation);
+            $startLocation = start.getTextDescription();
+            $before = $meetLocation + $startLocation + "<br/>Description: ";
+            $after = "<br/>Contact: " + walk.contactName + " (" + walk.telephone1 + " " + walk.telephone2 + "); <br/>";
+            if (walk.localGrade !== "") {
+                $after += "Grade: " + walk.localGrade + "/" + walk.nationalGrade + "; <br/> ";
+            } else {
+                $after += "Grade: " + walk.nationalGrade + "; <br/> ";
+            }
+            $after += walk.detailsPageUrl;
+            $after += "<br/>Note: Finish times are very approximate!";
+            if (walk.additionalNotes !== '') {
+                $after += "<br/>Notes: " + walk.additionalNotes;
+            }
+            $summary = walk.title;
+            if (walk.distanceMiles > 0) {
+                $summary += ", " + walk.distanceMiles + "mi/" + walk.distanceKm + "km";
+            }
+            if (walk.status === 'Cancelled') {
+                ev.method("CANCEL");
+                $summary = " CANCELLED " + $summary;
+                $description = "CANCELLED - REASON: " + walk.cancellationReason + " (" + walk.description + ")";
+            } else {
+
+                $description = $before + walk.description + $after;
+                $altDescription = $before + walk.descriptionHtml + $after;
+            }
+
+            var $time = icsfile._getFirstTime(walk);
+            var d = new Date(walk.walkDate);
+            if ($time !== null) {
+                $time.setDate(d.getDate());
+                $time.setMonth(d.getMonth());
+                $time.setFullYear(d.getFullYear());
+                ev.startDate($time);
+                $time = icsfile._getFinishTime(walk);
+                if ($time !== null) {
+                    ev.endDate(new Date($time));
+                }
+            } else {
+                ev.startDate(new Date(walk.walkDate));
+            }
+
+            ev.createdDate(new Date(walk.dateCreated));
+            ev.modifiedDate(new Date(walk.dateUpdated));
+            ev.uid('walk' + walk.id + '-isc@ramblers-webs.org.uk');
+            ev.organiser(walk.groupName + ":mailto:ignore@ramblers-webs.org.uk");
+            ev.summary($summary);
+            ev.description($description);
+            ev.altDescription($altDescription);
+            ev.location($startLocation);
+            ev.url(walk.detailsPageUrl);
+            ev.categories("Walk," + walk.groupName);
+            ev.class('PUBLIC');
+
+            events.addEvent(ev);
+        };
+        icsfile._getFirstTime = function (walk) {
+            var time = null;
+            if (walk.hasMeetPlace) {
+                time = walk.meetLocation.time;
+            }
+            if (time !== null) {
+                return time;
+            }
+            time = walk.startLocation.time;
+            return time;
+        };
+        icsfile._getLastTime = function (walk) {
+            var time=null;
+            if (walk.hasMeetPlace) {
+                time = walk.meetLocation.time;
+            }
+            if (walk.startLocation.exact === true) {
+                time = walk.startLocation.time;
+            }else{
+                
+            }
+            return time;
+        };
+
+        icsfile._getFinishTime = function (walk) {
+            if (walk.finishTime !== null) {
+                return walk.finishTime;
+            }
+            // calculate end time
+            var $lasttime = icsfile._getLastTime(walk);
+            if ($lasttime !== null) {
+                var $durationFullMins = Math.ceil(walk.distanceMiles / 2) * 60;
+                if (walk.startLocation.exact === false) {
+                    $durationFullMins += 60;
+                }
+                $lasttime = ra.time.addMinutes($lasttime, $durationFullMins);
+              }
+            return $lasttime;
+        };
+        return icsfile;
+    }
+    ());
     my.grade = (function () {
         var grade = {};
         // get abbreviation from National Grade

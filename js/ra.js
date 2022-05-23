@@ -426,13 +426,13 @@ ra.date = (function () {
     date.toICSFormat = function (datetime) {
         var value = date._setDateTime(datetime);
         var yyyymmdd = value.getFullYear().toString() + date.MM(value) + date.DD(value);
-        var out = yyyymmdd + "T" + value.getHours().toString().padStart(2, '0') + value.getMinutes().toString().padStart(2, '0') + "00";
+        var out = yyyymmdd + "T" + value.getHours().toString().padStart(2, '0') + value.getMinutes().toString().padStart(2, '0') + value.getSeconds().toString().padStart(2, '0');
         return out;
     };
     date.toYYYYMMDDmmhhssFormat = function (datetime) {
         var value = date._setDateTime(datetime);
         var yyyymmdd = value.getFullYear().toString() + '-' + date.MM(value) + '-' + date.DD(value);
-        var time = value.getHours().toString().padStart(2, '0') + ':' + value.getMinutes().toString().padStart(2, '0') + ':' + "00";
+        var time = value.getHours().toString().padStart(2, '0') + ':' + value.getMinutes().toString().padStart(2, '0') + ':' + value.getSeconds().toString().padStart(2, '0');
         var out = yyyymmdd + " " + time + '.000000';
         return out;
     };
@@ -728,7 +728,10 @@ ra.html = (function () {
     // open window with tag content for printing
     html.printTag = function (id) {
         var tag = html.getTag(id);
-        var content = tag.innerHTML;
+        html.printHTML(tag.innerHTML);
+        return true;
+    };
+    html.printHTML = function (html) {
         var mywindow = window.open('', 'Print', 'height=600,width=800');
         mywindow.document.write('<html><head><title>Print</title>');
         var index, len;
@@ -743,7 +746,7 @@ ra.html = (function () {
             }
         }
         mywindow.document.write('</head><body><div id="js-document"><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');
-        mywindow.document.write(content);
+        mywindow.document.write(html);
         mywindow.document.write('</div></div></body></html>');
         var span = mywindow.document.getElementById("js-document");
 // When the user clicks on <span> (x), close the modal
@@ -1793,7 +1796,7 @@ ra.jplist = function (group) {
         button.textContent = text;
         return button;
     };
-    this.addPagination = function (no, tag, jplistName, itemsPerPage, print = false) {
+    this.addPagination = function (no, tag, jplistName, itemsPerPage) {
         tag.innerHTML = '';
         if (!ra.isES6()) {
             var h3 = document.createElement('h3');
@@ -1807,10 +1810,7 @@ ra.jplist = function (group) {
             return null;
         }
         if (no < 21) {
-            var tags = [
-                {name: 'print', parent: 'root', tag: 'button', attrs: {class: 'link-button tiny button mintcake'}, textContent: 'Print'}
-            ];
-            var elements = ra.html.generateTags(tag, tags);
+
         } else {
             var tags = [
                 {name: 'div', parent: 'root', tag: 'div', attrs: {'data-jplist-control': 'pagination',
@@ -1818,7 +1818,6 @@ ra.jplist = function (group) {
                         'data-current-page': '0', 'data-id': 'no-items',
                         'data-name': jplistName, class: 'ra pagination'}},
                 {name: 'spanitems', parent: 'div', tag: 'span'},
-                {name: 'print', parent: 'spanitems', tag: 'button', attrs: {class: 'ra nonmobile link-button tiny button mintcake'}, textContent: 'Print'},
                 {name: 'span', parent: 'spanitems', tag: 'span', attrs: {class: 'ra nonmobile', 'data-type': 'info'}, textContent: '{startItem} - {endItem} of {itemsNumber}'},
                 {name: 'buttons', parent: 'div', tag: 'span', attrs: {class: 'center '}},
                 {name: 'first', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'first'}, textContent: '|<'},
@@ -1838,13 +1837,9 @@ ra.jplist = function (group) {
             var elements = ra.html.generateTags(tag, tags);
             elements.select.style.width = "120px";
         }
-        elements.print.style.marginRight = "5px";
-        if (print) {
-            return elements.print;
-        } else {
-            elements.print.style.display = 'none';
-            return null;
-    }
+
+        return null;
+
     };
     this.addFilter = function (varclass, name, type, min = 0, max = 999999) {
         var out = "";
@@ -1909,6 +1904,7 @@ ra.jplist = function (group) {
 
 if (typeof (ra.ics) === "undefined") {
     ra.ics = {};
+    // https://icalendar.org/
     ra.ics.events = function () {
         this.foldLength = 73;
         this.newLineChar = '\r\n';
@@ -1918,28 +1914,28 @@ if (typeof (ra.ics) === "undefined") {
         this.createdDate = d.toISOString();
         this.addEvent = function (event) {
             var item = event.getItem();
-            this.addRecord('BEGIN:', 'VEVENT');
-            this.addRecord('DTSTART;VALUE=DATE-TIME:', item.startDate);
-            this.addRecord('DTEND;VALUE=DATE-TIME:', item.endDate);
-            this.addRecord('LOCATION:', item.location);
-            this.addRecord('TRANSP:', 'OPAQUE');
-            this.addRecord('SEQUENCE:', item.sequence);
-            this.addRecord('UID:', item.uid);
-            this.addRecord('ORGANIZER;CN=', item.organiser);
-            this.addRecord('SUMMARY:', item.summary);
-            this.addRecord('DESCRIPTION:', item.description);
-            this.addRecord('X-ALT-DESC;FMTTYPE=text/html:', item.altDescription, true);
-            this.addRecord('CATEGORIES:', item.categories);
-            this.addRecord('DTSTAMP;VALUE=DATE-TIME:', this.dateStamp);
-            this.addRecord('CREATED;VALUE=DATE-TIME', item.createdDate);
-            this.addRecord('LAST-MODIFIED;VALUE=DATE-TIME', item.modifiedDate);
-            this.addRecord('PRIORITY:', '1');
-            this.addRecord('URL;VALUE=URI:', item.url);
-            this.addRecord('CLASS:', 'PUBLIC');
-            this.addRecord('END:', 'VEVENT');
+            this._addRecord('BEGIN:', 'VEVENT');
+            this._addRecord('DTSTART;VALUE=DATE-TIME:', item.startDate);
+            this._addRecord('DTEND;VALUE=DATE-TIME:', item.endDate);
+            this._addRecord('LOCATION:', item.location);
+            this._addRecord('TRANSP:', 'OPAQUE');
+            this._addRecord('SEQUENCE:', item.sequence);
+            this._addRecord('UID: ', item.uid);
+            this._addRecord('ORGANIZER;CN=', item.organiser);
+            this._addRecord('SUMMARY:', item.summary);
+            this._addRecord('DESCRIPTION:', item.description);
+            this._addRecord('X-ALT-DESC;FMTTYPE=text/html:', item.altDescription, true);
+            this._addRecord('CATEGORIES:', item.categories);
+            this._addRecord('DTSTAMP;VALUE=DATE-TIME:', this.dateStamp);
+            this._addRecord('CREATED;VALUE=DATE-TIME:', item.createdDate);
+            this._addRecord('LAST-MODIFIED;VALUE=DATE-TIME:', item.modifiedDate);
+            this._addRecord('PRIORITY:', '1');
+            this._addRecord('URL;VALUE=URI:', item.url);
+            this._addRecord('CLASS:', 'PUBLIC');
+            this._addRecord('END:', 'VEVENT');
         };
         this.download = function () {
-            this.addRecord('END:', 'VCALENDAR');
+            this._addRecord('END:', 'VCALENDAR');
             var data = this.file;
             try {
                 var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
@@ -1950,7 +1946,7 @@ if (typeof (ra.ics) === "undefined") {
                 alert('Your web browser does not support his option!');
             }
         };
-        this.addRecord = function ($command, $content = "", $html = false) {
+        this._addRecord = function ($command, $content = "", $html = false) {
             if ($content === null) {
                 return;
             }
@@ -1963,14 +1959,15 @@ if (typeof (ra.ics) === "undefined") {
             var $text = $content;
             var $line;
             if ($html) {
-                var $lines;
                 var $before = "<!DOCTYPE html><html><head><title></title></head><body>";
                 var $after = "</body></html>";
-                $text = this.decodeEntities($text);
                 $text = this.escapeString($text);
+                //  $text = this.decodeEntities($text);
+
                 //     $lines = this.foldline($command + $before + $text + $after + this.newLineChar);
                 $line = $command + $before + $text + $after;
             } else {
+
                 $text = $text.replace(/&nbsp;/g, " ");
                 $text = $text.replace(/<p>/g, "");
                 $text = $text.replace(/<\/p>/g, "\\n");
@@ -1979,29 +1976,34 @@ if (typeof (ra.ics) === "undefined") {
                 $text = $text.replace(/<BR>/g, "\\n");
                 $text = $text.replace(/<BR\/>/g, "\\n");
                 $text = $text.replace(/&ndash;/g, "-");
-                $text = ra.html.stripTags($text);
+                //   $text = ra.html.stripTags($text);
                 // $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
-                $text = ra.html.convertToText($text);
+                //   $text = ra.html.convertToText($text);
                 $text = this.escapeString($text);
                 //   $lines = this.foldline($command + $text + this.newLineChar);
                 $line = $command + $text;
             }
-            $lines = this.stringToChunks($line, 73);
-            var _this = this;
-            $lines.forEach(myFunction);
-
-            function myFunction(value, index, array) {
-                _this.file += value + '\r\n';
-        }
-        //  this.file += $lines;
+            this.file += this._stringIntoChunks($line, 73);
         };
-        this.stringToChunks = function (string, chunkSize) {
+        this._stringIntoChunks = function (string, chunkSize) {
             const chunks = [];
+            var out = '';
             while (string.length > 0) {
                 chunks.push(string.substring(0, chunkSize));
                 string = string.substring(chunkSize, string.length);
             }
-            return chunks;
+            var _this = this;
+            chunks.forEach(myFunction);
+
+            function myFunction(value, index, array) {
+                if (index === 0) {
+                    out += value + '\r\n';
+                } else {
+                    out += " " + value + '\r\n';
+                }
+
+            }
+            return out;
         };
         this.trimICSstring = function (str) {
             var finished = false;
@@ -2076,10 +2078,10 @@ if (typeof (ra.ics) === "undefined") {
         };
 
 
-        this.addRecord('BEGIN:', 'VCALENDAR');
-        this.addRecord('VERSION:', '2.0');
-        this.addRecord('METHOD:', 'PUBLISH');
-        this.addRecord('PRODID:', 'ramblers-webs v1.1');
+        this._addRecord('BEGIN:', 'VCALENDAR');
+        this._addRecord('VERSION:', '2.0');
+        this._addRecord('METHOD:', 'PUBLISH');
+        this._addRecord('PRODID:', 'ramblers-webs v1.1');
     };
 
 

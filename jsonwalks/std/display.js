@@ -253,7 +253,7 @@ ra.display.walksTabs = function (mapOptions, data) {
                 }
                 this.addPagination(no, this.elements.rapagination1);
                 this.addPagination(no, this.elements.rapagination2);
-                ra.html.setTag(this.elements.rawalks, this.displayWalksText($walks));
+                ra.html.setTag(this.elements.rawalks, this.displayWalksText($walks, false));
 
                 if (!this.settings.noPagination) {
                     this.myjplist.init('ra-display');
@@ -315,7 +315,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
     };
 
-    this.displayWalksText = function ($walks) {
+    this.displayWalksText = function ($walks, printing) {
         var index, len, $walk;
         var $out = "";
         var header = "";
@@ -356,10 +356,8 @@ ra.display.walksTabs = function (mapOptions, data) {
             $out = "<h3>Sorry, but no walks meet your filter search</h3>";
             ra.html.setTag(this.elements.rapagination1, "");
             ra.html.setTag(this.elements.rapagination2, "");
-            header = "";
-            footer = "";
         } else {
-            header = this.displayWalksHeader();
+            header = this.displayWalksHeader(printing);
             footer = this.displayWalksFooter();
         }
         return  header + $out + footer;
@@ -423,23 +421,32 @@ ra.display.walksTabs = function (mapOptions, data) {
         return true;
     };
 
-    this.displayWalksHeader = function () {
+    this.displayWalksHeader = function (printing = false) {
         var $out = "";
         switch (this.settings.currentView) {
             case "Grades":
-                if (this.settings.displayDetailsPrompt) {
+            case "List":
+            case "Table":
+                if (printing) {
+                    $out += "<h3>Walks programme from " + ra.baseDirectory() + "</h3>";
+                }
+                break;
+        }
+        switch (this.settings.currentView) {
+            case "Grades":
+                if (this.settings.displayDetailsPrompt & !printing) {
                     $out += "<p class='noprint'>Click on item to display full details of walk</p>";
                 }
                 $out += "<div data-jplist-group=\"" + this.settings.jplistGroup + "\">";
                 break;
             case "List":
-                if (this.settings.displayDetailsPrompt) {
+                if (this.settings.displayDetailsPrompt & !printing) {
                     $out += "<p class='noprint'>Click on item to display full details of walk</p>";
                 }
                 $out += "<div data-jplist-group=\"" + this.settings.jplistGroup + "\">";
                 break;
             case "Table":
-                if (this.settings.displayDetailsPrompt) {
+                if (this.settings.displayDetailsPrompt & !printing) {
                     $out += "<p class='noprint'>Click on item to display full details of walk</p>";
                 }
                 $out += "<table class='" + this.settings.displayClass + "'>\n";
@@ -458,11 +465,11 @@ ra.display.walksTabs = function (mapOptions, data) {
         switch (this.settings.currentView) {
             case "Grades":
                 $out += "</div>";
-                $out += "<div style='height:20px;'>  </div>";
+                $out += "<div style='height:5px;'>  </div>";
                 break;
             case "List":
                 $out += "</div>";
-                $out += "<div style='height:20px;'>  </div>";
+                $out += "<div style='height:5px;'>  </div>";
                 break;
             case "Table":
                 $out += "</tbody></table>\n";
@@ -843,24 +850,32 @@ ra.display.walksTabs = function (mapOptions, data) {
 
 
     this.addPagination = function (no, tag) {
-        var printTag = this.elements.rawalks;
-        var printButton = this.myjplist.addPagination(no, tag, this.settings.jplistName, this.settings.itemsPerPage, true);
-        if (printButton !== null) {
-            printButton.addEventListener('click', function () {
-                ra.html.printTag(printTag);
-            });
-        }
-        //  this.addToDiaryButton(tag);
+        this.myjplist.addPagination(no, tag, this.settings.jplistName, this.settings.itemsPerPage);
+        this.addPrintButton(tag);
+        this.addToDiaryButton(tag);
         return;
+    };
+    this.addPrintButton = function (tag) {
+        var printButton = document.createElement('button');
+        printButton.setAttribute('class', 'link-button tiny button mintcake right');
+        printButton.textContent = 'Print';
+        tag.appendChild(printButton);
+        var _this = this;
+        printButton.addEventListener('click', function () {
+            var walks = _this.getWalks();
+            var content = _this.displayWalksText(walks, true);
+            ra.html.printHTML(content);
+        });
     };
     this.addToDiaryButton = function (tag) {
         var diary = document.createElement('button');
         diary.setAttribute('class', 'link-button tiny button mintcake right');
-        diary.textContent = 'Add to diary';
+        diary.textContent = 'Add to Calendar';
         tag.appendChild(diary);
         var _this = this;
         diary.addEventListener('click', function () {
-            _this.icsfile();
+            var $walks = _this.getWalks();
+            ra.walk.icsfile.create($walks);
         });
     };
 
@@ -959,7 +974,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             return;
         }
         var result = this.getWalksStats(walks);
-        var filter = new ra.filter(this.settings.filter)
+        var filter = new ra.filter(this.settings.filter);
         result.groups = ra.sortObject(result.groups, "name");
         filter.setFilterGroup(result.groups);
         filter.setFilterGroup(result.updates);
@@ -1068,145 +1083,4 @@ ra.display.walksTabs = function (mapOptions, data) {
         });
         return $items;
     };
-    this.icsfile = function () {
-        var $walks = this.getWalks();
-
-        var index, len, $walk;
-        var events = new ra.ics.events();
-
-        for (index = 0, len = $walks.length; index < len; ++index) {
-            $walk = $walks[index];
-            if ($walk.display) {
-                this.addWalktoIcs($walk, events);
-            }
-        }
-        events.download();
-        var a = 1;
-
-    };
-    this.addWalktoIcs = function (walk, events) {
-        var ev = new ra.ics.event();
-        var $meetLocation, $startLocation, $before, $after, $summary, $description, $altDescription;
-        if (walk.hasMeetPlace) {
-            var meet = new ra.gwemLocation(walk.meetLocation);
-            $meetLocation = meet.getTextDescription();
-            $meetLocation += ";<br/>";
-        } else {
-            $meetLocation = "";
-        }
-        var start = new ra.gwemLocation(walk.startLocation);
-        $startLocation = start.getTextDescription();
-        $before = $meetLocation + $startLocation + "<br/>Description: ";
-        $after = "<br/>Contact: " + walk.contactName;
-        if (walk.telephone1 !== '') {
-            $after += ", " + walk.telephone1;
-        }
-        if (walk.telephone2 !== '') {
-            $after += ", " + walk.telephone2;
-        }
-        if (walk.localGrade !== "") {
-            $after += "<br/>Grade: " + walk.localGrade + "/" + walk.nationalGrade;
-        } else {
-            $after += "<br/>Grade: " + walk.nationalGrade;
-        }
-        $after += "<br/>" + walk.detailsPageUrl;
-        $after += "<br/>Note: Finish times are very approximate!";
-        if (walk.additionalNotes !== '') {
-            $after += "<br/>Notes: " + walk.additionalNotes;
-        }
-        $summary = walk.title;
-        if (walk.distanceMiles > 0) {
-            $summary += ", " + walk.distanceMiles + "mi/" + walk.distanceKm + "km";
-        }
-
-
-        //    $this->addIcsTimes($icsfile);
-
-
-
-        if (walk.status === 'Cancelled') {
-            ev.method("CANCEL");
-            $summary = " CANCELLED " + $summary;
-            $description = "CANCELLED - REASON: " + walk.cancellationReason + " (" + walk.description + ")";
-        } else {
-
-            $description = $before + walk.description + $after;
-            $altDescription = $before + walk.descriptionHtml + $after;
-        }
-
-        var $time = this.getFirstTime(walk);
-        var d = new Date(walk.walkDate);
-        if ($time !== null) {
-            $time.setDate(d.getDate());
-            $time.setMonth(d.getMonth());
-            $time.setFullYear(d.getFullYear());
-            ev.startDate($time);
-            $time = this.getFinishTime(walk);
-            if ($time !== null) {
-                //   $time.setDate(d.getDate());
-                //   $time.setMonth(d.getMonth());
-                //   $time.setFullYear(d.getFullYear());
-                ev.endDate(new Date($time));
-            }
-        } else {
-            ev.startDate(new Date(walk.walkDate));
-        }
-
-        ev.createdDate(new Date(walk.dateCreated));
-        ev.modifiedDate(new Date(walk.dateUpdated));
-        ev.uid('walk' + walk.id + '-isc@ramblers-webs.org.uk');
-        ev.organiser(walk.groupName + ":mailto:ignore@ramblers-webs.org.uk");
-        ev.summary($summary);
-        ev.description($description);
-        ev.altDescription($altDescription);
-        ev.location($startLocation);
-        ev.url(walk.detailsPageUrl);
-        ev.categories("Walk," + walk.groupName);
-        ev.class('PUBLIC');
-
-        events.addEvent(ev);
-    };
-    this.getFirstTime = function (walk) {
-        var time = null;
-        if (walk.hasMeetPlace) {
-            time = walk.meetLocation.time;
-        }
-        if (time !== null) {
-            return time;
-        }
-        time = walk.startLocation.time;
-        return time;
-    };
-    this.getLastTime = function (walk) {
-        var time;
-        time = walk.startLocation.time;
-        if (time !== '') {
-            if (walk.hasMeetPlace) {
-                time = walk.meetLocation.time;
-            }
-        }
-        return time;
-    };
-
-    this.getFinishTime = function (walk) {
-        if (walk.finishTime !== null) {
-            return walk.finishTime;
-        }
-        // calculate end time
-        var $lasttime = this.getLastTime(walk);
-        if ($lasttime !== '') {
-
-
-            var $durationFullMins = Math.ceil(walk.distanceMiles / 2) * 60;
-            if (walk.startLocation.exact === false) {
-                $durationFullMins += 60;
-            }
-            $lasttime = ra.time.addMinutes($lasttime, $durationFullMins)
-            //    var $intervalFormat = "PT" + $durationFullMins + "M";
-            //   var $interval = new DateInterval($intervalFormat);
-            //   $lasttime = $lasttime.add($interval);
-        }
-        return $lasttime;
-    }
-    ;
 };
