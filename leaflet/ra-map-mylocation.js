@@ -5,7 +5,7 @@ L.Control.MyLocation = L.Control.extend({
         position: 'topleft'
     },
     _userOptions: {
-        panToLocation: false,
+        panToLocation: true,
         marker: {
             radius: 5,
             color: '#0044DD'
@@ -27,6 +27,7 @@ L.Control.MyLocation = L.Control.extend({
     first: false,
     onAdd: function (map) {
         this._map = map;
+        this._readSettings();
         this.active = false;
         this.locationfound = false;
         this._map.myLocationLayer = L.featureGroup([]);
@@ -62,6 +63,7 @@ L.Control.MyLocation = L.Control.extend({
             //console.log('Location error');
             self.locationfound = false;
         });
+
         return containerAll;
     },
     _createIcon: function (container) {
@@ -215,10 +217,22 @@ L.Control.MyLocation = L.Control.extend({
                 'When using a smart phone the browser cannot access the location if the device goes into standby mode.';
         tag.appendChild(comment);
 
+        this._controls.marker.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+        this._controls.panToLocation.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+        this._controls.accuracy.display.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
+        this._controls.accuracy.fill.addEventListener("ra-input-change", function (e) {
+            ra.settings.changed();
+        });
     },
     resetSettings: function () {
         ra.html.input.colorReset(this._controls.marker, '#0044DD');
-        ra.html.input.yesNoReset(this._controls.panToLocation, false);
+        ra.html.input.yesNoReset(this._controls.panToLocation, true);
         ra.html.input.yesNoReset(this._controls.accuracy.display, false);
         ra.html.input.fillStyleReset(this._controls.accuracy.fill, {
             color: '#F75E5E',

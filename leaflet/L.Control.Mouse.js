@@ -429,7 +429,7 @@ L.Control.Rightclick = L.Control.extend({
         osmOptions["toilets"] = {tag: "amenity", type: "toilets", title: "Toilets", single: "Toilets"};
         osmOptions["bus_stops"] = {tag: "highway", type: "bus_stop", title: "Bus Stops", single: "Bus Stop"};
         this.osmOptions = osmOptions;
-        
+
         return this._container;
     },
     onRemove: function () {
@@ -1037,12 +1037,12 @@ L.Control.Rightclick = L.Control.extend({
         });
     },
     resetSettings: function () {
-       
+
         ra.html.input.numberReset(this.controls.groups.number, 60);
         ra.html.input.numberReset(this.controls.groups.distance, 50);
-         ra.html.input.numberReset(this.controls.postcodes.number, 20); 
-         ra.html.input.numberReset(this.controls.postcodes.distance, 10);
-            ra.html.input.numberReset(this.controls.starting.number, 300);
+        ra.html.input.numberReset(this.controls.postcodes.number, 20);
+        ra.html.input.numberReset(this.controls.postcodes.distance, 10);
+        ra.html.input.numberReset(this.controls.starting.number, 300);
         ra.html.input.numberReset(this.controls.starting.distance, 10);
         ra.html.input.numberReset(this.controls.osm.distance, 2);
     },

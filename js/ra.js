@@ -934,6 +934,8 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.ra = {};
         inputTag.ra.object = raobject;
         inputTag.ra.property = property;
+        inputTag.ra._label = _label;
+        inputTag.ra.label = label;
         if (raobject.hasOwnProperty(property)) {  // Initialise value
             inputTag.setAttribute('value', raobject[property]);
             _label.textContent = label.replace("%n", inputTag.value);
@@ -942,7 +944,7 @@ if (typeof (ra.html.input) === "undefined") {
             e.target.ra.object[e.target.ra.property] = e.target.value;
             _label.textContent = label.replace("%n", e.target.value);
             let event = new Event("ra-input-change");
-            tag.dispatchEvent(event);
+            inputTag.dispatchEvent(event);
         });
         itemDiv.appendChild(inputTag);
         itemDiv.appendChild(_label);
@@ -952,6 +954,7 @@ if (typeof (ra.html.input) === "undefined") {
         var ra = inputTag.ra;
         ra.object[ra.property] = value;
         inputTag.value = value;
+        inputTag.ra._label.textContent = inputTag.ra.label.replace("%n", inputTag.value);
         let event = new Event("ra-input-change");
         inputTag.dispatchEvent(event);
     };
@@ -980,7 +983,7 @@ if (typeof (ra.html.input) === "undefined") {
         inputColor.addEventListener("input", function (e) {
             e.target.ra.object[e.target.ra.property] = e.target.value;
             let event = new Event("ra-input-change"); // (2)
-            tag.dispatchEvent(event);
+            inputColor.dispatchEvent(event);
         });
         return inputColor;
     };

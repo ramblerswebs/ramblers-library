@@ -17,11 +17,6 @@ ra.display.plotRoute = function (options, data) {
             weight: 3,
             opacity: 1
         }};
-    this.defaultStyle = {
-        color: '#782327',
-        weight: 3,
-        opacity: 1
-    };
     this.options = options;  //public
     this.masterdiv = document.getElementById(options.divId);
     var lmap = new leafletMap(this.masterdiv, options);
@@ -726,13 +721,13 @@ ra.display.plotRoute = function (options, data) {
         this.line = ra.html.input.lineStyle(tag, '', 'Track style', this._userOptions.style);
         tag.appendChild(document.createElement('hr'));
 
-        this.pan.addEventListener("change", function (e) {
+        this.pan.addEventListener("ra-input-change", function (e) {
             ra.settings.changed();
         });
-        this.join.addEventListener("change", function (e) {
+        this.join.addEventListener("ra-input-change", function (e) {
             ra.settings.changed();
         });
-        this.line.addEventListener("change", function (e) {
+        this.line.addEventListener("ra-input-change", function (e) {
             ra.settings.changed();
             _this._map.fire("draw:color-change", null);
         });
@@ -742,9 +737,13 @@ ra.display.plotRoute = function (options, data) {
     };
 
     this.resetSettings = function () {
-        ra.html.input.lineStyleReset(this.line, this.defaultStyle);
         ra.html.input.yesNoReset(this.pan, true);
         ra.html.input.yesNoReset(this.join, true);
+        ra.html.input.lineStyleReset(this.line, {
+            color: '#782327',
+            weight: 3,
+            opacity: 1
+        });
         this._map.fire("draw:color-change", null);
     };
     this._readSettings = function () {
