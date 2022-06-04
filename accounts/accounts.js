@@ -7,7 +7,7 @@ if (typeof (ra.display) === "undefined") {
 }
  ra.display.accountsMap = function (options, data) {
         var masterdiv = document.getElementById(options.divId);
-        this.lmap = new leafletMap(masterdiv, options);
+        this.lmap = new ra.leafletmap(masterdiv, options);
         this.cluster = new cluster(this.lmap.map);
         this.data = data;
         this.load = function () {

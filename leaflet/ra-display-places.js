@@ -9,7 +9,7 @@ ra.display.places = function (options, data) {
 
     this.options = options;  //public
     this.masterdiv = document.getElementById(options.divId);
-    var lmap = new leafletMap(this.masterdiv, options);
+    var lmap = new ra.leafletmap(this.masterdiv, options);
     this._map = lmap.map;
     lmap.rightclickControl().disablePlaces();
 

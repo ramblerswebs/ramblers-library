@@ -8,7 +8,7 @@ if (typeof (ra.display) === "undefined") {
 ra.display.organisationMap = function (options, data) {
 
     var masterdiv = document.getElementById(options.divId);
-    this.lmap = new leafletMap(masterdiv, options);
+    this.lmap = new ra.leafletmap(masterdiv, options);
     this.cluster = new cluster(this.lmap.map);
     this.data = data;
     this.load = function () {
@@ -77,7 +77,7 @@ ra.display.organisationMyGroup = function (options, data) {
 
     this.data = data;
     this.colours = data.colours;
-    this.lmap = new leafletMap(masterdiv, options);
+    this.lmap = new ra.leafletmap(masterdiv, options);
     //  this.cluster = new cluster(this.lmap.map);
     this.groupsLayer = L.featureGroup([]).addTo(this.lmap.map);
     this.otherAreasLayer = L.featureGroup([]).addTo(this.lmap.map);

@@ -60,7 +60,7 @@ class RJsScript {
                 array("type" => "text/javascript"),
                 array('integrity' => 'sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==',
                     'crossorigin' => ''));
-        RLoad::addScript("libraries/ramblers/leaflet/ramblersleaflet.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/ra.leafletmap.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
         if ($options->fullscreen !== null) {
             $path = "libraries/ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
@@ -123,18 +123,20 @@ class RJsScript {
         }
 
         RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/js/raMap.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/js/raWalk.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/ra.map.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/ra.walk.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/js/raLocation.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/ra-map-mylocation.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.MyLocation.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/vendors/ArrowCircle/ArrowCircle.js", "text/javascript");
 
-        RLoad::addScript("libraries/ramblers/leaflet/ra-container.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.RAContainer.js", "text/javascript");
 
         // settings
-        RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-map-settings.css", "text/css");
-        RLoad::addScript("libraries/ramblers/leaflet/ra-map-settings.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/js/feedhandler.js", "text/javascript");
+        RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Settings.css", "text/css");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Settings.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/ra.feedhandler.js", "text/javascript");
+        $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
+ 
     }
 
     public static function registerWalks($walks) {

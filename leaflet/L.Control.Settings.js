@@ -1,5 +1,5 @@
 var L, ra, document;
-L.Control.RA_Map_Settings = L.Control.extend({
+L.Control.Settings = L.Control.extend({
     options: {
         id: null,
         title: 'Settings&Help',
@@ -22,16 +22,16 @@ L.Control.RA_Map_Settings = L.Control.extend({
         }
         container.title = this.options.title;
         container.addEventListener("click", function (e) {
-            var settings = document.createElement('div');
-            settings.setAttribute('class', 'settings');
-            ra.modal.display(settings, false);
+            var settingsDiv = document.createElement('div');
+            settingsDiv.setAttribute('class', 'settings');
+            ra.modal.display(settingsDiv, false);
             var title = document.createElement('h4');
             title.textContent = "Settings & Help";
-            settings.appendChild(title);
+            settingsDiv.appendChild(title);
             // tabs
             var cont = document.createElement('div');
             cont.setAttribute('class', 'tabs');
-            settings.appendChild(cont);
+            settingsDiv.appendChild(cont);
             var tabs = document.createElement('div');
             tabs.setAttribute('class', 'ra-tabs-left ');
             cont.appendChild(tabs);
@@ -113,7 +113,7 @@ L.Control.RA_Map_Settings = L.Control.extend({
     },
     _addSearch: function (tag) {
         var _this = this;
-        var feed = new feeds();
+        var feed = new ra.feedhandler();
         feed.getSearchTags(tag, tag);
         tag.addEventListener("locationfound", function (e) {
             var raData = e.raData;
@@ -211,6 +211,6 @@ L.Control.RA_Map_Settings = L.Control.extend({
         return item;
     }
 });
-L.control.ra_map_settings = function (options) {
-    return new L.Control.RA_Map_Settings(options);
+L.control.settings = function (options) {
+    return new L.Control.Settings(options);
 };

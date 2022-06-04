@@ -100,7 +100,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             leg.innerHTML = $legend2;
             this.elements.map.appendChild(leg);
         }
-        this.lmap = new leafletMap(this.elements.map, this.mapOptions);
+        this.lmap = new ra.leafletmap(this.elements.map, this.mapOptions);
         this.map = this.lmap.map;
         this.cluster = new cluster(this.map);
 

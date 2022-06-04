@@ -1329,6 +1329,9 @@ ra.modal = (function () {
             });
         }
     };
+    modal.headerDiv=function(){
+        return modal.elements.header;
+    };
     modal._createModalTag = function (print = true) {
         var tags = [
             {name: 'modaltag', parent: 'root', tag: 'div', attrs: {class: 'js-modal ramblers'}, style: {display: 'none'}},
@@ -1946,7 +1949,7 @@ if (typeof (ra.ics) === "undefined") {
                 var name = "walks.ics";
                 saveAs(blob, name);
             } catch (e) {
-                alert('Your web browser does not support his option!');
+                alert('Your web browser does not support this option!');
             }
         };
         this._addRecord = function ($command, $content = "", $html = false) {

@@ -1,5 +1,8 @@
 var ra, OsGridRef;
-feeds = function () {
+if (typeof (ra) === "undefined") {
+    ra = {};
+}
+ra.feedhandler = function () {
 
     this.getSearchTags = function (eventTag, contentTag) {
         var formDiv = document.createElement("div");

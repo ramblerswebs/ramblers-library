@@ -105,7 +105,6 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         RLoad::addScript("libraries/ramblers/jsonwalks/std/display.js", "text/javascript");
         $document = JFactory::getDocument();
         $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
-        $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
     }

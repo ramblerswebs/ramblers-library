@@ -45,7 +45,7 @@ ra.display.walksMap = function (mapOptions, data) {
                 this.elements.legendbottom.innerHTML = this.legend;
         }
 
-        this.lmap = new leafletMap(this.elements.map, this.options);
+        this.lmap = new ra.leafletmap(this.elements.map, this.options);
         this.map = this.lmap.map;
         this.cluster = new cluster(this.map);
         this._allwalks = ra.walk.convertPHPWalks(this.data.walks);

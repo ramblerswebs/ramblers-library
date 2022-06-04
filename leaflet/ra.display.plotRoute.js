@@ -19,7 +19,7 @@ ra.display.plotRoute = function (options, data) {
         }};
     this.options = options;  //public
     this.masterdiv = document.getElementById(options.divId);
-    var lmap = new leafletMap(this.masterdiv, options);
+    var lmap = new ra.leafletmap(this.masterdiv, options);
     this._map = lmap.map;
     this.controls = {
         rightclick: lmap.rightclickControl(),
@@ -29,7 +29,7 @@ ra.display.plotRoute = function (options, data) {
     this.pan = null;
     this.join = null;
     lmap.SetPlotUserControl(this);
-    this.mapDiv = lmap.mapDiv;
+    this.mapDiv = lmap.mapDiv();
     this.detailsDiv = document.createElement('div');
     this.mapDiv.parentNode.insertBefore(this.detailsDiv, this.mapDiv);
     this.SmartRouteControl = null;

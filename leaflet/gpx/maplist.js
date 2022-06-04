@@ -9,7 +9,7 @@ ra.display.gpxSingle = function (options, data) {
 
     this.data = data;
     var masterdiv = document.getElementById(options.divId);
-    this.lmap = new leafletMap(masterdiv, options);
+    this.lmap = new ra.leafletmap(masterdiv, options);
     this.load = function () {
         var data = this.data;
         var file = data.gpxfile;
@@ -137,7 +137,7 @@ ra.display.gpxFolder = function (options, data) {
     this.elements.list.addEventListener("click", function () {
         _this.ra_format('List');
     });
-    this.lmap = new leafletMap(this.elements.gpxmap, options);
+    this.lmap = new ra.leafletmap(this.elements.gpxmap, options);
     this._map = this.lmap.map;
     this.el = this.lmap.elevationControl();
     this.gpx = null;

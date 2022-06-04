@@ -50,7 +50,7 @@ ra.display.csvList = (function () {
             this.displayCSVTable();
 
             if (this.displayMap) {
-                this.lmap = new leafletMap(this.elements.csvmap, this.options);
+                this.lmap = new ra.leafletmap(this.elements.csvmap, this.options);
                 this.map = this.lmap.map;
                 this.cluster = new cluster(this.map);
                 this.ra_format("Map");

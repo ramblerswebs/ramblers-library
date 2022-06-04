@@ -1,6 +1,8 @@
 var L, ra, OsGridRef, Element;
-
-function leafletMap(tag, options) {
+if (typeof (ra) === "undefined") {
+    ra = {};
+}
+ra.leafletmap = function (tag, options) {
 
     this.options = options;
 
@@ -27,7 +29,7 @@ function leafletMap(tag, options) {
 //        mouse: null,
 //        rightclick: null,
 //        plotroute: null};
-    this.mapDiv = null;
+    this._mapDiv = null;
     var tags = [
         {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra-map-container'}},
         {name: 'map', parent: 'container', tag: 'div', style: {height: options.mapHeight, width: options.mapWidth}},
@@ -41,12 +43,12 @@ function leafletMap(tag, options) {
 
 
     var elements = ra.html.generateTags(tag, tags);
-    this.mapDiv = elements.map;
+    this._mapDiv = elements.map;
     if (options.copyright) {
         ra.html.generateTags(elements.copyright, tagcopy);
     }
     var self = this;
-    this.map = new L.Map(this.mapDiv, {
+    this.map = new L.Map(this._mapDiv, {
         center: new L.LatLng(54.221592, -3.355007),
         zoom: 5,
         zoomSnap: 0.25,
@@ -191,7 +193,7 @@ function leafletMap(tag, options) {
     var _this = this;
     if (options.settings !== null) {
         //  try {
-        this.controls.settings = L.control.ra_map_settings();
+        this.controls.settings = L.control.settings();
         this.controls.settings.setHelpPage(options.helpPage);
         this.controls.settings.addTo(this.map);
         this.controls.settings.setLeafletMap(this);
@@ -241,60 +243,63 @@ function leafletMap(tag, options) {
         }
     };
     this.setOptionalControls();
-}
-leafletMap.prototype.osZoomLevel = function () {
-    this.controls.zoomlevelOSMsg.setText("");
-    if (this.baseTiles === 'Ordnance Survey') {
-        var zoom = this.map.getZoom();
-        //  this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom "+zoom);
-        if (zoom <= 11) {
-            this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom in to see Ordnance Survey Maps");
+    this.osZoomLevel = function () {
+        this.controls.zoomlevelOSMsg.setText("");
+        if (this.baseTiles === 'Ordnance Survey') {
+            var zoom = this.map.getZoom();
+            //  this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom "+zoom);
+            if (zoom <= 11) {
+                this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom in to see Ordnance Survey Maps");
+            }
+            if (zoom > 17) {
+                this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom out to see Ordnance Survey Maps");
+            }
         }
-        if (zoom > 17) {
-            this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom out to see Ordnance Survey Maps");
-        }
-    }
-};
+    };
+    
 
-leafletMap.prototype.SetPlotUserControl = function (value) {
+this.SetPlotUserControl = function (value) {
     this.controls.plotroute = value;
 };
-leafletMap.prototype.plotControl = function () {
+this.plotControl = function () {
     return this.controls.plotroute;
 };
-leafletMap.prototype.layersControl = function () {
+this.layersControl = function () {
     return this.controls.layers;
 };
-leafletMap.prototype.settingsControl = function () {
+this.settingsControl = function () {
     return this.controls.settings;
 };
-leafletMap.prototype.zoomControl = function () {
+this.zoomControl = function () {
     return this.controls.zoom;
 };
-leafletMap.prototype.mylocationControl = function () {
+this.mylocationControl = function () {
     return this.controls.mylocation;
 };
-leafletMap.prototype.elevationControl = function () {
+this.elevationControl = function () {
     return this.controls.elevation;
 };
-leafletMap.prototype.fullscreenControl = function () {
+this.fullscreenControl = function () {
     return this.controls.fullscreen;
 };
-leafletMap.prototype.printControl = function () {
+this.printControl = function () {
     return this.controls.print;
 };
-leafletMap.prototype.mouseControl = function () {
+this.mouseControl = function () {
     return this.controls.mouse;
 };
-leafletMap.prototype.scaleControl = function () {
+this.scaleControl = function () {
     return this.controls.scale;
 };
-leafletMap.prototype.rightclickControl = function () {
+this.rightclickControl = function () {
     return this.controls.rightclick;
 };
-leafletMap.prototype.errorDivControl = function () {
+this.errorDivControl = function () {
     return this.controls.errorDiv;
 };
-leafletMap.prototype.mapDiv = function () {
-    return this.mapDiv;
+this.mapDiv = function () {
+    return this._mapDiv;
 };
+};
+
+

@@ -37,8 +37,8 @@
     color:var(--cancelled);
 }
 .ra.error {
-     color:var(--cancelled);
-     font-weight: bold;
+    color:var(--cancelled);
+    font-weight: bold;
 }
 
 /* css code to handle json walk feeds */
@@ -168,6 +168,12 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
 .mappopup {
     color:var(--sunset);
     cursor: pointer;
+    padding-right:15px;
+}
+span.mappopup:hover{
+    content:' ';
+    text-decoration: underline;
+    background: url(../../images/new-win.png) no-repeat right ;
 }
 .place .mappopup {
     font-size:  90%
@@ -280,41 +286,35 @@ div.nextwalk span.grade.middle{
     float:left;
 }
 
-span.mappopup:hover{
-    content:' ';
-    text-decoration: underline;
-    background: url(../../images/new-win.png) no-repeat right ;
-    padding-right:15px;
-}
 input.slider {
-  -webkit-appearance: none;
-  width: 50%;
-  height: 15px;
-  background: #BBBBBB;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
+    -webkit-appearance: none;
+    width: 50%;
+    height: 15px;
+    background: #BBBBBB;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
 }
 
 input.slider:hover {
-  opacity: 1;
+    opacity: 1;
 }
 
 input.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #04AA6D;
-  cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #04AA6D;
+    cursor: pointer;
 }
 
 input.slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: #04AA6D;
-  cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background: #04AA6D;
+    cursor: pointer;
 }
 
 div.ra_filter  div input,
@@ -516,8 +516,8 @@ div.gpxouter {
     padding:10px;
 }
 div.ra.pagination {
-  margin:  0;
-  padding: 0;
+    margin:  0;
+    padding: 0;
 }
 /*div#raoptions table, table.ra-tab-options{
 */

@@ -114,16 +114,16 @@ ra.walk = (function () {
         }
         ra.modal.display(html);
         my._addMaptoWalk(walk);
-        var tag = document.getElementById("ra-diary-button");
+        var tag =  ra.modal.headerDiv();
         if (tag !== null) {
             my._addDiaryButton(tag, walk);
         }
     };
     my._addDiaryButton = function (tag, walk) {
         var diary = document.createElement('button');
-        diary.setAttribute('class', 'link-button tiny button mintcake right');
+        diary.setAttribute('class', 'link-button small cloudy');
         diary.textContent = 'Add to Calendar';
-        tag.appendChild(diary);
+        tag.parentNode.insertBefore(diary, tag);
         diary.addEventListener('click', function () {
             var $walks = [walk];
             ra.walk.icsfile.create($walks);
@@ -144,7 +144,7 @@ ra.walk = (function () {
             return;
         }
         var tag = document.getElementById("div" + walk.id);
-        var lmap = new leafletMap(tag, ra.defaultMapOptions);
+        var lmap = new ra.leafletmap(tag, ra.defaultMapOptions);
         var map = lmap.map;
         var layer = L.featureGroup().addTo(map);
         if (walk.finishLocation) {
@@ -389,7 +389,7 @@ ra.walk = (function () {
         $html += "<div class='updated'>Walk ID " + $walk.id + "</div>" + PHP_EOL;
         $html += "<div class='updated walk" + $walk.status + "'>Last update: " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
-        $html += "<div id='ra-diary-button'></div>" + PHP_EOL;
+       
         $html += "</div>" + PHP_EOL;
         //    var mapdiv = "div" + $walk.id;
         //    $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;

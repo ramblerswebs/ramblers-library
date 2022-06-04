@@ -51,17 +51,17 @@ class RLeafletMapdraw extends RLeafletMap {
 
         parent::display();
 
-        RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-drawcontrol.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/ra.display.plotRoute.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-gpx-tools.css", "text/css");
         RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
-        RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-upload.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-download.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-reverse-route.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-smart-route.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/ra-gpx-simplify.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.GpxUpload.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.GpxDownload.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.ReverseRoute.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.SmartRoute.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.GpxSimplify.js", "text/javascript");
 
         $document = JFactory::getDocument();
-        $path = "libraries/ramblers/vendors/Leaflet.draw-1.0.4/dist/";
+        $path = "libraries/ramblers/vendors/Leaflet.draw-0.4.14/dist/";
         $document->addStyleSheet($path . "leaflet.draw.css", "text/css");
         $document->addScript($path . "leaflet.draw-src.js", "text/javascript");
         $document->addScript("libraries/ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");
