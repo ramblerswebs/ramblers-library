@@ -121,7 +121,7 @@ ra.walk = (function () {
     };
     my._addDiaryButton = function (tag, walk) {
         var diary = document.createElement('button');
-        diary.setAttribute('class', 'link-button small cloudy');
+        diary.setAttribute('class', 'link-button tiny cloudy');
         diary.textContent = 'Add to Calendar';
         tag.parentNode.insertBefore(diary, tag);
         diary.addEventListener('click', function () {

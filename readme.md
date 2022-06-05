@@ -1,6 +1,6 @@
 Ramblers library to process and display json walks feeds
 
-See wiki for details https://github.com/ramblerswebs/ramblers-library/wiki
+See how to use information see https://www.ramblers-webs.org.uk
 
 Updates
 3.0.0

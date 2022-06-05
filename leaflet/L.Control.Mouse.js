@@ -41,11 +41,12 @@ L.Control.Mouse = L.Control.extend({
         map.on('moveend', function () {
             _this.displayOSGrid();
         });
-        this.displayOSGrid();
+     
         if (L.Browser.mobile) {
             this._container.style.display = 'none';
         }
-        this._readSettings();
+        this._readSettings();  
+        this.displayOSGrid();
         return this._container;
     },
     changeDisplay: function (display) {
