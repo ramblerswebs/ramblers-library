@@ -102,10 +102,19 @@ L.Control.Places = L.Control.extend({
         var title = document.createElement('div');
         title.textContent = 'Meeting & Starting Places';
         this._container.appendChild(title);
+        this.checkBoxesDiv = document.createElement('div');
+        this._container.appendChild(this.checkBoxesDiv);
+        this.checkBoxesDiv.style.display = 'none';
+        this._container.addEventListener("mouseover", function () {
+            _this.checkBoxesDiv.style.display = 'block';
+        });
+        this._container.addEventListener("mouseout", function () {
+            _this.checkBoxesDiv.style.display = 'none';
+        });
         this.checkboxes = {};
         for (var i = 1; i < 6; i++) {
             var div = document.createElement('div');
-            this._container.appendChild(div);
+            this.checkBoxesDiv.appendChild(div);
             div.setAttribute('class', ' ramblers-places-options');
             var check = document.createElement('input');
             this.checkboxes[i] = check;
@@ -134,11 +143,6 @@ L.Control.Places = L.Control.extend({
         }
         var extra = document.createElement('div');
         div.appendChild(extra);
-//        var a = document.createElement('a');
-//        a.setAttribute('href', 'https://maphelp.ramblers-webs.org.uk');
-//        a.setAttribute('target', '_blank');
-//        a.textContent = 'Help';
-//        extra.appendChild(a);
     },
     clearLayers: function () {
         this._clearPlacesLayers();
@@ -177,9 +181,6 @@ L.Control.Places = L.Control.extend({
         var p = new LatLon(_locationOptions.location.lat, _locationOptions.location.lng);
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
-
-        //    var desc = "<b><a href='https://maphelp.ramblers-webs.org.uk/startingplaces.html' target='_blanks'>Meeting/Starting Places</a><b>";
-
         if (gr !== "") {
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
@@ -315,7 +316,7 @@ L.Control.Places = L.Control.extend({
     },
     _displayDetails: function (data, result) {
         var marker = data.marker;
-       // var starsUrl = marker.options.icon.options.iconUrl;
+        // var starsUrl = marker.options.icon.options.iconUrl;
         var self = data.places;
         var gr = data.gr;
         var latlng = marker.getLatLng();
