@@ -41,11 +41,11 @@ L.Control.Mouse = L.Control.extend({
         map.on('moveend', function () {
             _this.displayOSGrid();
         });
-     
+
         if (L.Browser.mobile) {
             this._container.style.display = 'none';
         }
-        this._readSettings();  
+        this._readSettings();
         this.displayOSGrid();
         return this._container;
     },
@@ -424,7 +424,7 @@ L.Control.Rightclick = L.Control.extend({
         //   this._container.innerHTML = text + options.join('') + '</select>';
         var osmOptions = [];
         osmOptions["cafes"] = {};
-        osmOptions["cafes"] = {tag: "amenity", type: "cafes", title: "Cafes", single: "Cafe"};
+        osmOptions["cafes"] = {tag: "amenity", type: "cafe", title: "Cafes", single: "Cafe"};
         osmOptions["parking"] = {tag: "amenity", type: "parking", title: "Car Parks", single: "Car Park"};
         osmOptions["pubs"] = {tag: "amenity", type: "pub", title: "Pubs", single: "Pub"};
         osmOptions["toilets"] = {tag: "amenity", type: "toilets", title: "Toilets", single: "Toilets"};
@@ -580,11 +580,10 @@ L.Control.Rightclick = L.Control.extend({
                     point.getPopup().setContent(msg);
                 } else {
                     if (items.length === 0) {
-                        var closest = "No postcodes found within 10km";
+                        var closest = "No postcodes found within " + self._userOptions.postcodes.distance+"km";
                         point.getPopup().setContent(closest);
                     } else {
                         for (i = 0; i < items.length; i++) {
-
                             var item = items[i];
                             var popup = item.Postcode + "<br />     Distance: " + self._kFormatter(Math.round(item.Distance)) + "m";
                             var easting = item.Easting;
@@ -603,11 +602,11 @@ L.Control.Rightclick = L.Control.extend({
                             self._mouseLayer.addLayer(marker);
                             self._mouseLayer.addLayer(L.polyline([pt, p], style));
                         }
+                        point.getPopup().setContent("<b>" + items.length + " Postcodes found within " + self._userOptions.postcodes.distance + "km</b>");
+                        point.openPopup();
+                        var bounds = self._mouseLayer.getBounds();
+                        self._map.fitBounds(bounds, {padding: [50, 50]});
                     }
-                    point.getPopup().setContent("<b>" + items.length + " Postcodes found</b>");
-                    point.openPopup();
-                    var bounds = self._mouseLayer.getBounds();
-                    self._map.fitBounds(bounds, {padding: [50, 50]});
                 }
                 setTimeout(function (point) {
                     self._map.removeLayer(point);
@@ -695,7 +694,7 @@ L.Control.Rightclick = L.Control.extend({
                     var closest = "No Ramblers Groups found within " + self._userOptions.groups.distance + "km";
                     point.getPopup().setContent(closest);
                 } else {
-                    msg = items.length + " Ramblers Groups found within " + self._userOptions.groups.distance + "km";
+                    msg = "<b>" + items.length + " Ramblers Groups found within " + self._userOptions.groups.distance + "km</b>";
                     point.getPopup().setContent(msg);
                     point.openPopup();
                     for (i = 0; i < items.length; i++) {
@@ -769,10 +768,10 @@ L.Control.Rightclick = L.Control.extend({
                 point.getPopup().setContent(msg);
             } else {
                 if (items.elements.length === 0) {
-                    var closest = "No " + title + " found within " + self._userOptions.osm.distance + "Km";
+                    var closest = "No " + title + " found within " + self._userOptions.osm.distance + "km";
                     point.getPopup().setContent(closest);
                 } else {
-                    msg = "<b>" + items.elements.length + " " + title + " found within " + self._userOptions.osm.distance + "Km</b>";
+                    msg = "<b>" + items.elements.length + " " + title + " found within " + self._userOptions.osm.distance + "km</b>";
                     msg += "<p>" + items.osm3s.copyright + "</p>";
                     point.getPopup().setContent(msg);
                     point.openPopup();
@@ -822,10 +821,10 @@ L.Control.Rightclick = L.Control.extend({
 //                point.getPopup().setContent(msg);
 //            } else {
 //                if (items.elements.length === 0) {
-//                    var closest = "No " + title + " found within " + self._userOptions.osm.distance + "Km";
+//                    var closest = "No " + title + " found within " + self._userOptions.osm.distance + "km";
 //                    point.getPopup().setContent(closest);
 //                } else {
-//                    msg = "<b>" + items.elements.length + " " + title + " found within " + self._userOptions.osm.distance + "Km</b>";
+//                    msg = "<b>" + items.elements.length + " " + title + " found within " + self._userOptions.osm.distance + "km</b>";
 //                    msg += "<p>" + items.osm3s.copyright + "</p>";
 //                    point.getPopup().setContent(msg);
 //                    point.openPopup();

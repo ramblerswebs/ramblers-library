@@ -175,10 +175,12 @@ L.Control.Places = L.Control.extend({
         };
         _locationOptions = L.setOptions(_locationOptions, locationOptions);
         this._clearPlacesLayers();
-        this._initialiseProgressBar();
         this._container.style.display = 'inherit';
         var self = this;
         var p = new LatLon(_locationOptions.location.lat, _locationOptions.location.lng);
+        var point = L.marker(p).bindPopup("<b>Searching for Meeting and Starting Places ...</b>");
+        this._masterlayer.addLayer(point);
+        point.openPopup();
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
         if (gr !== "") {
@@ -189,17 +191,20 @@ L.Control.Places = L.Control.extend({
             ra.ajax.getJSON(url, function (err, items) {
                 if (err !== null) {
                     self._closeProgressBar();
-                    alert("Error: Sorry something went wrong: " + err);
+                    point.getPopup().setContent("Error: Sorry something went wrong: " + err);
                 } else {
                     var no = items.length;
+                    point.getPopup().setContent("<b>" + no + " Meeting/Starting Places found within " + _locationOptions.distance + "km" + "</b>");
                     if (no === 0) {
-                        self._closeProgressBar();
-                        alert("No meeting/starting places found within " + _locationOptions.distance + "km");
+                        point.getPopup().setContent("No meeting/starting places found within " + _locationOptions.distance + "km");
                     } else {
                         self._processItems(items, 500);
                         var bounds = self._getPlacesBounds();
                         self._map.fitBounds(bounds, {padding: [50, 50]});
                     }
+                    setTimeout(function (point) {
+                        self._map.removeLayer(point);
+                    }, 3000, point);
                 }
                 self._addClusteredPlaces();
             });
