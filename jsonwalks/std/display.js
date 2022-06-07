@@ -335,7 +335,7 @@ ra.display.walksTabs = function (mapOptions, data) {
                 } else {
                     $class = "even";
                 }
-                var displayMonth = month !== $walk.month && should;
+                var displayMonth = month !== ($walk.month + ra.walk.addYear($walk)) && should;
                 switch (this.settings.currentView) {
                     case "Grades":
                         $out += this.displayWalk_Grades($walk, $class, displayMonth);
