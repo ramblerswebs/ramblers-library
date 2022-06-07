@@ -198,7 +198,7 @@ L.Control.Places = L.Control.extend({
                     if (no === 0) {
                         point.getPopup().setContent("No meeting/starting places found within " + _locationOptions.distance + "km");
                     } else {
-                        self._processItems(items, 500);
+                        self._processItems(items, 2000);
                         var bounds = self._getPlacesBounds();
                         self._map.fitBounds(bounds, {padding: [50, 50]});
                     }
@@ -227,13 +227,18 @@ L.Control.Places = L.Control.extend({
                 self._closeProgressBar();
             } else {
                 self._addClusteredPlaces();
-                self._processItems(items, 1000);
+                self._processItems(items, 2000);
             }
         });
     },
     _processItems: function (items, chunk) {
         var i = 0;
         var self = this;
+        // sort into reverse importance order
+        items.sort(function (a, b) {
+            return a.S - b.S;
+        });
+
         function processChunk() {
             self._processItemChucks(items, i * chunk, chunk);
             i++; // Increment the position
@@ -251,6 +256,7 @@ L.Control.Places = L.Control.extend({
             if (item.S > 0 && item.S < 6) {
                 var marker;
                 marker = this._getMarker(item.GR, item.S, item.Lat, item.Lng);
+                marker.setZIndexOffset(100 * item.S); // so more important are above lesser ones
                 this._placeslayer[item.S].addLayer(marker);
             }
             no += 1;
@@ -301,6 +307,7 @@ L.Control.Places = L.Control.extend({
                 ra.ajax.getUrl($url, "", {marker: marker, places: self, gr: $gr}, self._displayDetails);
             }
         }, marker);
+        //   marker.setZIndexOffset($no*1000);
         return marker;
     },
     _displayDetailsDiagnostics: function (data, result) {
