@@ -73,7 +73,7 @@ class RJsonwalksFeedoptions {
         foreach ($this->sources as $source) {
             $source->getWalks($walks);
         }
-        $walks->sort('SORT_DATE', 'SORT_TIME', 'SORT_DISTANCE');
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         return;
     }
 
