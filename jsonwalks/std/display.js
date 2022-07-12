@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var ra, jplist, FullCalendar, addFilterFormats, displayGradesRowClass, displayTableRowClass, displayListRowClass;
+var ra, jplist, FullCalendar, displayGradesRowClass, displayTableRowClass, displayListRowClass;
 
 if (typeof (ra) === "undefined") {
     ra = {};
@@ -117,9 +117,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             var $walks = _this.getWalks();
             _this.displayWalks($walks);
         });
-        // to support Area walks display
-        //  document.cookie = "AreaCode=;expires=Thu, 01 Jan 1970; path=/;samesite=Strict";
-    };
+     };
     this.processWalksFilter = function () {
 
         var wfOptions = JSON.parse(addFilterFormats());
@@ -870,6 +868,7 @@ ra.display.walksTabs = function (mapOptions, data) {
     this.addToDiaryButton = function (tag) {
         var diary = document.createElement('button');
         diary.setAttribute('class', 'link-button tiny button mintcake right');
+        diary.title = 'Download an .ICS file, import to Diary';
         diary.textContent = 'Add to Calendar';
         tag.appendChild(diary);
         var _this = this;

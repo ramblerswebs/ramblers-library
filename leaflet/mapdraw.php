@@ -34,7 +34,7 @@ class RLeafletMapdraw extends RLeafletMap {
 
         $this->help_page = "plot-walking-route.html";
         $this->options->fullscreen = true;
-      
+
         $this->options->mouseposition = true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;
@@ -42,9 +42,7 @@ class RLeafletMapdraw extends RLeafletMap {
         $this->options->cluster = null;
         $this->options->mylocation = true;
         $this->options->settings = true;
-    //    $this->options->draw = true;
         $this->options->print = true;
-      //  $this->options->ramblersPlaces = true;
         $this->options->latitude = $this->lat;
         $this->options->longitude = $this->long;
         $this->options->zoom = $this->zoom;
@@ -61,7 +59,7 @@ class RLeafletMapdraw extends RLeafletMap {
         RLoad::addScript("libraries/ramblers/leaflet/L.Control.GpxSimplify.js", "text/javascript");
 
         $document = JFactory::getDocument();
-        $path = "libraries/ramblers/vendors/Leaflet.draw-0.4.14/dist/";
+        $path = "libraries/ramblers/vendors/Leaflet.draw-1.0.4/dist/";
         $document->addStyleSheet($path . "leaflet.draw.css", "text/css");
         $document->addScript($path . "leaflet.draw-src.js", "text/javascript");
         $document->addScript("libraries/ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");

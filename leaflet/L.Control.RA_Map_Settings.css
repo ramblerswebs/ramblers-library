@@ -1,0 +1,47 @@
+
+/* Map Settings */
+
+.leaflet-control-display-settings{
+    width:30px;
+    height:30px;
+    border-radius:5px;
+    background:#fff url(images/mapsettings.png) no-repeat 0 0;
+    background-size:28px 28px;
+    background-position: center;
+    cursor: pointer;
+    padding:2.5px;
+}
+
+div.ra-tab-item{
+    background-color: #EEEEEE;
+    padding:5px;
+    cursor: pointer;
+    border-radius: 25px 0px 0px 25px;
+    border: 1px solid #DDDDDD;
+
+}
+div.ra-tab-item:hover{
+    background-color: #AAAAAA;
+}
+div.ra-tab-item.active{
+    background-color: #DDDDDD;
+    font-weight: bold;
+}
+div.ra-tabs-left{
+    float:left;
+    width:170px;
+}
+div.tab-content{
+    margin:0px;
+    margin-left: 170px;
+    background-color: #DDDDDD;
+    padding: 15px;
+    min-height: 250px;
+    border-radius: 0px 25px 25px 25px;
+}
+div.tab-panel.active{
+    display:inherit;
+}
+div.tab-panel {
+    display:none;
+}

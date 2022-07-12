@@ -122,6 +122,7 @@ ra.walk = (function () {
     my._addDiaryButton = function (tag, walk) {
         var diary = document.createElement('button');
         diary.setAttribute('class', 'link-button tiny cloudy');
+        diary.title= 'Download an .ICS file, import to Diary';
         diary.textContent = 'Add to Calendar';
         tag.parentNode.insertBefore(diary, tag);
         diary.addEventListener('click', function () {
