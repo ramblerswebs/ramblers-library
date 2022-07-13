@@ -52,14 +52,8 @@ class RJsScript {
 
         RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
         // Leaflet
-        $document->addStyleSheet("https://unpkg.com/leaflet@1.8.0/dist/leaflet.css",
-                array("type" => "text/css"),
-                array('integrity' => 'sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==',
-                    'crossorigin' => ''));
-        $document->addScript("https://unpkg.com/leaflet@1.8.0/dist/leaflet.js",
-                array("type" => "text/javascript"),
-                array('integrity' => 'sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==',
-                    'crossorigin' => ''));
+        $document->addStyleSheet("libraries/ramblers/vendors/Leaflet-1.7.1/leaflet.css", "text/css");
+        $document->addScript("libraries/ramblers/vendors/Leaflet-1.7.1/leaflet.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/leaflet/ra.leafletmap.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
         if ($options->fullscreen !== null) {
@@ -136,7 +130,6 @@ class RJsScript {
         RLoad::addScript("libraries/ramblers/leaflet/L.Control.Settings.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/js/ra.feedhandler.js", "text/javascript");
         $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
- 
     }
 
     public static function registerWalks($walks) {
