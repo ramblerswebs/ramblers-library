@@ -6,7 +6,7 @@ L.Control.Places = L.Control.extend({
         emptyString: 'Display previously used meeting and starting locations',
         cluster: false
     },
-    _urlbase: 'https://placestest.walkinginfo.co.uk/',
+    _urlbase: 'https://places.walkinginfo.co.uk/',
     _test: false,
     _diagnosticslayer: null,
     _masterlayer: null,
@@ -219,7 +219,6 @@ L.Control.Places = L.Control.extend({
         this._container.style.display = 'inherit';
         var self = this;
         this._addProgressBar();
-        //     var desc = "<b><a href='https://maphelp.ramblers-webs.org.uk/startingplaces.html' target='_blanks'>Meeting/Starting Places</a><b>";
         var url = this._urlbase + "getall.php";
         ra.ajax.getJSON(url, function (err, items) {
             if (err !== null) {

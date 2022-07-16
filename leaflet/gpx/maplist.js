@@ -313,7 +313,7 @@ ra.display.gpxFolder = function (options, data) {
             }
         }
         header += this.formatAltitude(route);
-        header += "<b>Est time <a href=\"https://maphelp.ramblers-webs.org.uk/naismith.html\" target='_blank'>(Naismith)</a>:</b> " + ra.math.naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
+        header += "<b>Est time <a href=\"" + ra.map.helpNaismith + "\" target='_blank'>(Naismith)</a>:</b> " + ra.math.naismith(route.distance, route.cumulativeElevationGain) + '<br/>';
         if (route.duration !== 0) {
             header += "<b>Actual Time:</b> " + ra.time.secsToHrsMins(route.duration) + '<br/>';
         }

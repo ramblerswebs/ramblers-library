@@ -10,7 +10,8 @@ ra.map = (function () {
         $code = $code.replace("[long]", longitude, $code);
         return   "<span class='mappopup' onClick=\"javascript:window.open('" + $code + "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" + $text + "]</span>";
     };
-    my.helpBase="https://maphelp5.ramblers-webs.org.uk/";
+    my.helpBase="https://maphelp.ramblers-webs.org.uk/";
+    my.helpNaismith="https://maphelp.ramblers-webs.org.uk/naismith.html";
     my.icon = (function () {
         var icon = {};
 
