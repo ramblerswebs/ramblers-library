@@ -91,7 +91,7 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
             $basics->additionalNotes = $item->additionalNotes;
 
             $walk->setBasics($basics);
-
+            $walk->checkCancelledStatus();
 
             switch ($item->finishTime) {
                 case null:
@@ -205,7 +205,7 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
                 $startitem = new RJsonwalksWalkStart($time, $publish, $loc);
                 $walk->setStart($startitem);
             }
-              if ($value->typeString == "End") {
+            if ($value->typeString == "End") {
                 $end = $value;
                 $loc = new RJsonwalksWalkLocation();
                 $loc->name = $end->description;

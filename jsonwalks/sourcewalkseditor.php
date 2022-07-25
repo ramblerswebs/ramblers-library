@@ -110,7 +110,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $basics->descriptionHtml = $item->basics->description;
         $basics->additionalNotes = '';
         $walk->setBasics($basics);
-
+        $walk->checkCancelledStatus();
         // meeting
         if ($item->meeting->type !== 'none') {
             $meet = $item->meeting->locations[0];
@@ -135,10 +135,10 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $time = null;
         $start = $item->start;
         $location = $start->location;
-        if (property_exists( $start->location,'time')){
-              $time = $location->time . ":00";
+        if (property_exists($start->location, 'time')) {
+            $time = $location->time . ":00";
         }
-      
+
         switch ($start->type) {
             case 'start':
                 $publish = true;

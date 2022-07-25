@@ -78,7 +78,11 @@ class RJsonwalksLocation {
                 break;
         }
         $day = $walkDate->format('Ymd ');
-        $this->time = DateTime::createFromFormat('Ymd H:i:s', $day . $placetime->time);
+        if ($placetime->time === null) {
+            $this->time = false;
+        } else {
+            $this->time = DateTime::createFromFormat('Ymd H:i:s', $day . $placetime->time);
+        }
         If ($this->time === false) {
             $this->time = "";
             $this->timeHHMM = "No time";

@@ -14,6 +14,8 @@ if (typeof (ra.display) === "undefined") {
 ra.display.walksTabs = function (mapOptions, data) {
     this._allwalks = null;
     this.map = null;
+    this.lmap = null;
+    this.cluster = null;
     this.elements = null;
     this.settings = {
         walkClass: "walk",
@@ -104,9 +106,6 @@ ra.display.walksTabs = function (mapOptions, data) {
         this.map = this.lmap.map;
         this.cluster = new cluster(this.map);
 
-        if (typeof addFilterFormats === 'function') {
-            this.processWalksFilter();
-        }
         this.processOptions(this.elements.raoptions);
         var $walks = this.getAllWalks();
         this.checkColumnNotBlank($walks, this.settings.tableFormat);
@@ -117,97 +116,6 @@ ra.display.walksTabs = function (mapOptions, data) {
             var $walks = _this.getWalks();
             _this.displayWalks($walks);
         });
-     };
-    this.processWalksFilter = function () {
-
-        var wfOptions = JSON.parse(addFilterFormats());
-        if (wfOptions.defaultView === "Details") {
-            wfOptions.defaultView = "Grades";
-        }
-        this.settings.tabOrder = [wfOptions.defaultView];
-        switch (wfOptions.defaultView) {
-            case "Grades":
-                wfOptions.detailsView = false;
-                break;
-            case "Table":
-                wfOptions.tableView = false;
-                break;
-            case "List":
-                wfOptions.listView = false;
-                break;
-            case "Map":
-                wfOptions.mapView = false;
-                break;
-            case "Contacts":
-                wfOptions.contactsView = false;
-                break;
-        }
-
-        if (wfOptions.detailsView) {
-            this.settings.tabOrder.push("Grades");
-        }
-        if (wfOptions.tableView) {
-            this.settings.tabOrder.push("Table");
-        }
-        if (wfOptions.listView) {
-            this.settings.tabOrder.push("List");
-        }
-        if (wfOptions.mapView) {
-            this.settings.tabOrder.push("Map");
-        }
-        if (wfOptions.contactsView) {
-            this.settings.tabOrder.push("Contacts");
-        }
-
-
-        var $diag = "<h3>Walks filter diagnostics</h3>";
-        if (wfOptions.listFormat !== null) {
-            $diag += "List Format Specified<br/>";
-            var items = this.parseFields(wfOptions.listFormat);
-            this.settings.listFormat = items;
-            $diag += "Items " + items.length + "<ul>";
-            items.forEach(function (item, index, items) {
-                $diag += "<li>" + item + "</li>";
-            });
-            $diag += "</ul>";
-        }
-        if (wfOptions.detailsFormat !== null) {
-            var items = this.parseFields(wfOptions.detailsFormat);
-            this.settings.gradesFormat = items;
-            $diag += "Grades Format Specified<br/>";
-            $diag += "Items " + items.length + "<ul>";
-            items.forEach(function (item, index, items) {
-                $diag += "<li>" + item + "</li>";
-            });
-            $diag += "</ul>";
-        }
-        if (wfOptions.tableFormat !== null) {
-            $diag += "<br/>Table Format Specified<br/>";
-            var cols = wfOptions.tableFormat;
-            var format = [];
-            var self = this;
-            cols.forEach(function (col, index, cols) {
-                var fields = {};
-                fields.title = col.title;
-                fields.items = self.parseFields(col.items);
-                format.push(fields);
-            });
-            this.settings.tableFormat = format;
-            $diag += "Columns " + cols.length + "<ol>";
-            format.forEach(function (col, index, format) {
-                $diag += "<li>" + col.title + "</li><ul>";
-                items = col.items;
-                items.forEach(function (item, index, items) {
-                    $diag += "<li>" + item + "</li>";
-                });
-                $diag += "</ul>";
-            });
-            $diag += "</ol>";
-        }
-        if (wfOptions.diagnostics) {
-            var tag = this.elements.filterDiagnostics;
-            tag.innerHTML = $diag;
-        }
     };
 
     this.getAllWalks = function () {
@@ -546,6 +454,13 @@ ra.display.walksTabs = function (mapOptions, data) {
                 break;
             default:
                 break;
+        }
+        if ($walk.status === "Cancelled") {
+            $display = this.settings.filter.status_C;
+            this.resetDisplay("status_C");
+        } else {
+            $display = this.settings.filter.status_P;
+            this.resetDisplay("status_P");
         }
         if (!$display) {
             return false;
@@ -906,7 +821,9 @@ ra.display.walksTabs = function (mapOptions, data) {
                 LessThan7Dats: {no: 0, name: 'In last week', num: 8, id: 'update_8'},
                 LessThan14Days: {no: 0, name: 'In last 2 weeks', num: 14, id: 'update_14'},
                 LessTheAMonth: {no: 0, name: 'In last month', num: 32, id: 'update_32'},
-                LessThen3Months: {no: 0, name: 'In last 3 months', num: 93, id: 'update_93'}
+                LessThen3Months: {no: 0, name: 'In last 3 months', num: 93, id: 'update_93'}},
+            status: {Cancelled: {no: 0, name: 'Cancelled walks', num: 0, id: 'status_C'},
+                Published: {no: 0, name: 'Published walks ', num: 8, id: 'status_P'}
             }
         };
         var i, len;
@@ -964,8 +881,13 @@ ra.display.walksTabs = function (mapOptions, data) {
             if (diffDays < 8) {
                 result.updates['LessThan7Dats'].no += 1;
             }
-
+            if (walk.status === 'Cancelled') {
+                result.status['Cancelled'].no += 1;
+            } else {
+                result.status['Published'].no += 1;
+            }
         }
+
         return result;
     };
     this.setFilters = function (walks) {
@@ -981,6 +903,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         filter.setFilterGroup(result.dow);
         filter.setFilterGroup(result.distances);
         filter.setFilterGroup(result.grades);
+        filter.setFilterGroup(result.status);
 
         var tag = this.elements.walksFilter;
 
@@ -998,7 +921,9 @@ ra.display.walksTabs = function (mapOptions, data) {
             filter.addFilter(div, 'Day of the Week', result.dow);
             filter.addFilter(div, 'Distance', result.distances);
             filter.addFilter(div, 'Grade', result.grades);
-
+            if (result.status.Cancelled.no>0){
+                 filter.addFilter(div, 'Status', result.status);
+            }
         }
 
     };
@@ -1053,33 +978,5 @@ ra.display.walksTabs = function (mapOptions, data) {
             document.dispatchEvent(e);
         });
     };
-    this.parseFields = function ($value) {
-        var $items = [];
-        var $item = "";
-        var $array = $value.split("");
-        var $inBracket = false;
-        $array.forEach(function ($char, index, array) {
-            switch ($char) {
-                case "{":
-                    if ($item !== "") {
-                        $items.push($item);
-                    }
-                    $item += $char;
-                    $inBracket = true;
-                    break;
-                case "}":
-                    if ($inBracket) {
-                        $item += $char;
-                        $items.push($item);
-                        $item = "";
-                    } else {
-                        $item += $char;
-                    }
-                    break;
-                default:
-                    $item += $char;
-            }
-        });
-        return $items;
-    };
+
 };

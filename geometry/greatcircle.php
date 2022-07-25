@@ -71,16 +71,16 @@ Class RGeometryGreatcircle {
 
     public static function direction($lat1, $lon1, $lat2, $lon2) {
         $bearing = RGeometryGreatcircle::bearing($lat1, $lon1, $lat2, $lon2);
-        $inc = 22.5;
-        $direction = array("North", "North East", "East", "South East", "South", "South West", "West", "North West", "North");
+        $inc = 11.25;
+       // $direction = array("North", "North East", "East", "South East", "South", "South West", "West", "North West", "North");
+        $direction = array("North", "North NorthEast", "North East", "East NorthEast", "East", "East SouthEast", "South East", "South SouthEast", "South", "South SouthWest", "South West", "West SouthWest", "West", "West NorthWest", "North West", "North NorthWest", "North");
         $i = 0;
-        for ($ang = 0; $ang <= 360; $ang+=45) {
+        for ($ang = 0; $ang <= 360; $ang += 22.5) {
             if ($bearing >= $ang - $inc and $bearing <= $ang + $inc) {
                 return $direction[$i];
             }
-            $i+=1;
+            $i += 1;
         }
-
 
         return "direction error";
     }
@@ -105,5 +105,3 @@ Class RGeometryGreatcircle {
     }
 
 }
-
-?>

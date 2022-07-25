@@ -199,6 +199,20 @@ ra.isES6 = function () {
         return ra._isES6;
     }
 };
+ra.arrayToCSV = function (arr) {
+    var item, i;
+    var line = [];
+
+    for (i = 0; i < arr.length; ++i) {
+        item = arr[i];
+        if (item.indexOf && (item.indexOf(',') !== -1 || item.indexOf('"') !== -1)) {
+            item = '"' + item.replace(/"/g, '""') + '"';
+        }
+        line.push(item);
+    }
+
+    return line.join(',');
+};
 
 
 ra.ajax = (function () {
@@ -1329,7 +1343,7 @@ ra.modal = (function () {
             });
         }
     };
-    modal.headerDiv=function(){
+    modal.headerDiv = function () {
         return modal.elements.header;
     };
     modal._createModalTag = function (print = true) {
@@ -1396,13 +1410,21 @@ ra.geom = (function () {
     // var FT = 20902260;
     var directions = [
         {angle: 0, name: "North", abbr: "N"},
+        {angle: 22.5, name: "North NorthEast", abbr: "NNE"},
         {angle: 45, name: "North East", abbr: "NE"},
+        {angle: 67.5, name: "East NorthEast", abbr: "ENE"},
         {angle: 90, name: "East", abbr: "E"},
+        {angle: 112.5, name: "East SouthEast", abbr: "ESE"},
         {angle: 135, name: "South East", abbr: "SE"},
+        {angle: 157.5, name: "South SouthEast", abbr: "SSE"},
         {angle: 180, name: "South", abbr: "S"},
+        {angle: 202.5, name: "South SouthWest", abbr: "SSW"},
         {angle: 225, name: "South West", abbr: "SW"},
+        {angle: 247.5, name: "West SouthWest", abbr: "WSW"},
         {angle: 270, name: "West", abbr: "W"},
+        {angle: 292.5, name: "West NorthWest", abbr: "WNW"},
         {angle: 315, name: "North West", abbr: "NW"},
+        {angle: 337.5, name: "North NorthWest", abbr: "NNW"},
         {angle: 360, name: "North", abbr: "N"}];
 
     geom.validateRadius = function ($unit) {
@@ -1412,6 +1434,15 @@ ra.geom = (function () {
             return MI;
         }
     };
+    geom.position = function ($lat1, $lon1, $lat2, $lon2, $unit = 'KM') {
+        var out = {};
+        out.distance = geom.distance($lat1, $lon1, $lat2, $lon2, $unit);
+        out.bearing = geom.bearing($lat1, $lon1, $lat2, $lon2);
+        out.direction = geom.direction($lat1, $lon1, $lat2, $lon2);
+        //  out.directionAbbr = geom.directionAbbr(out.direction);
+        return out;
+    };
+
 // Takes two sets of geographic coordinates in decimal degrees and produces distance along the great circle line.
 // Optionally takes a fifth argument with one of the predefined units of measurements, or planet radius in custom units.
     geom.distance = function ($lat1, $lon1, $lat2, $lon2, $unit = KM) {
@@ -1449,14 +1480,14 @@ ra.geom = (function () {
         $lat1 = ra.math.deg2rad($lat1);
         $lon1 = ra.math.deg2rad($lon1);
         var $lat3 = Math.asin(Math.sin($lat1) * Math.cos($dt / $r) + Math.cos($lat1) * Math.sin($dt / $r) * Math.cos(ra.math.deg2rad($brng)));
-        var $lon3 = $lon1 + Math.atan2(sin(ra.math.deg2rad($brng)) * Math.sin($dt / $r) * Math.cos($lat1), Math.cos($dt / $r) - Math.sin($lat1) * Math.sin($lat3));
+        var $lon3 = $lon1 + Math.atan2(Math.sin(ra.math.deg2rad($brng)) * Math.sin($dt / $r) * Math.cos($lat1), Math.cos($dt / $r) - Math.sin($lat1) * Math.sin($lat3));
         return {
-            "LAT": ra.math.rad2deg($lat3),
-            "LON": ra.math.rad2deg($lon3)};
+            "lat": ra.math.rad2deg($lat3),
+            "lon": ra.math.rad2deg($lon3)};
     };
     geom.direction = function ($lat1, $lon1, $lat2, $lon2) {
         var $bearing = geom.bearing($lat1, $lon1, $lat2, $lon2);
-        var $inc = 22.5;
+        var $inc = 11.25;
         //     var $direction = array("North", "North East", "East", "South East", "South", "South West", "West", "North West", "North");
         var $i = 0;
         var index, len, item, angle;
@@ -2172,4 +2203,6 @@ if (typeof (ra.ics) === "undefined") {
             return false;
         };
     };
+
+
 }

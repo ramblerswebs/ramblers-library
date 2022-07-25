@@ -134,8 +134,8 @@ class RJsonwalksWalk extends REvent {
         $this->startLocation = new RJsonwalksLocation();
         $this->startLocation->setLocation('Start', $start, $this->walkDate);
     }
-    
-      public function setFinish($finish) {
+
+    public function setFinish($finish) {
         $this->finishLocation = new RJsonwalksLocation();
         $this->finishLocation->setLocation('End', $finish, $this->walkDate);
     }
@@ -215,6 +215,22 @@ class RJsonwalksWalk extends REvent {
                 return $this->sortTime;
             default:
                 return NULL;
+        }
+    }
+
+    public function checkCancelledStatus() {
+        $contains = $this->contains("cancelled", strtolower($this->title));
+        $isC = $this->isCancelled();
+        if ($isC && $contains) {
+            return;
+        }
+        if ($contains) {
+            $this->status = "Cancelled";
+        }
+        if ($isC) {
+            if (!$contains) {
+                $this->title = $this->title . "  CANCELLED";
+            }
         }
     }
 
@@ -943,6 +959,10 @@ class RJsonwalksWalk extends REvent {
             return "<span data-descr='Walk updated " . $this->dateUpdated->format('D, jS M') . "' class=' walkNew'>" . $text . "</span>";
         }
         return $text;
+    }
+
+    private function contains($needle, $haystack) {
+        return strpos($haystack, $needle) !== false;
     }
 
     function __destruct() {

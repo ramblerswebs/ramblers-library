@@ -17,8 +17,5 @@ class RJsonwalksWalkBasics {
     public $descriptionHtml = "";   // description of walk with html tags
     public $additionalNotes = "";   // the additional notes field as text
     public $title="";                 // whether the walk is published, cancelled etc
-    
-
-    
-    
+        
 }

@@ -529,6 +529,7 @@ L.Control.Rightclick = L.Control.extend({
         links += '<a href="javascript:ra.link.googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
         links += '<a href="javascript:ra.loc.directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
         this._mouseLayer.clearLayers();
+
         var tags = [
             {parent: 'root', tag: 'div', 'innerHTML': desc},
             {name: 'w3w', parent: 'root', tag: 'div'},
@@ -554,6 +555,7 @@ L.Control.Rightclick = L.Control.extend({
 
         ra.w3w.get(e.latlng.lat, e.latlng.lng, elements.w3w, true);
     },
+
     _displayPostcodes: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
         var grid = OsGridRef.latLonToOsGrid(p);
@@ -580,17 +582,18 @@ L.Control.Rightclick = L.Control.extend({
                     point.getPopup().setContent(msg);
                 } else {
                     if (items.length === 0) {
-                        var closest = "No postcodes found within " + self._userOptions.postcodes.distance+"km";
+                        var closest = "No postcodes found within " + self._userOptions.postcodes.distance + "km";
                         point.getPopup().setContent(closest);
                     } else {
                         for (i = 0; i < items.length; i++) {
                             var item = items[i];
-                            var popup = item.Postcode + "<br />     Distance: " + self._kFormatter(Math.round(item.Distance)) + "m";
                             var easting = item.Easting;
                             var northing = item.Northing;
                             var gr = new OsGridRef(easting, northing);
                             var latlong = OsGridRef.osGridToLatLon(gr);
                             var pt = new L.latLng(latlong.lat, latlong.lon);
+                            var location = ra.geom.position(p.lat, p.lon, pt.lat, pt.lng);
+                            var popup = item.Postcode + "<br />     Location " + self._kFormatter(Math.round(location.distance * 1000)) + "m " + location.direction.name + " from marker";
                             var style;
                             if (i === 0) {
                                 marker = L.marker(pt, {icon: ra.map.icon.postcodeClosest()}).bindPopup(popup);
@@ -599,6 +602,7 @@ L.Control.Rightclick = L.Control.extend({
                                 marker = L.marker(pt, {icon: ra.map.icon.postcode()}).bindPopup(popup);
                                 style = {color: 'blue', weight: 3, opacity: 0.2};
                             }
+
                             self._mouseLayer.addLayer(marker);
                             self._mouseLayer.addLayer(L.polyline([pt, p], style));
                         }

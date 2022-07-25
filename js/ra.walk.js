@@ -1048,7 +1048,12 @@ ra.walk = (function () {
         return $walks;
     };
     my.convertPHPLocation = function (location) {
-        location.time = new Date(location.time.date);
+        if (location.time.hasOwnProperty('date')){
+             location.time = new Date(location.time.date);
+        }else{
+            location.time =null;
+        }
+       
     };
     my.addWalkMarker = function (cluster, $walk, walkClass) {
         var $long, $lat, $icon, $class;
