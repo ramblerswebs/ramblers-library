@@ -1975,7 +1975,7 @@ if (typeof (ra.ics) === "undefined") {
             this._addRecord('END:', 'VCALENDAR');
             var data = this.file;
             try {
-                var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
+                var blob = new Blob([data], {type: "text/calendar"});
 
                 var name = "walks.ics";
                 saveAs(blob, name);
@@ -2029,7 +2029,7 @@ if (typeof (ra.ics) === "undefined") {
                 chunks.push(string.substring(0, chunkSize));
                 string = string.substring(chunkSize, string.length);
             }
-            var _this = this;
+           
             chunks.forEach(myFunction);
 
             function myFunction(value, index, array) {

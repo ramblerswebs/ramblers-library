@@ -475,7 +475,7 @@ div#ra-help-helptag{
 .even.walkPublished:hover,
 .even.walkNew:hover {
     background-color:#DDDDDD !important;
-    text-decoration: underline;
+    
 }
 .odd {
     background-color:#FFFFFF;

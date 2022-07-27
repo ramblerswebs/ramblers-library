@@ -114,7 +114,7 @@ ra.walk = (function () {
         }
         ra.modal.display(html);
         my._addMaptoWalk(walk);
-        var tag =  ra.modal.headerDiv();
+        var tag = ra.modal.headerDiv();
         if (tag !== null) {
             my._addDiaryButton(tag, walk);
         }
@@ -122,7 +122,7 @@ ra.walk = (function () {
     my._addDiaryButton = function (tag, walk) {
         var diary = document.createElement('button');
         diary.setAttribute('class', 'link-button tiny cloudy');
-        diary.title= 'Download an .ICS file, import to Diary';
+        diary.title = 'Download an .ICS file, import to Diary';
         diary.textContent = 'Add to Calendar';
         tag.parentNode.insertBefore(diary, tag);
         diary.addEventListener('click', function () {
@@ -390,7 +390,7 @@ ra.walk = (function () {
         $html += "<div class='updated'>Walk ID " + $walk.id + "</div>" + PHP_EOL;
         $html += "<div class='updated walk" + $walk.status + "'>Last update: " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
-       
+
         $html += "</div>" + PHP_EOL;
         //    var mapdiv = "div" + $walk.id;
         //    $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;
@@ -450,7 +450,7 @@ ra.walk = (function () {
     my.getEmailLink = function ($walk) {
         var $link;
         $link = "javascript:ra.walk.emailContact(\"" + $walk.id + "\")";
-        return "<span><a href='" + $link + "' >Email contact</a></span>";
+        return "<span><a href='" + $link + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
     };
     my.emailContact = function ($id) {
 
@@ -649,21 +649,6 @@ ra.walk = (function () {
             case "{description}":
                 out = $walk.description;
                 break;
-            case "{difficulty}":
-                out = my.getWalkValue($walk, "{distance}");
-                out += "<br/><span class='pointer' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
-                if ($walk.localGrade !== "") {
-                    out += BR + $walk.localGrade;
-                }
-                break;
-            case "{difficulty+}":
-                out = my.getWalkValue($walk, "{distance}");
-                out += BR + ra.walk.grade.disp($walk.nationalGrade, "middle") + BR;
-                out += "<span class='pointer' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
-                if ($walk.localGrade !== "") {
-                    out += BR + $walk.localGrade;
-                }
-                break;
             case "{distance}":
                 if ($walk.distanceMiles > 0) {
                     out = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
@@ -679,6 +664,21 @@ ra.walk = (function () {
                     out = $walk.distanceKm + "km";
                 }
                 break;
+            case "{difficulty}":
+                out = my.getWalkValue($walk, "{distance}");
+                out += "<br/><span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
+                if ($walk.localGrade !== "") {
+                    out += BR + $walk.localGrade;
+                }
+                break;
+            case "{difficulty+}":
+                out = my.getWalkValue($walk, "{distance}");
+                out += BR + ra.walk.grade.disp($walk.nationalGrade, "middle") + BR;
+                out += "<span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
+                if ($walk.localGrade !== "") {
+                    out += BR + $walk.localGrade;
+                }
+                break;
             case "{gradeimg}":
                 out = ra.walk.grade.disp($walk.nationalGrade, 'details');
                 break;
@@ -689,7 +689,7 @@ ra.walk = (function () {
                 out = ra.walk.grade.disp($walk.nationalGrade, 'middle');
                 break;
             case "{grade}":
-                out = "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
+                out = "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
                     out += BR + $walk.localGrade;
                 }
@@ -697,7 +697,7 @@ ra.walk = (function () {
             case "{grade+}":
                 out = "";
                 out += ra.walk.grade.disp($walk.nationalGrade, "middle");
-                out += "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
+                out += "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
                     out += BR + $walk.localGrade;
                 }
@@ -887,7 +887,7 @@ ra.walk = (function () {
     };
     my._addWalkLink = function (id, $text, $class = "") {
         if ($text !== '') {
-            return  "<span class='pointer " + $class + "' onclick=\"" + my.DisplayWalkFunction + "(event,'" + id + "')\">" + $text + "</span>";
+            return  "<span class='pointer " + $class + "' onclick=\"" + my.DisplayWalkFunction + "(event,'" + id + "')\" title='Click to display walk details'>" + $text + "</span>";
         }
         return $text;
     };
@@ -1048,12 +1048,12 @@ ra.walk = (function () {
         return $walks;
     };
     my.convertPHPLocation = function (location) {
-        if (location.time.hasOwnProperty('date')){
-             location.time = new Date(location.time.date);
-        }else{
-            location.time =null;
+        if (location.time.hasOwnProperty('date')) {
+            location.time = new Date(location.time.date);
+        } else {
+            location.time = null;
         }
-       
+
     };
     my.addWalkMarker = function (cluster, $walk, walkClass) {
         var $long, $lat, $icon, $class;
@@ -1228,14 +1228,14 @@ ra.walk = (function () {
             return time;
         };
         icsfile._getLastTime = function (walk) {
-            var time=null;
+            var time = null;
             if (walk.hasMeetPlace) {
                 time = walk.meetLocation.time;
             }
             if (walk.startLocation.exact === true) {
                 time = walk.startLocation.time;
-            }else{
-                
+            } else {
+
             }
             return time;
         };
@@ -1252,7 +1252,7 @@ ra.walk = (function () {
                     $durationFullMins += 60;
                 }
                 $lasttime = ra.time.addMinutes($lasttime, $durationFullMins);
-              }
+            }
             return $lasttime;
         };
         return icsfile;
@@ -1324,28 +1324,31 @@ ra.walk = (function () {
         grade.disp = function (nationalGrade, $class) {
             var $tag = "";
             var $img = grade.image(nationalGrade);
+            var dataDescr = "";
             switch (nationalGrade) {
                 case "Easy Access":
-                    $tag = "<span data-descr='Easy Access' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "</span>";
+                    dataDescr = 'Easy Access';
                     break;
                 case "Easy":
-                    $tag = "<span data-descr='Easy' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "</span>";
+                    dataDescr = 'Easy Access';
                     break;
                 case "Leisurely":
-                    $tag = "<span data-descr='Leisurely' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "</span>";
+                    dataDescr = 'Easy Access';
                     break;
                 case "Moderate":
-                    $tag = "<span data-descr='Moderate' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "</span>";
+                    dataDescr = 'Easy Access';
                     break;
                 case "Strenuous":
-                    $tag = "<span data-descr='Strenuous' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "</span>";
+                    dataDescr = 'Easy Access';
                     break;
                 case "Technical":
-                    $tag = "<span data-descr='Technical' class='grade " + $class + "' onclick='ra.walk.dGH()'>" + $img + "</span>";
+                    dataDescr = 'Easy Access';
                     break;
                 default:
                     break;
             }
+            $tag = "<span data-descr='" + dataDescr + "' class='grade " + $class + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $img + "</span>";
+
             return $tag;
         };
         return grade;
