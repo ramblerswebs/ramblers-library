@@ -1330,19 +1330,19 @@ ra.walk = (function () {
                     dataDescr = 'Easy Access';
                     break;
                 case "Easy":
-                    dataDescr = 'Easy Access';
+                    dataDescr = 'Easy';
                     break;
                 case "Leisurely":
-                    dataDescr = 'Easy Access';
+                    dataDescr = 'Leisurely';
                     break;
                 case "Moderate":
-                    dataDescr = 'Easy Access';
+                    dataDescr = 'Moderate';
                     break;
                 case "Strenuous":
-                    dataDescr = 'Easy Access';
+                    dataDescr = 'Strenuous';
                     break;
                 case "Technical":
-                    dataDescr = 'Easy Access';
+                    dataDescr = 'Technical';
                     break;
                 default:
                     break;
