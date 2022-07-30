@@ -69,7 +69,6 @@ ra.display.walksTabs = function (mapOptions, data) {
 
         var tags = [
             {name: 'outer', parent: 'root', tag: 'div'},
-            {name: 'filterDiagnostics', parent: 'outer', tag: 'div'},
             {name: 'walksFilter', parent: 'outer', tag: 'div', attrs: {class: 'walksFilter'}},
             {name: 'raoptions', parent: 'outer', tag: 'div'},
             {name: 'inner', parent: 'outer', tag: 'div', attrs: {id: 'rainner'}},
@@ -454,6 +453,9 @@ ra.display.walksTabs = function (mapOptions, data) {
                 break;
             default:
                 break;
+        }
+        if (!$display) {
+            return false;
         }
         if ($walk.status === "Cancelled") {
             $display = this.settings.filter.status_C;
@@ -921,8 +923,8 @@ ra.display.walksTabs = function (mapOptions, data) {
             filter.addFilter(div, 'Day of the Week', result.dow);
             filter.addFilter(div, 'Distance', result.distances);
             filter.addFilter(div, 'Grade', result.grades);
-            if (result.status.Cancelled.no>0){
-                 filter.addFilter(div, 'Status', result.status);
+            if (result.status.Cancelled.no > 0) {
+                filter.addFilter(div, 'Status', result.status);
             }
         }
 
