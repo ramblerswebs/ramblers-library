@@ -13,9 +13,9 @@ class RJsonwalksBU51Fulldetails extends RJsonwalksStdSimplelist {
     public $walkClass = "bu51Nextwalk";
     public $feedClass = "walksfeed"; // not used?
     private $listFormat = ["{gradeimg}", "{title}", "{lf}",
-        "{dowddmmyyyy}", "{[meet at ]meetTime}", "{[ start at ]startTime}",
+        "{dowddmmyyyy}", "{[ meet at ]meetTime}", "{[ start at ]startTime}", "{[ estimated finish at ]finishTime}",
         "{,distance}", "{,nationalGrade}","{,type}","{ walk}"];
-    private $nowalks = 5;
+    private $nowalks = 20;
 
     public function __construct() {
         parent::__construct();

@@ -398,34 +398,34 @@ ra.date = (function () {
 //      Possible values are "numeric", "2-digit", "narrow", "short", "long".
 
     date.getDate = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var options = {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'};
         return value.toLocaleDateString("en-UK", options);
     };
     date.dow = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var options = {weekday: 'long'};
         return value.toLocaleDateString("en-UK", options);
     };
     date.dowShort = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var options = {weekday: 'short'};
         return value.toLocaleDateString("en-UK", options);
     };
     date.dd = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         return value.getDate().toString() + date.nth(value);
     };
     date.dowShortdd = function (datetime) {
         return date.dowShort(datetime) + ", " + date.dd(datetime);
     };
     date.month = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var options = {month: 'long'};
         return value.toLocaleDateString("en-UK", options);
     };
     date.monthShort = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var options = {month: 'short'};
         return value.toLocaleDateString("en-UK", options);
     };
@@ -433,18 +433,18 @@ ra.date = (function () {
         return date.dowShortdd(datetime) + ", " + date.month(datetime);
     };
     date.dowShortddmmyyyy = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var options = {year: 'numeric', month: 'short', day: 'numeric', weekday: 'short'};
         return value.toLocaleDateString("en-UK", options);
     };
     date.toICSFormat = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var yyyymmdd = value.getFullYear().toString() + date.MM(value) + date.DD(value);
         var out = yyyymmdd + "T" + value.getHours().toString().padStart(2, '0') + value.getMinutes().toString().padStart(2, '0') + value.getSeconds().toString().padStart(2, '0');
         return out;
     };
     date.toYYYYMMDDmmhhssFormat = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var yyyymmdd = value.getFullYear().toString() + '-' + date.MM(value) + '-' + date.DD(value);
         var time = value.getHours().toString().padStart(2, '0') + ':' + value.getMinutes().toString().padStart(2, '0') + ':' + value.getSeconds().toString().padStart(2, '0');
         var out = yyyymmdd + " " + time + '.000000';
@@ -463,7 +463,7 @@ ra.date = (function () {
         return date.dowddmm(datetime) + " " + date.YYYY(datetime);
     };
     date.YYYY = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var options = {year: 'numeric'};
         return value.toLocaleDateString("en-UK", options);
     };
@@ -472,23 +472,23 @@ ra.date = (function () {
         return value.substr(2, 2);
     };
     date.YYYYMMDD = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         return value.getFullYear() + "-" + date.MM(value) + "-" + date.DD(value);
     };
     date.DDMMYYYY = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         return date.DD(value) + "/" + date.MM(value) + "/" + value.getFullYear();
     };
     date.MM = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         return  (value.getMonth() + 1).toString().padStart(2, '0');
     };
     date.DD = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         return value.getDate().toString().padStart(2, '0');
     };
     date.nth = function (datetime) {
-        var value = date._setDateTime(datetime);
+        var value = date.getDateTime(datetime);
         var d = value.getDate();
         if (d > 3 && d < 21)
             return 'th';
@@ -504,8 +504,8 @@ ra.date = (function () {
         }
     };
     date.periodInDays = function (date1, date2) {
-        var d1 = date._setDateTime(date1);
-        var d2 = date._setDateTime(date2);
+        var d1 = date.getDateTime(date1);
+        var d2 = date.getDateTime(date2);
         const diffTime = Math.abs(d1 - d2);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays;
@@ -523,7 +523,7 @@ ra.date = (function () {
         }
         return Date.parse(text) !== null;
     };
-    date._setDateTime = function (datetimestring) {
+    date.getDateTime = function (datetimestring) {
         // also used by time
         var value = datetimestring;
         if (typeof value === "string") {
@@ -581,7 +581,7 @@ ra.date = (function () {
 ra.time = (function () {
     var time = {};
     time.HHMM = function (datetime) {
-        var date = ra.date._setDateTime(datetime);
+        var date = ra.date.getDateTime(datetime);
         var hours = date.getHours();
         var minutes = date.getMinutes();
         var ampm = hours >= 12 ? 'pm' : 'am';
@@ -592,7 +592,7 @@ ra.time = (function () {
         return strTime;
     };
     time.HHMMshort = function (datetime) {
-        var value = ra.date._setDateTime(datetime);
+        var value = ra.date.getDateTime(datetime);
         return time.HHMM(value).replace(":00", "");
     };
     time.secsToHrsMins = function (seconds) {
@@ -908,8 +908,8 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.addEventListener("click", function (e) {
             inputTag.ra.object[inputTag.ra.property] = !inputTag.ra.object[inputTag.ra.property];
             ra.html.input.yesNoReset(inputTag, inputTag.ra.object[inputTag.ra.property]);
-            let event = new Event("ra-input-change");
-            inputTag.dispatchEvent(event);
+            // let event = new Event("ra-input-change"); Reset does this for us
+            // inputTag.dispatchEvent(event);
         });
         itemDiv.appendChild(_label);
         itemDiv.appendChild(inputTag);
@@ -926,6 +926,62 @@ if (typeof (ra.html.input) === "undefined") {
             inputTag.textContent = ra.options[1];
             inputTag.classList.add("button-p0186");
             inputTag.classList.remove("button-p0555");
+        }
+        let event = new Event("ra-input-change");
+        inputTag.dispatchEvent(event);
+    };
+    ra.html.input.combo = function (tag, divClass, label, raobject, property, options = ['Yes', 'No']) {
+        var _this=this;
+        var itemDiv = document.createElement('div');
+        if (divClass !== '') {
+            itemDiv.setAttribute('class', divClass);
+        }
+        tag.appendChild(itemDiv);
+        var _label = document.createElement('label');
+        _label.textContent = label;
+        _label.style.display = "inline";
+        var inputTag = document.createElement('select');
+        inputTag.setAttribute('class', '');
+        inputTag.style.display = "inline";
+        inputTag.style.marginLeft = "10px";
+      inputTag.style.width = "250px";
+//        if (raobject[property]) {
+//            inputTag.textContent = options[0];
+//
+//        } else {
+//            inputTag.textContent = options[1];
+//
+//        }
+         Object.keys(options).forEach(function (key) {
+                var item = options[key];
+                  var optionTag = document.createElement('option');
+                  optionTag.textContent=item.name;
+                  optionTag.value=item.value;
+                  inputTag.appendChild(optionTag);
+            });
+        inputTag.ra = {};
+        inputTag.ra.object = raobject;
+        inputTag.ra.property = property;
+        inputTag.ra.options = options;
+        inputTag.addEventListener("click", function (e) {
+            inputTag.ra.object[inputTag.ra.property] = !inputTag.ra.object[inputTag.ra.property];
+           // ra.html.input.yesNoReset(inputTag, inputTag.ra.object[inputTag.ra.property]);
+            // let event = new Event("ra-input-change"); Reset does this for us
+            // inputTag.dispatchEvent(event);
+        });
+        itemDiv.appendChild(_label);
+        itemDiv.appendChild(inputTag);
+        return inputTag;
+    };
+    ra.html.input.comboReset = function (inputTag, value) {
+        var ra = inputTag.ra;
+        ra.object[ra.property] = value;
+        if (value) {
+            inputTag.textContent = ra.options[0];
+
+        } else {
+            inputTag.textContent = ra.options[1];
+
         }
         let event = new Event("ra-input-change");
         inputTag.dispatchEvent(event);
@@ -1976,8 +2032,7 @@ if (typeof (ra.ics) === "undefined") {
             var data = this.file;
             try {
                 var blob = new Blob([data], {type: "text/calendar"});
-
-                var name = "walks.ics";
+                var name = "ramblerswalks.ics";
                 saveAs(blob, name);
             } catch (e) {
                 alert('Your web browser does not support this option!');
@@ -2029,7 +2084,7 @@ if (typeof (ra.ics) === "undefined") {
                 chunks.push(string.substring(0, chunkSize));
                 string = string.substring(chunkSize, string.length);
             }
-           
+
             chunks.forEach(myFunction);
 
             function myFunction(value, index, array) {

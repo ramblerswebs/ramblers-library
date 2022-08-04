@@ -12,7 +12,7 @@ class RJsonwalksBU51Micronextwalks extends RJsonwalksStdSimplelist {
 
     public $walkClass = "bu51-nextwalk";
     public $feedClass = "walksfeed"; // not used?
-    private $listFormat = ["{dowShortddmm}", "{startTime}",
+    private $listFormat = ["{dowShortddmm}", " ","{startTime}",
         "{,title}", "{,startPC}", "{,nationalGrade}", "{,distance}"];
     private $nowalks = 5;
 

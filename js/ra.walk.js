@@ -126,6 +126,7 @@ ra.walk = (function () {
         diary.textContent = 'Add to Calendar';
         tag.parentNode.insertBefore(diary, tag);
         diary.addEventListener('click', function () {
+            walk.display = true;
             var $walks = [walk];
             ra.walk.icsfile.create($walks);
         });
@@ -927,7 +928,7 @@ ra.walk = (function () {
     my.addYear = function ($walk) {
         var d = new Date();
         var newDate = new Date(d.getTime() + 300 * 24 * 60 * 60000);
-        var walkDate = ra.date._setDateTime($walk.walkDate);
+        var walkDate = ra.date.getDateTime($walk.walkDate);
         if (walkDate.getTime() < newDate.getTime()) {
             return '';
         } else {
@@ -1049,7 +1050,7 @@ ra.walk = (function () {
     };
     my.convertPHPLocation = function (location) {
         if (location.time.hasOwnProperty('date')) {
-            location.time = new Date(location.time.date);
+            location.time = ra.date.getDateTime(location.time.date);
         } else {
             location.time = null;
         }
@@ -1188,7 +1189,7 @@ ra.walk = (function () {
             }
 
             var $time = icsfile._getFirstTime(walk);
-            var d = new Date(walk.walkDate);
+            var d = ra.date.getDateTime(walk.walkDate);
             if ($time !== null) {
                 $time.setDate(d.getDate());
                 $time.setMonth(d.getMonth());
@@ -1199,11 +1200,11 @@ ra.walk = (function () {
                     ev.endDate(new Date($time));
                 }
             } else {
-                ev.startDate(new Date(walk.walkDate));
+                ev.startDate(ra.date.getDateTime(walk.walkDate));
             }
 
-            ev.createdDate(new Date(walk.dateCreated));
-            ev.modifiedDate(new Date(walk.dateUpdated));
+            ev.createdDate(ra.date.getDateTime(walk.dateCreated));
+            ev.modifiedDate(ra.date.getDateTime(walk.dateUpdated));
             ev.uid('walk' + walk.id + '-isc@ramblers-webs.org.uk');
             ev.organiser(walk.groupName + ":mailto:ignore@ramblers-webs.org.uk");
             ev.summary($summary);
