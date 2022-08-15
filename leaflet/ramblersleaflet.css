@@ -444,3 +444,52 @@ table th {
     left: 50%;
     z-index:2000;
 }
+
+.ra-map-tools-icon{
+    background:#fff url(images/tools.png) no-repeat 0 0;
+    cursor: pointer;
+    background-size:32px 32px;
+    background-position: center;
+    width:35px;
+    height:35px;
+    border-radius:5px;
+
+}
+.ra-zoomall-icon{
+    background:#fff url(images/extent.png) no-repeat 0 0;
+    cursor: pointer;
+    background-size:32px 32px;
+    background-position: center;
+    width:35px;
+    height:35px;
+    border-radius:5px;
+
+}
+.ra-map-tools-icon.leaflet-control{
+    margin-left:0px;
+}
+.leaflet-tools-container {
+    display: grid;
+   
+   grid-template-areas: 
+    "header header "
+    "header header "
+    "header header ";
+    justify-items: start;
+    align-items: start;
+    background-color:#fff;
+    border-radius:5px;
+    border: 2px solid rgba(0,0,0,0.2);
+    padding:10px;
+    padding-left:0px;
+}
+.leaflet-control-search.leaflet-bar.leaflet-control{
+    background:#fff url(images/search.png) no-repeat 0 0;
+    cursor: pointer;
+    background-size:20px 20px;
+    background-position: center;
+    width:30px;
+    height:30px;
+    border-radius:5px;
+ 
+}

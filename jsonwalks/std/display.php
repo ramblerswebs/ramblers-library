@@ -38,10 +38,10 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
         $this->id = uniqid(rand());
         if ($this->printOn) {
-             echo "<p>User: Please use the Print option next to the pagination controls</p>";
-             echo "<p></p>";
-             echo "<p>Web master please disable this print option</p>";
-          return;
+            echo "<p>User: Please use the Print option next to the pagination controls</p>";
+            echo "<p></p>";
+            echo "<p>Web master please disable this print option</p>";
+            return;
         }
         $this->map = new RLeafletMap();
         $this->map->setCommand("ra.display.walksTabs");
@@ -50,18 +50,12 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $options = $this->map->options;
         $options->cluster = true;
         $options->displayElevation = false;
-        $options->fullscreen = true;
-        $options->mylocation = true;
         $options->mouseposition = true;
         $options->postcodes = true;
         $options->fitbounds = false;
-        $options->copyright = true;
         $options->settings = true;
         $options->rightclick = true;
-        $options->print = true;
         $options->calendar = true;
-        //  $this->map->addScriptsandStyles($options);
-
         $items = $walks->allWalks();
         $display = new RJsonwalksStdCancelledwalks();
         $number = $this->noCancelledWalks($items);

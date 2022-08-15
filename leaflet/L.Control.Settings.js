@@ -3,7 +3,7 @@ L.Control.Settings = L.Control.extend({
     options: {
         id: null,
         title: 'Settings&Help',
-        position: 'topright'
+        position: 'topleft'
     },
     saveOptions: {
         saveSettings: false
@@ -13,8 +13,6 @@ L.Control.Settings = L.Control.extend({
     onAdd: function (map) {
         this._map = map;
         var _this = this;
-        this.searchLayer = L.featureGroup([]);
-        this.searchLayer.addTo(this._map);
         var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar leaflet-control-display-settings');
         this._container = container;
         if (this.options.id !== null) {
@@ -24,7 +22,20 @@ L.Control.Settings = L.Control.extend({
         container.addEventListener("click", function (e) {
             var settingsDiv = document.createElement('div');
             settingsDiv.setAttribute('class', 'settings');
-            ra.modal.display(settingsDiv, false);
+            _this.fullscreen = _this._map.isFullscreen();
+            if (_this.fullscreen) {
+                _this._map.toggleFullscreen();
+            }
+            _this.modal = ra.modals.createModal(settingsDiv, false);
+//            document.addEventListener("ra-modal-closed", function (e) {
+//                if (e.ra.modal === _this.modal) {
+//                    // reset status of map
+//                    if (_this.fullscreen) {
+//                        _this._map.toggleFullscreen();
+//                    }
+//                }
+//
+//            });
             var title = document.createElement('h4');
             title.textContent = "Settings & Help";
             settingsDiv.appendChild(title);
@@ -53,32 +64,29 @@ L.Control.Settings = L.Control.extend({
                 first = false;
             }
 
-            var searchDiv;
-            _this._addTabItem(cont, list, 'Search', 'search', first);
-            searchDiv = _this._addTabContentItem(content, "search", first);
-            first = false;
-            _this._addSearch(searchDiv);
-
             control = _this.leafletMap.mouseControl();
             if (control !== null) {
-                _this._addTabItem(cont, list, 'Ordnance Survey', 'osmaps', false);
-                var osmapsDiv = _this._addTabContentItem(content, "osmaps", false);
+                _this._addTabItem(cont, list, 'Ordnance Survey', 'osmaps', first);
+                var osmapsDiv = _this._addTabContentItem(content, "osmaps", first);
+                first = false;
                 control.settingsForm(osmapsDiv);
                 _this.controlsWithSettings.push(control);
             }
 
             control = _this.leafletMap.rightclickControl();
             if (control !== null) {
-                _this._addTabItem(cont, list, 'Mouse Right Click', 'mouse', false);
-                var mouseDiv = _this._addTabContentItem(content, "mouse", false);
+                _this._addTabItem(cont, list, 'Mouse Right Click', 'mouse', first);
+                var mouseDiv = _this._addTabContentItem(content, "mouse", first);
+                first = false;
                 control.settingsForm(mouseDiv);
                 _this.controlsWithSettings.push(control);
             }
 
             control = _this.leafletMap.mylocationControl();
             if (control !== null) {
-                _this._addTabItem(cont, list, 'My Location', 'mylocation', false);
-                var mylocation = _this._addTabContentItem(content, "mylocation", false);
+                _this._addTabItem(cont, list, 'My Location', 'mylocation', first);
+                var mylocation = _this._addTabContentItem(content, "mylocation", first);
+                first = false;
                 control.settingsForm(mylocation);
                 _this.controlsWithSettings.push(control);
             }
@@ -111,22 +119,22 @@ L.Control.Settings = L.Control.extend({
     setLeafletMap: function (value) {
         this.leafletMap = value;
     },
-    _addSearch: function (tag) {
-        var _this = this;
-        var feed = new ra.feedhandler();
-        feed.getSearchTags(tag, tag);
-        tag.addEventListener("locationfound", function (e) {
-            var raData = e.raData;
-            var result = raData.item;
-            _this.searchLayer.clearLayers();
-            result.center = new L.LatLng(result.lat, result.lon);
-            new L.Marker(result.center, {icon: ra.map.icon.redmarker()})
-                    .bindPopup("<b>" + result.class + ": " + result.type + "</b><br/>" + result.display_name)
-                    .addTo(_this.searchLayer)
-                    .openPopup();
-            _this._map.setView(result.center, 16);
-        });
-    },
+//    _addSearch: function (tag) {
+//        var _this = this;
+//        var feed = new ra.feedhandler();
+//        feed.getSearchTags(tag, tag);
+//        tag.addEventListener("locationfound", function (e) {
+//            var raData = e.raData;
+//            var result = raData.item;
+//            _this.searchLayer.clearLayers();
+//            result.center = new L.LatLng(result.lat, result.lon);
+//            new L.Marker(result.center, {icon: ra.map.icon.redmarker()})
+//                    .bindPopup("<b>" + result.class + ": " + result.type + "</b><br/>" + result.display_name)
+//                    .addTo(_this.searchLayer)
+//                    .openPopup();
+//            _this._map.setView(result.center, 16);
+//        });
+//    },
     _addSave: function (tag) {
         var save = ra.html.input.yesNo(tag, '', "Save settings between sessions/future visits to web site (you accept cookies)", this.saveOptions, 'saveSettings');
         var reset = ra.html.input.action(tag, '', "Reset all settings to default values", 'Reset');

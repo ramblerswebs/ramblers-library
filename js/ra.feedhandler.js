@@ -19,7 +19,7 @@ ra.feedhandler = function () {
         var inputField = document.createElement('input');
         inputField.setAttribute('type', 'text');
         inputField.setAttribute('class', 'map-select');
-        inputField.setAttribute('placeholder', 'Enter place name or grid reference');
+        inputField.setAttribute('placeholder', 'Enter place name, grid reference, postcode or W3W');
         inputField.textContent = 'Location Search  ';
         formDiv.appendChild(inputField);
 
@@ -82,9 +82,9 @@ ra.feedhandler = function () {
             var items = selectTag.raData.items;
             var item = items[selectTag.value];
             //  alert("accept" + item.display_name);
-            var closeBtn = ra.modal.elements.close;
-            ;
-            closeBtn.dispatchEvent(new Event("click"));
+      //      var closeBtn = ra.modal.elements.close;
+            
+       //     closeBtn.dispatchEvent(new Event("click"));
             let event = new Event("locationfound", {bubbles: true}); // (2)
             event.raData = {};
             event.raData.item = item;
@@ -107,17 +107,17 @@ ra.feedhandler = function () {
         });
 
     };
-    this.getSearchMapModal = function (e) {
-        var eventTag = e.target;
-        var contentTag = document.createElement('div');
-        var p = document.createElement('p');
-        contentTag.appendChild(p);
-        ra.modal.display(contentTag,false);
-        ////   var $html = '<div id="js-search-content"></div>';
-        //  //$html += '<p></p>';
-        //    var contentTag = document.getElementById("js-search-content");
-        this.getSearchTags(eventTag, contentTag);
-    };
+//    this.getSearchMapModal = function (e) {
+//        var eventTag = e.target;
+//        var contentTag = document.createElement('div');
+//        var p = document.createElement('p');
+//        contentTag.appendChild(p);
+//        ra.modals.createModal(contentTag, false);
+//        ////   var $html = '<div id="js-search-content"></div>';
+//        //  //$html += '<p></p>';
+//        //    var contentTag = document.getElementById("js-search-content");
+//        this.getSearchTags(eventTag, contentTag);
+//    };
     this.getPossibleMapLocations = function (raData) { // called via an event on input field
         var inputField = raData.inputField;
         var input = inputField.value;
@@ -301,7 +301,7 @@ ra.feedhandler = function () {
         var contentTag = document.createElement('div');
         var p = document.createElement('p');
         contentTag.appendChild(p);
-        ra.modal.display(contentTag);
+        ra.modals.createModal(contentTag);
 //        var $html = '';
 //        $html += '<div id="js-location-search"></div>';
 //        $html += '<p></p>';

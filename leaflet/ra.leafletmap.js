@@ -5,7 +5,7 @@ if (typeof (ra) === "undefined") {
 ra.leafletmap = function (tag, options) {
 
     this.options = options;
-
+   
     this.controls = {layers: null,
         settins: null,
         zoom: null,
@@ -16,6 +16,7 @@ ra.leafletmap = function (tag, options) {
         scale: null,
         mouse: null,
         rightclick: null,
+        search: null,
         plotroute: null,
         zoomlevelOSMsg: null};
 
@@ -73,6 +74,14 @@ ra.leafletmap = function (tag, options) {
         }
 
     }
+    // get my location for directions
+    this.map.locate();
+    this.map.on('locationerror', function () {
+        ra.loc.setPositionError();
+    });
+    this.map.on('locationfound', function (e) {
+        ra.loc.setPosition(e);
+    });
     // top right control for error messages
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
     this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
@@ -103,10 +112,13 @@ ra.leafletmap = function (tag, options) {
         });
         this.controls.elevation.addTo(this.map);
     }
-    this.controls.zoom = this.map.addControl(new L.Control.Zoom());
-    if (options.fullscreen) {
-        this.controls.fullscreen = this.map.addControl(new L.Control.Fullscreen());
-    }
+    //  this.controls.zoom = this.map.addControl(new L.Control.Zoom());
+    this.controls.zoom = L.control.zoom({position: 'topleft'}).addTo(this.map);
+
+    // if (options.fullscreen) {
+    //  this.controls.fullscreen = this.map.addControl(new L.Control.Fullscreen());
+    this.controls.fullscreen = L.control.fullscreen({position: 'topleft'}).addTo(this.map);
+    // }
     if (options.print !== null) {
         var self = this;
         this.controls.print = L.control.browserPrint({
@@ -128,38 +140,35 @@ ra.leafletmap = function (tag, options) {
             );
         }
     }
-    if (options.mylocation !== null) {
-        this.controls.mylocation = L.control.mylocation().addTo(this.map);
-        //   this.userOptions.mylocation = this.controls.mylocation.userOptions();
-    }
+    this.controls.search = L.control.search({position: 'topleft'}).addTo(this.map);
+
+
+    this.controls.mylocation = L.control.mylocation({position: 'topleft'}).addTo(this.map);
+
+    var zoomall = L.control.zoomall().addTo(this.map);
+    var tools = L.control.tools({id: 'js-maptools'}).addTo(this.map);
+
+    ra.map.moveMapControl(this.controls.zoom, tools.getToolsDiv());
+    ra.map.moveMapControl(zoomall, tools.getToolsDiv());
+    ra.map.moveMapControl(this.controls.mylocation.getLocationControl(), tools.getToolsDiv());
+    ra.map.moveMapControl(this.controls.search, tools.getToolsDiv());
+    ra.map.moveMapControl(this.controls.fullscreen, tools.getToolsDiv());
+    ra.map.moveMapControl(this.controls.print, tools.getToolsDiv());
+
+    L.control.resizer({onlyOnHover: false, direction: 's'}).addTo(this.map);
+
 
     // bottom left controls
     if (options.rightclick !== null) {
-        //  try {
         this.controls.rightclick = L.control.rightclick().addTo(this.map);
-        //   if (this.controls.layers === null) {
-        //       alert('Program error in rambler leaflet map');
-        //  }
-        //  this.controls.rightclick.mapControl(this.controls.layers);
-        //    this.userOptions.rightclick = this.controls.rightclick.userOptions();
-        // } catch (err) {
-        //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-        //  }
     }
 
     if (options.mouseposition !== null) {
-        //  try {
         this.controls.mouse = L.control.mouse().addTo(this.map);
-        //  } catch (err) {
-        //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-        //  }
-
     }
 
     this.controls.scale = L.control.scale().addTo(this.map);
-//    this.map.on('LayersControlEvent', function (ev) {
-//        alert(ev.latlng); // ev is an event object (MouseEvent in this case)
-//    });
+
     var _this = this;
     this.map.on('baselayerchange', function (e) {
         _this.currentLayer = e.layer;
@@ -178,7 +187,7 @@ ra.leafletmap = function (tag, options) {
     }
     this.map.addEventListener('fullscreenchange', function () {
         // let modal know if map full screen;
-        ra.modal.fullscreen(self.map.isFullscreen(), self.map);
+        //  ra.modals.fullscreen(self.map.isFullscreen(), self.map);
         // display of not controls in full screen
         self.setOptionalControls();
 
@@ -192,14 +201,10 @@ ra.leafletmap = function (tag, options) {
     }
     var _this = this;
     if (options.settings !== null) {
-        //  try {
         this.controls.settings = L.control.settings();
         this.controls.settings.setHelpPage(options.helpPage);
         this.controls.settings.addTo(this.map);
         this.controls.settings.setLeafletMap(this);
-        //  } catch (err) {
-        //      self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-        //  }
     }
     // this.controls.settings.setErrorDiv(this.errorDivControl());
     this.map.on('zoomend', function () {
@@ -210,12 +215,9 @@ ra.leafletmap = function (tag, options) {
         _this.osZoomLevel();
     });
     if (options.rightclick !== null) {
-        //  try {
+
         this.controls.rightclick.mapControl(this.controls.layers);
-        //    this.userOptions.rightclick = this.controls.rightclick.userOptions();
-        //  } catch (err) {
-        //     self.controls.errorDiv.setErrorText("ERROR: " + err.message);
-        // }
+
     }
 
     this.setOptionalControls = function () {
@@ -226,21 +228,10 @@ ra.leafletmap = function (tag, options) {
         if (options.mouseposition === false) {
             self.controls.mouse.changeDisplay(display);
         }
-        if (options.mylocation === false) {
-            self.controls.mylocation.changeDisplay(display);
-        }
-        if (options.print === false) {
-            self.controls.print._container.style.display = display;
-        }
-        if (options.settings === false) {
-            self.controls.settings.changeDisplay(display);
-        }
         if (options.rightclick === false) {
             self.controls.rightclick.changeDisplay(display);
         }
-        if (options.mylocation === false) {
-            self.controls.mylocation.changeDisplay(display);
-        }
+
     };
     this.setOptionalControls();
     this.osZoomLevel = function () {
@@ -256,50 +247,50 @@ ra.leafletmap = function (tag, options) {
             }
         }
     };
-    
 
-this.SetPlotUserControl = function (value) {
-    this.controls.plotroute = value;
-};
-this.plotControl = function () {
-    return this.controls.plotroute;
-};
-this.layersControl = function () {
-    return this.controls.layers;
-};
-this.settingsControl = function () {
-    return this.controls.settings;
-};
-this.zoomControl = function () {
-    return this.controls.zoom;
-};
-this.mylocationControl = function () {
-    return this.controls.mylocation;
-};
-this.elevationControl = function () {
-    return this.controls.elevation;
-};
-this.fullscreenControl = function () {
-    return this.controls.fullscreen;
-};
-this.printControl = function () {
-    return this.controls.print;
-};
-this.mouseControl = function () {
-    return this.controls.mouse;
-};
-this.scaleControl = function () {
-    return this.controls.scale;
-};
-this.rightclickControl = function () {
-    return this.controls.rightclick;
-};
-this.errorDivControl = function () {
-    return this.controls.errorDiv;
-};
-this.mapDiv = function () {
-    return this._mapDiv;
-};
+
+    this.SetPlotUserControl = function (value) {
+        this.controls.plotroute = value;
+    };
+    this.plotControl = function () {
+        return this.controls.plotroute;
+    };
+    this.layersControl = function () {
+        return this.controls.layers;
+    };
+    this.settingsControl = function () {
+        return this.controls.settings;
+    };
+    this.zoomControl = function () {
+        return this.controls.zoom;
+    };
+    this.mylocationControl = function () {
+        return this.controls.mylocation;
+    };
+    this.elevationControl = function () {
+        return this.controls.elevation;
+    };
+    this.fullscreenControl = function () {
+        return this.controls.fullscreen;
+    };
+    this.printControl = function () {
+        return this.controls.print;
+    };
+    this.mouseControl = function () {
+        return this.controls.mouse;
+    };
+    this.scaleControl = function () {
+        return this.controls.scale;
+    };
+    this.rightclickControl = function () {
+        return this.controls.rightclick;
+    };
+    this.errorDivControl = function () {
+        return this.controls.errorDiv;
+    };
+    this.mapDiv = function () {
+        return this._mapDiv;
+    };
 };
 
 

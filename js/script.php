@@ -56,11 +56,10 @@ class RJsScript {
         $document->addScript("libraries/ramblers/vendors/Leaflet-1.7.1/leaflet.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/leaflet/ra.leafletmap.js", "text/javascript");
         RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
-        if ($options->fullscreen !== null) {
-            $path = "libraries/ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
-            RLoad::addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
-            RLoad::addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
-        }
+
+        $path = "libraries/ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
+        RLoad::addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
+        RLoad::addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
 
         if ($options->displayElevation !== null) {
             // elevation
@@ -86,10 +85,12 @@ class RJsScript {
         $document->addScript("libraries/ramblers/vendors/Leaflet.FeatureGroup.SubGroup-1.0.2/src/subgroup.js", array("type" => "text/javascript"));
 
         RLoad::addScript("libraries/ramblers/leaflet/L.Control.Places.js", "text/javascript");
-        if ($options->mouseposition or $options->rightclick) {
-            RLoad::addScript("libraries/ramblers/leaflet/L.Control.Mouse.js", "text/javascript");
-            RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Mouse.css", "text/css");
-        }
+
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Mouse.js", "text/javascript");
+        RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Mouse.css", "text/css");
+   
+        RLoad::addScript("libraries/ramblers/vendors/Leaflet.Control.Resizer-0.0.1/L.Control.Resizer.js", "text/javascript");
+        RLoad::addStyleSheet("libraries/ramblers/vendors/Leaflet.Control.Resizer-0.0.1/L.Control.Resizer.css", "text/css");
 
         if ($options->mouseposition !== null or $options->osgrid !== null or $options->rightclick !== null) {
             // grid ref to/from lat/long
@@ -103,12 +104,11 @@ class RJsScript {
             $document->addScript("libraries/ramblers/vendors/bing/bing.js", array("type" => "text/javascript"));
         }
 
-        if ($options->print !== null) {
-            $path = "libraries/ramblers/vendors/leaflet.browser.print-1/src/";
-            $document->addScript($path . "leaflet.browser.print.js", array("type" => "text/javascript"));
-            $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
-            $document->addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
-        }
+
+        $path = "libraries/ramblers/vendors/leaflet.browser.print-1/src/";
+        $document->addScript($path . "leaflet.browser.print.js", array("type" => "text/javascript"));
+        $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
+        $document->addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
 
         if ($options->calendar) {
             $path = "libraries/ramblers/vendors/fullcalendar-5.9.0/lib/";
@@ -119,11 +119,15 @@ class RJsScript {
         RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/js/ra.map.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/js/ra.walk.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/js/raLocation.js", "text/javascript");
+        // my location start
         RLoad::addScript("libraries/ramblers/leaflet/L.Control.MyLocation.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/vendors/ArrowCircle/ArrowCircle.js", "text/javascript");
+        $document->addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js", "text/javascript");
+        $document->addStyleSheet("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css", "text/css");
+        // my location finish
 
         RLoad::addScript("libraries/ramblers/leaflet/L.Control.RAContainer.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Tools.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Search.js", "text/javascript");
 
         // settings
         RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Settings.css", "text/css");

@@ -43,4 +43,4 @@ JPList pagination
 https://www.jplist.org/
 
 Arrow pointer
-https://github.com/coyotesqrl/Leaflet.ArrowCircle
+// not used now https://github.com/coyotesqrl/Leaflet.ArrowCircle

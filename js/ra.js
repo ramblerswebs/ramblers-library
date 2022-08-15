@@ -930,8 +930,7 @@ if (typeof (ra.html.input) === "undefined") {
         let event = new Event("ra-input-change");
         inputTag.dispatchEvent(event);
     };
-    ra.html.input.combo = function (tag, divClass, label, raobject, property, options = ['Yes', 'No']) {
-        var _this=this;
+    ra.html.input.combo = function (tag, divClass, label, raobject, property, options) {
         var itemDiv = document.createElement('div');
         if (divClass !== '') {
             itemDiv.setAttribute('class', divClass);
@@ -944,47 +943,44 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.setAttribute('class', '');
         inputTag.style.display = "inline";
         inputTag.style.marginLeft = "10px";
-      inputTag.style.width = "250px";
-//        if (raobject[property]) {
-//            inputTag.textContent = options[0];
-//
-//        } else {
-//            inputTag.textContent = options[1];
-//
-//        }
-         Object.keys(options).forEach(function (key) {
-                var item = options[key];
-                  var optionTag = document.createElement('option');
-                  optionTag.textContent=item.name;
-                  optionTag.value=item.value;
-                  inputTag.appendChild(optionTag);
-            });
+        inputTag.style.width = "250px";
+        var which = '';
+        Object.keys(options).forEach(function (key) {
+            var item = options[key];
+            var optionTag = document.createElement('option');
+            optionTag.textContent = item.name;
+            optionTag.value = item.value;
+            if (raobject[property] === item.value) {
+                which = item.value;
+
+            }
+            inputTag.appendChild(optionTag);
+        });
+        inputTag.value = which; // set current value
+        inputTag.value = raobject[property];
         inputTag.ra = {};
         inputTag.ra.object = raobject;
         inputTag.ra.property = property;
         inputTag.ra.options = options;
-        inputTag.addEventListener("click", function (e) {
-            inputTag.ra.object[inputTag.ra.property] = !inputTag.ra.object[inputTag.ra.property];
-           // ra.html.input.yesNoReset(inputTag, inputTag.ra.object[inputTag.ra.property]);
-            // let event = new Event("ra-input-change"); Reset does this for us
-            // inputTag.dispatchEvent(event);
+        inputTag.addEventListener("change", function (e) {
+            ra.html.input.comboReset(inputTag, inputTag.value);
         });
         itemDiv.appendChild(_label);
         itemDiv.appendChild(inputTag);
         return inputTag;
     };
     ra.html.input.comboReset = function (inputTag, value) {
-        var ra = inputTag.ra;
-        ra.object[ra.property] = value;
-        if (value) {
-            inputTag.textContent = ra.options[0];
-
+        var current = inputTag.selectedIndex;
+        inputTag.value = value;
+        if (inputTag.selectedIndex === -1) {
+            inputTag.selectedIndex = current;
         } else {
-            inputTag.textContent = ra.options[1];
-
+            var ra = inputTag.ra;
+            ra.object[ra.property] = value;
+            let event = new Event("ra-input-change");
+            inputTag.dispatchEvent(event);
         }
-        let event = new Event("ra-input-change");
-        inputTag.dispatchEvent(event);
+
     };
     ra.html.input.number = function (tag, divClass, label, raobject, property, minval, maxval, step) {
         var itemDiv = document.createElement('div');
@@ -1331,78 +1327,75 @@ ra.w3w = (function () {
 ());
 
 
-ra.modal = (function () {
-    var modal = {};
-    modal.isFullScreen = false;
-    modal.mapcontrol = null;
-    modal.elements = {modaltag: null};
-    modal.display = function ($html, printButton = true) {
+ra.modals = (function () {
+    var modals = {};
+    modals.items = [];
 
-        modal._createModalTag(printButton);
-        ra.html.setTag(modal.elements.data, $html);
-        modal.elements.modaltag.style.display = "block";
-        modal.elements.close.addEventListener("click", function () {
-            if (modal.elements.modaltag !== null) {
-                modal.elements.modaltag.remove();
-                modal.elements = {modaltag: null};
-            }
+    modals.masterdiv = null;
+    modals.createModal = function ($html, printButton = true) {
+        if (modals.masterdiv === null) {
+            var body = document.getElementsByTagName("BODY")[0];
+            modals.masterdiv = document.createElement('div');
+            modals.masterdiv.setAttribute('class', 'modal=master');
+            body.appendChild(modals.masterdiv);
+        }
+        var item = new ra.modal();
+        item.setContent($html, printButton);
+        modals.items.push(item);
+        modals.masterdiv.innerHTML = '';
+        modals.masterdiv.appendChild(item.getContent());
+        return item;
+    };
+  
+    document.addEventListener("ra-modal-closing", function (event) {
+        // raise event to reset status that may be lost, e.g. map full screen
+        var modal = modals.items[modals.items.length - 1];
+        let e = new Event("ra-modal-closed");
+        e.ra = {modal: modal};
+        document.dispatchEvent(e);
+        modals.items.pop();
+        if (modals.items.length === 0) {
+            modals.masterdiv.innerHTML = '';
+        } else {
+            var item = modals.items[modals.items.length - 1];
+            ra.html.setTag(modals.masterdiv, item.getContent());
+        }
+    });
+    return modals;
+}
+());
+
+ra.modal = function () {
+    this.elements = {};
+    this.content;
+    this.setContent = function ($html, printButton = true) {
+        var _this = this;
+        this._createModalTag(printButton);
+        ra.html.setTag(this.elements.data, $html);
+        this.elements.modaltag.style.display = "block";
+        this.elements.close.addEventListener("click", function () {
+            _this.close();
         });
-        var print = modal.elements.print;
+        var print = this.elements.print;
         if (print !== null) {
             print.onclick = function () {
-                ra.html.printTag(modal.elements.data);
+                ra.html.printTag(this.elements.data);
             };
-        }
-        modal.fullscreenMap();
-        return;
+    }
+    };
+    this.getContent = function () {
+        return this.content;
+    };
+    this.headerDiv = function () {
+        return this.elements.header;
+    };
+    this.close = function () {
+        let e = new Event("ra-modal-closing");
+        document.dispatchEvent(e);
+        event.stopImmediatePropagation();
     };
 
-    modal.magnify = function (target) {
-        // save current modal
-        var savecurrentmodal = '';
-        if (modal.elements.modaltag === null) {
-            // not in a modal
-            modal.display(target.innerHTML);
-            return;
-        }
-        savecurrentmodal = modal.elements.data.innerHTML;
-        // change content
-        var complete = document.createElement('div');
-        complete.classList.add("modal-outline");
-        var closeBtn = document.createElement('span');
-        closeBtn.textContent = 'x';
-        closeBtn.classList.add("close");
-        complete.appendChild(closeBtn);
-        var content = document.createElement('div');
-        complete.appendChild(content);
-
-        content.innerHTML = target.innerHTML;
-        //  content.classList.add("pointer");
-        ra.modal.elements.data.innerHTML = '';
-        ra.modal.elements.data.appendChild(complete);
-        complete.addEventListener("click", function () {
-            ra.modal.elements.data.innerHTML = '';
-            ra.modal.elements.data.innerHTML = savecurrentmodal;
-        });
-        // reset modal when it closes
-    };
-    modal.fullscreen = function (isFullScreen, mapcontrol) {
-        modal.isFullScreen = isFullScreen;
-        modal.mapcontrol = mapcontrol;
-    };
-    modal.fullscreenMap = function () {
-        if (modal.isFullScreen) {
-            modal.mapcontrol.toggleFullscreen();
-            var closeBtn = modal.elements.close;
-            closeBtn.addEventListener("click", function () {
-                modal.mapcontrol.toggleFullscreen();
-            });
-        }
-    };
-    modal.headerDiv = function () {
-        return modal.elements.header;
-    };
-    modal._createModalTag = function (print = true) {
+    this._createModalTag = function (print = true) {
         var tags = [
             {name: 'modaltag', parent: 'root', tag: 'div', attrs: {class: 'js-modal ramblers'}, style: {display: 'none'}},
             {name: 'content', parent: 'modaltag', tag: 'div', attrs: {class: 'modal-content'}},
@@ -1413,20 +1406,14 @@ ra.modal = (function () {
             {name: 'data', parent: 'content', tag: 'div'},
             {parent: 'content', tag: 'hr'}
         ];
-
-        if (modal.elements.modaltag === null) {
-            var body = document.getElementsByTagName("BODY")[0];
-            modal.elements = ra.html.generateTags(body, tags);
-            modal.elements.close.setAttribute('data-dismiss', 'modal');
-        }
+        this.content = document.createElement('div');
+        this.elements = ra.html.generateTags(this.content, tags);
+        this.elements.close.setAttribute('data-dismiss', 'modal');
         if (!print) {
-            modal.elements.print.style.display = 'none';
+            this.elements.print.style.display = 'none';
     }
     };
-    return modal;
-}
-());
-
+};
 
 ra.math = (function () {
     var math = {};

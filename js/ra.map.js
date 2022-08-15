@@ -10,8 +10,8 @@ ra.map = (function () {
         $code = $code.replace("[long]", longitude, $code);
         return   "<span class='mappopup' onClick=\"javascript:window.open('" + $code + "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" + $text + "]</span>";
     };
-    my.helpBase="https://maphelp.ramblers-webs.org.uk/";
-    my.helpNaismith="https://maphelp.ramblers-webs.org.uk/naismith.html";
+    my.helpBase = "https://maphelp.ramblers-webs.org.uk/";
+    my.helpNaismith = "https://maphelp.ramblers-webs.org.uk/naismith.html";
     my.icon = (function () {
         var icon = {};
 
@@ -266,6 +266,16 @@ ra.map = (function () {
         return icon;
     }
     ());
+    my.moveMapControl = function (control, newTag) {
+        var moveEl = control.getContainer();
+        var newParent = newTag;
+        newParent.appendChild(moveEl);
+        var oldParent = moveEl;
+
+        //   while (oldParent.childNodes.length > 0) {
+        //       newParent.appendChild(oldParent.childNodes[0]);
+        //   }
+    };
     my.os = (function () {
         var os = {};
         os.display = function (map, layer) {
@@ -313,7 +323,7 @@ ra.map = (function () {
         return os;
     }
     ());
-   
+
     my.getGPXDistance = function (distance) { // distance in metres
         var dist, miles;
         dist = ra.units.metresTokm(distance);
@@ -364,8 +374,55 @@ ra.map = (function () {
         marker.bindPopup(pc);
         return marker;
     };
-   
+
     return my;
+}
+());
+
+if (typeof (ra.data) === "undefined") {
+    ra.data = {};
+}
+if (typeof (ra.data.location) === "undefined") {
+    ra.data.location = {};
+    ra.data.location.found = false;
+    ra.data.location.latitude = 0;
+    ra.data.location.longitude = 0;
+
+    ra.data.location.accuracy = 99999;
+}
+
+ra.loc = (function () {
+    var loc = {};
+    loc.directionsSpan = function ($lat, $long) {
+        return "<span class='mappopup' onclick='javascript:ra.loc.directions(" + $lat + "," + $long + ")' >[Directions]</span>";
+
+    };
+    loc.directions = function ($lat, $long) {
+        var page = -'';
+        if (ra.data.location.found) {
+            var myloc = ra.data.location;
+            page = "https://maps.google.com?saddr=" + myloc.latitude.toString() + "," + myloc.longitude.toString() + "&daddr=" + $lat.toString() + "," + $long.toString();
+        } else {
+            alert("Sorry - Unable to find your location, we will ask Google to try");
+            page = "https://www.google.com/maps/dir/Current+Location/" + $lat.toString() + "," + $long.toString();
+        }
+        // console.log(page);
+        window.open(page, "_blank", "scrollbars=yes,width=900,height=580,menubar=yes,resizable=yes,status=yes");
+    };
+    loc.setPosition = function (e) {
+        ra.data.location.found = true;
+        ra.data.location.latitude = e.latitude;
+        ra.data.location.longitude = e.longitude;
+        ra.data.location.accuracy = e.accuracy;
+    };
+    loc.setPositionError = function (e) {
+        ra.data.location.found = false;
+        ra.data.location.latitude = 0;
+        ra.data.location.longitude = 0;
+        ra.data.location.accuracy = 999999;
+    };
+
+    return loc;
 }
 ());
 
@@ -422,6 +479,12 @@ function cluster(map) {
         marker.bindPopup($popup, {offset: new L.Point(0, -20)});
         this.markerList.push(marker);
         return marker;
+    };
+    this.turnOffFullscreen = function () {
+        var fullscreen = this._map.isFullscreen();
+        if (fullscreen) {
+            this._map.toggleFullscreen();
+        }
     };
 
 }

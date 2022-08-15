@@ -19,28 +19,24 @@ class RLeafletMapoptions {
     // the following can be true of false
     public $cluster = false;
     public $fitbounds = false;
+    public $controlcontainer = false; // used by Walks Editor
     public $displayElevation = false;
     public $calendar = false;
     public $topoMapDefault = false;
     public $initialview = null;
-    public $fullscreen = false;
-    public $copyright = true;
-    public $controlcontainer = false; // used by Walks Editor
-    // ************** these options have three values
+      public $copyright = true;
+  // always on
+    public $fullscreen = true;
+    public $settings = true;
+    public $mylocation = true; 
+    public $print = true;
+    //// ************** these options have three values
     // null never display option
     // true always display option
     // false only display option on full screen
     public $mouseposition = false;
     public $rightclick = false;
-    public $settings = false;
-    public $mylocation = false;
-    public $print = false;
     // ************** END these options have three values
-
-
-
-   // public $ramblersPlaces = false;
-   
 
     public function __construct() {
         $this->divId = uniqid(rand());

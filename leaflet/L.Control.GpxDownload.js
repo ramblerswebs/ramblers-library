@@ -100,24 +100,30 @@ L.Control.GpxDownload = L.Control.extend({
         this.holder.style.display = "none";
     },
     _details: function (evt) {
+        var _this = this;
         this._map.fire('download:cancelled');
-        var contentTag = document.createElement('div');
-        ra.modal.display(contentTag, false);
-        if (this._map.isFullscreen()) {
+        this.fullscreen = this._map.isFullscreen();
+        if (this.fullscreen) {
             this._map.toggleFullscreen();
-            var closeBtn = ra.modal.elements.close;
-            var _this = this;
-            closeBtn.addEventListener("click", function () {
-                _this._returnToFullScreen();
-            });
         }
+        var contentTag = document.createElement('div');
+        _this.modal = ra.modals.createModal(contentTag, false);
+//        document.addEventListener("ra-modal-closed", function (e) {
+//            if (e.ra.modal === _this.modal) {
+//                // reset status of map
+//                if (_this.fullscreen) {
+//                    _this._map.toggleFullscreen();
+//                }
+//            }
+//
+//        });
         this._addDetailsForm(contentTag);
     },
     _returnToFullScreen: function () {
         this._map.toggleFullscreen();
     },
     _addDetailsForm: function (formtag) {
-               var heading = document.createElement('h2');
+        var heading = document.createElement('h2');
         heading.textContent = 'GPX File Details';
         formtag.appendChild(heading);
         this._addText(formtag, 'ra-gpx-popup', 'File Name/Title', this._info, 'name');

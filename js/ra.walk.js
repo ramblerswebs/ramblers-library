@@ -112,9 +112,9 @@ ra.walk = (function () {
         } else {
             html = my.walkDetails(walk);
         }
-        ra.modal.display(html);
+        var modal = ra.modals.createModal(html);
         my._addMaptoWalk(walk);
-        var tag = ra.modal.headerDiv();
+        var tag = modal.headerDiv();
         if (tag !== null) {
             my._addDiaryButton(tag, walk);
         }
@@ -242,11 +242,6 @@ ra.walk = (function () {
     };
 // display walks 
     my.walkDetails = function ($walk) {
-        // get my location for directions
-        ra.loc.getPosition({
-            maxWait: 5000, // defaults to 10000
-            desiredAccuracy: 30 // defaults to 20
-        });
         var PHP_EOL = "\n";
         var $html = "";
         var $link, $out, $text;
@@ -466,7 +461,8 @@ ra.walk = (function () {
         data.title = $walk.title;
         data.date = ra.date.dowShortddmmyyyy($walk.walkDate);
         var frameDiv = '<div id="raContactDiv"></div>';
-        ra.modal.display(frameDiv);
+        var modal = ra.modals.createModal(frameDiv);
+        //    ra.modal.display(frameDiv);
         var div = document.getElementById("raContactDiv");
         var frame = document.createElement('iframe');
         frame.setAttribute('class', 'ra contactForm');
@@ -476,7 +472,7 @@ ra.walk = (function () {
         // Create IE + others compatible event handler
         var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
         var eventer = window[eventMethod];
-        var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+        var messageEvent = eventMethod === "attachEvent" ? "onmessage" : "message";
         // Listen to message from child window
         eventer(messageEvent, function (e) {
             var height = parseInt(e.data);
@@ -637,7 +633,7 @@ ra.walk = (function () {
                 break;
             case "{finishTime}":
                 if ($walk.finishTime !== null) {
-                    out = ra.time.HHMMshort($walk.finishTime)
+                    out = ra.time.HHMMshort($walk.finishTime);
                 }
                 break;
             case "{startMapCode}":
@@ -1076,6 +1072,7 @@ ra.walk = (function () {
         summary.innerHTML = ra.walk.getWalkValues($walk, my.mapFormat, false);
         var id = $walk.id;
         summary.addEventListener("click", function (e) {
+            cluster.turnOffFullscreen();
             ra.walk.displayWalkID(e, id);
         });
         var link = document.createElement('div');
@@ -1085,6 +1082,7 @@ ra.walk = (function () {
         grade.style.float = "right";
         grade.innerHTML = my.grade.image($walk.nationalGrade) + "<br/>" + $walk.nationalGrade;
         grade.addEventListener("click", function (e) {
+            cluster.turnOffFullscreen();
             ra.walk.dGH();
         });
         $popup.appendChild(grade);
@@ -1133,7 +1131,7 @@ ra.walk = (function () {
     };
     _displayGradesModal = function (marker, $html) {
         $html = $html.replace(/basedirectory/g, ra.baseDirectory());
-        ra.modal.display($html);
+        ra.modals.createModal($html);
     };
     my.icsfile = (function () {
         var icsfile = {};

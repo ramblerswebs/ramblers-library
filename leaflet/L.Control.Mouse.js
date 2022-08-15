@@ -26,10 +26,8 @@ L.Control.Mouse = L.Control.extend({
         L.DomEvent.disableClickPropagation(this._container);
         map.on('mousemove', this._update, this);
         this._container.innerHTML = this.options.emptyString;
-        this.gridsquare100 = L.rectangle([[84, -89], [84.00001, -89.000001]],
-                {color: "#ff7800", weight: 1}).addTo(map);
-        this.gridsquare10 = L.rectangle([[84, -89], [84.00001, -89.000001]],
-                {color: "#884000", weight: 1}).addTo(map);
+        this.OSGridSquareLayer = L.featureGroup([]).addTo(map);
+        this.OSGridSquareLayer.options.ignore = true;
         this.osMapLayer = L.featureGroup([]).addTo(map);
         this.OSGrid = {};
         this.OSGrid.basicgrid = false;
@@ -41,7 +39,6 @@ L.Control.Mouse = L.Control.extend({
         map.on('moveend', function () {
             _this.displayOSGrid();
         });
-
         if (L.Browser.mobile) {
             this._container.style.display = 'none';
         }
@@ -94,6 +91,7 @@ L.Control.Mouse = L.Control.extend({
     _getMouseMoveAction: function (map, latlng) {
         var gr, gridref;
         var zoom = map.getZoom();
+        this.OSGridSquareLayer.clearLayers();
         // console.log(zoom);
         var p = new LatLon(latlng.lat, latlng.lng);
         var grid = OsGridRef.latLonToOsGrid(p);
@@ -110,19 +108,14 @@ L.Control.Mouse = L.Control.extend({
             if (this._userOptions.displayMouseGridSquare) {
                 if (zoom > 12) {
                     var bounds = this._osGridToLatLongSquare(grid, 100);
-                    // change rectangle
-                    this.gridsquare100.setLatLngs(bounds);
+                    this.gridsquare100 = L.rectangle(bounds, {color: "#ff7800", weight: 1, ignore: true});
+                    this.OSGridSquareLayer.addLayer(this.gridsquare100);  // change rectangle
                 }
                 if (zoom > 16) {
                     var bounds2 = this._osGridToLatLongSquare(grid, 10);
-                    // change rectangle
-                    this.gridsquare10.setLatLngs(bounds2);
-                } else {
-                    this.gridsquare10.setLatLngs([[84, -89], [84.00001, -89.000001]]);
+                    this.gridsquare10 = L.rectangle(bounds2, {color: "#884000", weight: 1, ignore: true});
+                    this.OSGridSquareLayer.addLayer(this.gridsquare10);     // change rectangle
                 }
-            } else {
-                this.gridsquare10.setLatLngs([[84, -89], [84.00001, -89.000001]]);
-                this.gridsquare100.setLatLngs([[84, -89], [84.00001, -89.000001]]);
             }
         }
         var lng = latlng.lng.toFixed(5);
@@ -272,7 +265,6 @@ L.Control.Mouse = L.Control.extend({
                 _this.OSGrid.basicgrid = false;
                 _this.displayOSGrid();
             });
-
             if (!L.Browser.mobile) {
                 tag.appendChild(document.createElement('hr'));
                 title = document.createElement('h4');
@@ -292,7 +284,6 @@ L.Control.Mouse = L.Control.extend({
             var title = document.createElement('h4');
             title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
             tag.appendChild(title);
-
             var comment = document.createElement('div');
             comment.innerHTML = 'Display the areas covered by all Ordnance Survey Landranger or Explorer Maps.';
             comment.innerHTML += '<br/> Please note that this information is unofficial and may be incorrect. Please check before buying a map.';
@@ -340,8 +331,6 @@ L.Map.addInitHook(function () {
 L.control.mouse = function (options) {
     return new L.Control.Mouse(options);
 };
-
-
 L.Control.Rightclick = L.Control.extend({
     options: {
         position: 'bottomleft',
@@ -430,7 +419,6 @@ L.Control.Rightclick = L.Control.extend({
         osmOptions["toilets"] = {tag: "amenity", type: "toilets", title: "Toilets", single: "Toilets"};
         osmOptions["bus_stops"] = {tag: "highway", type: "bus_stop", title: "Bus Stops", single: "Bus Stop"};
         this.osmOptions = osmOptions;
-
         return this._container;
     },
     onRemove: function () {
@@ -529,7 +517,6 @@ L.Control.Rightclick = L.Control.extend({
         links += '<a href="javascript:ra.link.googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
         links += '<a href="javascript:ra.loc.directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
         this._mouseLayer.clearLayers();
-
         var tags = [
             {parent: 'root', tag: 'div', 'innerHTML': desc},
             {name: 'w3w', parent: 'root', tag: 'div'},
@@ -541,21 +528,14 @@ L.Control.Rightclick = L.Control.extend({
         var elements = ra.html.generateTags(pop, tags);
         var point = L.marker(p).bindPopup(pop);
         this._mouseLayer.addLayer(point);
-
-
-
-
         //    point.getPopup().setContent(ele);
         //      ra.html.createElement(tag, 'span').innerHTML = desc;
         //         w3w = ra.html.createElement(tag, 'span');
         //         ra.html.createElement(tag, 'span').innerHTML = links;
 
         point.openPopup();
-
-
         ra.w3w.get(e.latlng.lat, e.latlng.lng, elements.w3w, true);
     },
-
     _displayPostcodes: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
         var grid = OsGridRef.latLonToOsGrid(p);
@@ -924,7 +904,6 @@ L.Control.Rightclick = L.Control.extend({
         value = value.replace(/_/g, " ");
         return value;
     },
-
     getAddr: function (tags) {
         var out = "";
         out += this.getProperty(tags, "addr:housenumber");
@@ -1016,7 +995,6 @@ L.Control.Rightclick = L.Control.extend({
         comment.textContent = 'This option affects the display of parking, bus stops, cafes, public housea and toilets.';
         tag.appendChild(comment);
         this.controls.osm.distance = ra.html.input.number(tag, '', 'Display items within %n km', this._userOptions.osm, 'distance', 0.5, 5, 0.5);
-
         this.controls.groups.distance.addEventListener("ra-input-change", function (e) {
             ra.settings.changed();
         });
@@ -1035,7 +1013,6 @@ L.Control.Rightclick = L.Control.extend({
         this.controls.starting.number.addEventListener("ra-input-change", function (e) {
             ra.settings.changed();
         });
-
         this.controls.osm.distance.addEventListener("ra-input-change", function (e) {
             ra.settings.changed();
         });
@@ -1057,7 +1034,6 @@ L.Control.Rightclick = L.Control.extend({
         ra.settings.save(save, '__rightclick', this._userOptions);
     }
 });
-
 L.control.rightclick = function (options) {
     return new L.Control.Rightclick(options);
 };
