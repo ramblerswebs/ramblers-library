@@ -523,14 +523,10 @@ div.ra.pagination {
 */
 table.ra-tab-options{
     table-layout: auto;
-    border-width: 0px !important;
-    margin-bottom:0px !important;
-    background-color:rgba(0, 0, 0, 0) !important;
-}
-table.ra-tab-options{
     background-color:transparent;
-    margin-bottom:0px;
-    border-width: 0px;
+    margin-bottom:0px !important;
+    border-width: 0px !important;
+    width: auto;
 }
 table tr td.ra-tab {
     cursor: pointer;
