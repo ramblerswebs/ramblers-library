@@ -112,10 +112,6 @@ div.walkstdfulldetails div.walkitem.walkdates {
 }
 
 div.walkstdfulldetails div.walkitem {
-    font-size: 115%;
-}
-
-div.walkstdfulldetails div.walkitem {
     margin: 2px;
     border-radius: 10px 10px 10px 10px;
     padding: 5px;
@@ -127,13 +123,10 @@ div.walkstdfulldetails div.walkitem {
     border: 2px solid #cccccc  ;
     background-color: #eeeeee;
     line-height: 1.5em;
-
+    font-size: 115%;
 }
 div.walkstdfulldetails div.walkitem.map {
-
     padding: 5px;
-
-
 }
 div.walkstdfulldetails div.festivals > ul,
 div.walkstdfulldetails div.strands > ul,
@@ -475,7 +468,7 @@ div#ra-help-helptag{
 .even.walkPublished:hover,
 .even.walkNew:hover {
     background-color:#DDDDDD !important;
-    
+
 }
 .odd {
     background-color:#FFFFFF;
@@ -694,7 +687,7 @@ span.middle.grade {
     vertical-align: middle;
     display: inline;
 }
-span.popup.grade img{
+DELETEspan.popup.grade img{
     height:24px;
     width:24px;
     padding-left: 8px;

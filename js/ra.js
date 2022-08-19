@@ -41,7 +41,10 @@ ra.baseDirectory = function () {
 ra.decodeOptions = function (value) {
     var options = JSON.parse(value);
     if (options.hasOwnProperty('base')) {
-        ra._baseDirectory = options.base;
+        var parts = options.base.split("/");
+        parts.splice(0, 3);// remove protocol and host
+        var base = parts.join('/');
+        ra._baseDirectory = "/" + base;
     }
     ra.defaultMapOptions.bing = options.bing;
     ra.defaultMapOptions.bingkey = options.bingkey;
@@ -1346,7 +1349,7 @@ ra.modals = (function () {
         modals.masterdiv.appendChild(item.getContent());
         return item;
     };
-  
+
     document.addEventListener("ra-modal-closing", function (event) {
         // raise event to reset status that may be lost, e.g. map full screen
         var modal = modals.items[modals.items.length - 1];
