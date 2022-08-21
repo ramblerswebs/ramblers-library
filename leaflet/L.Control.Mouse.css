@@ -11,7 +11,7 @@
     color: #333;
     font: 11px/1.5 arial,Monaco, sans-serif;
 }
-.leaflet-container .leaflet-control-postcodeposition {
+.leaflet-container .leaflet-control-rightclick {
     background-color: rgba(255, 255, 255, 0.7);
     box-shadow: 0 0 5px #bbb;
     width:auto;
@@ -24,15 +24,17 @@
     color: #333;
     font: 11px/1.5 arial,Monaco, sans-serif;
     font-weight: bold;
+    
+}
+div.leaflet-control-container div.leaflet-control-resizer-corner-s{
+    z-index: 750 !important;
 }
 
 .ramblers-places-iconDELETE img{
     width:18px;
     height:18px;
 }
-div.leaflet-control-container .leaflet-top.leaflet-right{
-    z-index:1001;
-}
+
 select.ra-mouse-options {
     display: inline-block;
     font-size: 12px;
@@ -41,7 +43,8 @@ select.ra-mouse-options {
     color: #444;
     line-height: 1.1;
     padding: 0;
-    width: 300px;
+    height: 20px;
+    width: 320px;
     max-width: 100%;
     box-sizing: border-box;
     margin: 0;

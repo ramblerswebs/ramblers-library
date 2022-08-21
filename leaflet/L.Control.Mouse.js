@@ -319,18 +319,20 @@ L.Control.Mouse = L.Control.extend({
         ra.settings.save(save, '__mouseosmap', this._userOptions);
     }
 });
-L.Map.mergeOptions({
-    positionControl: false
-});
-L.Map.addInitHook(function () {
-    if (this.options.positionControl) {
-        this.positionControl = new L.Control.MousePosition();
-        this.addControl(this.positionControl);
-    }
-});
+//L.Map.mergeOptions({
+//    positionControl: false
+//});
+//L.Map.addInitHook(function () {
+//    if (this.options.positionControl) {
+//        this.positionControl = new L.Control.MousePosition();
+//        this.addControl(this.positionControl);
+//    }
+//});
 L.control.mouse = function (options) {
     return new L.Control.Mouse(options);
 };
+
+
 L.Control.Rightclick = L.Control.extend({
     options: {
         position: 'bottomleft',
@@ -381,7 +383,7 @@ L.Control.Rightclick = L.Control.extend({
         this._mouseLayer = L.featureGroup([]);
         this._mouseLayer.addTo(this._map);
         this.enabled = true;
-        this._container = L.DomUtil.create('div', 'leaflet-control-postcodeposition');
+        this._container = L.DomUtil.create('div', 'leaflet-control-rightclick');
         L.DomEvent.disableClickPropagation(this._container);
         this._map.on('zoomend', this._onZoomEnd, this);
         this._map.on('contextmenu', this._onRightClick, this);
