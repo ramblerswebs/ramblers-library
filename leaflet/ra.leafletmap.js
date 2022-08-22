@@ -5,7 +5,7 @@ if (typeof (ra) === "undefined") {
 ra.leafletmap = function (tag, options) {
 
     this.options = options;
-   
+
     this.controls = {layers: null,
         settins: null,
         zoom: null,
@@ -158,11 +158,10 @@ ra.leafletmap = function (tag, options) {
     L.control.resizer({onlyOnHover: false, direction: 's'}).addTo(this.map);
 
 
-    // bottom left controls
+    // bottom left controls 
     if (options.rightclick !== null) {
         this.controls.rightclick = L.control.rightclick().addTo(this.map);
     }
-
     if (options.mouseposition !== null) {
         this.controls.mouse = L.control.mouse().addTo(this.map);
     }

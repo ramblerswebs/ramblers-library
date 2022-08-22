@@ -24,15 +24,11 @@
     color: #333;
     font: 11px/1.5 arial,Monaco, sans-serif;
     font-weight: bold;
-    
+
 }
 div.leaflet-control-container div.leaflet-control-resizer-corner-s{
-    z-index: 750 !important;
-}
-
-.ramblers-places-iconDELETE img{
-    width:18px;
-    height:18px;
+    width:50px;
+    left:50%;
 }
 
 select.ra-mouse-options {
@@ -44,7 +40,7 @@ select.ra-mouse-options {
     line-height: 1.1;
     padding: 0;
     height: 20px;
-    width: 320px;
+    width: 310px;
     max-width: 100%;
     box-sizing: border-box;
     margin: 0;
@@ -64,10 +60,14 @@ select.ra-mouse-options {
 select.ra-mouse-options::-ms-expand {
     display: none;
 }
-selectDELETE.ra-mouse-options:hover {
-    border-color: red;
-}
 
 select.ra-mouse-options option {
     font-weight:normal;
+}
+
+@media only screen and (max-width: 980px) {
+    select.ra-mouse-options {
+        width: 150px !important;
+        background-image: none;
+    }
 }
