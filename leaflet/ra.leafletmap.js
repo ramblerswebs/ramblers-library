@@ -124,9 +124,12 @@ ra.leafletmap = function (tag, options) {
         this.controls.print = L.control.browserPrint({
             title: 'Print',
             documentTitle: 'The Ramblers - working for walkers',
-            printModes: ["Portrait", "Landscape"],
-            closePopupsOnPrint: false
+            printModes: [L.control.browserPrint.mode.portrait(),
+                L.control.browserPrint.mode.landscape(),
+                L.control.browserPrint.mode.custom("Select Area", "A4")],
+            closePopupsOnPrint: true
         }).addTo(this.map);
+
         if (options.bingkey) {
             L.Control.BrowserPrint.Utils.registerLayer(
                     L.BingLayer,
@@ -141,12 +144,9 @@ ra.leafletmap = function (tag, options) {
         }
     }
     this.controls.search = L.control.search({position: 'topleft'}).addTo(this.map);
-
-
     this.controls.mylocation = L.control.mylocation({position: 'topleft'}).addTo(this.map);
-
     var zoomall = L.control.zoomall().addTo(this.map);
-    var tools = L.control.tools({id: 'js-maptools'}).addTo(this.map);
+    var tools = L.control.tools().addTo(this.map);
 
     ra.map.moveMapControl(this.controls.zoom, tools.getToolsDiv());
     ra.map.moveMapControl(zoomall, tools.getToolsDiv());
@@ -177,7 +177,7 @@ ra.leafletmap = function (tag, options) {
     // bottom right controls
     if (options.controlcontainer) {
         // used by walks editor
-        L.control.racontainer({id: 'js-gewmapButtons'}).addTo(this.map);
+        L.control.racontainer().addTo(this.map);
     }
 
     if (options.initialview) {
@@ -246,6 +246,12 @@ ra.leafletmap = function (tag, options) {
             }
         }
     };
+    this.map.on('browser-print-end', function (e) {
+        document.getElementById(tag.id).scrollIntoView();
+    });
+    this.map.on('browser-print-end', function (e) {
+        document.getElementById(tag.id).scrollIntoView();
+    });
 
 
     this.SetPlotUserControl = function (value) {

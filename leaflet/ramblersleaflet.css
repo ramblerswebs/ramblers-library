@@ -465,16 +465,22 @@ table th {
     border-radius:5px;
 
 }
+.ra-zoomall-icon.disabled{
+    background:#fff url(images/extentdisabled.png) no-repeat 0 0;
+    background-size:32px 32px;
+    background-position: center;
+    cursor: not-allowed;
+}
 .ra-map-tools-icon.leaflet-control{
     margin-left:0px;
 }
 .leaflet-tools-container {
     display: grid;
-   
-   grid-template-areas: 
-    "header header "
-    "header header "
-    "header header ";
+
+    grid-template-areas:
+        "header header "
+        "header header "
+        "header header ";
     justify-items: start;
     align-items: start;
     background-color:#fff;
@@ -491,5 +497,5 @@ table th {
     width:30px;
     height:30px;
     border-radius:5px;
- 
+
 }

@@ -105,10 +105,10 @@ class RJsScript {
         }
 
 
-        $path = "libraries/ramblers/vendors/leaflet.browser.print-1/src/";
+        $path = "libraries/ramblers/vendors/leaflet.browser.print-1/dist/";
         $document->addScript($path . "leaflet.browser.print.js", array("type" => "text/javascript"));
-        $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
-        $document->addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
+   //     $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
+   //     $document->addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
 
         if ($options->calendar) {
             $path = "libraries/ramblers/vendors/fullcalendar-5.9.0/lib/";
