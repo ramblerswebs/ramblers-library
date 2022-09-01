@@ -88,6 +88,7 @@ ra.leafletmap = function (tag, options) {
     });
     // top right control for error messages
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
+    this.controls.errorDiv.setText(ra.html.getBrowserStatus());
     this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
     // top left controls
     if (options.displayElevation) {
