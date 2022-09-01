@@ -31,6 +31,7 @@ ra.leafletmap = function (tag, options) {
 //        rightclick: null,
 //        plotroute: null};
     this._mapDiv = null;
+
     var tags = [
         {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra-map-container'}},
         {name: 'map', parent: 'container', tag: 'div', style: {height: options.mapHeight, width: options.mapWidth}},
@@ -45,6 +46,8 @@ ra.leafletmap = function (tag, options) {
 
     var elements = ra.html.generateTags(tag, tags);
     this._mapDiv = elements.map;
+
+    this.minHeight = this._mapDiv.clientHeight; // save initial map height
     if (options.copyright) {
         ra.html.generateTags(elements.copyright, tagcopy);
     }
@@ -76,6 +79,7 @@ ra.leafletmap = function (tag, options) {
     }
     // get my location for directions
     this.map.locate();
+
     this.map.on('locationerror', function () {
         ra.loc.setPositionError();
     });
@@ -112,13 +116,9 @@ ra.leafletmap = function (tag, options) {
         });
         this.controls.elevation.addTo(this.map);
     }
-    //  this.controls.zoom = this.map.addControl(new L.Control.Zoom());
     this.controls.zoom = L.control.zoom({position: 'topleft'}).addTo(this.map);
-
-    // if (options.fullscreen) {
-    //  this.controls.fullscreen = this.map.addControl(new L.Control.Fullscreen());
     this.controls.fullscreen = L.control.fullscreen({position: 'topleft'}).addTo(this.map);
-    // }
+
     if (options.print !== null) {
         var self = this;
         this.controls.print = L.control.browserPrint({
@@ -155,8 +155,16 @@ ra.leafletmap = function (tag, options) {
     ra.map.moveMapControl(this.controls.fullscreen, tools.getToolsDiv());
     ra.map.moveMapControl(this.controls.print, tools.getToolsDiv());
 
-    L.control.resizer({onlyOnHover: false, direction: 's'}).addTo(this.map);
+    this.controls.resizer = L.control.resizer({onlyOnHover: false, direction: 's'}).addTo(this.map);
 
+    this.controls.resizer.addEventListener('drag', function () {
+        var newHeight = self._mapDiv.clientHeight;
+        if (newHeight < self.minHeight) {
+            self._mapDiv.style.height = self.minHeight + "px";
+            //  only allow map to be larger
+        }
+
+    });
 
     // bottom left controls 
     if (options.rightclick !== null) {
@@ -247,10 +255,10 @@ ra.leafletmap = function (tag, options) {
         }
     };
     this.map.on('browser-print-end', function (e) {
-        document.getElementById(tag.id).scrollIntoView();
+        tag.scrollIntoView();
     });
     this.map.on('browser-print-end', function (e) {
-        document.getElementById(tag.id).scrollIntoView();
+        tag.scrollIntoView();
     });
 
 

@@ -15,7 +15,8 @@ L.Control.Search = L.Control.extend({
         this.searchLayer.addTo(this._map);
         this.container = L.DomUtil.create('div', 'leaflet-control-search leaflet-bar leaflet-control');
         this.container.title = 'Search for a location, place, GR, Postcode, W3W';
-        this.container.addEventListener("click", function (e) {
+         L.DomEvent.on(this.container, 'click', function (ev) {
+            L.DomEvent.stopPropagation(ev);
             _this.fullscreen = map.isFullscreen();
             if (_this.fullscreen) {
                 _this._map.toggleFullscreen();
@@ -25,16 +26,6 @@ L.Control.Search = L.Control.extend({
             searchDiv.setAttribute('class', 'search');
             _this.modal = ra.modals.createModal(searchDiv, false);
             _this._addSearch(searchDiv);
-//            document.addEventListener("ra-modal-closed", function (e) {
-//                if (e.ra.modal === _this.modal) {
-//                    // reset status of map
-//                    if (_this.fullscreen) {
-//                        _this._map.toggleFullscreen();
-//                    }
-//                }
-//
-//            });
-
         });
         return this.container;
     },

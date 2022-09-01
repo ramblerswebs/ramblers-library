@@ -66,8 +66,9 @@ L.Control.ZoomAll = L.Control.extend({
         this._map = map;
         this._container = L.DomUtil.create('div', 'ra-zoomall-icon leaflet-bar leaflet-control', this._container);
         this._container.title = this.options.title;
-        this._container.addEventListener("click", function (e) {
-            var result = _this._getBounds();
+        L.DomEvent.on(this._container, 'click', function (ev) {
+            L.DomEvent.stopPropagation(ev);
+             var result = _this._getBounds();
             if (result.isSet) {
                 _this._map.flyToBounds(result.bounds, {padding: [50, 50], duration: 1});
             }
