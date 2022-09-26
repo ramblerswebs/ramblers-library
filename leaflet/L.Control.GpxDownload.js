@@ -108,15 +108,6 @@ L.Control.GpxDownload = L.Control.extend({
         }
         var contentTag = document.createElement('div');
         _this.modal = ra.modals.createModal(contentTag, false);
-//        document.addEventListener("ra-modal-closed", function (e) {
-//            if (e.ra.modal === _this.modal) {
-//                // reset status of map
-//                if (_this.fullscreen) {
-//                    _this._map.toggleFullscreen();
-//                }
-//            }
-//
-//        });
         this._addDetailsForm(contentTag);
     },
     _returnToFullScreen: function () {

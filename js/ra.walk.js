@@ -1,4 +1,4 @@
-var ra, displayCustomValues, OsGridRef;
+var ra, displayCustomValues, OsGridRef, LatLon;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -346,13 +346,7 @@ ra.walk = (function () {
         $html += "</div>" + PHP_EOL;
         var mapdiv = "div" + $walk.id;
         $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;
-//        $html += my.addItemInfo("strands", "", $walk.strands);
-//        $html += my.addItemInfo("festivals", "Festivals", $walk.festivals);
-//        $html += my.addItemInfo("suitability", "Suitability", $walk.suitability);
-//        $html += my.addItemInfo("surroundings", "Surroundings", $walk.surroundings);
-//        $html += my.addItemInfo("theme", "Theme", $walk.theme);
-//        $html += my.addItemInfo("specialStatus", "Special Status", $walk.specialStatus);
-//        $html += my.addItemInfo("facilities", "Facilities", $walk.facilities);
+        $html += my.addFlagInfo($walk.flags);
 
         if ($walk.media.length > 0) {
             if ($walk.media.length > 0) {
@@ -372,7 +366,7 @@ ra.walk = (function () {
                         caption += "<br/>";
                     }
                     caption += "</div>";
-                    $html += "<div class='walk-image' onclick='ra.modal.magnify(this)'><img class='walkmedia' src='" + item.url + "'  >" + caption + "</div>";
+                    $html += "<div class='walk-image' onclick='ra.html.displayInModal(this)'><img class='walkmedia' src='" + item.url + "'  >" + caption + "</div>";
                 }
                 $html += "</div>" + PHP_EOL;
             }
@@ -419,6 +413,31 @@ ra.walk = (function () {
             return  out;
     }
 
+    };
+    my.addFlagInfo = function (items) {
+        var $html = "";
+        var lastSection = '';
+        if (items.length > 0) {
+            $html += "<div class='walkitem'>";
+
+            var index, len;
+            for (index = 0, len = items.length; index < len; ++index) {
+                var item = items[index];
+                var section = item.section;
+                if (lastSection !== section) {
+                    if (lastSection !== '') {
+                        $html += "</ul>";
+                    }
+                    $html += "<b>" + section + "</b>";
+                    lastSection = section;
+                    $html += "<ul>";
+
+                }
+                $html += "<li class='item'>" + item.name + "</li>";
+            }
+            $html += "</ul></div>";
+        }
+        return $html;
     };
 //    my.addItemInfo = function ($class, $title, $value) {
 //        var $html = "";

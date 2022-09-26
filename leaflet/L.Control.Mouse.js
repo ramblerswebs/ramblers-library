@@ -319,15 +319,8 @@ L.Control.Mouse = L.Control.extend({
         ra.settings.save(save, '__mouseosmap', this._userOptions);
     }
 });
-//L.Map.mergeOptions({
-//    positionControl: false
-//});
-//L.Map.addInitHook(function () {
-//    if (this.options.positionControl) {
-//        this.positionControl = new L.Control.MousePosition();
-//        this.addControl(this.positionControl);
-//    }
-//});
+
+
 L.control.mouse = function (options) {
     return new L.Control.Mouse(options);
 };
@@ -412,14 +405,14 @@ L.Control.Rightclick = L.Control.extend({
             self._mouseLayer.clearLayers();
             self._places.clearLayers();
         });
-        //   this._container.innerHTML = text + options.join('') + '</select>';
+
         var osmOptions = [];
-        osmOptions["cafes"] = {};
         osmOptions["cafes"] = {tag: "amenity", type: "cafe", title: "Cafes", single: "Cafe"};
         osmOptions["parking"] = {tag: "amenity", type: "parking", title: "Car Parks", single: "Car Park"};
         osmOptions["pubs"] = {tag: "amenity", type: "pub", title: "Pubs", single: "Pub"};
         osmOptions["toilets"] = {tag: "amenity", type: "toilets", title: "Toilets", single: "Toilets"};
         osmOptions["bus_stops"] = {tag: "highway", type: "bus_stop", title: "Bus Stops", single: "Bus Stop"};
+        osmOptions["alltags"] = {tag: "alltags", type: "alltags", title: "Whats there", single: "Whats there"};
         this.osmOptions = osmOptions;
         return this._container;
     },
@@ -775,57 +768,57 @@ L.Control.Rightclick = L.Control.extend({
         });
     },
     _displayAllTags: function (e) {
-        alert('This option not available yet');
-        return;
-//        var self =this;
-//        var title = "All items";
-//        var single = "Item";
-//        var type = "Items";
-//        var p = new LatLon(e.latlng.lat, e.latlng.lng);
-//        var i;
-//        var msg = "<b>Searching for " + type + " ...</b>";
-//        var point = L.marker(p).bindPopup(msg);
-//        this._mouseLayer.clearLayers();
-//        this._mouseLayer.addLayer(point);
-//        //  point.getPopup().setContent(msg);
-//        point.openPopup();
-//        this._latlng = e.latlng;
-//        // var queryTemplate = '[out:json]; (node({{bbox}});way({{bbox}});relation({{bbox}});';
-//        var queryTemplate = '[out:json];(way(around:200,52.71017,-1.3480224););out body;';
-//        //   node({{bbox}})(if:count_tags() > 0);
-//        //  var query = this.getQuery(queryTemplate, null, null);
-//        var lat = this._latlng.lat;
-//        var lng = this._latlng.lng;
-//        var kwargs = {bbox: this.getBox()};
-//        var query = L.Util.template(queryTemplate, kwargs);
-//        //console.log("Query: " + query);
-//        var url = this.getUrl(query);
-//        //console.log("Query: " + url);
-//        ra.ajax.getJSON(url, function (err, items) {
-//            if (err !== null) {
-//                var msg = "Error: Something went wrong: " + err;
-//                point.getPopup().setContent(msg);
-//            } else {
-//                if (items.elements.length === 0) {
-//                    var closest = "No " + title + " found within " + self._userOptions.osm.distance + "km";
-//                    point.getPopup().setContent(closest);
-//                } else {
-//                    msg = "<b>" + items.elements.length + " " + title + " found within " + self._userOptions.osm.distance + "km</b>";
-//                    msg += "<p>" + items.osm3s.copyright + "</p>";
-//                    point.getPopup().setContent(msg);
-//                    point.openPopup();
-//                    for (i = 0; i < items.elements.length; i++) {
-//                        var item = items.elements[i];
-//                        self.displayElement(item, single);
-//                    }
-//                    var bounds = self._mouseLayer.getBounds();
-//                    self._map.fitBounds(bounds, {padding: [50, 50]});
-//                }
-//            }
-//            setTimeout(function (point) {
-//                self._map.removeLayer(point);
-//            }, 6000, point);
-//        });
+        // alert('This option not available yet');
+        //  return;
+        var self = this;
+        var title = "All items";
+        var single = "Item";
+        var type = "Items";
+        var p = new LatLon(e.latlng.lat, e.latlng.lng);
+        var i;
+        var msg = "<b>Searching for " + type + " ...</b>";
+        var point = L.marker(p).bindPopup(msg);
+        this._mouseLayer.clearLayers();
+        this._mouseLayer.addLayer(point);
+        //  point.getPopup().setContent(msg);
+        point.openPopup();
+        this._latlng = e.latlng;
+        // var queryTemplate = '[out:json]; (node({{bbox}});way({{bbox}});relation({{bbox}});';
+        var queryTemplate = '[out:json];(way(around:200,52.71017,-1.3480224););out body;';
+        //   node({{bbox}})(if:count_tags() > 0);
+        //  var query = this.getQuery(queryTemplate, null, null);
+        var lat = this._latlng.lat;
+        var lng = this._latlng.lng;
+        var kwargs = {bbox: this.getBox()};
+        var query = L.Util.template(queryTemplate, kwargs);
+        //console.log("Query: " + query);
+        var url = this.getUrl(query);
+        //console.log("Query: " + url);
+        ra.ajax.getJSON(url, function (err, items) {
+            if (err !== null) {
+                var msg = "Error: Something went wrong: " + err;
+                point.getPopup().setContent(msg);
+            } else {
+                if (items.elements.length === 0) {
+                    var closest = "No " + title + " found within " + self._userOptions.osm.distance + "km";
+                    point.getPopup().setContent(closest);
+                } else {
+                    msg = "<b>" + items.elements.length + " " + title + " found within " + self._userOptions.osm.distance + "km</b>";
+                    msg += "<p>" + items.osm3s.copyright + "</p>";
+                    point.getPopup().setContent(msg);
+                    point.openPopup();
+                    for (i = 0; i < items.elements.length; i++) {
+                        var item = items.elements[i];
+                        self.displayElement(item, single);
+                    }
+                    var bounds = self._mouseLayer.getBounds();
+                    self._map.fitBounds(bounds, {padding: [50, 50]});
+                }
+            }
+            setTimeout(function (point) {
+                self._map.removeLayer(point);
+            }, 6000, point);
+        });
     },
     displayElement: function (node, title) {
         switch (node.type) {

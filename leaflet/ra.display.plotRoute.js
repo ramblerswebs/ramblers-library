@@ -655,7 +655,7 @@ ra.display.plotRoute = function (options, data) {
             }
             var points = "data=" + JSON.stringify(nullItems);
             var url = "https://elevation.theramblers.org.uk/";
-            ra.ajax.postJSON(url, points, function (err, items) {
+            ra.ajax.postJSON(url, points, null, function (err, items) {
                 if (err !== null) {
                     var msg = "Error: Something went wrong: " + err;
                     alert(msg);

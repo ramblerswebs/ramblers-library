@@ -50,13 +50,14 @@ class RJsonwalksWalk extends REvent {
     public $pace;                   // the pace of the walk or null
     Public $ascentMetres;           // the ascent in metres or null
     Public $ascentFeet;             // the ascent in feet or null
-    Public $strands;                // RJsonwalksItems object or null
-    Public $festivals;              // RJsonwalksItems object or null
-    public $suitability;            // RJsonwalksItems object or null
-    public $surroundings;           // RJsonwalksItems object or null
-    public $theme;                  // RJsonwalksItems object or null
-    public $specialStatus;          // RJsonwalksItems object or null
-    public $facilities;             // RJsonwalksItems object or null
+    Public $flags;                  // flags to describe walk 
+//    Public $strands;                // RJsonwalksItems object or null
+//    Public $festivals;              // RJsonwalksItems object or null
+//    public $suitability;            // RJsonwalksItems object or null
+//    public $surroundings;           // RJsonwalksItems object or null
+//    public $theme;                  // RJsonwalksItems object or null
+//    public $specialStatus;          // RJsonwalksItems object or null
+//    public $facilities;             // RJsonwalksItems object or null
     public $media = [];                  // array of image infomation
 // extra derived values
     private $sortTime;
@@ -152,6 +153,10 @@ class RJsonwalksWalk extends REvent {
         $this->telephone1 = $walk->telephone1;
         $this->telephone2 = $walk->telephone2;
         $this->walkLeader = $walk->walkLeader;
+    }
+
+    public function setFlags($flags) {
+        $this->flags = $flags->items;
     }
 
     public function addYear() {
@@ -398,40 +403,8 @@ class RJsonwalksWalk extends REvent {
         }
         $intervalFormat = "PT" . $durationFullMins . "M";
         $interval = new DateInterval($intervalFormat);
-        $lasttime = $lasttime->add($interval);
-        return $lasttime;
+        return $lasttime->add($interval);
     }
-
-//    public static function nationalGradesLink() {
-//        $out = '<p></p><p>Description of <a href="libraries/ramblers/pages/grades.html" class="jcepopup" data-mediabox="1">National Grades</a></p>';
-//        echo $out;
-//    }
-//    public function getGradeImage() {
-//        $image = "libraries/ramblers/images/grades/base.jpg";
-//        switch ($this->nationalGrade) {
-//            case "Easy Access":
-//                $image = "libraries/ramblers/images/grades/ea.png";
-//                break;
-//            case "Easy":
-//                $image = "libraries/ramblers/images/grades/e.png";
-//                break;
-//            case "Leisurely":
-//                $image = "libraries/ramblers/images/grades/l.png";
-//                break;
-//            case "Moderate":
-//                $image = "libraries/ramblers/images/grades/m.png";
-//                break;
-//            case "Strenuous":
-//                $image = "libraries/ramblers/images/grades/s.png";
-//                break;
-//            case "Technical":
-//                $image = "libraries/ramblers/images/grades/t.png";
-//                break;
-//            default:
-//                break;
-//        }
-//        return $image;
-//    }
 
     private function getGradeSpan($class) {
         $tag = "";

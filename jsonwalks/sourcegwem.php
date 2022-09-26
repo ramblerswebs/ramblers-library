@@ -137,30 +137,16 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
 //            if (count($item->strands->items) > 0) {
 //                $walk->strands = new RJsonwalksItems($item->strands);
 //            }
-//// read festivals
-//            if (count($item->festivals->items) > 0) {
-//                $walk->festivals = new RJsonwalksItems($item->festivals);
-//            }
-//// read suitability
-//            if (count($item->suitability->items) > 0) {
-//                $walk->suitability = new RJsonwalksItems($item->suitability);
-//            }
-//// read surroundings
-//            if (count($item->surroundings->items) > 0) {
-//                $walk->surroundings = new RJsonwalksItems($item->surroundings);
-//            }
-//// read theme
-//            if (count($item->theme->items) > 0) {
-//                $walk->theme = new RJsonwalksItems($item->theme);
-//            }
-//// read specialStatus
-//            if (count($item->specialStatus->items) > 0) {
-//                $walk->specialStatus = new RJsonwalksItems($item->specialStatus);
-//            }
-//            // read facilities
-//            if (count($item->facilities->items) > 0) {
-//                $walk->facilities = new RJsonwalksItems($item->facilities);
-//            }
+
+            $flags = new RJsonwalksWalkFlags();
+            $flags->addGWEMFlags("Festivals", $item->festivals);
+            $flags->addGWEMFlags("Facilities", $item->facilities);
+            $flags->addGWEMFlags("Suitability", $item->suitability);
+            $flags->addGWEMFlags("Surroundings", $item->surroundings);
+            $flags->addGWEMFlags("Theme", $item->theme);
+            $flags->addGWEMFlags("Special Status", $item->specialStatus);
+            $walk->setFlags($flags);
+
 // process meeting and starting locations
             $this->processPoints($walk, $item->points);
             //  $walk->createExtraData();

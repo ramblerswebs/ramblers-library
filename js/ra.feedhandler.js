@@ -3,6 +3,16 @@ if (typeof (ra) === "undefined") {
     ra = {};
 }
 ra.feedhandler = function () {
+    this.modalSearchForm = function (eventTag) {
+        var searchDiv = document.createElement('div');
+        searchDiv.setAttribute('class', 'search');
+        this.modal = ra.modals.createModal(searchDiv, false);
+        var _this = this;
+        this.getSearchTags(eventTag, searchDiv);
+        eventTag.addEventListener("locationfound", function (e) {
+            _this.modal.close();
+        });
+    };
 
     this.getSearchTags = function (eventTag, contentTag) {
         var formDiv = document.createElement("div");
@@ -82,9 +92,9 @@ ra.feedhandler = function () {
             var items = selectTag.raData.items;
             var item = items[selectTag.value];
             //  alert("accept" + item.display_name);
-      //      var closeBtn = ra.modal.elements.close;
-            
-       //     closeBtn.dispatchEvent(new Event("click"));
+            //      var closeBtn = ra.modal.elements.close;
+
+            //     closeBtn.dispatchEvent(new Event("click"));
             let event = new Event("locationfound", {bubbles: true}); // (2)
             event.raData = {};
             event.raData.item = item;
@@ -107,17 +117,7 @@ ra.feedhandler = function () {
         });
 
     };
-//    this.getSearchMapModal = function (e) {
-//        var eventTag = e.target;
-//        var contentTag = document.createElement('div');
-//        var p = document.createElement('p');
-//        contentTag.appendChild(p);
-//        ra.modals.createModal(contentTag, false);
-//        ////   var $html = '<div id="js-search-content"></div>';
-//        //  //$html += '<p></p>';
-//        //    var contentTag = document.getElementById("js-search-content");
-//        this.getSearchTags(eventTag, contentTag);
-//    };
+
     this.getPossibleMapLocations = function (raData) { // called via an event on input field
         var inputField = raData.inputField;
         var input = inputField.value;

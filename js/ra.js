@@ -288,7 +288,7 @@ ra.ajax = (function () {
         xhr.send();
     };
     // post for json feed and callback
-    ajax.postJSON = function (url, data, callback) {
+    ajax.postJSON = function (url, data, target, callback) {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -302,9 +302,9 @@ ra.ajax = (function () {
                 } else {
                     items = xhr.response;
                 }
-                callback(null, items);
+                callback(target, items);
             } else {
-                callback(status);
+                callback(target, status);
             }
         };
         xhr.send(data);
@@ -635,6 +635,10 @@ ra.html = (function () {
         }
         tag.appendChild(ele);
         return ele;
+    };
+    html.displayInModal = function (tag) {
+        // used to display walk images
+       ra.modals.createModal(tag.cloneNode(true), false);
     };
     html.generateTags = function (root, items) {
         var index;
@@ -1335,7 +1339,7 @@ ra.modals = (function () {
     modals.items = [];
 
     modals.masterdiv = null;
-    modals.createModal = function ($html, printButton = true) {
+    modals.createModal = function ($html, printButton = true, cancelButton = true) {
         if (modals.masterdiv === null) {
             var body = document.getElementsByTagName("BODY")[0];
             modals.masterdiv = document.createElement('div');
@@ -1343,7 +1347,7 @@ ra.modals = (function () {
             body.appendChild(modals.masterdiv);
         }
         var item = new ra.modal();
-        item.setContent($html, printButton);
+        item.setContent($html, printButton, cancelButton);
         modals.items.push(item);
         modals.masterdiv.innerHTML = '';
         modals.masterdiv.appendChild(item.getContent());
@@ -1371,9 +1375,9 @@ ra.modals = (function () {
 ra.modal = function () {
     this.elements = {};
     this.content;
-    this.setContent = function ($html, printButton = true) {
+    this.setContent = function ($html, printButton = true, closeButton = true) {
         var _this = this;
-        this._createModalTag(printButton);
+        this._createModalTag(printButton, closeButton);
         ra.html.setTag(this.elements.data, $html);
         this.elements.modaltag.style.display = "block";
         this.elements.close.addEventListener("click", function () {
@@ -1382,7 +1386,7 @@ ra.modal = function () {
         var print = this.elements.print;
         if (print !== null) {
             print.onclick = function () {
-                ra.html.printTag(this.elements.data);
+                ra.html.printTag(_this.elements.data);
             };
     }
     };
@@ -1398,7 +1402,7 @@ ra.modal = function () {
         event.stopImmediatePropagation();
     };
 
-    this._createModalTag = function (print = true) {
+    this._createModalTag = function (print = true, closeButton = true) {
         var tags = [
             {name: 'modaltag', parent: 'root', tag: 'div', attrs: {class: 'js-modal ramblers'}, style: {display: 'none'}},
             {name: 'content', parent: 'modaltag', tag: 'div', attrs: {class: 'modal-content'}},
@@ -1409,13 +1413,23 @@ ra.modal = function () {
             {name: 'data', parent: 'content', tag: 'div'},
             {parent: 'content', tag: 'hr'}
         ];
-        this.content = document.createElement('div');
-        this.elements = ra.html.generateTags(this.content, tags);
-        this.elements.close.setAttribute('data-dismiss', 'modal');
+        if (typeof this.content !== 'undefined') {
+            this.elements.data.innerHTML = '';
+        } else {
+            this.content = document.createElement('div');
+            this.elements = ra.html.generateTags(this.content, tags);
+            this.elements.close.setAttribute('data-dismiss', 'modal');
+        }
+        this.elements.close.style.display = '';
+        this.elements.print.style.display = '';
+        if (!closeButton) {
+            this.elements.close.style.display = 'none';
+        }
         if (!print) {
             this.elements.print.style.display = 'none';
     }
     };
+
 };
 
 ra.math = (function () {

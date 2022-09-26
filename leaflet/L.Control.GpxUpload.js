@@ -56,7 +56,7 @@ L.Control.GpxUpload = L.Control.extend({
         input.setAttribute('id', "gpx-file-upload");
         input.style.display = 'none';
         input.setAttribute('type', "file");
-        input.setAttribute('accept', "*.gpx");
+        input.setAttribute('accept', ".gpx");
         div.appendChild(input);
         return input;
     },
