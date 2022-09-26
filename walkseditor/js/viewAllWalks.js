@@ -661,7 +661,7 @@ ra.walkseditor.viewAllwalks = function (mapOptions, data) {
 
 
         for (i = 0, len = items.length; i < len; ++i) {
-            walk = items[i].walk.data;
+            walk = items[i].walk;
             var status = items[i].status;
             if (!result.status.hasOwnProperty(status)) {
                 result.status[status] = {no: 0};
@@ -678,13 +678,13 @@ ra.walkseditor.viewAllwalks = function (mapOptions, data) {
             }
             result.category[category].no += 1;
 
-            var basics = walk.basics;
+            var walkdate = walk.getObjProperty(walk.data, "basics.date", "");
             var today = new Date().toISOString().slice(0, 10);
-            if (basics.hasOwnProperty('date')) {
-                var dayofweek = ra.date.dow(basics.date);
+            if (ra.date.isValidString(walkdate)) {
+                var dayofweek = ra.date.dow(walkdate);
                 result.dow[dayofweek].no += 1;
                 // result.dateSet.Set.no += 1;
-                yyyymmdd = ra.date.YYYYMMDD(basics.date);
+                yyyymmdd = ra.date.YYYYMMDD(walkdate);
                 if (yyyymmdd < result.dates.min.no) {
                     result.dates.min.no = yyyymmdd;
                 }
@@ -701,14 +701,14 @@ ra.walkseditor.viewAllwalks = function (mapOptions, data) {
             } else {
                 result.timeSpan.noDate.no += 1;
             }
-            var no = items[i].walk.getNoWalkIssues();
+            var no = walk.getNoWalkIssues();
             if (no === 0) {
                 result.issues.None.no += 1;
             } else {
                 result.issues.Has.no += 1;
             }
 
-            if (items[i].walk.hasEditorNotes()) {
+            if (walk.hasEditorNotes()) {
                 result.editorNotes.Has.no += 1;
             } else {
                 result.editorNotes.None.no += 1;
@@ -736,9 +736,9 @@ ra.walkseditor.viewAllwalks = function (mapOptions, data) {
             {name: 'cancelled', parent: 'details', tag: 'div', attrs: {class: 'ra legend cancelled'}},
             {parent: 'cancelled', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Cancelled'}
 
-    //        {name: 'pastheading', parent: 'details', tag: 'h5', textContent: 'Past Walks'},
-    //        {name: 'past', parent: 'details', tag: 'div', attrs: {class: 'ra legend past'}},
-    //        {parent: 'past', tag: 'div', attrs: {class: 'legendbox status-Past'}, textContent: 'Past'}
+            //        {name: 'pastheading', parent: 'details', tag: 'h5', textContent: 'Past Walks'},
+            //        {name: 'past', parent: 'details', tag: 'div', attrs: {class: 'ra legend past'}},
+            //        {parent: 'past', tag: 'div', attrs: {class: 'legendbox status-Past'}, textContent: 'Past'}
 
         ];
         ra.html.generateTags(tag, tags);
