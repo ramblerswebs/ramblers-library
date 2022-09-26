@@ -45,7 +45,7 @@ ra.walkseditor.submitwalkform = function (options, data) {
 
         this.editorDiv = document.createElement('div');
         tag.appendChild(this.editorDiv);
-        var editor = new ra.walkseditor.walkeditor(this.walk.data);
+        var editor = new ra.walkseditor.walkeditor(this.walk.data, true);
         editor.sortData();
         editor.addEditForm(this.editorDiv);
         var bottomOptions = document.createElement('div');
@@ -68,7 +68,7 @@ ra.walkseditor.submitwalkform = function (options, data) {
             var walk = e.ra.walk;
             _this.walk.data = walk;
             _this.editorDiv.innerHTML = '';
-            var editor = new ra.walkseditor.walkeditor(_this.walk.data);
+            var editor = new ra.walkseditor.walkeditor(_this.walk.data, true);
             editor.sortData();
             editor.addEditForm(_this.editorDiv);
         });
@@ -144,7 +144,7 @@ ra.walkseditor.submitwalkform = function (options, data) {
             if (response.error) {
                 msg += "<p style='color:red;font-weight: bold'>ERROR OCCURRED<br/>";
                 msg += response.message + "</p>";
-            }else {
+            } else {
                 msg += "<p style='color:green;font-weight: bold'>EMAIL has been sent<br/><br/>";
                 msg += response.message + "</p>";
             }
@@ -152,8 +152,8 @@ ra.walkseditor.submitwalkform = function (options, data) {
         };
         xhr.send(formData);
     };
-   
-   
+
+
     this._saveWalk = function () {
         var walk = this.walk.data;
         var data = JSON.stringify(walk, null, "    ");

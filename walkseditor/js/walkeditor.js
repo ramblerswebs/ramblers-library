@@ -5,10 +5,11 @@ if (typeof (ra) === "undefined") {
 if (typeof (ra.walkseditor) === "undefined") {
     ra.walkseditor = {};
 }
-ra.walkseditor.walkeditor = function (walk) {
+ra.walkseditor.walkeditor = function (walk, formmode = false) {
     this.walk = walk;
+    this.formmode = formmode;
     this.input = new ra.walkseditor.inputFields;
-    this.who='ra.walkseditor.walkeditor';
+    this.who = 'ra.walkseditor.walkeditor';
     this.addEditForm = function (editDiv) {
         // first clear any old form from div
         editDiv.innerHTML = "";
@@ -47,7 +48,8 @@ ra.walkseditor.walkeditor = function (walk) {
             dataObject: this.walk,
             arrayProperty: 'walks',
             createFunction: this.addWalk,
-            sortFunction: this.sortWalks
+            sortFunction: this.sortWalks,
+            formmode: this.formmode
         });
         walkItems.display();
 
@@ -196,7 +198,8 @@ ra.walkseditor.walkeditor = function (walk) {
             dataObject: this.walk.meeting,
             arrayProperty: 'locations',
             createFunction: this.addMeetingLocation,
-            sortFunction: this.sortMeetingLocation
+            sortFunction: this.sortMeetingLocation,
+            formmode: this.formmode
         };
         switch (type) {
             case 'undefined':
@@ -242,7 +245,7 @@ ra.walkseditor.walkeditor = function (walk) {
                 alert("Type error - please report this issue");
     }
     };
-    this.addMeetingLocation = function (editor, tag, no) {
+    this.addMeetingLocation = function (formmode, editor, tag, no) {
 
         var meeting = editor.walk.meeting;
         if (!meeting.hasOwnProperty('locations')) {
@@ -393,7 +396,7 @@ ra.walkseditor.walkeditor = function (walk) {
         return;
     };
 
-    this.addWalk = function (editor, tag, no) {
+    this.addWalk = function (formmode, editor, tag, no) {
 
         if (tag === null) {
             throw new Error("js-Walk container is null");
@@ -443,7 +446,12 @@ ra.walkseditor.walkeditor = function (walk) {
         detailTags.summary.innerHTML = 'Additional details';
         detailTags.summary.title = 'Click to open or close section';
         editor._leader = editor.input.addText(detailTags.details, 'leader', 'Walk Leader Name', walks[no], 'leader', 'Walk leader(s) if different from contact', ra.walkseditor.help.walkLeader);
-        editor._localgrade = editor.input.addLocalGradeSelect(detailTags.details, 'localgrade', "Local Grade:", walks[no], 'localgrade', ra.walkseditor.help.walkLocalGrade);
+        if (formmode) {
+            editor._localgrade = editor.input.addText(detailTags.details, 'localgrade', "Local Grade:", walks[no], 'localgrade','Local grade', ra.walkseditor.help.walkLocalGradeText);
+        } else {
+            editor._localgrade = editor.input.addLocalGradeSelect(detailTags.details, 'localgrade', "Local Grade:", walks[no], 'localgrade', ra.walkseditor.help.walkLocalGrade);
+        }
+
         editor._pace = editor.input.addText(detailTags.details, 'pace', 'Pace ', mPace, walks[no], 'pace', ra.walkseditor.help.walkPace);
         editor._ascent = editor.input.addText(detailTags.details, 'ascent', "Ascent:", walks[no], 'ascent', '', ra.walkseditor.help.walkAscent);
         editor._duration = editor.input.addText(detailTags.details, 'duration', "Duration:", walks[no], 'duration', '', ra.walkseditor.help.walkDuration);
@@ -721,7 +729,7 @@ function raItems(options) {
         this._deleteItem.ra.raItems = this;
         this._deleteItem.ra.itemDiv = itemDiv;
         itemDiv.appendChild(this._deleteItem);
-        this.options.createFunction(this.options.editor, itemDiv, no);
+        this.options.createFunction(this.options.formmode, this.options.editor, itemDiv, no);
         this._deleteItem.addEventListener("click", this.deleteButton);
     };
     this.addButton = function () {

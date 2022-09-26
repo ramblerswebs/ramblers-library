@@ -98,6 +98,9 @@ ra.walkseditor.help = (function () {
     help.walkLocalGrade = function () {
         return "Select local grade from drop down (optional)";
     };
+    help.walkLocalGradeText = function () {
+        return "Enter the grade as per your groups grading system";
+    };
     help.walkPace = function () {
         return "walkPace???";
     };
