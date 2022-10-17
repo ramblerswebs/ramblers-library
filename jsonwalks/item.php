@@ -10,7 +10,6 @@ defined('_JEXEC') or die('Restricted access');
  */
 class RJsonwalksItem {
 
-    //put your code here
     public $text;
 
     function __construct($value) {

@@ -286,6 +286,7 @@ L.GPX = L.FeatureGroup.extend({
         try {
             req.overrideMimeType('text/xml'); // unsupported by IE
         } catch (e) {
+            alert("Error");
         }
         req.onreadystatechange = function () {
             if (req.readyState != 4)
@@ -298,6 +299,9 @@ L.GPX = L.FeatureGroup.extend({
     _parse: function (input, options, async) {
         var _this = this;
         var cb = function (gpx, options) {
+            if (gpx===null){
+                alert("Sorry: Unable to retrieve gpx file");
+            }
             var layers = _this._parse_gpx_data(gpx, options);
             if (!layers)
                 return;

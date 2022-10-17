@@ -1286,7 +1286,7 @@ ra.w3w = (function () {
                 tag.innerHTML = "Error accessing What3Words: " + err + "<br/>";
             } else {
                 var out = '<a class="w3w" href="https://what3words.com/about-us/" target="_blank">What3Words: </a>';
-                out += '<a class="w3w" href="https://what3words.com/' + items.words + '" target="_blank"> ///' + items.words + '</a><br/>';
+                out += '<a href="https://what3words.com/' + items.words + '" target="_blank"> ///' + items.words + '</a><br/>';
                 if (place) {
                     out += '<b>Nearest Place: </b>' + items.nearestPlace + '<br/>';
                 }

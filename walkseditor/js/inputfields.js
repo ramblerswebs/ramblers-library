@@ -367,7 +367,14 @@ ra.walkseditor.inputFields = function () {
             }
             checkbox.addEventListener("change", function (e) {
                 var ra = e.target.ra;
-                ra.targetObject[ra.item] = e.target.checked;
+                if (e.target.checked) {
+                    ra.targetObject[ra.item] = {};
+                    ra.targetObject[ra.item].value = e.target.checked;
+                    ra.targetObject[ra.item].name = e.target.value;
+                } else {
+                    delete ra.targetObject[ra.item];
+                }
+
             });
         }
 
@@ -377,7 +384,7 @@ ra.walkseditor.inputFields = function () {
         return;
     };
 
-    this.addSelect = function (tag, divName, labelName, values, raobject, property, helpFunction = null) {
+    this.addSelect = function (tag, divName, labelName, values, raobject, property, propertyDesc = null, helpFunction = null) {
         var div = document.createElement('div');
         div.setAttribute('class', divName);
         tag.appendChild(div);
@@ -389,6 +396,7 @@ ra.walkseditor.inputFields = function () {
         inputTag.setAttribute('class', 'gwem');
         inputTag.raobject = raobject;
         inputTag.raproperty = property;
+        inputTag.rapropertyDesc = propertyDesc;
         div.appendChild(inputTag);
         for (var key in values) {
             var value = values[key];
@@ -401,7 +409,12 @@ ra.walkseditor.inputFields = function () {
             inputTag.value = raobject[property];
         }
         inputTag.addEventListener("change", function (e) {
-            e.target.raobject[e.target.raproperty] = e.target.value;
+            var t = e.target;
+            e.target.raobject[e.target.raproperty] = t.value;
+            if (propertyDesc !== null) {
+                var i = t.selectedIndex;
+                e.target.raobject[e.target.rapropertyDesc] = t[i].label;
+            }
         });
         if (helpFunction !== null) {
             new ra.help(div, helpFunction).add();

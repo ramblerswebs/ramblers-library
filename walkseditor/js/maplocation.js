@@ -260,27 +260,25 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
     };
     this.updateMapMarker = function () {
         this.layer.clearLayers();
-        var img;
+        var img, icon;
         switch (this.location) {
             case ra.walkseditor.mapLocationInput.AREA :
                 img = ra.baseDirectory() + "libraries/ramblers/images/marker-area.png";
+                icon = L.icon({iconUrl: img, iconSize: [35, 40], iconAnchor: [17, 20], popupAnchor: [0, 0]});
                 break;
             case ra.walkseditor.mapLocationInput.START :
                 img = ra.baseDirectory() + "libraries/ramblers/images/marker-start.png";
+                icon = L.icon({iconUrl: img, iconSize: [35, 40], iconAnchor: [17, 20], popupAnchor: [0, 0]});
                 break;
             case ra.walkseditor.mapLocationInput.FINISH :
                 img = ra.baseDirectory() + "libraries/ramblers/images/marker-finish.png";
+                icon = L.icon({iconUrl: img, iconSize: [35, 40], iconAnchor: [5, 37], popupAnchor: [0, 0]});
                 break;
             default:
                 img = ra.baseDirectory() + "libraries/ramblers/images/marker-route.png";
+                icon = L.icon({iconUrl: img, iconSize: [33, 50], iconAnchor: [17,45], popupAnchor: [0, 0]});
         }
 
-        var icon = L.icon({
-            iconUrl: img,
-            iconSize: [35, 35],
-            iconAnchor: [16, 16],
-            popupAnchor: [0, 0]
-        });
         var lat, long;
         if (this.raobject.isLatLongSet) {
             lat = this.raobject.latitude;

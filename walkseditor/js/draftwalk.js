@@ -37,11 +37,7 @@ ra.walkseditor.draftWalk = function (  ) {
             comments: ''
         }
     };
-    const XXXXDATETYPE = {
-        NoDate: 1,
-        Past: 2,
-        Future: 3
-    };
+    
     this.buttons = {delete: null,
         edit: null,
         duplicate: null};
@@ -596,15 +592,19 @@ ra.walkseditor.draftWalk = function (  ) {
     };
     this.getWalkDate = function (view) {
         var d = this.getObjProperty(this.data, 'basics.date');
+        var past='';
         if (d !== null) {
             if (ra.date.isValidString(d)) {
-                var dow = ra.date.dow(d);
+               var status=this.dateStatus();
+               if (status===ra.walkseditor.DATETYPE.Past){
+                   past=" [PAST]";
+               }
                 switch (view) {
                     case 'table':
-                        return  "<b>" + ra.date.dowdd(d) + "</b><br/>" + " " + ra.date.month(d) + " " + ra.date.YY(d);
+                        return  "<b>" + ra.date.dowdd(d) + "</b><br/>" + " " + ra.date.month(d) + " " + ra.date.YY(d)+past;
                     case 'list':
                     case 'details':
-                        return  "<b>" + ra.date.dowdd(d) + "</b>" + " " + ra.date.month(d) + " " + ra.date.YY(d);
+                        return  "<b>" + ra.date.dowdd(d) + "</b>" + " " + ra.date.month(d) + " " + ra.date.YY(d)+past;
                 }
             }
         }
@@ -840,38 +840,23 @@ ra.walkseditor.draftWalk = function (  ) {
     };
     this.getWalkFacilities = function () {
         var out = "";
-        var facilities = {
-            refresh: 'Refreshments available (Pub/cafe)',
-            toilet: 'Toilets available'};
-        var transport = {access: 'Accessible by public transport',
-            park: 'Car parking available',
-            share: 'Car sharing available',
-            coach: 'Coach trip'};
-        var access = {
-            dog: 'Dog friendly',
-            intro: 'Introductory walk',
-            nostiles: 'No Stiles',
-            family: 'Family-Friendly',
-            wheelchair: 'Wheelchair accessible'
-        };
-        out += this.getWalkFacilitiesItem(facilities, "Facilities", 'facilities');
-        out += this.getWalkFacilitiesItem(transport, "Transport", 'transport');
-        out += this.getWalkFacilitiesItem(access, "Accessibility", 'accessibility');
+        out += this.getWalkFacilitiesItem("Facilities", 'facilities');
+        out += this.getWalkFacilitiesItem("Transport", 'transport');
+        out += this.getWalkFacilitiesItem("Accessibility", 'accessibility');
         if (out === "") {
             out = "No facilities, transport, accessibility flags";
         }
         return out;
 
     };
-    this.getWalkFacilitiesItem = function (options, title, section) {
+    this.getWalkFacilitiesItem = function (title, section) {
         var out = "";
         var d = this.getObjProperty(this.data, section);
         if (d !== null) {
-            for (var key in options) {
-                var option = options[key];
-                var value = this.getObjProperty(d, key, false);
-                if (value) {
-                    out += "<li>" + option + "</li>";
+            for (var key in d) {
+                var item = d[key];
+                if (item.value) {
+                    out += "<li>" + item.name + "</li>";
                 }
             }
         }
@@ -1046,11 +1031,11 @@ ra.walkseditor.draftWalk = function (  ) {
         if (type === isERROR) {
             this.errors += 1;
         }
-        var iclass="ra-we-issues";
-        if ( type === isERROR){
-            iclass+=" error";
+        var iclass = "ra-we-issues";
+        if (type === isERROR) {
+            iclass += " error";
         }
-        this.notifications.push('<div class="'+iclass+'">' + msg + '</div>');
+        this.notifications.push('<div class="' + iclass + '">' + msg + '</div>');
     };
     this.setWalkValues = function () {
 

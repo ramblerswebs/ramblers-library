@@ -50,16 +50,16 @@ class RJsScript {
 
         $document = JFactory::getDocument();
 
-        RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/ra.js", array("type" => "text/javascript"));
         // Leaflet
-        $document->addStyleSheet("libraries/ramblers/vendors/Leaflet-1.7.1/leaflet.css", "text/css");
-        $document->addScript("libraries/ramblers/vendors/Leaflet-1.7.1/leaflet.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/ra.leafletmap.js", "text/javascript");
-        RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css", "text/css");
+        $document->addStyleSheet("libraries/ramblers/vendors/Leaflet-1.7.1/leaflet.css", array("type" => "text/css"));
+        $document->addScript("libraries/ramblers/vendors/Leaflet-1.7.1/leaflet.js", array("type" => "text/javascript"));
+        RLoad::addScript("libraries/ramblers/leaflet/ra.leafletmap.js");
+        RLoad::addStyleSheet("libraries/ramblers/leaflet/ramblersleaflet.css");
 
         $path = "libraries/ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
-        RLoad::addScript($path . "Leaflet.fullscreen.min.js", "text/javascript");
-        RLoad::addStyleSheet($path . "leaflet.fullscreen.css", "text/css");
+        RLoad::addScript($path . "Leaflet.fullscreen.min.js");
+        RLoad::addStyleSheet($path . "leaflet.fullscreen.css");
 
         if ($options->displayElevation !== null) {
             // elevation
@@ -72,68 +72,68 @@ class RJsScript {
         if (RLicense::isGoogleKeyMapSet()) {
             // Google
             //$document->addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), array("type"=>"text/javascript"), true, true);
-            $document->addScript("libraries/ramblers/vendors/Leaflet.GridLayer.GoogleMutant/Leaflet.GoogleMutant.js", array("type" => "text/javascript"));
-            $document->addScript("libraries/ramblers/vendors/es6-promise-vv4.2.3/dist/es6-promise.auto.js", array("type" => "text/javascript"));
+            RLoad::addScript("libraries/ramblers/vendors/Leaflet.GridLayer.GoogleMutant/Leaflet.GoogleMutant.js");
+            RLoad::addScript("libraries/ramblers/vendors/es6-promise-vv4.2.3/dist/es6-promise.auto.js");
             //    $document->map->replaceString("// [set addGoogle]", "ramblersMap.options.google=true;");
         }
 
         // clustering
         $path = "libraries/ramblers/vendors/Leaflet.markercluster-1.5.3/dist/";
-        $document->addStyleSheet($path . "MarkerCluster.css", array("type" => "text/css"));
-        $document->addStyleSheet($path . "MarkerCluster.Default.css", array("type" => "text/css"));
-        $document->addScript($path . "leaflet.markercluster.js", array("type" => "text/javascript"));
-        $document->addScript("libraries/ramblers/vendors/Leaflet.FeatureGroup.SubGroup-1.0.2/src/subgroup.js", array("type" => "text/javascript"));
+        RLoad::addStyleSheet($path . "MarkerCluster.css");
+        RLoad::addStyleSheet($path . "MarkerCluster.Default.css");
+        RLoad::addScript($path . "leaflet.markercluster.js");
+        RLoad::addScript("libraries/ramblers/vendors/Leaflet.FeatureGroup.SubGroup-1.0.2/src/subgroup.js");
 
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Places.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Places.js");
 
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Mouse.js", "text/javascript");
-        RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Mouse.css", "text/css");
-   
-        RLoad::addScript("libraries/ramblers/vendors/Leaflet.Control.Resizer-0.0.1/L.Control.Resizer.js", "text/javascript");
-        RLoad::addStyleSheet("libraries/ramblers/vendors/Leaflet.Control.Resizer-0.0.1/L.Control.Resizer.css", "text/css");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Mouse.js");
+        RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Mouse.css");
+
+        RLoad::addScript("libraries/ramblers/vendors/Leaflet.Control.Resizer-0.0.1/L.Control.Resizer.js");
+        RLoad::addStyleSheet("libraries/ramblers/vendors/Leaflet.Control.Resizer-0.0.1/L.Control.Resizer.css");
 
         if ($options->mouseposition !== null or $options->osgrid !== null or $options->rightclick !== null) {
             // grid ref to/from lat/long
-            $document->addScript("libraries/ramblers/vendors/geodesy/vector3d.js", array("type" => "text/javascript"));
-            $document->addScript("libraries/ramblers/vendors/geodesy/latlon-ellipsoidal.js", array("type" => "text/javascript"));
-            $document->addScript("libraries/ramblers/vendors/geodesy/osgridref.js", array("type" => "text/javascript"));
+            RLoad::addScript("libraries/ramblers/vendors/geodesy/vector3d.js");
+            RLoad::addScript("libraries/ramblers/vendors/geodesy/latlon-ellipsoidal.js");
+            RLoad::addScript("libraries/ramblers/vendors/geodesy/osgridref.js");
         }
 
         if (RLicense::isBingKeyMapSet()) {
             // Bing maps
-            $document->addScript("libraries/ramblers/vendors/bing/bing.js", array("type" => "text/javascript"));
+            RLoad::addScript("libraries/ramblers/vendors/bing/bing.js", array("type" => "text/javascript"));
         }
 
 
         $path = "libraries/ramblers/vendors/leaflet.browser.print-1/dist/";
-        $document->addScript($path . "leaflet.browser.print.js", array("type" => "text/javascript"));
-   //     $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
-   //     $document->addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
+        RLoad::addScript($path . "leaflet.browser.print.js");
+        //     $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
+        //     $document->addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
 
         if ($options->calendar) {
             $path = "libraries/ramblers/vendors/fullcalendar-5.9.0/lib/";
-            RLoad::addScript($path . "main.js", "text/javascript");
-            RLoad::addStyleSheet($path . "main.css", "text/css");
+            RLoad::addScript($path . "main.js");
+            RLoad::addStyleSheet($path . "main.css");
         }
 
-        RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/js/ra.map.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/js/ra.walk.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/js/ra.js");
+        RLoad::addScript("libraries/ramblers/js/ra.map.js");
+        RLoad::addScript("libraries/ramblers/js/ra.walk.js");
         // my location start
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.MyLocation.js", "text/javascript");
-        $document->addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js", "text/javascript");
-        $document->addStyleSheet("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css", "text/css");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.MyLocation.js");
+         $document->addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js");
+         $document->addStyleSheet("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css");
         // my location finish
 
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.RAContainer.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Tools.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Search.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.RAContainer.js");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Tools.js");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Search.js");
 
         // settings
-        RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Settings.css", "text/css");
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Settings.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/js/ra.feedhandler.js", "text/javascript");
-        $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
+        RLoad::addStyleSheet("libraries/ramblers/leaflet/L.Control.Settings.css");
+        RLoad::addScript("libraries/ramblers/leaflet/L.Control.Settings.js");
+        RLoad::addScript("libraries/ramblers/js/ra.feedhandler.js");
+        RLoad::addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js");
     }
 
     public static function registerWalks($walks) {

@@ -91,10 +91,6 @@ ra.feedhandler = function () {
         acceptBtn.addEventListener("click", function (e) {
             var items = selectTag.raData.items;
             var item = items[selectTag.value];
-            //  alert("accept" + item.display_name);
-            //      var closeBtn = ra.modal.elements.close;
-
-            //     closeBtn.dispatchEvent(new Event("click"));
             let event = new Event("locationfound", {bubbles: true}); // (2)
             event.raData = {};
             event.raData.item = item;
@@ -301,7 +297,7 @@ ra.feedhandler = function () {
         var contentTag = document.createElement('div');
         var p = document.createElement('p');
         contentTag.appendChild(p);
-        ra.modals.createModal(contentTag);
+        var myModal = ra.modals.createModal(contentTag);
 //        var $html = '';
 //        $html += '<div id="js-location-search"></div>';
 //        $html += '<p></p>';
@@ -367,7 +363,7 @@ ra.feedhandler = function () {
             item.longitude = parseFloat(item.longitude);
             event.raData.item = item;
             findButton.dispatchEvent(event);
-            var closeBtn = ra.modal.elements.close;
+            var closeBtn = myModal.elements.close;
             closeBtn.dispatchEvent(new Event("click"));
         });
         selectTag.addEventListener("change", function () {

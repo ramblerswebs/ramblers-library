@@ -27,9 +27,15 @@ class RWalkseditorSubmitform extends RLeafletMap {
 
     public function display() {
         if ($this->groups == null) {
+            $text = "No groups defined";
+            $app = JApplicationCms::getInstance('site');
+            $app->enqueueMessage($text, 'error');
             return;
         }
         if ($this->coords == null) {
+            $text = "No walks coordinators defined";
+            $app = JApplicationCms::getInstance('site');
+            $app->enqueueMessage($text, 'error');
             return;
         }
 

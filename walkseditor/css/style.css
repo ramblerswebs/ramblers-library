@@ -448,9 +448,6 @@ div.draftwalk.first {
     border-top: 50px solid var(--skyBlue) !important;
 }
 
-tr.status-Past td  {
-    border-top: 3px solid var(--pastcolor) !important;
-}
 tr.first td  {
     border-top: 50px solid var(--skyBlue) !important;
 }
@@ -560,11 +557,11 @@ div.ra.legend.waiting div.legendbox{
     background-color:  #ababab;
     border-color:#ababab;
 }
-div.ra.legend.past div.legendbox{
+div.raDDD.legend.past div.legendbox{
     background-color: var(--mintcake);
 
 }
-div.ra.legend.past {
+div.raDDD.legend.past {
     background-color: var(--pastcolor);
     width:200px;
 }

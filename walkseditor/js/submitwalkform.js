@@ -16,6 +16,7 @@ ra.walkseditor.submitwalkform = function (options, data) {
 //  this.emailURL = "http://localhost/librarytest/libraries/ramblers/walkseditor/sendemail.php";
     this.emailURL = "libraries/ramblers/walkseditor/sendemail.php";
     this.data = data;
+    this.groups = this.data.groups;
     this.email = {name: '',
         email: '',
         message: ''
@@ -33,20 +34,12 @@ ra.walkseditor.submitwalkform = function (options, data) {
         var clear = document.createElement('div');
         clear.setAttribute('class', 'clear');
         tag.appendChild(clear);
-        var groups = this.data.groups;
-        if (Object.keys(groups).length > 1) {
-            groups[0] = "Please select the group name";
-            this.groupDiv = document.createElement('div');
-            this.groupDiv.setAttribute('class', 'group section');
-            tag.appendChild(this.groupDiv);
-            var input = new ra.walkseditor.inputFields;
-            input.addSelect(this.groupDiv, 'group', 'Group Name ', groups, this.walk.data, 'group', null);
-        }
 
         this.editorDiv = document.createElement('div');
         tag.appendChild(this.editorDiv);
         var editor = new ra.walkseditor.walkeditor(this.walk.data, true);
         editor.sortData();
+        editor.setGroups(this.groups);
         editor.addEditForm(this.editorDiv);
         var bottomOptions = document.createElement('div');
         tag.appendChild(bottomOptions);
@@ -70,6 +63,7 @@ ra.walkseditor.submitwalkform = function (options, data) {
             _this.editorDiv.innerHTML = '';
             var editor = new ra.walkseditor.walkeditor(_this.walk.data, true);
             editor.sortData();
+            editor.setGroups(_this.groups);
             editor.addEditForm(_this.editorDiv);
         });
         var emailButton = document.createElement('button');

@@ -50,7 +50,7 @@ class RJsonwalksWalk extends REvent {
     public $pace;                   // the pace of the walk or null
     Public $ascentMetres;           // the ascent in metres or null
     Public $ascentFeet;             // the ascent in feet or null
-    Public $flags;                  // flags to describe walk 
+    Public $flags = [];                  // flags to describe walk 
 //    Public $strands;                // RJsonwalksItems object or null
 //    Public $festivals;              // RJsonwalksItems object or null
 //    public $suitability;            // RJsonwalksItems object or null

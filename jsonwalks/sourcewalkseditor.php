@@ -2,7 +2,7 @@
 
 /**
  * @version		0.0
- * @package		Simple JSON Feed reader
+ * @package		Process Walks Editor walks and convert to internal format
  * @author              Chris Vaughan Ramblers-webs.org.uk
  * @copyright           Copyright (c) 2021 Chris Vaughan. All rights reserved.
  * @license		GNU/GPL license: http://www.gnu.org/copyleft/gpl.html
@@ -192,6 +192,18 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $contact->telephone2 = $itemContact->telephone2;
 
         $walk->setContact($contact);
+
+        $flags = new RJsonwalksWalkFlags();
+        if (property_exists($item, 'facilities')) {
+            $flags->addWalksEditorFlags("Facilities", $item->facilities);
+        }
+        if (property_exists($item, 'transport')) {
+            $flags->addWalksEditorFlags("Transport", $item->transport);
+        }
+        if (property_exists($item, 'accessibility')) {
+            $flags->addWalksEditorFlags("Accessibility", $item->accessibility);
+        }
+        $walk->setFlags($flags);
 
         //     $walk->media = $walk->getMedia($item);
     }

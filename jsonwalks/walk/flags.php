@@ -21,7 +21,16 @@ class RJsonwalksWalkFlags {
             $flag->section = $section;
             $flag->code = '';
             $flag->name = $value->text;
+            $this->items[] = $flag;
+        }
+    }
 
+    public function addWalksEditorFlags($section, $values) {
+        foreach ($values as $value) {
+            $flag = new RJsonwalksWalkFlag();
+            $flag->section = $section;
+            $flag->code = '';
+            $flag->name = $value->name;
             $this->items[] = $flag;
         }
     }
