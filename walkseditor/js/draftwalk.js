@@ -576,10 +576,7 @@ ra.walkseditor.draftWalk = function (  ) {
     };
     this.dateStatus = function () {
         var d = this.getObjProperty(this.data, 'basics.date', null);
-        if (d !== null) {
-            if (isNaN(d)) {
-                return ra.walkseditor.DATETYPE.NoDate;
-            }
+        if (ra.date.isValidString(d)) {
             var value = ra.date.getDateTime(d);
             var today = new Date();
             if (value < today) {
