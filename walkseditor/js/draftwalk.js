@@ -37,7 +37,7 @@ ra.walkseditor.draftWalk = function (  ) {
             comments: ''
         }
     };
-    
+
     this.buttons = {delete: null,
         edit: null,
         duplicate: null};
@@ -577,6 +577,9 @@ ra.walkseditor.draftWalk = function (  ) {
     this.dateStatus = function () {
         var d = this.getObjProperty(this.data, 'basics.date', null);
         if (d !== null) {
+            if (isNaN(d)) {
+                return ra.walkseditor.DATETYPE.NoDate;
+            }
             var value = ra.date.getDateTime(d);
             var today = new Date();
             if (value < today) {
@@ -592,19 +595,19 @@ ra.walkseditor.draftWalk = function (  ) {
     };
     this.getWalkDate = function (view) {
         var d = this.getObjProperty(this.data, 'basics.date');
-        var past='';
+        var past = '';
         if (d !== null) {
             if (ra.date.isValidString(d)) {
-               var status=this.dateStatus();
-               if (status===ra.walkseditor.DATETYPE.Past){
-                   past=" [PAST]";
-               }
+                var status = this.dateStatus();
+                if (status === ra.walkseditor.DATETYPE.Past) {
+                    past = " [PAST]";
+                }
                 switch (view) {
                     case 'table':
-                        return  "<b>" + ra.date.dowdd(d) + "</b><br/>" + " " + ra.date.month(d) + " " + ra.date.YY(d)+past;
+                        return  "<b>" + ra.date.dowdd(d) + "</b><br/>" + " " + ra.date.month(d) + " " + ra.date.YY(d) + past;
                     case 'list':
                     case 'details':
-                        return  "<b>" + ra.date.dowdd(d) + "</b>" + " " + ra.date.month(d) + " " + ra.date.YY(d)+past;
+                        return  "<b>" + ra.date.dowdd(d) + "</b>" + " " + ra.date.month(d) + " " + ra.date.YY(d) + past;
                 }
             }
         }

@@ -403,6 +403,9 @@ ra.walkseditor.inputFields = function () {
             var option = document.createElement("option");
             option.value = key;
             option.text = value;
+//            if (values.length===1){
+//                option.selected=true;
+//            }
             inputTag.appendChild(option);
         }
         if (raobject.hasOwnProperty(property)) {  // Initialise value

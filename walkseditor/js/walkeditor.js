@@ -152,12 +152,25 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
 
         if (this.groups !== null) {
             var options = {};
+            var $default = null;
+            var first = true;
             options.undefined = "Please select the group running the walk...";
             for (var key in this.groups) {
                 var value = this.groups[key];
                 options[key] = value;
+                if (first) {
+                    $default = {code: key, group: value};
+                    first = false;
+                } else {
+                    $default = null;
+                }
             }
-            this._group = this.input.addSelect(itemDiv, 'group', 'Group: ', options, basics, 'group','groupName', ra.walkseditor.help.basicGroup);
+            if ($default !== null) {
+                delete  options.undefined;
+                basics.group = $default.code;
+                basics.groupName = $default.group;
+            }
+            this._group = this.input.addSelect(itemDiv, 'group', 'Group: ', options, basics, 'group', 'groupName', ra.walkseditor.help.basicGroup);
         }
         this._date = this.input.addDate(itemDiv, 'date', 'Date of walk', basics, 'date', ra.walkseditor.help.basicDate);
 
@@ -186,7 +199,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             coach: 'We meet and catch a coach to the walk',
             public: 'We meet and use public transport to the walk (Bus, Tram, Train)'
         };
-        this._option = this.input.addSelect(tag, 'moptions', 'How do you get to the walk? ', options, meeting, 'type',null, ra.walkseditor.help.meetType);
+        this._option = this.input.addSelect(tag, 'moptions', 'How do you get to the walk? ', options, meeting, 'type', null, ra.walkseditor.help.meetType);
         var _this = this;
 
         this._meetingsDiv = document.createElement('div');
@@ -305,7 +318,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             this.walk.start = {};
         }
         var start = this.walk.start;
-        this._option = this.input.addSelect(tag, 'moptions', 'Publish: ', options, start, 'type',null, ra.walkseditor.help.startType);
+        this._option = this.input.addSelect(tag, 'moptions', 'Publish: ', options, start, 'type', null, ra.walkseditor.help.startType);
 
         startingsDiv = document.createElement('div');
         startingsDiv.setAttribute('class', 'js-start');
@@ -398,7 +411,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         if (!this.walk.finish.hasOwnProperty('location')) {
             this.walk.finish.location = {};
         }
-          var comment = document.createElement('span');
+        var comment = document.createElement('span');
         comment.textContent = 'Only relevant for Linear walks';
         finishDiv.appendChild(comment);
         var location = this.walk.finish.location;
@@ -454,9 +467,9 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         editor._dist.setAttribute('type', 'number');
         editor._dist.setAttribute('min', 0);
 
-        editor._unit = editor.input.addSelect(tag, 'distanceunits', 'Distance is in ', mUnits, walks[no], 'units',null, ra.walkseditor.help.walkUnits);
-        editor._type = editor.input.addSelect(tag, 'walktype', 'The walk is ', mWalk, walks[no], 'type',null, ra.walkseditor.help.walkType);
-        editor._natgrade = editor.input.addSelect(tag, 'natgrade', 'National Grade ', mNatGrades, walks[no], 'natgrade',null, ra.walkseditor.help.walkNatGrade);
+        editor._unit = editor.input.addSelect(tag, 'distanceunits', 'Distance is in ', mUnits, walks[no], 'units', null, ra.walkseditor.help.walkUnits);
+        editor._type = editor.input.addSelect(tag, 'walktype', 'The walk is ', mWalk, walks[no], 'type', null, ra.walkseditor.help.walkType);
+        editor._natgrade = editor.input.addSelect(tag, 'natgrade', 'National Grade ', mNatGrades, walks[no], 'natgrade', null, ra.walkseditor.help.walkNatGrade);
 
         var detailTags = editor.input.addDetailsTag(tag);
         detailTags.summary.innerHTML = 'Additional details';
@@ -495,7 +508,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         this._email = this.input.addEmail(itemDiv, 'email', "Email Address:", contact, 'email', 'Contact\'s email address', ra.walkseditor.help.contactEmail);
         this._tel1 = this.input.addText(itemDiv, 'tel1', "Contact Telephone 1:", contact, 'telephone1', 'Telephone number', ra.walkseditor.help.contactTel1);
         this._tel2 = this.input.addText(itemDiv, 'tel2', "Contact Telephone 2:", contact, 'telephone2', '', ra.walkseditor.help.contactTel2);
-        this._option = this.input.addSelect(itemDiv, 'moptions', 'Is the Contact the walk leader?', options, contact, 'contactType',null, ra.walkseditor.help.contactType);
+        this._option = this.input.addSelect(itemDiv, 'moptions', 'Is the Contact the walk leader?', options, contact, 'contactType', null, ra.walkseditor.help.contactType);
 
         var _this = this;
         itemDiv.addEventListener("predefinedContact", function (e) {
@@ -640,9 +653,9 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         };
 
         var itemDiv = this.input.itemsItemDivs(tag);
-     //   var comment = document.createElement('p');
-   //     comment.textContent = 'Change this secition to whatever options we agree upon';
-    //    itemDiv.appendChild(comment);
+        //   var comment = document.createElement('p');
+        //     comment.textContent = 'Change this secition to whatever options we agree upon';
+        //    itemDiv.appendChild(comment);
         this.input.addMultiChoice(itemDiv, 'facilities', 'Facilities', facilities, this.walk, 'facilities');
         this.input.addMultiChoice(itemDiv, 'transport', 'Transport', transport, this.walk, 'transport');
         this.input.addMultiChoice(itemDiv, 'accessibility', 'Accessibility', access, this.walk, 'accessibility');
