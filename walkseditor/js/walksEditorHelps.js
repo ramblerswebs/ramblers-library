@@ -77,6 +77,9 @@ ra.walkseditor.help = (function () {
     help.startTime = function () {
         return "Type in start time or click icon to select from drop down";
     };
+    help.finishTime = function () {
+        return "Estimate of when the walks is likely to finish";
+    };
     help.finishName = function () {
         return "Type in name or general description of finish place to aid people finding it.<br/>This is only needed for <b>Linear</b> walks<br/>You must also specfy the location on the map by positioning the marker on the map";
     };
@@ -131,6 +134,14 @@ ra.walkseditor.help = (function () {
     help.editorNotes = function () {
         return "You may record any future changes that will be required or additional information required, before the walk can be published";
     };
+   help.formOptions = function () {
+        return '<h4>Save walk</h4><p>Save the walk so you can upload it later and add additional information.</p>' +
+                '<h4>Upload walk</h4><p>Upload a previously saved walk, so you can change or add information</p>' +
+                '<p>Please note that any information in the form will be overwritten.</p>' +
+                '<h4>Submit walk to group</h4><p>Email the walk to your group\'s Programme Secretary/Walks coordinators</p>' +
+                '<h4>Preview walk</h4><p>View the walk as a whole to review the information you have entered</p>' +
+                 '<h4>WM Export</h4><p>Save the walk in a CSV file suitable for uploading to Walks Manager</p>';
+   };
 
     return help;
 }

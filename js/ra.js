@@ -159,6 +159,32 @@ ra.isEquivalent = function (a, b) {
     // are considered equivalent
     return true;
 };
+// obtain property of an object
+ra.getObjProperty = function (obj, path, defaultvalue = null) {
+        // call getObj("basics.date");
+        if (typeof obj === 'undefined') {
+            return defaultvalue;
+        }
+        if (obj === null) {
+            return defaultvalue;
+        }
+        var property;
+        var result = null;
+        var properties = path.split(".");
+        var item = obj;
+        var i;
+        for (i = 0; i < properties.length; i++) {
+            property = properties[i];
+            if (item.hasOwnProperty(property)) {
+                result = item;
+                item = item[property];
+            } else {
+                return defaultvalue;
+            }
+        }
+        return item;
+
+    };
 // sort object so listed in order of a value
 ra.sortObject = function (obj, property) {
     var sortedObj = {};

@@ -566,4 +566,4 @@ ra.walkseditor.inputFields = function () {
         details.appendChild(summary);
         return {details: details, summary: summary};
     };
-}
+};

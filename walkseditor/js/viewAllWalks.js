@@ -175,98 +175,47 @@ ra.walkseditor.viewAllwalks = function (mapOptions, data) {
                 break;
         }
     };
-    this.addExportToWMButton = function (tag) {
-        if (!this.allowWMExport) {
-            return;
-        }
-        var wmexport = document.createElement('button');
-        wmexport.setAttribute('class', 'link-button tiny button mintcake');
-        wmexport.title = 'Create CSV Upload fine for Walks Manager';
-        wmexport.textContent = 'Export to Walks Manager';
-        tag.appendChild(wmexport);
-        var _this = this;
-        wmexport.addEventListener('click', function () {
-            _this.ExportWalksToWM();
-        });
-    };
-    this.ExportWalksToWM = function () {
-        alert("This feature is being developed and will not be final until fully tested with Walks Manager");
-        var data = "";
-        data = data + this.exportHeader();
-        for (i = 0, clen = items.length; i < clen; ++i) {
-            item = items[i];
-            if (item.walk.displayWalk) {
-                data = data + item.walk.exportToWMLine(item.walk);
-            }
-        }
-        try {
-            var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
-            var name = "WalksManagerUpload.csv";
-            saveAs(blob, name);
-        } catch (e) {
-            alert('Your web browser does not support this option!');
-        }
-    };
-    this.exportHeader = function () {
-        var data = [];
-        data.push('Date');
-        data.push('Title');
-        data.push('Description');
-        data.push('Additional details');
-        data.push('Walk leaders');
-        data.push('Linear or Circular');
-        data.push('Start time');
-        data.push('Starting latitude');
-        data.push('Starting longitude');
-        data.push('Starting postcode');
-        data.push('Starting gridref');
-        data.push('Starting w3w');
-        data.push('Starting location details');
-        data.push('Meeting time');
-        data.push('Meeting latitude');
-        data.push('Meeting longitude');
-        data.push('Meeting postcode');
-        data.push('Meeting gridref');
-        data.push('Meeting w3w');
-        data.push('Meeting location details');
-        data.push('Est finish time');
-        data.push('Finish latitude');
-        data.push('Finish longitude');
-        data.push('Finishing postcode');
-        data.push('Finishing gridref');
-        data.push('Finishing w3w');
-        data.push('Finishing location details');
-        data.push('Difficulty');
-        data.push('Distance km');
-        data.push('Distance miles');
-        data.push('Ascent metres');
-        data.push('Ascent feet');
+//    this.addExportToWMButton = function (tag) {
+//        if (!this.allowWMExport) {
+//            return;
+//        }
+//        var wmexport = document.createElement('button');
+//        wmexport.setAttribute('class', 'link-button tiny button mintcake');
+//        wmexport.title = 'Create CSV Upload fine for Walks Manager';
+//        wmexport.textContent = 'Export to Walks Manager';
+//        tag.appendChild(wmexport);
+//        var _this = this;
+//        wmexport.addEventListener('click', function () {
+//            _this.ExportWalksToWM();
+//        });
+//    };
+//    this.ExportWalksToWM = function () {
+//        alert("This feature is being developed and will not be final until fully tested with Walks Manager");
+//        var data = "";
+//        data = data + ra.walkseditor.draftWalk.exportHeader();
+//        for (i = 0, clen = items.length; i < clen; ++i) {
+//            item = items[i];
+//            if (item.walk.displayWalk) {
+//                data = data + item.walk.exportToWMLine(item.walk);
+//            }
+//        }
+//        try {
+//            var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
+//            var name = "WalksManagerUpload.csv";
+//            saveAs(blob, name);
+//        } catch (e) {
+//            alert('Your web browser does not support this option!');
+//        }
+//    };
 
-        data.push('Refreshments available (Pub/cafe)');
-        data.push('Toilets available');
-
-        data.push('Accessible by public transport');
-        data.push('Car parking available');
-        data.push('Car sharing available');
-        data.push('Coach trip');
-
-        data.push('Dog friendly');
-        data.push('Introductory walk');
-        data.push('No stiles');
-        data.push('Family-friendly');
-        data.push('Wheelchair accessible');
-
-
-        var out = ra.arrayToCSV(data) + "\n\r";
-        return out;
-    };
     this.displayTable = function (tag) {
         var items = this.data.items;
         var i, clen, item;
         var comment = document.createElement('p');
         comment.innerHTML = "Click on walk to view details";
         tag.appendChild(comment);
-        this.addExportToWMButton(tag);
+        var wmexport = new ra.walkseditor.exportToWM();
+        wmexport.button(tag, items);
         var pagination = document.createElement('div');
         tag.appendChild(pagination);
         this.itemsPerPage = 10;
@@ -312,7 +261,8 @@ ra.walkseditor.viewAllwalks = function (mapOptions, data) {
         var comment = document.createElement('p');
         comment.innerHTML = "Click on walk to view details";
         tag.appendChild(comment);
-        this.addExportToWMButton(tag);
+        var wmexport = new ra.walkseditor.exportToWM();
+        wmexport.button(tag, items);
         var pagination = document.createElement('div');
         tag.appendChild(pagination);
         this.itemsPerPage = 10;
@@ -678,7 +628,7 @@ ra.walkseditor.viewAllwalks = function (mapOptions, data) {
             }
             result.category[category].no += 1;
 
-            var walkdate = walk.getObjProperty(walk.data, "basics.date", "");
+            var walkdate = ra.getObjProperty(walk.data, "basics.date", "");
             var today = new Date().toISOString().slice(0, 10);
             if (ra.date.isValidString(walkdate)) {
                 var dayofweek = ra.date.dow(walkdate);

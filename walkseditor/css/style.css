@@ -154,8 +154,11 @@ div.location-group table.no-extra td{
     padding:0px;
 }
 div.gpxouter table{
+    table-layout:fixed;
     width:100%;
+    overflow-wrap: break-word;
 }
+
 
 select.gwem {
     border: 0;
@@ -350,20 +353,23 @@ div.ra.walksweditor.extras button{
     }
     div.ra.walksweditor.mapcontainer{
         width:70%;
-
+    }
+    div.ra-edit-options {
+        transform: scale(.5,.5);
+        bottom: 0px;
+        right: 0px;
+    }
+}
+@media only screen and (max-width: 769px){
+    div.gpxouter table tr th:nth-child(3) ,
+    div.gpxouter table tr td:nth-child(3) ,
+    div.gpxouter table tr th:nth-child(6) ,
+    div.gpxouter table tr td:nth-child(6) {
+        display:none;
     }
 }
 
-@media only screen and (max-width: 768px){
-    div.display {
-        border-radius: 10px 10px 10px 10px;
-        padding: 5px;
-        padding-right:10px;
-        background-color: #ffffff;
-        min-width: 200px;
 
-    }
-}
 div.display {
     font-size:14px;
     line-height: 16px;
@@ -373,9 +379,26 @@ div.display h2{
     line-height: 18px;
 }
 div.ra-edit-options {
-    float:right;
-    border:2px;
+    background-color: #eeeeee;
+    position: fixed;
+    bottom: -20px;
+    right: -20px;
+    z-index:99;
+    border: 1px solid gray;
+    padding: 5px;
+    margin: 10px;
+    border-radius: 10px;
+    transform: scale(0.75,0.75);
 }
+div.ra-edit-options:hover {
+    transform: scale(1.2,1.2);
+    bottom: 20px;
+    right: 20px;
+}
+div.ra-edit-options button{
+    display: block;
+}
+
 option:disabled{
     text-decoration: line-through !important;
     font-style: italic;

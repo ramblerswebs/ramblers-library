@@ -16,7 +16,7 @@ ra.walkseditor.editplace = function (options, data) {
 
     this.data = data;
     this.options = options;
-    
+
     this.load = function () {
 
         var data = this.data;
@@ -75,7 +75,6 @@ ra.walkseditor.editwalk = function (options, data) {
         topOptions.setAttribute('class', 'ra-edit-options');
         tag.appendChild(topOptions);
         var topHelp = document.createElement('div');
-        topHelp.setAttribute('class', 'ra-edit-options');
         topOptions.appendChild(topHelp);
 
         var clear = document.createElement('div');
@@ -84,12 +83,11 @@ ra.walkseditor.editwalk = function (options, data) {
         var _this = this;
         var soptions = this.getElementOptions(this.data.fields.status);
         var coptions = this.getElementOptions(this.data.fields.category);
-        this.statusSelect = this.setElementOptions(topOptions, 'Status', soptions);
-        this.categorySelect = this.setElementOptions(topOptions, 'Category', coptions);
+        this.statusSelect = this.setElementOptions(topOptions, 'Status', soptions, ra.walkseditor.help.editButtons);
+         this.categorySelect = this.setElementOptions(topOptions, 'Category', coptions);
         if (coptions.items.length < 2) {
             this.categorySelect.style.display = 'none';
         }
-        new ra.help(topHelp, ra.walkseditor.help.editButtons).add();
         this.addButtons(topOptions);
 
         var draftwalk = this.data.walk;
@@ -113,13 +111,9 @@ ra.walkseditor.editwalk = function (options, data) {
 
         var editorDiv = document.createElement('div');
         tag.appendChild(editorDiv);
-       var editor = new ra.walkseditor.walkeditor(this.data.walk.data);
+        var editor = new ra.walkseditor.walkeditor(this.data.walk.data);
         editor.sortData();
         editor.addEditForm(editorDiv);
-        var bottomOptions = document.createElement('div');
-        bottomOptions.setAttribute('class', 'ra-edit-options');
-        tag.appendChild(bottomOptions);
-        this.addButtons(bottomOptions);
 
     };
     this.getElementOptions = function (id) {
@@ -139,12 +133,13 @@ ra.walkseditor.editwalk = function (options, data) {
         return options;
     };
 
-    this.setElementOptions = function (tag, name, options) {
+    this.setElementOptions = function (tag, name, options, helpPage = null) {
         var container = document.createElement('div');
         tag.appendChild(container);
         var label = document.createElement('label');
         label.textContent = name;
         container.appendChild(label);
+     
         var select = document.createElement('select');
         select.setAttribute('class', 'gwem');
         container.appendChild(select);
@@ -160,6 +155,10 @@ ra.walkseditor.editwalk = function (options, data) {
             if (option.selected !== null) {
                 optionTag.setAttribute('selected', true);
             }
+        }
+           if (helpPage !== null) {
+            var help = new ra.help(container, helpPage);
+            help.add();
         }
         return select;
     };

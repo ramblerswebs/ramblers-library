@@ -81,6 +81,12 @@ ra.feedhandler = function () {
         searchBtn.addEventListener("mapLocations", function (e) {
             var feed = e.target.raData.feedhelper;
             //   alert("mapLocations " + e.target.tagName); // Hello from H1
+            if (e.data.length === 1) {
+                let event = new Event("locationfound", {bubbles: true}); // (2)
+                event.raData = {};
+                event.raData.item = e.data[0];
+                eventTag.dispatchEvent(event);
+            }
             feed.setUpSelectTagForMapSearch(selectTitle, selectTag, e.error, e.data, function (item) {
                 item.class = ra.capitalizeFirstLetter(item.class);
                 item.type = ra.capitalizeFirstLetter(item.type);
@@ -124,6 +130,8 @@ ra.feedhandler = function () {
             var gr;
             var latlng;
             gr = OsGridRef.parse(input);
+            gr.easting += 1; // rounding error
+            gr.northing += 1;
             var gr8 = gr.toString(6);
             var gr10 = gr.toString(8);
             latlng = OsGridRef.osGridToLatLon(gr);

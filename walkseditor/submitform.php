@@ -4,7 +4,7 @@ class RWalkseditorSubmitform extends RLeafletMap {
 
     private $groups = null;
     private $coords = null;
-
+  
     public function setWalksCoordinators($values) {
         if (is_array($values)) {
             $this->coords = $values;
@@ -39,11 +39,6 @@ class RWalkseditorSubmitform extends RLeafletMap {
             return;
         }
 
-        if (count($this->groups) === 1) {
-            echo "<h3>Submit draft walk for " . $this->groups[0] . "</h3>";
-        } else {
-            
-        }
         //  $this->help_page = "https://maphelp.ramblers-webs.org.uk/draw-walking-route.html";
 
         $this->options->settings = true;

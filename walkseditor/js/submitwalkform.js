@@ -13,8 +13,7 @@ if (typeof (ra.walkseditor) === "undefined") {
 }
 
 ra.walkseditor.submitwalkform = function (options, data) {
-//  this.emailURL = "http://localhost/librarytest/libraries/ramblers/walkseditor/sendemail.php";
-    this.emailURL = "libraries/ramblers/walkseditor/sendemail.php";
+    this.emailURL = ra.baseDirectory() + "libraries/ramblers/walkseditor/sendemail.php";
     this.data = data;
     this.groups = this.data.groups;
     this.email = {name: '',
@@ -41,22 +40,33 @@ ra.walkseditor.submitwalkform = function (options, data) {
         editor.sortData();
         editor.setGroups(this.groups);
         editor.addEditForm(this.editorDiv);
-        var bottomOptions = document.createElement('div');
-        tag.appendChild(bottomOptions);
-        this.addButtons(bottomOptions);
+//        var bottomOptions = document.createElement('div');
+//        tag.appendChild(bottomOptions);
+//        this.addButtons(bottomOptions);
     };
     this.addButtons = function (tag) {
+
+        var divTag = document.createElement('div');
+        divTag.setAttribute('type', 'button');
+        divTag.setAttribute('class', 'ra-edit-options');
+        tag.appendChild(divTag);
         var _this = this;
+        var helpSpan = document.createElement('div');
+        helpSpan.style.cssFloat = "right";
+        divTag.appendChild(helpSpan);
+        new ra.help(helpSpan, ra.walkseditor.help.formOptions).add();
         var saveButton = document.createElement('button');
         saveButton.setAttribute('type', 'button');
-        saveButton.setAttribute('class', 'link-button mintcake');
-        saveButton.textContent = "Save";
+        saveButton.setAttribute('class', 'ra-button');
+        saveButton.textContent = "Save walk";
+        saveButton.title = "Save walk to PC as json file";
         saveButton.addEventListener("click", function (e) {
             _this._saveWalk();
         });
-        tag.appendChild(saveButton);
+        divTag.appendChild(saveButton);
+    
         var uploadButton = new ra.walkseditor.uploadFile();
-        var input = uploadButton.addButton(tag);
+        var input = uploadButton.addButton(divTag);
         input.addEventListener("upload-walk-read", function (e) {
             var walk = e.ra.walk;
             _this.walk.data = walk;
@@ -68,19 +78,23 @@ ra.walkseditor.submitwalkform = function (options, data) {
         });
         var emailButton = document.createElement('button');
         emailButton.setAttribute('type', 'button');
-        emailButton.setAttribute('class', 'link-button mintcake');
-        emailButton.textContent = "Submit walk by email";
+        emailButton.setAttribute('class', 'ra-button');
+        emailButton.textContent = "Email walk to group";
+        emailButton.title = "Email walk to the Groups' Programme Sec/Walks co-ordinators";
         emailButton.addEventListener("click", function () {
             _this.emailModal();
         });
-        tag.appendChild(emailButton);
+        divTag.appendChild(emailButton);
         var previewButton = document.createElement('button');
-        previewButton.innerHTML = 'Preview';
+        previewButton.textContent = 'Preview walk';
+        previewButton.title = 'Preview walk and see outstanding issues';
         previewButton.setAttribute('class', 'ra-button');
         previewButton.addEventListener("click", function () {
             _this.walk.displayDetails();
         });
-        tag.appendChild(previewButton);
+        divTag.appendChild(previewButton);
+        var wmexport = new ra.walkseditor.exportToWM();
+        wmexport.button(divTag, this.walk);
     };
     this.emailModal = function () {
         var input = new ra.walkseditor.inputFields;
@@ -115,7 +129,9 @@ ra.walkseditor.submitwalkform = function (options, data) {
     this._emailWalk = function () {
         var $url = this.emailURL;
         var self = this;
+        var fromSite = window.location.href;
         var data = {
+            fromSite: fromSite,
             walk: this.walk.data,
             walkbody: this.walk.walkDetails(),
             coords: this.data.coords,
@@ -166,8 +182,9 @@ ra.walkseditor.uploadFile = function () {
     this.addButton = function (tag) {
         var uploadButton = document.createElement('button');
         // uploadButton.setAttribute('type', 'button');
-        uploadButton.setAttribute('class', 'link-button mintcake');
-        uploadButton.textContent = "Upload File";
+        uploadButton.setAttribute('class', 'ra-button');
+        uploadButton.textContent = "Upload walk";
+        uploadButton.title = "Upload/read walk previously saved in json forma";
         tag.appendChild(uploadButton);
         this.input = this._createInput(uploadButton);
         var _this = this;

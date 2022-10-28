@@ -19,8 +19,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         form.setAttribute('id', 'ra_container');
         editDiv.appendChild(form);
 
-
-
         // Basics section
 
         var basicsDiv = document.createElement('details');
@@ -98,16 +96,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         this.input.addHeader(contactDiv, "summary", "Contact");
         this.addContact(contactDiv);
 
-        // ??? fields
-
-        // Publicity
-
-
-        //    this.addPublicity(pubDiv);
-
-        // add top button
-        //  this.addScrollButton(form);
-
         // Publicity
 
         var pubDiv = document.createElement('details');
@@ -130,7 +118,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         this.addNotes(notesDiv);
 
         // add top button
-        this.addScrollButton(form);
+   //     this.addScrollButton(form);
 
     };
     this.setGroups = function (groups) {
@@ -415,10 +403,11 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         comment.textContent = 'Only relevant for Linear walks';
         finishDiv.appendChild(comment);
         var location = this.walk.finish.location;
-        var itemDiv = this.input.itemsItemDivs(tag);
+      var itemDiv = this.input.itemsItemDivs(tag);
         var itemsDiv2 = document.createElement('div');
         itemsDiv2.setAttribute('class', 'location-group');
         itemDiv.appendChild(itemsDiv2);
+        this._time = this.input.addTime(itemsDiv2, 'time', 'Estimated Finish Time', location, 'time', ra.walkseditor.help.finishTime);
         var location = new ra.walkseditor.mapLocationInput(itemsDiv2, location, ra.walkseditor.mapLocationInput.FINISH);
         location.addLocation();
 
@@ -503,7 +492,9 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         var contact = this.walk.contact;
         var itemDiv = this.input.itemsItemDivs(tag);
         //  selectContactItem(itemDiv, contact);
-        this.input.addPredefinedContactButton(itemDiv, contact, ra.walkseditor.help.contactPredefined);
+        if (!formmode) {
+            this.input.addPredefinedContactButton(itemDiv, contact, ra.walkseditor.help.contactPredefined);
+        }
         this._displayName = this.input.addText(itemDiv, 'name', "Display Name:", contact, 'displayName', 'Published contact name', ra.walkseditor.help.contactName);
         this._email = this.input.addEmail(itemDiv, 'email', "Email Address:", contact, 'email', 'Contact\'s email address', ra.walkseditor.help.contactEmail);
         this._tel1 = this.input.addText(itemDiv, 'tel1', "Contact Telephone 1:", contact, 'telephone1', 'Telephone number', ra.walkseditor.help.contactTel1);
@@ -520,42 +511,42 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         });
         return;
     };
-    this.addScrollButton = function (tag) {
-        //   <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
-        var topButton = document.createElement('button');
-        topButton.classList.add('topbutton');
-        topButton.classList.add('link-button');
-        topButton.classList.add('small');
-
-
-        topButton.textContent = "Top";
-        topButton.addEventListener("click", function (e) {
-            //      document.body.scrollTop = 0;
-            //      document.documentElement.scrollTop = 0;
-            window.scrollTo(0, 250);
-        });
-        tag.appendChild(topButton);
-
-
-// When the user scrolls down 20px from the top of the document, show the button
-        window.onscroll = function () {
-            scrollFunction();
-        };
-
-        function scrollFunction() {
-            if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
-                topButton.style.display = "block";
-            } else {
-                topButton.style.display = "none";
-            }
-        }
-
-// When the user clicks on the button, scroll to the top of the document
-        function topFunction() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-        }
-    };
+//   this.addScrollButton = function (tag) {
+//           <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+//        var topButton = document.createElement('button');
+//        topButton.classList.add('topbutton');
+//        topButton.classList.add('link-button');
+//        topButton.classList.add('small');
+//
+//
+//        topButton.textContent = "Top";
+//        topButton.addEventListener("click", function (e) {
+//            //      document.body.scrollTop = 0;
+//            //      document.documentElement.scrollTop = 0;
+//            window.scrollTo(0, 250);
+//        });
+//        tag.appendChild(topButton);
+//
+//
+//// When the user scrolls down 20px from the top of the document, show the button
+//        window.onscroll = function () {
+//            scrollFunction();
+//        };
+//
+//        function scrollFunction() {
+//            if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
+//                topButton.style.display = "block";
+//            } else {
+//                topButton.style.display = "none";
+//            }
+//        }
+//
+//// When the user clicks on the button, scroll to the top of the document
+//        function topFunction() {
+//            document.body.scrollTop = 0;
+//            document.documentElement.scrollTop = 0;
+//        }
+//    };
 
     this.sortData = function () {
         var walk = this.walk;
@@ -807,3 +798,102 @@ function raItems(options) {
     };
 
 }
+
+ra.walkseditor.exportToWM = function () {
+    this.button = function (tag, walks) {
+//        if (!this.allowWMExport) {
+//            return;
+//        }
+        var wmexport = document.createElement('button');
+        wmexport.setAttribute('class', 'ra-button');
+        wmexport.title = 'Create CSV Upload file for Walks Manager';
+        wmexport.textContent = 'WM Export';
+        tag.appendChild(wmexport);
+        var _this = this;
+        wmexport.addEventListener('click', function () {
+            _this._ExportWalksToWM(walks);
+        });
+    };
+    this._ExportWalksToWM = function (items) {
+        // items is either an array or items or a single walk
+        alert("This feature is being developed and will not be final until fully tested with Walks Manager");
+        var data = "";
+        data = data + this._header();
+        if (Array.isArray(items)) {
+            // array of items
+            var i, clen;
+            for (i = 0, clen = items.length; i < clen; ++i) {
+                var item = items[i];
+                if (item.walk.displayWalk) {
+                    data = data + item.walk.exportToWMLine();
+                }
+            }
+        } else {
+            // single walk rather than array of items
+            data = data + items.exportToWMLine();
+        }
+
+        try {
+            var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
+            var name = "WalksManagerUpload.csv";
+            saveAs(blob, name);
+        } catch (e) {
+            alert('Your web browser does not support this option!');
+        }
+    };
+    this._header = function () {
+        var data = [];
+        data.push('Date');
+        data.push('Title');
+        data.push('Description');
+        data.push('Additional details');
+        data.push('Walk leaders');
+        data.push('Linear or Circular');
+        data.push('Start time');
+        data.push('Starting latitude');
+        data.push('Starting longitude');
+        data.push('Starting postcode');
+        data.push('Starting gridref');
+        data.push('Starting w3w');
+        data.push('Starting location details');
+        data.push('Meeting time');
+        data.push('Meeting latitude');
+        data.push('Meeting longitude');
+        data.push('Meeting postcode');
+        data.push('Meeting gridref');
+        data.push('Meeting w3w');
+        data.push('Meeting location details');
+        data.push('Est finish time');
+        data.push('Finish latitude');
+        data.push('Finish longitude');
+        data.push('Finishing postcode');
+        data.push('Finishing gridref');
+        data.push('Finishing w3w');
+        data.push('Finishing location details');
+        data.push('Difficulty');
+        data.push('Distance km');
+        data.push('Distance miles');
+        data.push('Ascent metres');
+        data.push('Ascent feet');
+
+        data.push('Refreshments available (Pub/cafe)');
+        data.push('Toilets available');
+
+        data.push('Accessible by public transport');
+        data.push('Car parking available');
+        data.push('Car sharing available');
+        data.push('Coach trip');
+
+        data.push('Dog friendly');
+        data.push('Introductory walk');
+        data.push('No stiles');
+        data.push('Family-friendly');
+        data.push('Wheelchair accessible');
+
+
+        var out = ra.arrayToCSV(data) + "\n\r";
+        return out;
+    };
+
+
+};

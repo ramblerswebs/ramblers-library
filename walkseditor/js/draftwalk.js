@@ -239,34 +239,35 @@ ra.walkseditor.draftWalk = function (  ) {
         var natgrade = '';
 
         var data = [];
-        data.push(this.getObjProperty(this.data, 'basics.date', ''));
-        data.push(this.getObjProperty(this.data, 'basics.title', ''));
-        data.push(this.getObjProperty(this.data, 'basics.description', ''));
-        data.push(this.getObjProperty(this.data, 'basics.notes', ''));
-        data.push(this.getObjProperty(this.data, 'contact.displayName', ''));
-        //  data.push(this.getObjProperty(this.data, 'contact.email', ''));
-        //  data.push(this.getObjProperty(this.data, 'contact.telephone1', ''));
-        //  data.push(this.getObjProperty(this.data, 'contact.telephone2', ''));
-        //  data.push(this.getObjProperty(this.data, 'contact.contactType', ''));
-        var walks = this.getObjProperty(this.data, 'walks', null);
+        data.push(ra.getObjProperty(this.data, 'basics.date', ''));
+        data.push(ra.getObjProperty(this.data, 'basics.title', ''));
+        data.push(ra.getObjProperty(this.data, 'basics.description', ''));
+        data.push(ra.getObjProperty(this.data, 'basics.notes', ''));
+        data.push(ra.getObjProperty(this.data, 'contact.displayName', ''));
+        //  data.push(ra.getObjProperty(this.data, 'contact.email', ''));
+        //  data.push(ra.getObjProperty(this.data, 'contact.telephone1', ''));
+        //  data.push(ra.getObjProperty(this.data, 'contact.telephone2', ''));
+        //  data.push(ra.getObjProperty(this.data, 'contact.contactType', ''));
+        var walks = ra.getObjProperty(this.data, 'walks', null);
         if (walks.length > 0) {
             var walk1 = walks[0];
-            data.push(this.getObjProperty(walk1, 'type', ''));
-            distance = this.getObjProperty(walk1, 'distance', '');
-            units = this.getObjProperty(walk1, 'units', '');
-            natgrade = this.getObjProperty(walk1, 'natgrade', '');
+            data.push(ra.getObjProperty(walk1, 'type', ''));
+            distance = ra.getObjProperty(walk1, 'distance', '');
+            units = ra.getObjProperty(walk1, 'units', '');
+            natgrade = ra.getObjProperty(walk1, 'natgrade', '');
         } else {
             data.push('null');
         }
-        var start = this.getObjProperty(this.data, 'start', null);
-        if (start === null) {
-            this.exportLocation(data, null);
+        var start = ra.getObjProperty(this.data, 'start.location', null);
+        this._exportLocation(data, ra.getObjProperty(this.data, 'start.location', null));
+        var meetloc = ra.getObjProperty(this.data, 'meeting.locations', []);
+        if (meetloc.length > 0) {
+            this._exportLocation(data, meetloc[0]);
         } else {
-
+            this._exportLocation(data, null);
         }
-        this.exportLocation(data, this.getObjProperty(this.data, 'start', null));
-        this.exportLocation(data, this.getObjProperty(this.data, 'meeting', null));
-        this.exportLocation(data, this.getObjProperty(this.data, 'finish', null));
+
+        this._exportLocation(data, ra.getObjProperty(this.data, 'finish.location', null));
 
         data.push(natgrade);
         switch (units) {
@@ -284,22 +285,22 @@ ra.walkseditor.draftWalk = function (  ) {
         }
         data.push('');  // ascent
         data.push('');
-        data.push(this.getObjProperty(this.data, 'facilities.refresh', ''));
-        data.push(this.getObjProperty(this.data, 'facilities.toilet', ''));
-        data.push(this.getObjProperty(this.data, 'transport.access', ''));
-        data.push(this.getObjProperty(this.data, 'transport.park', ''));
-        data.push(this.getObjProperty(this.data, 'transport.share', ''));
-        data.push(this.getObjProperty(this.data, 'transport.coach', ''));
-        data.push(this.getObjProperty(this.data, 'accessibility.dog', ''));
-        data.push(this.getObjProperty(this.data, 'accessibility.intro', ''));
-        data.push(this.getObjProperty(this.data, 'accessibility.nostiles', ''));
-        data.push(this.getObjProperty(this.data, 'accessibility.family', ''));
-        data.push(this.getObjProperty(this.data, 'accessibility.wheelchair', ''));
+        data.push(ra.getObjProperty(this.data, 'facilities.refresh.value', ''));
+        data.push(ra.getObjProperty(this.data, 'facilities.toilet.value', ''));
+        data.push(ra.getObjProperty(this.data, 'transport.access.value', ''));
+        data.push(ra.getObjProperty(this.data, 'transport.park.value', ''));
+        data.push(ra.getObjProperty(this.data, 'transport.share.value', ''));
+        data.push(ra.getObjProperty(this.data, 'transport.coach.value', ''));
+        data.push(ra.getObjProperty(this.data, 'accessibility.dog.value', ''));
+        data.push(ra.getObjProperty(this.data, 'accessibility.intro.value', ''));
+        data.push(ra.getObjProperty(this.data, 'accessibility.nostiles.value', ''));
+        data.push(ra.getObjProperty(this.data, 'accessibility.family.value', ''));
+        data.push(ra.getObjProperty(this.data, 'accessibility.wheelchair.value', ''));
 
         var out = ra.arrayToCSV(data) + "\n\r";
         return out;
     };
-    this.exportLocation = function (dataarray, data) {
+    this._exportLocation = function (dataarray, data) {
         if (data === null) {
             dataarray.push('');
             dataarray.push('');
@@ -309,13 +310,13 @@ ra.walkseditor.draftWalk = function (  ) {
             dataarray.push('');
             dataarray.push('');
         } else {
-            dataarray.push(this.getObjProperty(data, 'location.time', ''));
-            dataarray.push(this.getObjProperty(data, 'location.latitude', ''));
-            dataarray.push(this.getObjProperty(data, 'location.longitude', ''));
-            dataarray.push(this.getObjProperty(data, 'location.postcode.value', ''));
+            dataarray.push(ra.getObjProperty(data, 'time', ''));
+            dataarray.push(ra.getObjProperty(data, 'latitude', ''));
+            dataarray.push(ra.getObjProperty(data, 'longitude', ''));
+            dataarray.push(ra.getObjProperty(data, 'postcode.value', ''));
             dataarray.push(''); //  GR
             dataarray.push(''); //  W3W
-            dataarray.push(this.getObjProperty(data, 'location.name', ''));
+            dataarray.push(ra.getObjProperty(data, 'name', ''));
         }
 
     };
@@ -391,29 +392,29 @@ ra.walkseditor.draftWalk = function (  ) {
     };
     this.checkFieldsBasics = function () {
         var walk = this.data;
-        if (this.getObjProperty(walk, 'basics') === null) {
+        if (ra.getObjProperty(walk, 'basics') === null) {
             this.notificationMsg("No basics section found");
         }
-        if (this.getObjProperty(walk, 'basics.date') === null) {
+        if (ra.getObjProperty(walk, 'basics.date') === null) {
             this.notificationMsg("Basics: No walk date found");
         }
-        if (this.getObjProperty(walk, 'basics.title') === null) {
+        if (ra.getObjProperty(walk, 'basics.title') === null) {
             this.notificationMsg("Basics: No walk title found");
         }
-        if (this.getObjProperty(walk, 'basics.description') === null) {
+        if (ra.getObjProperty(walk, 'basics.description') === null) {
             this.notificationMsg("Basics: No walk description found", isWarning);
         }
-        if (this.getObjProperty(walk, 'basics.description') === '') {
+        if (ra.getObjProperty(walk, 'basics.description') === '') {
             this.notificationMsg("Basics: No walk description found", isWarning);
         }
     };
     this.checkFieldsMeeting = function () {
         var walk = this.data;
-        if (this.getObjProperty(walk, 'meeting') === null) {
+        if (ra.getObjProperty(walk, 'meeting') === null) {
             this.notificationMsg("No meeting found");
         }
-        var meet = this.getObjProperty(walk, 'meeting');
-        var type = this.getObjProperty(meet, 'type');
+        var meet = ra.getObjProperty(walk, 'meeting');
+        var type = ra.getObjProperty(meet, 'type');
         if (type === null) {
             this.notificationMsg("Meeting type not defined");
         }
@@ -425,16 +426,16 @@ ra.walkseditor.draftWalk = function (  ) {
             case 'car':
             case 'coach':
             case 'public':
-                var meets = this.getObjProperty(meet, 'locations');
+                var meets = ra.getObjProperty(meet, 'locations');
                 meets.forEach(element => {
-                    if (this.getObjProperty(element, 'time') === null) {
+                    if (ra.getObjProperty(element, 'time') === null) {
                         this.notificationMsg("Meeting time not defined");
                     }
-                    if (this.getObjProperty(element, 'name') === null) {
+                    if (ra.getObjProperty(element, 'name') === null) {
                         this.notificationMsg("Meeting location name not defined");
                     }
 
-                    if (this.getObjProperty(element, 'latitude') === null) {
+                    if (ra.getObjProperty(element, 'latitude') === null) {
                         this.notificationMsg("Meeting location latitude/longitude not defined");
                     }
                 });
@@ -445,28 +446,28 @@ ra.walkseditor.draftWalk = function (  ) {
     };
     this.checkFieldsStart = function () {
         var walk = this.data;
-        var type = this.getObjProperty(walk, 'start.type');
+        var type = ra.getObjProperty(walk, 'start.type');
         switch (type) {
             case 'area':
-                var meetingType = this.getObjProperty(walk, 'meeting.type');
+                var meetingType = ra.getObjProperty(walk, 'meeting.type');
                 if (meetingType === null || meetingType === 'undefined' || meetingType === 'none') {
                     this.notificationMsg("Information: You have not supplied a meeting point nor a starting place", isWarning);
                 }
-                if (this.getObjProperty(walk, 'start.location.name') === null) {
+                if (ra.getObjProperty(walk, 'start.location.name') === null) {
                     this.notificationMsg("Walk area name not defined");
                 }
-                if (this.getObjProperty(walk, 'start.location.latitude') === null) {
+                if (ra.getObjProperty(walk, 'start.location.latitude') === null) {
                     this.notificationMsg("Walk area latitude/longitude not defined");
                 }
                 break;
             case 'start':
-                if (this.getObjProperty(walk, 'start.location.time') === null) {
+                if (ra.getObjProperty(walk, 'start.location.time') === null) {
                     this.notificationMsg("Start time not defined");
                 }
-                if (this.getObjProperty(walk, 'start.location.name') === null) {
+                if (ra.getObjProperty(walk, 'start.location.name') === null) {
                     this.notificationMsg("Start name not defined");
                 }
-                if (this.getObjProperty(walk, 'start.location.latitude') === null) {
+                if (ra.getObjProperty(walk, 'start.location.latitude') === null) {
                     this.notificationMsg("Start latitude/longitude not defined");
                 }
                 break;
@@ -476,26 +477,26 @@ ra.walkseditor.draftWalk = function (  ) {
     };
     this.checkFieldsWalks = function () {
         var walk = this.data;
-        var walks = this.getObjProperty(walk, 'walks');
+        var walks = ra.getObjProperty(walk, 'walks');
         if (walks === null) {
             this.notificationMsg("No walk defined");
         } else {
             walks.forEach(singlewalk => {
-                var dist = this.getObjProperty(singlewalk, 'distance');
+                var dist = ra.getObjProperty(singlewalk, 'distance');
                 if (dist === null || dist === '') {
                     this.notificationMsg("Walk - No distance specified");
                 }
-                if (this.getObjProperty(singlewalk, 'units') === null) {
+                if (ra.getObjProperty(singlewalk, 'units') === null) {
                     this.notificationMsg("Walk - No distance units (miles/km) specified");
                 }
-                if (this.getObjProperty(singlewalk, 'natgrade') === null) {
+                if (ra.getObjProperty(singlewalk, 'natgrade') === null) {
                     this.notificationMsg("Walk - No national grade has been assigned");
 
                 }
-                if (this.getObjProperty(singlewalk, 'type') === null) {
+                if (ra.getObjProperty(singlewalk, 'type') === null) {
                     this.notificationMsg("Walk - No walk shape assigned, circular,linear");
                 }
-                if (this.getObjProperty(singlewalk, 'type') === "undefined") {
+                if (ra.getObjProperty(singlewalk, 'type') === "undefined") {
                     this.notificationMsg("Walk - No walk shape assigned, circular,linear");
                 }
             });
@@ -504,51 +505,24 @@ ra.walkseditor.draftWalk = function (  ) {
     this.checkFieldsContact = function () {
         var walk = this.data;
 
-        if (this.getObjProperty(walk, 'contact') === null) {
+        if (ra.getObjProperty(walk, 'contact') === null) {
             this.notificationMsg("Contact - Not defined");
         }
-        if (this.getObjProperty(walk, 'contact.displayName') === null) {
+        if (ra.getObjProperty(walk, 'contact.displayName') === null) {
             this.notificationMsg("Contact - No name defined");
         }
-        var type = this.getObjProperty(walk, 'contact.contactType');
+        var type = ra.getObjProperty(walk, 'contact.contactType');
         if (type === null || type === 'undefined') {
             this.notificationMsg("Contact - No type, Leader/Not leader, defined");
         }
-        var email = this.getObjProperty(walk, 'email.title') !== null;
-        var tel1 = this.getObjProperty(walk, 'contact.telephone1') !== null;
-        var tel2 = this.getObjProperty(walk, 'contact.telephon2') !== null;
+        var email = ra.getObjProperty(walk, 'email.title') !== null;
+        var tel1 = ra.getObjProperty(walk, 'contact.telephone1') !== null;
+        var tel2 = ra.getObjProperty(walk, 'contact.telephon2') !== null;
         if (email || tel1 || tel2) {
             // at least one contact method defined
         } else {
             this.notificationMsg("Information:  Contact - No contact method defined (email or telephone)", isWarning);
         }
-    };
-
-
-    this.getObjProperty = function (obj, path, defaultvalue = null) {
-        // call getObj("basics.date");
-        if (typeof obj === 'undefined') {
-            return defaultvalue;
-        }
-        if (obj === null) {
-            return defaultvalue;
-        }
-        var property;
-        var result = null;
-        var properties = path.split(".");
-        var item = obj;
-        for (i = 0; i < properties.length; i++) {
-            property = properties[i];
-            if (item.hasOwnProperty(property)) {
-                result = item;
-                item = item[property];
-            } else {
-                return defaultvalue;
-
-            }
-        }
-        return item;
-
     };
 
     this.setWalkStatus = function (status, reason = '') {
@@ -565,7 +539,7 @@ ra.walkseditor.draftWalk = function (  ) {
         switch (status) {
             case 'Approved':
             case 'Cancelled':
-                var d = this.getObjProperty(this.data, 'basics.date');
+                var d = ra.getObjProperty(this.data, 'basics.date');
                 var value = ra.date.getDateTime(d);
                 var today = new Date();
                 if (value < today) {
@@ -575,7 +549,7 @@ ra.walkseditor.draftWalk = function (  ) {
         return 'status-' + status;
     };
     this.dateStatus = function () {
-        var d = this.getObjProperty(this.data, 'basics.date', null);
+        var d = ra.getObjProperty(this.data, 'basics.date', null);
         if (ra.date.isValidString(d)) {
             var value = ra.date.getDateTime(d);
             var today = new Date();
@@ -591,7 +565,7 @@ ra.walkseditor.draftWalk = function (  ) {
         return this.category;
     };
     this.getWalkDate = function (view) {
-        var d = this.getObjProperty(this.data, 'basics.date');
+        var d = ra.getObjProperty(this.data, 'basics.date');
         var past = '';
         if (d !== null) {
             if (ra.date.isValidString(d)) {
@@ -611,9 +585,9 @@ ra.walkseditor.draftWalk = function (  ) {
         return 'Date not defined';
     };
     this.getWalkBasics = function (view) {
-        var title = this.getObjProperty(this.data, 'basics.title');
-        var description = this.getObjProperty(this.data, 'basics.description');
-        var notes = this.getObjProperty(this.data, 'basics.notes');
+        var title = ra.getObjProperty(this.data, 'basics.title');
+        var description = ra.getObjProperty(this.data, 'basics.description');
+        var notes = ra.getObjProperty(this.data, 'basics.notes');
         var out = '';
         out += '<h3>Title: ' + title + '</h3>';
         out += '<h3>Date: ' + this.getWalkDate('details') + '</h3>';
@@ -626,84 +600,74 @@ ra.walkseditor.draftWalk = function (  ) {
         out += '<h4>Description: </h4>' + description;
         out += '<h4>Notes: </h4>' + notes;
 
-
-
         return out;
     };
     this.getWalkMeeting = function (view) {
-        var type = this.getObjProperty(this.data, 'meeting.type');
+        var startTag = "", endTag = "";
+        switch (view) {
+            case 'table':
+            case 'list':
+                break;
+            case 'details':
+                startTag = "<p>";
+                endTag = "</p>";
+                break;
+            default:
+                break;
+        }
+        var type = ra.getObjProperty(this.data, 'meeting.type');
         if (type === null) {
-            return  "Meeting type not defined ????";
+            return  startTag + "Meeting type not defined ????" + endTag;
         }
         var out = type;
         switch (type) {
             case 'car':
-                out = 'Car Share';
+                out = startTag + 'Car Share' + endTag;
                 break;
             case 'coach':
-                out = 'Coach walk';
+                out = startTag + 'Coach walk' + endTag;
                 break;
             case 'public':
-                out = 'Using public transport';
+                out = startTag + 'Using public transport' + endTag;
                 break;
             case 'none':
-                out = 'Meet at start of walk';
-                return out;
+                out = startTag + 'Meet at start of walk' + endTag;
+                break;
             default:
+                return  startTag + "Meeting type not defined" + endTag;
         }
 
 
-        var meets = this.getObjProperty(this.data, 'meeting.locations');
+        var meets = ra.getObjProperty(this.data, 'meeting.locations');
         meets.forEach(element => {
-            var time = this.getObjProperty(element, 'time', '????');
-            var name = this.getObjProperty(element, 'name', '????');
-            var gr = this.getObjProperty(element, 'gridref8', '????');
-            var pc = this.getObjProperty(element, 'postcode.value', '');
-            switch (view) {
-                case 'table':
-                    out += '<br/>' + time + ' at ' + name + ' (' + gr + ' ' + pc + ')';
-                    break;
-                case 'list':
-                    out += ', ' + time + ' at ' + name + ' (' + gr + ' ' + pc + ')';
-                    break;
-                case 'details':
-                    out += '<br/>' + time + ' at ' + name + ' (' + gr + ' ' + pc + ')';
-                    break;
-            }
+            out += this.displayLocation(element, view, 'Meeting');
+
         });
         return out;
     };
     this.getWalkStart = function (view) {
-        var type = this.getObjProperty(this.data, 'start.type');
+        var startTag = "", endTag = "";
+        switch (view) {
+            case 'table':
+            case 'list':
+                break;
+            case 'details':
+                startTag = "<p>";
+                endTag = "</p>";
+                break;
+            default:
+                break;
+        }
+        var type = ra.getObjProperty(this.data, 'start.type');
         var out = "";
+        var location = ra.getObjProperty(this.data, 'start.location');
         switch (type) {
             case 'start':
-                var time = this.getObjProperty(this.data, 'start.location.time', '????');
-                var name = this.getObjProperty(this.data, 'start.location.name', '????');
-                var gr = this.getObjProperty(this.data, 'start.location.gridref8', '????');
-                var pc = this.getObjProperty(this.data, 'start.location.postcode.value', '');
-                switch (view) {
-                    case 'table':
-                        out += time;
-                        out += " at " + name;
-                        out += ", " + gr + ' ' + pc;
-                        break;
-                    case 'list':
-                        out += time;
-                        out += " at " + name;
-                        out += ", " + gr + ' ' + pc;
-                        break;
-                    case 'details':
-                        out += 'Start: ';
-                        out += time;
-                        out += " at " + name;
-                        out += "</br/>Grid Ref " + gr + ' ' + pc;
-                        break;
-                }
+                out += this.displayLocation(location, view, 'start');
                 break;
             case 'area':
-                var name = this.getObjProperty(this.data, 'start.location.name', '????');
-                var gr = this.getObjProperty(this.data, 'start.location.gridref8', '????');
+                var name = ra.getObjProperty(location, 'location.name', '[?Place name?]');
+                var gr = ra.getObjProperty(location, 'location.gridref8', '[?no grid ref?]');
                 switch (view) {
                     case 'table':
                         out += 'General Area: ';
@@ -716,19 +680,73 @@ ra.walkseditor.draftWalk = function (  ) {
                         out += ", Around Grid Ref " + gr;
                         break;
                     case 'details':
-                        out += 'General Area: ';
+                        out += '<p>General Area: </p>';
                         out += name;
                         out += "</br/>Around Grid Ref " + gr;
                         break;
                 }
                 break;
             default:
-                out = "????";
+                out = startTag + "Start type not defined" + endTag;
         }
         return out;
     };
+    this.displayLocation = function (location, view, type) {
+        var out = '';
+        var time = ra.getObjProperty(location, 'time', '[?Time?]');
+        var name = ra.getObjProperty(location, 'name', '[?Place?]');
+        var lat = ra.getObjProperty(location, 'latitude', 0);
+        var long = ra.getObjProperty(location, 'longitude', 0);
+        var gr = ra.getObjProperty(location, 'gridref8', null);
+        var gr10 = ra.getObjProperty(location, 'gridref10', null);
+        if (gr === "") {
+            gr = 'Outside UK';
+        } else {
+            if (gr === null) {
+                gr = '[?no grid ref?]';
+            } else {
+                gr = gr + "/" + gr10;
+            }
+        }
+
+        var pc = ra.getObjProperty(location, 'postcode.value', '');
+        var w3w = ra.getObjProperty(location, 'w3w', '');
+        switch (view) {
+            case 'table':
+                out += time + ' at ' + name + ' (' + gr + ' ' + pc + ')';
+                break;
+            case 'list':
+                out += ', ' + time + ' at ' + name + ' (' + gr + ' ' + pc + ')';
+                break;
+            case 'details':
+                out += '<b>Time: </b>' + time;
+                out += '<br/><b>Place: </b>' + name;
+                out += '<ul>';
+                out += '<li><b>Lat/Long: </b>' + lat.toFixed(5) + "/" + long.toFixed(5) + "</li>";
+                out += '<li><b>Grid Ref: </b>' + gr + "</li>";
+                out += '<li><b>Postcode: </b>' + pc + "</li>";
+                out += '<li><b>W3W: </b>' + w3w + "</li>";
+                out += "<li><b>Maps</b>" + this.displayMaps(location) + "</ul>";
+                out += '</ul>';
+        }
+        return out;
+    };
+    this.displayMaps = function (location) {
+        var out = '';
+
+        var maps = ra.getObjProperty(location, 'osmaps', null);
+        if (maps === null) {
+            return out;
+        }
+        out = "<ul>";
+        maps.forEach(map => {
+            out += '<li>' + map.type + " " + map.number + " - " + map.title + "</li>";
+        });
+        out += "</ul>";
+        return out;
+    };
     this.getWalkTitle = function (view = 'default') {
-        var d = this.getObjProperty(this.data, 'basics.title');
+        var d = ra.getObjProperty(this.data, 'basics.title');
         if (d !== null) {
             return  "<b>" + d + "</b>";
         }
@@ -739,11 +757,11 @@ ra.walkseditor.draftWalk = function (  ) {
         if (view === 'details') {
             out += "<ul>";
         }
-        var walks = this.getObjProperty(this.data, 'walks');
+        var walks = ra.getObjProperty(this.data, 'walks');
         walks.forEach(element => {
-            var distance = this.getObjProperty(element, 'distance');
-            var units = this.getObjProperty(element, 'units');
-            var natgrade = this.getObjProperty(element, 'natgrade');
+            var distance = ra.getObjProperty(element, 'distance', '[?Distance?]');
+            var units = ra.getObjProperty(element, 'units', '[?miles/km?]');
+            var natgrade = ra.getObjProperty(element, 'natgrade', '[?National grade?]');
             switch (view) {
                 case 'table':
                     out += distance + ' ' + units + ' ' + natgrade + '<br/>';
@@ -752,10 +770,10 @@ ra.walkseditor.draftWalk = function (  ) {
                     out += distance + ' ' + units + ', ';
                     break;
                 case 'details':
-                    var localgrade = this.getObjProperty(element, 'localgrade');
-                    var leader = this.getObjProperty(element, 'leader');
-                    var ascent = this.getObjProperty(element, 'ascent');
-                    var duration = this.getObjProperty(element, 'duration');
+                    var localgrade = ra.getObjProperty(element, 'localgrade');
+                    var leader = ra.getObjProperty(element, 'leader');
+                    var ascent = ra.getObjProperty(element, 'ascent');
+                    var duration = ra.getObjProperty(element, 'duration');
                     out += '<li>' + distance + ' ' + units + ' ' + natgrade;
                     if (localgrade !== null) {
                         out += " / " + localgrade;
@@ -778,15 +796,15 @@ ra.walkseditor.draftWalk = function (  ) {
         if (view === 'details') {
             out += "</ul>";
         }
-        return out.replaceAll('null', '????');
+        return out;
 
     };
 
     this.getWalkContact = function (view) {
-        var d = this.getObjProperty(this.data, 'contact');
+        var d = ra.getObjProperty(this.data, 'contact');
         var out = '';
         if (typeof (d.displayName) === "undefined") {
-            out += '????';
+            out += '[?No contact name?]';
         } else {
             out += d.displayName;
         }
@@ -851,7 +869,7 @@ ra.walkseditor.draftWalk = function (  ) {
     };
     this.getWalkFacilitiesItem = function (title, section) {
         var out = "";
-        var d = this.getObjProperty(this.data, section);
+        var d = ra.getObjProperty(this.data, section);
         if (d !== null) {
             for (var key in d) {
                 var item = d[key];
@@ -885,7 +903,7 @@ ra.walkseditor.draftWalk = function (  ) {
 
     };
     this.getWalkNotes = function (view) {
-        var d = this.getObjProperty(this.data, 'notes.comments');
+        var d = ra.getObjProperty(this.data, 'notes.comments');
         var out = '';
         switch (view) {
             case 'table':
@@ -903,16 +921,16 @@ ra.walkseditor.draftWalk = function (  ) {
     this.getAsEvent = function () {
         var meetingTime = '';
 
-        var d = this.getObjProperty(this.data, 'basics.date');
-        var startTime = this.getObjProperty(this.data, 'start.location.time');
-        var meeting = this.getObjProperty(this.data, 'meeting.locations');
+        var d = ra.getObjProperty(this.data, 'basics.date');
+        var startTime = ra.getObjProperty(this.data, 'start.location.time');
+        var meeting = ra.getObjProperty(this.data, 'meeting.locations');
         if (meeting !== null) {
-            meetingTime = this.getObjProperty(meeting[0], 'time');
+            meetingTime = ra.getObjProperty(meeting[0], 'time');
             if (meetingTime === "undefined") {
                 meetingTime = null;
             }
         }
-        var title = this.getObjProperty(this.data, 'basics.title');
+        var title = ra.getObjProperty(this.data, 'basics.title');
         if (title === null) {
             title = 'No title defined';
         }
@@ -938,21 +956,21 @@ ra.walkseditor.draftWalk = function (  ) {
         return event;
     };
     this.getAsMarker = function (cluster) {
-        var type = this.getObjProperty(this.data, 'start.type');
+        var type = ra.getObjProperty(this.data, 'start.type');
         var icon, popup, popupoffset, title;
         var lat;
         var lng;
-        var date = this.getObjProperty(this.data, 'basics.date');
-        var title = this.getObjProperty(this.data, 'basics.title');
-        var time = this.getObjProperty(this.data, 'start.location.time');
-        var name = this.getObjProperty(this.data, 'start.location.name');
-        var gr = this.getObjProperty(this.data, 'start.location.gridref8');
+        var date = ra.getObjProperty(this.data, 'basics.date');
+        var title = ra.getObjProperty(this.data, 'basics.title');
+        var time = ra.getObjProperty(this.data, 'start.location.time');
+        var name = ra.getObjProperty(this.data, 'start.location.name');
+        var gr = ra.getObjProperty(this.data, 'start.location.gridref8');
         var _this = this;
         popup = "<b>Date: " + date + "<br/>Title: " + title + "</b><br/>";
         switch (type) {
             case 'start':
-                lat = this.getObjProperty(this.data, 'start.location.latitude');
-                lng = this.getObjProperty(this.data, 'start.location.longitude');
+                lat = ra.getObjProperty(this.data, 'start.location.latitude');
+                lng = ra.getObjProperty(this.data, 'start.location.longitude');
                 if (lat === null) {
                     lat = 53.70774;
                 }
@@ -967,8 +985,8 @@ ra.walkseditor.draftWalk = function (  ) {
                 popupoffset = [0, -10];
                 break;
             case 'area':
-                lat = this.getObjProperty(this.data, 'start.location.latitude');
-                lng = this.getObjProperty(this.data, 'start.location.longitude');
+                lat = ra.getObjProperty(this.data, 'start.location.latitude');
+                lng = ra.getObjProperty(this.data, 'start.location.longitude');
                 if (lat === null) {
                     lat = 53.70774;
                 }
@@ -1004,7 +1022,7 @@ ra.walkseditor.draftWalk = function (  ) {
 
 
     this.hasEditorNotes = function () {
-        var notes = this.getObjProperty(this.data, 'notes.comments');
+        var notes = ra.getObjProperty(this.data, 'notes.comments');
         if (notes !== null) {
             return notes.length > 0;
         }
@@ -1054,11 +1072,11 @@ ra.walkseditor.draftWalk = function (  ) {
         $html += "</div>" + PHP_EOL;
 
         $html += "<div class='ra preview section'>";
-        $html += '<b>Meeting:</b><br/>' + this.getWalkMeeting('details');
+        $html += '<b>Meeting:</b>' + this.getWalkMeeting('details');
         $html += "</div>" + PHP_EOL;
 
         $html += "<div class='ra preview section'>";
-        $html += '<b>Start:</b><br/>' + this.getWalkStart('details');
+        $html += '<b>Start:</b>' + this.getWalkStart('details');
         $html += "</div>" + PHP_EOL;
 
         $html += "<div class='ra preview section'>";
@@ -1097,7 +1115,7 @@ ra.walkseditor.draftWalk = function (  ) {
         var map = lmap.map;
         var points = 0;
         var layer = L.featureGroup().addTo(map);
-        var type = this.getObjProperty(this.data, 'meeting.type');
+        var type = ra.getObjProperty(this.data, 'meeting.type');
         if (type !== null) {
             var out = '';
             switch (type) {
@@ -1115,16 +1133,16 @@ ra.walkseditor.draftWalk = function (  ) {
                 default:
             }
             if (out !== '') {
-                var meets = this.getObjProperty(this.data, 'meeting.locations');
+                var meets = ra.getObjProperty(this.data, 'meeting.locations');
                 meets.forEach(element => {
-                    var time = this.getObjProperty(element, 'time', '???');
-                    var name = this.getObjProperty(element, 'name', '???');
-                    var gr = this.getObjProperty(element, 'gridref8');
-                    var lat = this.getObjProperty(element, 'latitude');
-                    var long = this.getObjProperty(element, 'longitude');
-                    var pc = this.getObjProperty(element, 'postcode.value', null);
-                    var pcLat = this.getObjProperty(element, 'postcode.latitude');
-                    var pcLng = this.getObjProperty(element, 'postcode.longitude');
+                    var time = ra.getObjProperty(element, 'time', '???');
+                    var name = ra.getObjProperty(element, 'name', '???');
+                    var gr = ra.getObjProperty(element, 'gridref8');
+                    var lat = ra.getObjProperty(element, 'latitude');
+                    var long = ra.getObjProperty(element, 'longitude');
+                    var pc = ra.getObjProperty(element, 'postcode.value', null);
+                    var pcLat = ra.getObjProperty(element, 'postcode.latitude');
+                    var pcLng = ra.getObjProperty(element, 'postcode.longitude');
                     if (lat !== null && long !== null) {
                         out += time + ' from ' + name + ', ' + gr;
 
@@ -1139,21 +1157,21 @@ ra.walkseditor.draftWalk = function (  ) {
             }
         }
 
-        var type = this.getObjProperty(this.data, 'start.type');
+        var type = ra.getObjProperty(this.data, 'start.type');
         var out = "";
         var icon;
         var lat = null;
         var long = null;
         switch (type) {
             case 'start':
-                var time = this.getObjProperty(this.data, 'start.location.time', '???');
-                var name = this.getObjProperty(this.data, 'start.location.name', '???');
-                var gr = this.getObjProperty(this.data, 'start.location.gridref8');
-                lat = this.getObjProperty(this.data, 'start.location.latitude');
-                long = this.getObjProperty(this.data, 'start.location.longitude');
-                var pc = this.getObjProperty(this.data, 'start.location.postcode.value', null);
-                var pcLat = this.getObjProperty(this.data, 'start.location.postcode.latitude');
-                var pcLng = this.getObjProperty(this.data, 'start.location.postcode.longitude');
+                var time = ra.getObjProperty(this.data, 'start.location.time', '???');
+                var name = ra.getObjProperty(this.data, 'start.location.name', '???');
+                var gr = ra.getObjProperty(this.data, 'start.location.gridref8');
+                lat = ra.getObjProperty(this.data, 'start.location.latitude');
+                long = ra.getObjProperty(this.data, 'start.location.longitude');
+                var pc = ra.getObjProperty(this.data, 'start.location.postcode.value', null);
+                var pcLat = ra.getObjProperty(this.data, 'start.location.postcode.latitude');
+                var pcLng = ra.getObjProperty(this.data, 'start.location.postcode.longitude');
                 icon = ra.map.icon.markerStart();
                 out = "Start of walk<br/>";
                 out += time;
@@ -1164,10 +1182,10 @@ ra.walkseditor.draftWalk = function (  ) {
                 }
                 break;
             case 'area':
-                var name = this.getObjProperty(this.data, 'start.location.name');
-                var gr = this.getObjProperty(this.data, 'start.location.gridref8');
-                var lat = this.getObjProperty(this.data, 'start.location.latitude');
-                var long = this.getObjProperty(this.data, 'start.location.longitude');
+                var name = ra.getObjProperty(this.data, 'start.location.name');
+                var gr = ra.getObjProperty(this.data, 'start.location.gridref8');
+                var lat = ra.getObjProperty(this.data, 'start.location.latitude');
+                var long = ra.getObjProperty(this.data, 'start.location.longitude');
                 icon = ra.map.icon.markerArea();
                 out += 'General area: os walk<br/>';
                 out += name;
