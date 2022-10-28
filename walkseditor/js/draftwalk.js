@@ -666,12 +666,12 @@ ra.walkseditor.draftWalk = function (  ) {
                 out += this.displayLocation(location, view, 'start');
                 break;
             case 'area':
-                var name = ra.getObjProperty(location, 'location.name', '[?Place name?]');
-                var gr = ra.getObjProperty(location, 'location.gridref8', '[?no grid ref?]');
+                var name = ra.getObjProperty(location, 'name', '[?Place name?]');
+                var gr = ra.getObjProperty(location, 'gridref8', '[?no grid ref?]');
                 switch (view) {
                     case 'table':
                         out += 'General Area: ';
-                        out += name;
+                        out += '</br/>' + name;
                         out += "</br/>Around Grid Ref " + gr;
                         break;
                     case 'list':
@@ -680,9 +680,9 @@ ra.walkseditor.draftWalk = function (  ) {
                         out += ", Around Grid Ref " + gr;
                         break;
                     case 'details':
-                        out += '<p>General Area: </p>';
-                        out += name;
-                        out += "</br/>Around Grid Ref " + gr;
+                        out += '<br/>General Area: ';
+                        out += '<br/>Name: ' + name;
+                        out += "</br/>Around Grid Ref: " + gr;
                         break;
                 }
                 break;
