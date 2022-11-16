@@ -116,6 +116,9 @@ class RErrors {
     }
 
     private static function checkJsonProperties($item, $properties) {
+        if ($properties===null){
+            return 0;
+        }
         foreach ($properties as $value) {
             if (!RErrors::checkJsonProperty($item, $value)) {
                 return 1;

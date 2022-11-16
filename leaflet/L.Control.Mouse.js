@@ -84,8 +84,7 @@ L.Control.Mouse = L.Control.extend({
         var bounds = [[ll1.lat, ll1.lon],
             [ll2.lat, ll2.lon],
             [ll3.lat, ll3.lon],
-            [ll4.lat, ll4.lon],
-            [ll1.lat, ll1.lon]];
+            [ll4.lat, ll4.lon]];
         return bounds;
     },
     _getMouseMoveAction: function (map, latlng) {
@@ -108,12 +107,14 @@ L.Control.Mouse = L.Control.extend({
             if (this._userOptions.displayMouseGridSquare) {
                 if (zoom > 12) {
                     var bounds = this._osGridToLatLongSquare(grid, 100);
-                    this.gridsquare100 = L.rectangle(bounds, {color: "#ff7800", weight: 1, ignore: true});
+                    this.gridsquare100 = L.polygon(bounds, {color: "#ff7800", weight: 1, ignore: true});
+                    // ignore property is for Zoom All
                     this.OSGridSquareLayer.addLayer(this.gridsquare100);  // change rectangle
                 }
                 if (zoom > 16) {
                     var bounds2 = this._osGridToLatLongSquare(grid, 10);
-                    this.gridsquare10 = L.rectangle(bounds2, {color: "#884000", weight: 1, ignore: true});
+                    this.gridsquare10 = L.polygon(bounds2, {color: "#884000", weight: 1, ignore: true});
+                    // ignore property is for Zoom All
                     this.OSGridSquareLayer.addLayer(this.gridsquare10);     // change rectangle
                 }
             }
@@ -180,16 +181,7 @@ L.Control.Mouse = L.Control.extend({
         var color = this._userOptions.osgridline.color;
         var weight = this._userOptions.osgridline.weight;
         var opacity = this._userOptions.osgridline.opacity;
-        switch (gs) {
-            case 1000:
-                style = {color: color, weight: weight, opacity: opacity};
-                break;
-            case 10000:
-                style = {color: color, weight: weight, opacity: opacity};
-                break;
-            default:
-                style = {color: color, weight: weight, opacity: opacity};
-        }
+        style = {color: color, weight: weight, opacity: opacity, ignore: true};
         var lines;
         for (east = sw.easting; east < ne.easting + 1000; east += gs) {
             lines = new Array();

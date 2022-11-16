@@ -161,30 +161,30 @@ ra.isEquivalent = function (a, b) {
 };
 // obtain property of an object
 ra.getObjProperty = function (obj, path, defaultvalue = null) {
-        // call getObj("basics.date");
-        if (typeof obj === 'undefined') {
+    // call getObj("basics.date");
+    if (typeof obj === 'undefined') {
+        return defaultvalue;
+    }
+    if (obj === null) {
+        return defaultvalue;
+    }
+    var property;
+    var result = null;
+    var properties = path.split(".");
+    var item = obj;
+    var i;
+    for (i = 0; i < properties.length; i++) {
+        property = properties[i];
+        if (item.hasOwnProperty(property)) {
+            result = item;
+            item = item[property];
+        } else {
             return defaultvalue;
         }
-        if (obj === null) {
-            return defaultvalue;
-        }
-        var property;
-        var result = null;
-        var properties = path.split(".");
-        var item = obj;
-        var i;
-        for (i = 0; i < properties.length; i++) {
-            property = properties[i];
-            if (item.hasOwnProperty(property)) {
-                result = item;
-                item = item[property];
-            } else {
-                return defaultvalue;
-            }
-        }
-        return item;
+    }
+    return item;
 
-    };
+};
 // sort object so listed in order of a value
 ra.sortObject = function (obj, property) {
     var sortedObj = {};
@@ -664,7 +664,7 @@ ra.html = (function () {
     };
     html.displayInModal = function (tag) {
         // used to display walk images
-       ra.modals.createModal(tag.cloneNode(true), false);
+        ra.modals.createModal(tag.cloneNode(true), false);
     };
     html.generateTags = function (root, items) {
         var index;
@@ -1712,11 +1712,11 @@ ra.filter = function (settingsFilter) {
     }
 
     };
-    this.addFilter = function (tag, title, items, all = true, dates = false) {
-        //   if (!all) {
-        if (Object.keys(items).length < 2) {
-            return;
-            //       }
+    this.addFilter = function (tag, title, items, all = false, dates = false) {
+        if (!all) {
+            if (Object.keys(items).length < 2) {
+                return;
+            }
         }
         var div = document.createElement('div');
         div.setAttribute('class', 'ra-filteritem');
@@ -1731,8 +1731,10 @@ ra.filter = function (settingsFilter) {
         div.appendChild(intDiv);
         if (!dates) {
             var ul = document.createElement('ul');
-            this.addAllNone(intDiv, '[All]', ul);
-            this.addAllNone(intDiv, '[None]', ul);
+            if (Object.keys(items).length > 1) {
+                this.addAllNone(intDiv, '[All]', ul);
+                this.addAllNone(intDiv, '[None]', ul);
+            }
             intDiv.appendChild(ul);
             var _this = this;
             Object.keys(items).forEach(function (key) {
