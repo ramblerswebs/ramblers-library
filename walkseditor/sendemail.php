@@ -15,13 +15,13 @@ $swalk = json_encode($walk, JSON_PRETTY_PRINT);
 $walkbody = $data->walkbody;
 $email = $data->email;
 $fromSite = $data->fromSite;
-$reason = "This email was sent from the web page: " . $fromSite . "<br/>You are receiving this email as you are defined as a Programme Sec/Walks coordinator on that web site<hr/>";
+$reason = "<p class='smaller'>This email was sent from the web page: " . $fromSite . "<br/>You are receiving this email as you are defined as a Programme Sec/Walks coordinator on that web site</p><hr/>";
 $coords = $data->coords;
-$message = $email->message;
+$message = "<p>" . $email->message . "</p>";
 $fromname = $email->name;
 $fromemail = $email->email;
-$sig = "<p></p><p>From: " . $fromname . "</p><p>Email: " . $fromemail . "</p>";
-$fullbody = $reason . $message . $sig . "<p></p><hr/><p></p>" . $walkbody;
+$sig = "<p></p><p>Walk submitted by: " . $fromname . "  email: " . $fromemail . "</p>";
+$fullbody = $reason . $sig . $message . "<p></p><hr/><p></p>" . $walkbody;
 sendEmail($coords, $fullbody, $swalk, $result);
 
 header("Access-Control-Allow-Origin: *");

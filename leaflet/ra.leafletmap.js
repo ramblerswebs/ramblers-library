@@ -9,6 +9,7 @@ ra.leafletmap = function (tag, options) {
     this.controls = {layers: null,
         settins: null,
         zoom: null,
+        zoomAll: null,
         elevation: null,
         errorDiv: null,
         print: null,
@@ -18,18 +19,9 @@ ra.leafletmap = function (tag, options) {
         rightclick: null,
         search: null,
         plotroute: null,
-        zoomlevelOSMsg: null};
+        zoomlevelOSMsg: null,
+        osinfo: null};
 
-//    this.userOptions = {layers: null,
-//        settings: null,
-//        zoom: null,
-//        elevation: null,
-//        print: null,
-//        mylocation: null,
-//        scale: null,
-//        mouse: null,
-//        rightclick: null,
-//        plotroute: null};
     this._mapDiv = null;
 
     var tags = [
@@ -42,7 +34,6 @@ ra.leafletmap = function (tag, options) {
         {parent: 'root', tag: 'p', attrs: {class: 'mapcopyright'}, textContent: '© openrouteservice.org by HeiGIT | Map data © OpenStreetMap contributors'},
         {parent: 'root', tag: 'p', attrs: {class: 'mapcopyright'}, textContent: 'Maps Icons Collection https://mapicons.mapsmarker.com'}
     ];
-
 
     var elements = ra.html.generateTags(tag, tags);
     this._mapDiv = elements.map;
@@ -86,10 +77,12 @@ ra.leafletmap = function (tag, options) {
     this.map.on('locationfound', function (e) {
         ra.loc.setPosition(e);
     });
+
     // top right control for error messages
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
     //this.controls.errorDiv.setText(ra.html.getBrowserStatus());
     this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
+    
     // top left controls
     if (options.displayElevation) {
         this.controls.elevation = L.control.elevation({
@@ -119,42 +112,49 @@ ra.leafletmap = function (tag, options) {
     }
     this.controls.zoom = L.control.zoom({position: 'topleft'}).addTo(this.map);
     this.controls.fullscreen = L.control.fullscreen({position: 'topleft'}).addTo(this.map);
+    this.controls.print = L.control.browserPrint({
+        title: 'Print',
+        documentTitle: 'The Ramblers - working for walkers',
+        printModes: [L.control.browserPrint.mode.portrait(),
+            L.control.browserPrint.mode.landscape(),
+            L.control.browserPrint.mode.custom("Select Area", "A4")],
+        closePopupsOnPrint: true
+    }).addTo(this.map);
 
-    if (options.print !== null) {
-        var self = this;
-        this.controls.print = L.control.browserPrint({
-            title: 'Print',
-            documentTitle: 'The Ramblers - working for walkers',
-            printModes: [L.control.browserPrint.mode.portrait(),
-                L.control.browserPrint.mode.landscape(),
-                L.control.browserPrint.mode.custom("Select Area", "A4")],
-            closePopupsOnPrint: true
-        }).addTo(this.map);
-
-        if (options.bingkey) {
-            L.Control.BrowserPrint.Utils.registerLayer(
-                    L.BingLayer,
-                    "L.BingLayer",
-                    function (layer) {
-                        var bing = L.bingLayer(layer.key, layer.options);
-                        // fix as above object fails to set url
-                        bing._url = self.currentLayer._url;
-                        return bing;
-                    }
-            );
-        }
+    if (options.bingkey) {
+        L.Control.BrowserPrint.Utils.registerLayer(
+                L.BingLayer,
+                "L.BingLayer",
+                function (layer) {
+                    var bing = L.bingLayer(layer.key, layer.options);
+                    // fix as above object fails to set url
+                    bing._url = self.currentLayer._url;
+                    return bing;
+                }
+        );
     }
+
     this.controls.search = L.control.search({position: 'topleft'}).addTo(this.map);
     this.controls.mylocation = L.control.mylocation({position: 'topleft'}).addTo(this.map);
-    var zoomall = L.control.zoomall().addTo(this.map);
-    var tools = L.control.tools().addTo(this.map);
+    this.controls.zoomAll = L.control.zoomall().addTo(this.map);
+    this.controls.osinfo = L.control.osinfo().addTo(this.map);
+    this.controls.rightclick = L.control.rightclick().addTo(this.map);
+    this.controls.settings = L.control.settings();
+    this.controls.settings.setHelpPage(options.helpPage);
+    this.controls.settings.addTo(this.map);
+    this.controls.settings.setLeafletMap(this);
 
-    ra.map.moveMapControl(this.controls.zoom, tools.getToolsDiv());
-    ra.map.moveMapControl(zoomall, tools.getToolsDiv());
-    ra.map.moveMapControl(this.controls.mylocation.getLocationControl(), tools.getToolsDiv());
-    ra.map.moveMapControl(this.controls.search, tools.getToolsDiv());
-    ra.map.moveMapControl(this.controls.fullscreen, tools.getToolsDiv());
-    ra.map.moveMapControl(this.controls.print, tools.getToolsDiv());
+    var tools = L.control.tools().addTo(this.map);
+    tools.moveMapControl(this.controls.zoom);
+    tools.moveMapControl(this.controls.zoomAll);
+    tools.moveMapControl(this.controls.print);
+    tools.moveMapControl(this.controls.mylocation.getLocationControl());
+    tools.moveMapControl(this.controls.search);
+    tools.moveMapControl(this.controls.fullscreen);
+    tools.moveMapControl(this.controls.rightclick);
+    tools.moveMapControl(this.controls.osinfo);
+    tools.moveMapControl(this.controls.settings);
+
 
     this.controls.resizer = L.control.resizer({onlyOnHover: false, direction: 's'}).addTo(this.map);
 
@@ -168,9 +168,6 @@ ra.leafletmap = function (tag, options) {
     });
 
     // bottom left controls 
-    if (options.rightclick !== null) {
-        this.controls.rightclick = L.control.rightclick().addTo(this.map);
-    }
     if (options.mouseposition !== null) {
         this.controls.mouse = L.control.mouse().addTo(this.map);
     }
@@ -193,13 +190,10 @@ ra.leafletmap = function (tag, options) {
         var pt = L.latLng(options.initialview.latitude, options.initialview.longitude);
         this.map.setView(pt, options.initialview.zoom);
     }
-    this.map.addEventListener('fullscreenchange', function () {
+    //this.map.addEventListener('fullscreenchange', function () {
         // let modal know if map full screen;
         //  ra.modals.fullscreen(self.map.isFullscreen(), self.map);
-        // display of not controls in full screen
-        self.setOptionalControls();
-
-    });
+    //});
     // top right controls
     this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
     if (options.topoMapDefault) {
@@ -208,12 +202,7 @@ ra.leafletmap = function (tag, options) {
         this.map.addLayer(this.mapLayers["Open Street Map"]);
     }
     var _this = this;
-    if (options.settings !== null) {
-        this.controls.settings = L.control.settings();
-        this.controls.settings.setHelpPage(options.helpPage);
-        this.controls.settings.addTo(this.map);
-        this.controls.settings.setLeafletMap(this);
-    }
+
     // this.controls.settings.setErrorDiv(this.errorDivControl());
     this.map.on('zoomend', function () {
         _this.osZoomLevel();
@@ -223,25 +212,10 @@ ra.leafletmap = function (tag, options) {
         _this.osZoomLevel();
     });
     if (options.rightclick !== null) {
-
         this.controls.rightclick.mapControl(this.controls.layers);
-
     }
 
-    this.setOptionalControls = function () {
-        var display = "none";
-        if (self.map.isFullscreen()) {
-            display = '';
-        }
-        if (options.mouseposition === false) {
-            self.controls.mouse.changeDisplay(display);
-        }
-        if (options.rightclick === false) {
-            self.controls.rightclick.changeDisplay(display);
-        }
 
-    };
-    this.setOptionalControls();
     this.osZoomLevel = function () {
         this.controls.zoomlevelOSMsg.setText("");
         if (this.baseTiles === 'Ordnance Survey') {

@@ -266,16 +266,6 @@ ra.map = (function () {
         return icon;
     }
     ());
-    my.moveMapControl = function (control, newTag) {
-        var moveEl = control.getContainer();
-        var newParent = newTag;
-        newParent.appendChild(moveEl);
-        var oldParent = moveEl;
-
-        //   while (oldParent.childNodes.length > 0) {
-        //       newParent.appendChild(oldParent.childNodes[0]);
-        //   }
-    };
     my.os = (function () {
         var os = {};
         os.display = function (map, layer) {

@@ -23,3 +23,6 @@ div.ra.preview.section{
     background-color: #eeeeee;
     line-height: 1.5em;
 }
+p.smaller{
+    font-size:0.75em;
+}

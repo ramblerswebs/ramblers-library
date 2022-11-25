@@ -24,10 +24,10 @@ ra.walkseditor.submitwalkform = function (options, data) {
 
     this.load = function () {
         this.walk = new ra.walkseditor.draftWalk();
-        this.walk.init("", "", true);
+        this.walk.init("Draft", "", true);
         var tag = document.getElementById(options.divId);
         var topOptions = document.createElement('div');
-        //  topOptions.setAttribute('class', 'ra-edit-options');
+        topOptions.setAttribute('class', 'ra-edit-options');
         tag.appendChild(topOptions);
         this.addButtons(topOptions);
         var clear = document.createElement('div');
@@ -40,21 +40,35 @@ ra.walkseditor.submitwalkform = function (options, data) {
         editor.sortData();
         editor.setGroups(this.groups);
         editor.addEditForm(this.editorDiv);
-//        var bottomOptions = document.createElement('div');
-//        tag.appendChild(bottomOptions);
-//        this.addButtons(bottomOptions);
+
     };
     this.addButtons = function (tag) {
 
-        var divTag = document.createElement('div');
-        divTag.setAttribute('type', 'button');
-        divTag.setAttribute('class', 'ra-edit-options');
-        tag.appendChild(divTag);
         var _this = this;
         var helpSpan = document.createElement('div');
         helpSpan.style.cssFloat = "right";
-        divTag.appendChild(helpSpan);
+        tag.appendChild(helpSpan);
         new ra.help(helpSpan, ra.walkseditor.help.formOptions).add();
+
+        var previewButton = document.createElement('button');
+        previewButton.textContent = 'Preview walk';
+        previewButton.title = 'Preview walk and see outstanding issues';
+        previewButton.setAttribute('class', 'ra-button');
+        previewButton.addEventListener("click", function () {
+            _this.walk.displayDetails();
+        });
+        tag.appendChild(previewButton);
+
+        var emailButton = document.createElement('button');
+        emailButton.setAttribute('type', 'button');
+        emailButton.setAttribute('class', 'ra-button');
+        emailButton.textContent = "Email walk to group";
+        emailButton.title = "Email walk to the Groups' Programme Sec/Walks co-ordinators";
+        emailButton.addEventListener("click", function () {
+            _this.emailModal();
+        });
+        tag.appendChild(emailButton);
+
         var saveButton = document.createElement('button');
         saveButton.setAttribute('type', 'button');
         saveButton.setAttribute('class', 'ra-button');
@@ -63,10 +77,10 @@ ra.walkseditor.submitwalkform = function (options, data) {
         saveButton.addEventListener("click", function (e) {
             _this._saveWalk();
         });
-        divTag.appendChild(saveButton);
-    
+        tag.appendChild(saveButton);
+
         var uploadButton = new ra.walkseditor.uploadFile();
-        var input = uploadButton.addButton(divTag);
+        var input = uploadButton.addButton(tag);
         input.addEventListener("upload-walk-read", function (e) {
             var walk = e.ra.walk;
             _this.walk.data = walk;
@@ -76,25 +90,10 @@ ra.walkseditor.submitwalkform = function (options, data) {
             editor.setGroups(_this.groups);
             editor.addEditForm(_this.editorDiv);
         });
-        var emailButton = document.createElement('button');
-        emailButton.setAttribute('type', 'button');
-        emailButton.setAttribute('class', 'ra-button');
-        emailButton.textContent = "Email walk to group";
-        emailButton.title = "Email walk to the Groups' Programme Sec/Walks co-ordinators";
-        emailButton.addEventListener("click", function () {
-            _this.emailModal();
-        });
-        divTag.appendChild(emailButton);
-        var previewButton = document.createElement('button');
-        previewButton.textContent = 'Preview walk';
-        previewButton.title = 'Preview walk and see outstanding issues';
-        previewButton.setAttribute('class', 'ra-button');
-        previewButton.addEventListener("click", function () {
-            _this.walk.displayDetails();
-        });
-        divTag.appendChild(previewButton);
+
         var wmexport = new ra.walkseditor.exportToWM();
-        wmexport.button(divTag, this.walk);
+        wmexport.button(tag, this.walk);
+        return tag;
     };
     this.emailModal = function () {
         var input = new ra.walkseditor.inputFields;

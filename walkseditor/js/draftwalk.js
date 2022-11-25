@@ -726,7 +726,7 @@ ra.walkseditor.draftWalk = function (  ) {
                 out += '<li><b>Grid Ref: </b>' + gr + "</li>";
                 out += '<li><b>Postcode: </b>' + pc + "</li>";
                 out += '<li><b>W3W: </b>' + w3w + "</li>";
-                out += "<li><b>Maps</b>" + this.displayMaps(location) + "</ul>";
+                out += "<li><b>Maps</b></li>" + this.displayMaps(location);
                 out += '</ul>';
         }
         return out;
@@ -1065,7 +1065,7 @@ ra.walkseditor.draftWalk = function (  ) {
         var $html = "";
 
         $html += "<div class='walkstdfulldetails stdfulldetails walk draft' >" + PHP_EOL;
-        $html += "<div class=\'group " + this.getWalkStatusClass() + "'><b>Preview of Walk - " + this.getWalkStatus() + " </b></div>" + PHP_EOL;
+        $html += "<div class=\'group " + this.getWalkStatusClass() + "'><b>Walk details/preview- " + this.getWalkStatus() + " </b></div>" + PHP_EOL;
 
         $html += "<div class='ra preview section'>" + PHP_EOL;
         $html += '<b>Basics:</b><br/>' + this.getWalkBasics('details');

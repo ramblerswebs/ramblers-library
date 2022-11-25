@@ -27,15 +27,6 @@ L.Control.Settings = L.Control.extend({
                 _this._map.toggleFullscreen();
             }
             _this.modal = ra.modals.createModal(settingsDiv, false);
-//            document.addEventListener("ra-modal-closed", function (e) {
-//                if (e.ra.modal === _this.modal) {
-//                    // reset status of map
-//                    if (_this.fullscreen) {
-//                        _this._map.toggleFullscreen();
-//                    }
-//                }
-//
-//            });
             var title = document.createElement('h4');
             title.textContent = "Settings & Help";
             settingsDiv.appendChild(title);
@@ -110,31 +101,15 @@ L.Control.Settings = L.Control.extend({
         return container;
     },
 
-    changeDisplay: function (display) {
-        this._container.style.display = display;
-    },
+//    changeDisplay: function (display) {
+//        this._container.style.display = display;
+//    },
     setHelpPage: function (value) {
         this._helpPageUrl = value;
     },
     setLeafletMap: function (value) {
         this.leafletMap = value;
     },
-//    _addSearch: function (tag) {
-//        var _this = this;
-//        var feed = new ra.feedhandler();
-//        feed.getSearchTags(tag, tag);
-//        tag.addEventListener("locationfound", function (e) {
-//            var raData = e.raData;
-//            var result = raData.item;
-//            _this.searchLayer.clearLayers();
-//            result.center = new L.LatLng(result.lat, result.lon);
-//            new L.Marker(result.center, {icon: ra.map.icon.redmarker()})
-//                    .bindPopup("<b>" + result.class + ": " + result.type + "</b><br/>" + result.display_name)
-//                    .addTo(_this.searchLayer)
-//                    .openPopup();
-//            _this._map.setView(result.center, 16);
-//        });
-//    },
     _addSave: function (tag) {
         var save = ra.html.input.yesNo(tag, '', "Save settings between sessions/future visits to web site (you accept cookies)", this.saveOptions, 'saveSettings');
         var reset = ra.html.input.action(tag, '', "Reset all settings to default values", 'Reset');

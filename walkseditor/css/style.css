@@ -6,7 +6,10 @@
     --granite:#404141;
     --rosycheeks:#F6B09D;
     --sunrise:#F9B104;
+    --sunriseDarker:#de7649;
     --cloudy:#FFFFFF;
+    --lightgrey: #C0C0C0;
+    --midgrey: #808080;
     --gradeEA:#ADADAD;
     --gradeE:var(--mintcake);
     --gradeL:var(--rosycheeks);
@@ -36,7 +39,6 @@ a{
 }
 
 details.section > summary  {
-    color: var(--granite);
     font-size: 26px;
     margin-bottom: 0px;
     border-bottom: 0px;
@@ -176,7 +178,9 @@ select.gwem {
     background: var(--sunset);
     margin-bottom: 4px;
 }
-
+select.gwem:hover {
+    background: var(--sunriseDarker);
+}
 input.gwem {
     width:408px;
 }
@@ -384,12 +388,13 @@ div.ra-edit-options {
     bottom: -20px;
     right: -20px;
     z-index:99;
-    border: 1px solid gray;
+    border: 2px solid var(--sunset);
     padding: 5px;
     margin: 10px;
     border-radius: 10px;
     transform: scale(0.75,0.75);
 }
+
 div.ra-edit-options:hover {
     transform: scale(1.2,1.2);
     bottom: 20px;
@@ -414,6 +419,12 @@ form#form-draftgwem2event{
 
 details summary {
     cursor: pointer;
+    color:var(--sunset);
+    font-weight: bold;
+}
+details summary:hover {
+    color: var(--sunriseDarker);
+    font-style: italic;
 }
 
 details summary > * {
@@ -435,6 +446,7 @@ details.section > summary::before {
 details[open].section > summary::before {
     content: url(open.png);
 }
+
 
 details.section ,
 div.group.section{

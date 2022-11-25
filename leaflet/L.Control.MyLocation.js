@@ -38,14 +38,11 @@ L.Control.MyLocation = L.Control.extend({
         this.location = L.control.locate(this.options).addTo(map);
         return container;
     },
-    getLocationControl:function(){
+    getLocationControl: function () {
         return this.location;
     },
     onRemove: function (map) {
         // Nothing to do here
-    },
-    changeDisplay: function (display) {
-        this._container.style.display = display;
     },
     settingsForm: function (tag) {
         var _this = this;
@@ -114,7 +111,6 @@ L.Control.MyLocation = L.Control.extend({
     },
     _readSettings: function () {
         ra.settings.read('__mylocation', this.options);
-        //  ra.settings._transferValues(this._userOptions, this.options);
     },
     saveSettings: function (save) {
         ra.settings.save(save, '__mylocation', this.options);

@@ -118,7 +118,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         this.addNotes(notesDiv);
 
         // add top button
-   //     this.addScrollButton(form);
+        //     this.addScrollButton(form);
 
     };
     this.setGroups = function (groups) {
@@ -222,7 +222,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
                 }
                 break;
             case 'none':
-                this.input.addHeader(tag, "p", "Walkers travel independently to start of walk.");
+                this.input.addHeader(tag, "lu", "<b>Walkers travel independently to start of walk.</d>");
                 if (change) {
                     meeting.locations = [];
                 }
@@ -330,12 +330,12 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             case 'undefined':
                 break;
             case 'start':
-                this.input.addHeader(tag, "p", "Walkers can travel independently to start of walk");
+                this.input.addHeader(tag, "p", "<b>Walkers can travel independently to start of walk</b>");
                 var _this = this;
                 _this.addStart(tag);
                 break;
             case 'area':
-                this.input.addHeader(tag, "p", "Walkers, who wish to go to start of walk, will need to contact the walk organiser/contact");
+                this.input.addHeader(tag, "p", "<b>Walkers, who wish to go to start of walk, will need to contact the walk organiser/contact</b>");
                 var _this = this;
                 _this.addArea(tag);
                 break;
@@ -403,7 +403,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         comment.textContent = 'Only relevant for Linear walks';
         finishDiv.appendChild(comment);
         var location = this.walk.finish.location;
-      var itemDiv = this.input.itemsItemDivs(tag);
+        var itemDiv = this.input.itemsItemDivs(tag);
         var itemsDiv2 = document.createElement('div');
         itemsDiv2.setAttribute('class', 'location-group');
         itemDiv.appendChild(itemsDiv2);

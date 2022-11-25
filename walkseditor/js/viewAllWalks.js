@@ -314,7 +314,7 @@ ra.walkseditor.viewAllwalks = function (mapOptions, data) {
                         walk.getWalkContact('list');
                 out += "<br/><div class='alignRight'>" + walk.getStatusCategory(' ', this.settings.noCategories) + "</div>";
                 walkDiv.innerHTML = out;
-                first = false
+                first = false;
                 walkDiv.ra = {};
                 walkDiv.ra.walk = walk;
                 walkDiv.setAttribute('title', 'View walk details');
@@ -572,7 +572,7 @@ ra.walkseditor.viewAllwalks = function (mapOptions, data) {
             div.style.display = "none";
             tag.appendChild(div);
             filter.addFilter(div, 'Status', result.status);
-            filter.addFilter(div, 'Category', result.category);
+            filter.addFilter(div, 'Category', result.category, true);
             filter.addFilter(div, 'Issues', result.issues);
 
             filter.addFilter(div, 'Dates', result.dates, true, true);

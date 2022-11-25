@@ -105,7 +105,7 @@ ra.walkseditor.help = (function () {
         return "Enter the grade as per your groups grading system";
     };
     help.walkPace = function () {
-        return "walkPace???";
+        return "Enter optional pace of the walk, in line with how the group normally describe pace.";
     };
     help.walkAscent = function () {
         return "Total ascent over whole walk. Ignore descent, otherwise circular walks will always be zero! (Optional)<br/>This is a text field so please indicate if the ascent is in feet or metres.";
@@ -132,16 +132,16 @@ ra.walkseditor.help = (function () {
         return "Click to search for a contact that has been saved on the system";
     };
     help.editorNotes = function () {
-        return "You may record any future changes that will be required or additional information required, before the walk can be published";
+        return "You may record any future changes that will be required or additional information required, before the walk can be published. This information is for the editor's use only.";
     };
-   help.formOptions = function () {
-        return '<h4>Save walk</h4><p>Save the walk so you can upload it later and add additional information.</p>' +
+    help.formOptions = function () {
+        return  '<h4>Preview walk</h4><p>View the walk as a whole to review the information you have entered</p>' +
+                '<h4>Email walk to group</h4><p>Email the walk to your group\'s Programme Secretary/Walks coordinators</p>' +
+                '<h4>Save walk</h4><p>Save the walk so you can upload it later and add additional information.</p>' +
                 '<h4>Upload walk</h4><p>Upload a previously saved walk, so you can change or add information</p>' +
                 '<p>Please note that any information in the form will be overwritten.</p>' +
-                '<h4>Submit walk to group</h4><p>Email the walk to your group\'s Programme Secretary/Walks coordinators</p>' +
-                '<h4>Preview walk</h4><p>View the walk as a whole to review the information you have entered</p>' +
-                 '<h4>WM Export</h4><p>Save the walk in a CSV file suitable for uploading to Walks Manager</p>';
-   };
+                '<h4>WM Export</h4><p>Save the walk in a CSV file suitable for uploading to Walks Manager</p>';
+    };
 
     return help;
 }

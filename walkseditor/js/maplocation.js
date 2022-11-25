@@ -59,11 +59,11 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         this.details = document.createElement('details');
         tag.appendChild(this.details);
         this.summary = document.createElement('summary');
-        this.summary.innerHTML = 'Set or edit location/ display mapping options';
+        this.summary.innerHTML = 'Open/Close location/mapping options';
         this.summary.title = 'Click to open or close section';
         this.details.appendChild(this.summary);
         this.addLocationEditor(this.details);
-        this.details.open = false;
+        this.details.open = !this.raobject.isLatLongSet;
         var _this = this;
         this.details.addEventListener("toggle", function () {
             var open = _this.details.open;
@@ -183,13 +183,13 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
 
         });
 
-//        this.findButton.addEventListener("locationfound", function (e) { // (1)
-//            let event = new Event("marker-moved", {bubbles: true}); // 
-//            var item = e.raData.item;
-//            event.ra = {};
-//            event.ra.latlng = L.latLng(parseFloat(item.lat), parseFloat(item.lon));
-//            _this.tag.dispatchEvent(event);
-//        });
+        this.findButton.addEventListener("locationfound", function (e) { 
+            let event = new Event("marker-moved", {bubbles: true}); 
+            var item = e.raData.item;
+            event.ra = {};
+            event.ra.latlng = L.latLng(parseFloat(item.lat), parseFloat(item.lon));
+            _this.tag.dispatchEvent(event);
+        });
 
     };
     this.updateStatus = function () {

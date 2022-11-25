@@ -3,18 +3,14 @@ L.Control.Tools = L.Control.extend({
     options: {
         position: 'topleft'
     },
-
     onAdd: function (map) {
         var _this = this;
         this._map = map;
-
         this._container = document.createElement('div');
         this._button = L.DomUtil.create('div', 'ra-map-tools-icon leaflet-bar leaflet-control', this._container);
         this._button.title = 'Mapping tools';
         this._toolsDiv = L.DomUtil.create('div', 'leaflet-tools-container', this._container);
-
         this._toolsDiv.style.display = 'none';
-
         this._container.addEventListener("mouseenter", function (e) {
             _this._openTools();
         });
@@ -32,7 +28,6 @@ L.Control.Tools = L.Control.extend({
                 _this._toolsDiv.style.display = 'none';
             } else {
                 _this._openTools();
-
             }
         });
         return this._container;
@@ -40,16 +35,23 @@ L.Control.Tools = L.Control.extend({
     getToolsDiv: function () {
         return this._toolsDiv;
     },
+    moveMapControl: function (control) {
+        var moveEl = control.getContainer();
+        var newParent = this._toolsDiv;
+        newParent.appendChild(moveEl);
+    },
     _openTools: function () {
         this._toolsDiv.style.display = 'grid';
         let event = new Event("ra-map-tools-open");
         document.dispatchEvent(event);
-    },
+    }
+    ,
     onRemove: function (map) {
         //  map.off('mousemove', this._update);
     }
 
-});
+}
+);
 L.control.tools = function (options) {
     return new L.Control.Tools(options);
 };
@@ -68,7 +70,7 @@ L.Control.ZoomAll = L.Control.extend({
         this._container.title = this.options.title;
         L.DomEvent.on(this._container, 'click', function (ev) {
             L.DomEvent.stopPropagation(ev);
-             var result = _this._getBounds();
+            var result = _this._getBounds();
             if (result.isSet) {
                 _this._map.flyToBounds(result.bounds, {padding: [50, 50], duration: 1});
             }

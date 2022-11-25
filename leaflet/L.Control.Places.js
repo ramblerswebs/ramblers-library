@@ -168,6 +168,14 @@ L.Control.Places = L.Control.extend({
         }
         return bounds;
     },
+    noLayers: function () {
+        var no;
+        no = this._placeslayer[1].getLayers(). length;
+        for (var i = 2; i < 6; i++) {
+            no += this._placeslayer[i].getLayers(). length;
+        }
+        return no ;
+    },
     displayPlaces: function (locationOptions) {
         var _locationOptions = {location: {lat: 52, lng: -2},
             distance: 20,

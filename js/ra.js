@@ -16,13 +16,13 @@ ra.defaultMapOptions = {
     //  "search": false,
     //  "locationsearch": false,
     "osgrid": true,
-    "mouseposition": false,
-    "rightclick": false,
-    "settings": false,
-    "mylocation": false,
+    "mouseposition": true,
+    "rightclick": true,
+    "settings": true,
+    "mylocation": true,
     "fitbounds": true,
     "draw": false,
-    "print": false,
+    "print": true,
     "displayElevation": null,
     //  "smartRoute": false,
     "bing": false,
@@ -203,7 +203,7 @@ ra.sortObject = function (obj, property) {
                 key = prop;
             }
         }
-        if (key == null) {
+        if (key === null) {
             done = true;
         } else {
             delete obj[key];
@@ -227,6 +227,9 @@ ra.isES6 = function () {
         }
         return ra._isES6;
     }
+};
+ra.isRealOject = function (obj) {
+    return typeof obj === "object" && obj !== null && obj !== 'undefined';
 };
 ra.arrayToCSV = function (arr) {
     var item, i;
@@ -396,7 +399,7 @@ ra.settings = (function () {
             var toItem = to[key];
             if (from.hasOwnProperty(key)) {
                 var fromItem = from[key];
-                if (typeof toItem === 'object' && typeof fromItem === 'object') {
+                if (ra.isRealOject(toItem) && ra.isRealOject(fromItem)) {
                     ra.settings._transferValues(fromItem, toItem);
                 } else {
                     to[key] = from[key];
@@ -751,6 +754,16 @@ ra.html = (function () {
     html.toggleVisibilities = function (id1, id2) {
         html.toggleVisibility(id1);
         html.toggleVisibility(id2);
+    };
+    html.isInViewport = function (el) {
+        const rect = el.getBoundingClientRect();
+        return (
+                rect.top >= 0 &&
+                rect.left >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+
+                );
     };
     html.insertAfter = function (referenceNode, newNode) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
