@@ -10,14 +10,19 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
     this.formmode = formmode;
     this.input = new ra.walkseditor.inputFields;
     this.groups = null;
+    this.expandDetails = true;
     this.who = 'ra.walkseditor.walkeditor';  // what is this?
     this.addEditForm = function (editDiv) {
         // first clear any old form from div
         editDiv.innerHTML = "";
-        var form = document.createElement('div'); // was form
+        var form = document.createElement('div');
+        this.form = form;
         form.setAttribute('class', 'ra_container');
         form.setAttribute('id', 'ra_container');
         editDiv.appendChild(form);
+
+        // Expand/Collapse Button
+        this.addExpandButtons(form);
 
         // Basics section
 
@@ -117,9 +122,43 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         this.input.addHeader(notesDiv, "summary", "Editor's Notes", ra.walkseditor.help.editorNotes);
         this.addNotes(notesDiv);
 
-        // add top button
-        //     this.addScrollButton(form);
+    };
+    this.addExpandButtons = function (tag) {
+        var self = this;
+        var expand = document.createElement('button');
+        expand.setAttribute('type', 'button');
+        expand.setAttribute('class', 'ra-button expand');
+        expand.textContent = "Expand All";
+        tag.appendChild(expand);
+        expand.addEventListener("click", function (e) {
+            if (self.expandDetails) {
+                self.expandAll();
+                expand.textContent = "Collapse All";
+                expand.setAttribute('expand', true);
+            } else {
+                self.collapseAll();
+                expand.textContent = "Expand All";
+                expand.removeAttribute('expand');
+            }
+            self.expandDetails = !self.expandDetails;
+        });
 
+    };
+    this.expandAll = function () {
+        ra.html.walkDOM(this.form, function (node) {
+            if (node.nodeName === 'DETAILS') {
+                node.setAttribute('open', true);
+            }
+
+        });
+    };
+    this.collapseAll = function () {
+        ra.html.walkDOM(this.form, function (node) {
+            if (node.nodeName === 'DETAILS') {
+                node.removeAttribute('open');
+            }
+
+        });
     };
     this.setGroups = function (groups) {
         this.groups = groups;
@@ -500,6 +539,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         this._tel1 = this.input.addText(itemDiv, 'tel1', "Contact Telephone 1:", contact, 'telephone1', 'Telephone number', ra.walkseditor.help.contactTel1);
         this._tel2 = this.input.addText(itemDiv, 'tel2', "Contact Telephone 2:", contact, 'telephone2', '', ra.walkseditor.help.contactTel2);
         this._option = this.input.addSelect(itemDiv, 'moptions', 'Is the Contact the walk leader?', options, contact, 'contactType', null, ra.walkseditor.help.contactType);
+        this._id = this.input.addNumber(itemDiv, 'id', "Contact ID:", contact, 'id', ra.walkseditor.help.contactID);
 
         var _this = this;
         itemDiv.addEventListener("predefinedContact", function (e) {
@@ -511,42 +551,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         });
         return;
     };
-//   this.addScrollButton = function (tag) {
-//           <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
-//        var topButton = document.createElement('button');
-//        topButton.classList.add('topbutton');
-//        topButton.classList.add('link-button');
-//        topButton.classList.add('small');
-//
-//
-//        topButton.textContent = "Top";
-//        topButton.addEventListener("click", function (e) {
-//            //      document.body.scrollTop = 0;
-//            //      document.documentElement.scrollTop = 0;
-//            window.scrollTo(0, 250);
-//        });
-//        tag.appendChild(topButton);
-//
-//
-//// When the user scrolls down 20px from the top of the document, show the button
-//        window.onscroll = function () {
-//            scrollFunction();
-//        };
-//
-//        function scrollFunction() {
-//            if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
-//                topButton.style.display = "block";
-//            } else {
-//                topButton.style.display = "none";
-//            }
-//        }
-//
-//// When the user clicks on the button, scroll to the top of the document
-//        function topFunction() {
-//            document.body.scrollTop = 0;
-//            document.documentElement.scrollTop = 0;
-//        }
-//    };
 
     this.sortData = function () {
         var walk = this.walk;
@@ -807,7 +811,7 @@ ra.walkseditor.exportToWM = function () {
         var wmexport = document.createElement('button');
         wmexport.setAttribute('class', 'ra-button');
         wmexport.title = 'Create CSV Upload file for Walks Manager';
-        wmexport.textContent = 'WM Export';
+        wmexport.textContent = 'Export to WM';
         tag.appendChild(wmexport);
         var _this = this;
         wmexport.addEventListener('click', function () {
@@ -816,9 +820,9 @@ ra.walkseditor.exportToWM = function () {
     };
     this._ExportWalksToWM = function (items) {
         // items is either an array or items or a single walk
-        alert("This feature is being developed and will not be final until fully tested with Walks Manager");
+        alert("This feature is being developed please let us know if you have any issues");
         var data = "";
-        data = data + this._header();
+        data = data + this._WMheader();
         if (Array.isArray(items)) {
             // array of items
             var i, clen;
@@ -841,34 +845,29 @@ ra.walkseditor.exportToWM = function () {
             alert('Your web browser does not support this option!');
         }
     };
-    this._header = function () {
+    this._WMheader = function () {
         var data = [];
         data.push('Date');
         data.push('Title');
         data.push('Description');
         data.push('Additional details');
+        data.push('Website Link');
         data.push('Walk leaders');
         data.push('Linear or Circular');
         data.push('Start time');
-        data.push('Starting latitude');
-        data.push('Starting longitude');
+        data.push('Starting Location');
         data.push('Starting postcode');
         data.push('Starting gridref');
-        data.push('Starting w3w');
         data.push('Starting location details');
         data.push('Meeting time');
-        data.push('Meeting latitude');
-        data.push('Meeting longitude');
+        data.push('Meeting location');
         data.push('Meeting postcode');
         data.push('Meeting gridref');
-        data.push('Meeting w3w');
         data.push('Meeting location details');
         data.push('Est finish time');
-        data.push('Finish latitude');
-        data.push('Finish longitude');
+        data.push('Finish location');
         data.push('Finishing postcode');
         data.push('Finishing gridref');
-        data.push('Finishing w3w');
         data.push('Finishing location details');
         data.push('Difficulty');
         data.push('Distance km');
@@ -876,23 +875,108 @@ ra.walkseditor.exportToWM = function () {
         data.push('Ascent metres');
         data.push('Ascent feet');
 
-        data.push('Refreshments available (Pub/cafe)');
-        data.push('Toilets available');
-
-        data.push('Accessible by public transport');
-        data.push('Car parking available');
-        data.push('Car sharing available');
-        data.push('Coach trip');
-
         data.push('Dog friendly');
         data.push('Introductory walk');
         data.push('No stiles');
         data.push('Family-friendly');
         data.push('Wheelchair accessible');
 
+        data.push('Accessible by public transport');
+        data.push('Car parking available');
+        data.push('Car sharing available');
+        data.push('Coach trip');
+
+        data.push('Refreshments available (Pub/cafe)');
+        data.push('Toilets available');
 
         var out = ra.arrayToCSV(data) + "\n\r";
         return out;
+    };
+
+    ra.walkseditor.exportToGWEM = function () {
+        this.button = function (tag, walks) {
+//        if (!this.allowWMExport) {
+//            return;
+//        }
+            var wmexport = document.createElement('button');
+            wmexport.setAttribute('class', 'ra-button');
+            wmexport.title = 'Create CSV Upload file for Walks Manager';
+            wmexport.textContent = 'Export to GWEM';
+            tag.appendChild(wmexport);
+            var _this = this;
+            wmexport.addEventListener('click', function () {
+                _this._ExportWalksToGWEM(walks);
+            });
+        };
+        this._ExportWalksToGWEM = function (items) {
+            // items is either an array or items or a single walk
+            alert("This feature is being developed please let us know if you have any issues");
+            var data = "";
+            data = data + this._GWEMheader();
+            if (Array.isArray(items)) {
+                // array of items
+                var i, clen;
+                for (i = 0, clen = items.length; i < clen; ++i) {
+                    var item = items[i];
+                    if (item.walk.displayWalk) {
+                        data = data + item.walk.exportToGWEMLine();
+                    }
+                }
+            } else {
+                // single walk rather than array of items
+                data = data + items.exportToGWEMLine();
+            }
+
+            try {
+                var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
+                var name = "GWEMUpload.csv";
+                saveAs(blob, name);
+            } catch (e) {
+                alert('Your web browser does not support this option!');
+            }
+        };
+        this._GWEMheader = function () {
+            var data = [];
+            data.push('Date');
+            data.push('Title');
+            data.push('Description');
+            data.push('Linear or Circular');
+
+            data.push('Starting location');
+            data.push('Starting postcode');
+            data.push('Starting gridref');
+            data.push('Starting location details');
+            data.push('Show exact starting point');
+            data.push('Start time');
+
+            data.push('Meeting location');
+            data.push('Meeting postcode');
+            data.push('Meeting gridref');
+            data.push('Meeting location details');
+            data.push('Show exact Meeting point');
+            data.push('Meeting time');
+
+            data.push('Finish location');
+            data.push('Finish postcode');
+            data.push('Finish gridref');
+            data.push('Finish location details');
+
+            data.push('Restriction');
+            data.push('Difficulty');
+            data.push('Local walk grade');
+            data.push('Distance km');
+            data.push('Distance miles');
+            data.push('Est finish time');
+            data.push('Contact id');
+            data.push('Is walk leader');
+            data.push('Walks leader name');
+            data.push('Festivals');
+            data.push('Strands');
+            data.push('Additional details');
+
+            var out = ra.arrayToCSV(data) + "\n\r";
+            return out;
+        };
     };
 
 

@@ -706,10 +706,10 @@ ra.display.plotRoute = function (options, data) {
     };
     this.settingsForm = function (tag) {
         var _this = this;
-        var title = document.createElement('h4');
+        var title = document.createElement('h3');
         title.textContent = 'Plot Walking Route';
         tag.appendChild(title);
-        var titleoptions = document.createElement('h5');
+        var titleoptions = document.createElement('h4');
         titleoptions.textContent = 'Options';
         tag.appendChild(titleoptions);
         this.pan = ra.html.input.yesNo(tag, 'divClass', "Pan: Centre map on last point added to route", this._userOptions.draw, 'panToNewPoint');

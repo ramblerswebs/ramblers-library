@@ -463,11 +463,22 @@ table th {
     border-radius:5px;
 
 }
+
 .ra-zoomall-icon.disabled{
     background:#fff url(images/extentdisabled.png) no-repeat 0 0;
     background-size:32px 32px;
     background-position: center;
     cursor: not-allowed;
+}
+.ra-help-icon{
+    background:#fff url(images/help.png) no-repeat 0 0;
+    cursor: pointer;
+    background-size:28px 28px;
+    background-position: center;
+    width:30px;
+    height:31px;
+    border-radius:5px;
+
 }
 .ra-map-tools-icon.leaflet-control{
     margin-left:0px;

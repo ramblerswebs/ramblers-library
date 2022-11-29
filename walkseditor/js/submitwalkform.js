@@ -93,6 +93,8 @@ ra.walkseditor.submitwalkform = function (options, data) {
 
         var wmexport = new ra.walkseditor.exportToWM();
         wmexport.button(tag, this.walk);
+       var gwemexport = new ra.walkseditor.exportToGWEM();
+        gwemexport.button(tag, this.walk);
         return tag;
     };
     this.emailModal = function () {

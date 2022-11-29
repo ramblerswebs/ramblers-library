@@ -130,3 +130,41 @@ L.Control.ZoomAll = L.Control.extend({
 L.control.zoomall = function (options) {
     return new L.Control.ZoomAll(options);
 };
+
+
+L.Control.Help = L.Control.extend({
+    options: {
+        position: 'topleft',
+        title: 'Display mapping help',
+        helpPageUrl: ''
+    },
+
+    onAdd: function (map) {
+        var _this = this;
+        this._map = map;
+        this._container = L.DomUtil.create('div', 'ra-help-icon leaflet-bar leaflet-control', this._container);
+        this._container.title = this.options.title;
+        L.DomEvent.on(this._container, 'click', function (ev) {
+            var page = _this.options.helpPageUrl;
+            if (page !== '') {
+                page = ra.map.helpBase + page;
+                window.open(page, "_blank", "scrollbars=yes,width=990,height=480,menubar=yes,resizable=yes,status=yes");
+            } else {
+                alert("Program error - no help file specified");
+            }
+
+        });
+//        document.addEventListener("ra-map-tools-open", function (e) {
+//            _this.setStatus();
+//        });
+        return this._container;
+    },
+
+    onRemove: function (map) {
+        //  map.off('mousemove', this._update);
+    }
+
+});
+L.control.help = function (options) {
+    return new L.Control.Help(options);
+};

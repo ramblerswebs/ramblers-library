@@ -131,6 +131,9 @@ ra.walkseditor.help = (function () {
     help.contactPredefined = function () {
         return "Click to search for a contact that has been saved on the system";
     };
+    help.contactID = function () {
+        return "This field is used to specify the Contact ID required when you upload the walk to GWEM";
+    };
     help.editorNotes = function () {
         return "You may record any future changes that will be required or additional information required, before the walk can be published. This information is for the editor's use only.";
     };

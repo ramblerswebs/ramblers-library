@@ -44,3 +44,6 @@ https://www.jplist.org/
 
 Arrow pointer
 // not used now https://github.com/coyotesqrl/Leaflet.ArrowCircle
+
+Location
+https://github.com/domoritz/leaflet-locatecontrol

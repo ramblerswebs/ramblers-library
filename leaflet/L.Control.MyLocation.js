@@ -4,6 +4,9 @@ L.Control.MyLocation = L.Control.extend({
 
     options: {
         position: 'topleft',
+        strings: {
+            title: "My Location - Show me where I am"
+        },
         showPopup: true,
         setView: 'always', // have to set this to false because we have to do setView manually
         flyTo: true,
@@ -46,7 +49,7 @@ L.Control.MyLocation = L.Control.extend({
     },
     settingsForm: function (tag) {
         var _this = this;
-        var hdg1 = document.createElement('h5');
+        var hdg1 = document.createElement('h3');
         hdg1.textContent = 'My Location Options';
         tag.appendChild(hdg1);
 

@@ -440,11 +440,23 @@ details.section > summary::-webkit-details-marker {
 
 details.section > summary::before {
     content: url(close.png);
-
 }
 
 details[open].section > summary::before {
     content: url(open.png);
+}
+
+button.expand {
+    padding-top:5px;
+}
+button.expand::before {
+    content: url(close.png);
+    vertical-align: middle;
+}
+
+button.expand[expand]::before {
+    content: url(open.png);
+    vertical-align: middle;
 }
 
 

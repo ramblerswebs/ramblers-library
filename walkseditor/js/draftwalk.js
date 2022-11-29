@@ -239,19 +239,27 @@ ra.walkseditor.draftWalk = function (  ) {
         var natgrade = '';
 
         var data = [];
-        data.push(ra.getObjProperty(this.data, 'basics.date', ''));
+        var walkdate = ra.getObjProperty(this.data, 'basics.date', null);
+        if (walkdate === null) {
+            data.push('');
+        } else {
+            data.push(ra.date.DDMMYYYY(walkdate));
+        }
         data.push(ra.getObjProperty(this.data, 'basics.title', ''));
         data.push(ra.getObjProperty(this.data, 'basics.description', ''));
         data.push(ra.getObjProperty(this.data, 'basics.notes', ''));
+        data.push(''); // website link
         data.push(ra.getObjProperty(this.data, 'contact.displayName', ''));
-        //  data.push(ra.getObjProperty(this.data, 'contact.email', ''));
-        //  data.push(ra.getObjProperty(this.data, 'contact.telephone1', ''));
-        //  data.push(ra.getObjProperty(this.data, 'contact.telephone2', ''));
-        //  data.push(ra.getObjProperty(this.data, 'contact.contactType', ''));
+
         var walks = ra.getObjProperty(this.data, 'walks', null);
         if (walks.length > 0) {
             var walk1 = walks[0];
-            data.push(ra.getObjProperty(walk1, 'type', ''));
+            var linear = ra.getObjProperty(walk1, 'type', '') === 'linear';
+            if (linear) {
+                data.push('Linear');
+            } else {
+                data.push('Circular');
+            }
             distance = ra.getObjProperty(walk1, 'distance', '');
             units = ra.getObjProperty(walk1, 'units', '');
             natgrade = ra.getObjProperty(walk1, 'natgrade', '');
@@ -285,20 +293,30 @@ ra.walkseditor.draftWalk = function (  ) {
         }
         data.push('');  // ascent
         data.push('');
-        data.push(ra.getObjProperty(this.data, 'facilities.refresh.value', ''));
-        data.push(ra.getObjProperty(this.data, 'facilities.toilet.value', ''));
-        data.push(ra.getObjProperty(this.data, 'transport.access.value', ''));
-        data.push(ra.getObjProperty(this.data, 'transport.park.value', ''));
-        data.push(ra.getObjProperty(this.data, 'transport.share.value', ''));
-        data.push(ra.getObjProperty(this.data, 'transport.coach.value', ''));
-        data.push(ra.getObjProperty(this.data, 'accessibility.dog.value', ''));
-        data.push(ra.getObjProperty(this.data, 'accessibility.intro.value', ''));
-        data.push(ra.getObjProperty(this.data, 'accessibility.nostiles.value', ''));
-        data.push(ra.getObjProperty(this.data, 'accessibility.family.value', ''));
-        data.push(ra.getObjProperty(this.data, 'accessibility.wheelchair.value', ''));
+        data.push(this.outFlag(this.data, 'accessibility.dog.value'));
+        data.push(this.outFlag(this.data, 'accessibility.intro.value', ''));
+        data.push(this.outFlag(this.data, 'accessibility.nostiles.value', ''));
+        data.push(this.outFlag(this.data, 'accessibility.family.value', ''));
+        data.push(this.outFlag(this.data, 'accessibility.wheelchair.value', ''));
 
+        data.push(this.outFlag(this.data, 'transport.access.value', ''));
+        data.push(this.outFlag(this.data, 'transport.park.value', ''));
+        data.push(this.outFlag(this.data, 'transport.share.value', ''));
+        data.push(this.outFlag(this.data, 'transport.coach.value', ''));
+
+        data.push(this.outFlag(this.data, 'facilities.refresh.value', ''));
+        data.push(this.outFlag(this.data, 'facilities.toilet.value', ''));
         var out = ra.arrayToCSV(data) + "\n\r";
         return out;
+    };
+    this.outFlag = function (data, item) {
+        var value = ra.getObjProperty(data, item, false);
+        if (value) {
+            return 'True';
+        } else {
+            return '';
+        }
+
     };
     this._exportLocation = function (dataarray, data) {
         if (data === null) {
@@ -307,19 +325,117 @@ ra.walkseditor.draftWalk = function (  ) {
             dataarray.push('');
             dataarray.push('');
             dataarray.push('');
-            dataarray.push('');
-            dataarray.push('');
         } else {
             dataarray.push(ra.getObjProperty(data, 'time', ''));
-            dataarray.push(ra.getObjProperty(data, 'latitude', ''));
-            dataarray.push(ra.getObjProperty(data, 'longitude', ''));
-            dataarray.push(ra.getObjProperty(data, 'postcode.value', ''));
-            dataarray.push(''); //  GR
-            dataarray.push(''); //  W3W
+            dataarray.push('');
+            dataarray.push('');
+            dataarray.push(ra.getObjProperty(data, 'gridref10', ''));
             dataarray.push(ra.getObjProperty(data, 'name', ''));
         }
 
     };
+
+    this.exportToGWEMLine = function () {
+        var difficulty = '';
+        var localgrade = '';
+        var km = '';
+        var miles = '';
+        var data = [];
+        var walkdate = ra.getObjProperty(this.data, 'basics.date', null);
+        if (walkdate === null) {
+            data.push('');
+        } else {
+            data.push(ra.date.DDMMYYYY(walkdate));
+        }
+        data.push(ra.getObjProperty(this.data, 'basics.title', ''));
+        data.push(ra.getObjProperty(this.data, 'basics.description', ''));
+        var walks = ra.getObjProperty(this.data, 'walks', null);
+
+        if (walks.length > 0) {
+            var walk1 = walks[0];
+            difficulty = ra.getObjProperty(walk1, 'natgrade', '');
+            localgrade = ra.getObjProperty(walk1, 'localgrade', '');
+            var units = ra.getObjProperty(walk1, 'units', '');
+            if (units === 'miles') {
+                miles = ra.getObjProperty(walk1, 'distance', 0);
+            } else {
+                km = ra.getObjProperty(walk1, 'distance', 0);
+            }
+            var linear = ra.getObjProperty(walk1, 'type', '') === 'linear';
+            if (linear) {
+                data.push('Linear');
+            } else {
+                data.push('Circular');
+            }
+        } else {
+            data.push('');
+        }
+
+        // start
+        this._exportGWEMLocation(data, ra.getObjProperty(this.data, 'start.location', null));
+        var exact = ra.getObjProperty(this.data, 'start.type', null) === "start";
+        if (exact) {
+            data.push('Yes');
+        } else {
+            data.push('No');
+        }
+        data.push(ra.getObjProperty(this.data, 'start.location.time', ''));
+
+        // meeting
+        var meetloc = ra.getObjProperty(this.data, 'meeting.locations', []);
+        if (meetloc.length > 0) {
+            this._exportGWEMLocation(data, meetloc[0]);
+            data.push('Yes');  // exact
+            data.push(ra.getObjProperty(meetloc[0], 'time', ''));
+        } else {
+            this._exportGWEMLocation(data, null);
+            data.push('');
+            data.push('');
+        }
+
+        // finish
+        this._exportGWEMLocation(data, ra.getObjProperty(this.data, 'finish.location', null));
+
+        data.push('Public');
+        data.push(difficulty);
+        data.push(localgrade);
+        data.push(km);
+        data.push(miles);
+        var estfinish = '';
+        data.push(estfinish);
+
+        // contact
+        data.push(ra.getObjProperty(this.data, 'contact.id', ''));
+        var contactType = ra.getObjProperty(this.data, 'contact.contactType', '');
+        if (contactType === 'isLeader') {
+            data.push('Yes');
+        } else {
+            data.push('No');
+        }
+        data.push(ra.getObjProperty(this.data, 'contact.displayName', ''));
+        data.push(''); // Festivals
+        data.push('');  // Strands
+
+        data.push(ra.getObjProperty(this.data, 'basics.notes', ''));
+
+        var out = ra.arrayToCSV(data) + "\n\r";
+        return out;
+    };
+    this._exportGWEMLocation = function (dataarray, data) {
+        if (data === null) {
+            dataarray.push('');
+            dataarray.push('');
+            dataarray.push('');
+            dataarray.push('');
+        } else {
+            dataarray.push('');
+            dataarray.push(ra.getObjProperty(data, 'postcode.value', ''));
+            dataarray.push(ra.getObjProperty(data, 'gridref10', ''));
+            dataarray.push(ra.getObjProperty(data, 'name', ''));
+        }
+
+    };
+
     this.displayDetails = function () {
         var $html = "<div id='ramblers-details-buttons1' ></div>";
         $html += this.walkDetails();

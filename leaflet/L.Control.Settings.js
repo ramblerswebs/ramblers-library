@@ -2,7 +2,7 @@ var L, ra, document;
 L.Control.Settings = L.Control.extend({
     options: {
         id: null,
-        title: 'Settings&Help',
+        title: 'Settings',
         position: 'topleft'
     },
     saveOptions: {
@@ -28,7 +28,7 @@ L.Control.Settings = L.Control.extend({
             }
             _this.modal = ra.modals.createModal(settingsDiv, false);
             var title = document.createElement('h4');
-            title.textContent = "Settings & Help";
+            title.textContent = "Settings";
             settingsDiv.appendChild(title);
             // tabs
             var cont = document.createElement('div');
@@ -57,19 +57,19 @@ L.Control.Settings = L.Control.extend({
 
             control = _this.leafletMap.mouseControl();
             if (control !== null) {
-                _this._addTabItem(cont, list, 'Ordnance Survey', 'osmaps', first);
-                var osmapsDiv = _this._addTabContentItem(content, "osmaps", first);
+                _this._addTabItem(cont, list, 'Mouse position', 'mouse', first);
+                var mouseDiv = _this._addTabContentItem(content, "mouse", first);
                 first = false;
-                control.settingsForm(osmapsDiv);
+                control.settingsForm(mouseDiv);
                 _this.controlsWithSettings.push(control);
             }
 
             control = _this.leafletMap.rightclickControl();
             if (control !== null) {
-                _this._addTabItem(cont, list, 'Mouse Right Click', 'mouse', first);
-                var mouseDiv = _this._addTabContentItem(content, "mouse", first);
+                _this._addTabItem(cont, list, 'Mouse Right Click', 'rightmouse', first);
+                var rightmouseDiv = _this._addTabContentItem(content, "rightmouse", first);
                 first = false;
-                control.settingsForm(mouseDiv);
+                control.settingsForm(rightmouseDiv);
                 _this.controlsWithSettings.push(control);
             }
 
@@ -82,15 +82,19 @@ L.Control.Settings = L.Control.extend({
                 _this.controlsWithSettings.push(control);
             }
 
+            control = _this.leafletMap.osInfoControl();
+            if (control !== null) {
+                _this._addTabItem(cont, list, 'Ordnance Survey', 'osinfo', first);
+                var osinfo = _this._addTabContentItem(content, "osinfo", first);
+                first = false;
+                control.settingsForm(osinfo);
+                _this.controlsWithSettings.push(control);
+            }
+
             _this.saveTab = _this._addTabItem(cont, list, 'Save<sup>ON</sup>/Reset Settings', 'save', false);
             var saveDiv = _this._addTabContentItem(content, "save", false);
             _this._addSave(saveDiv);
 
-            if (_this._helpPageUrl !== '') {
-                _this._addTabItem(cont, list, 'Help/Feedback', 'help', false);
-                var helpDiv = _this._addTabContentItem(content, "help", false);
-                _this._addHelp(helpDiv);
-            }
             _this._saveSettings();
             document.addEventListener("ra-setting-changed", function (e) {
                 _this._saveSettings();
@@ -104,13 +108,14 @@ L.Control.Settings = L.Control.extend({
 //    changeDisplay: function (display) {
 //        this._container.style.display = display;
 //    },
-    setHelpPage: function (value) {
-        this._helpPageUrl = value;
-    },
+
     setLeafletMap: function (value) {
         this.leafletMap = value;
     },
     _addSave: function (tag) {
+          var hdg1 = document.createElement('h3');
+        hdg1.textContent = 'Save settings between sessions';
+        tag.appendChild(hdg1);
         var save = ra.html.input.yesNo(tag, '', "Save settings between sessions/future visits to web site (you accept cookies)", this.saveOptions, 'saveSettings');
         var reset = ra.html.input.action(tag, '', "Reset all settings to default values", 'Reset');
         var _this = this;
@@ -141,22 +146,6 @@ L.Control.Settings = L.Control.extend({
         });
     },
 
-    _addHelp: function (tag) {
-        if (this._helpPageUrl !== '') {
-            var helpcomment = document.createElement('div');
-            helpcomment.setAttribute('class', 'help map-tools');
-            helpcomment.innerHTML = "If you have a problem with the mapping facilities on this site then please contact the web site owner. Alternatively contact us via the mapping HELP below.</br></br>";
-            tag.appendChild(helpcomment);
-
-            var help = document.createElement('a');
-            help.setAttribute('class', 'link-button mintcake');
-            help.setAttribute('href', ra.map.helpBase + this._helpPageUrl);
-            help.setAttribute('target', '_blank');
-            help.style.cssFloat = "center";
-            help.textContent = "View Mapping Help";
-            tag.appendChild(help);
-        }
-    },
     _addTabItem: function (container, list, name, id, active) {
         var listItem;
         listItem = document.createElement('div');

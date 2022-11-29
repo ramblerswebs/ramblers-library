@@ -885,6 +885,15 @@ ra.html = (function () {
         const doc = new DOMParser().parseFromString(dirtyString, 'text/html');
         return doc.body.textContent || '';
     };
+
+    html.walkDOM = function (node, func) {
+        func(node);  //this will invoke the functionToInvoke from arg
+        node = node.firstChild;
+        while (node) {
+            html.walkDOM(node, func);
+            node = node.nextSibling;
+        }
+    };
     return html;
 }
 ());
@@ -952,10 +961,8 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.ra.property = property;
         inputTag.ra.options = options;
         inputTag.addEventListener("click", function (e) {
-            inputTag.ra.object[inputTag.ra.property] = !inputTag.ra.object[inputTag.ra.property];
-            ra.html.input.yesNoReset(inputTag, inputTag.ra.object[inputTag.ra.property]);
-            // let event = new Event("ra-input-change"); Reset does this for us
-            // inputTag.dispatchEvent(event);
+            var newvalue = !inputTag.ra.object[inputTag.ra.property];
+            ra.html.input.yesNoReset(inputTag, newvalue);
         });
         itemDiv.appendChild(_label);
         itemDiv.appendChild(inputTag);
@@ -963,18 +970,20 @@ if (typeof (ra.html.input) === "undefined") {
     };
     ra.html.input.yesNoReset = function (inputTag, value) {
         var ra = inputTag.ra;
-        ra.object[ra.property] = value;
-        if (value) {
-            inputTag.textContent = ra.options[0];
-            inputTag.classList.add("button-p0555");
-            inputTag.classList.remove("button-p0186");
-        } else {
-            inputTag.textContent = ra.options[1];
-            inputTag.classList.add("button-p0186");
-            inputTag.classList.remove("button-p0555");
+        if (ra.object[ra.property] !== value) {
+            ra.object[ra.property] = value;
+            if (value) {
+                inputTag.textContent = ra.options[0];
+                inputTag.classList.add("button-p0555");
+                inputTag.classList.remove("button-p0186");
+            } else {
+                inputTag.textContent = ra.options[1];
+                inputTag.classList.add("button-p0186");
+                inputTag.classList.remove("button-p0555");
+            }
+            let event = new Event("ra-input-change");
+            inputTag.dispatchEvent(event);
         }
-        let event = new Event("ra-input-change");
-        inputTag.dispatchEvent(event);
     };
     ra.html.input.combo = function (tag, divClass, label, raobject, property, options) {
         var itemDiv = document.createElement('div');
@@ -1064,11 +1073,13 @@ if (typeof (ra.html.input) === "undefined") {
     };
     ra.html.input.numberReset = function (inputTag, value) {
         var ra = inputTag.ra;
-        ra.object[ra.property] = value;
-        inputTag.value = value;
-        inputTag.ra._label.textContent = inputTag.ra.label.replace("%n", inputTag.value);
-        let event = new Event("ra-input-change");
-        inputTag.dispatchEvent(event);
+        if (ra.object[ra.property] !== value) {
+            ra.object[ra.property] = value;
+            inputTag.value = value;
+            inputTag.ra._label.textContent = inputTag.ra.label.replace("%n", inputTag.value);
+            let event = new Event("ra-input-change");
+            inputTag.dispatchEvent(event);
+        }
     };
     ra.html.input.colour = function (tag, divClass, labeltext, raobject, property) {
         var itemDiv = document.createElement('div');
@@ -1101,10 +1112,12 @@ if (typeof (ra.html.input) === "undefined") {
     };
     ra.html.input.colorReset = function (inputTag, value) {
         var ra = inputTag.ra;
-        ra.object[ra.property] = value;
-        inputTag.value = value;
-        let event = new Event("ra-input-change"); // (2)
-        inputTag.dispatchEvent(event);
+        if (ra.object[ra.property] !== value) {
+            ra.object[ra.property] = value;
+            inputTag.value = value;
+            let event = new Event("ra-input-change"); // (2)
+            inputTag.dispatchEvent(event);
+        }
     };
     ra.html.input.lineStyle = function (tag, divClass, labeltext, raobject) {
         var itemDiv = document.createElement('div');
@@ -1155,6 +1168,9 @@ if (typeof (ra.html.input) === "undefined") {
         ra.html.input.colorReset(itemDiv.ra.color, style.color, false);
         ra.html.input.numberReset(itemDiv.ra.weight, style.weight, false);
         ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity, false);
+
+        let event = new Event("ra-input-change"); // (2)
+        itemDiv.dispatchEvent(event);
     };
     ra.html.input._addExampleLine = function (tag, length, comment) {
         var com = document.createElement('div');

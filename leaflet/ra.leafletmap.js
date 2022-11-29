@@ -82,7 +82,7 @@ ra.leafletmap = function (tag, options) {
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
     //this.controls.errorDiv.setText(ra.html.getBrowserStatus());
     this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
-    
+
     // top left controls
     if (options.displayElevation) {
         this.controls.elevation = L.control.elevation({
@@ -133,6 +133,9 @@ ra.leafletmap = function (tag, options) {
                 }
         );
     }
+    if (options.helpPage !== '') {
+        this.controls.help = L.control.help({helpPageUrl: options.helpPage}).addTo(this.map);
+    }
 
     this.controls.search = L.control.search({position: 'topleft'}).addTo(this.map);
     this.controls.mylocation = L.control.mylocation({position: 'topleft'}).addTo(this.map);
@@ -140,7 +143,7 @@ ra.leafletmap = function (tag, options) {
     this.controls.osinfo = L.control.osinfo().addTo(this.map);
     this.controls.rightclick = L.control.rightclick().addTo(this.map);
     this.controls.settings = L.control.settings();
-    this.controls.settings.setHelpPage(options.helpPage);
+   // this.controls.settings.setHelpPage(options.helpPage);
     this.controls.settings.addTo(this.map);
     this.controls.settings.setLeafletMap(this);
 
@@ -154,7 +157,9 @@ ra.leafletmap = function (tag, options) {
     tools.moveMapControl(this.controls.rightclick);
     tools.moveMapControl(this.controls.osinfo);
     tools.moveMapControl(this.controls.settings);
-
+    if (options.helpPage !== '') {
+        tools.moveMapControl(this.controls.help);
+    }
 
     this.controls.resizer = L.control.resizer({onlyOnHover: false, direction: 's'}).addTo(this.map);
 
@@ -191,8 +196,8 @@ ra.leafletmap = function (tag, options) {
         this.map.setView(pt, options.initialview.zoom);
     }
     //this.map.addEventListener('fullscreenchange', function () {
-        // let modal know if map full screen;
-        //  ra.modals.fullscreen(self.map.isFullscreen(), self.map);
+    // let modal know if map full screen;
+    //  ra.modals.fullscreen(self.map.isFullscreen(), self.map);
     //});
     // top right controls
     this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
@@ -273,6 +278,10 @@ ra.leafletmap = function (tag, options) {
     this.rightclickControl = function () {
         return this.controls.rightclick;
     };
+    this.osInfoControl = function () {
+        return this.controls.osinfo;
+    };
+          
     this.errorDivControl = function () {
         return this.controls.errorDiv;
     };

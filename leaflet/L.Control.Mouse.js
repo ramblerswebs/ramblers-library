@@ -8,17 +8,10 @@ L.Control.Mouse = L.Control.extend({
         numDigits: 5
     },
     _userOptions: {
-        displayMouseGridSquare: true,
-        OSGridDisplay: false,
-        osgridline: {
-            color: '#0080C0',
-            weight: 2,
-            opacity: 0.5}
+        displayMouseGridSquare: true
     },
     _controls: {
-        displayMouseGridSquare: null,
-        OSGridDisplay: null,
-        osgridline: null
+        displayMouseGridSquare: null
     },
     onAdd: function (map) {
         this._map = map;
@@ -28,22 +21,10 @@ L.Control.Mouse = L.Control.extend({
         this._container.innerHTML = this.options.emptyString;
         this.OSGridSquareLayer = L.featureGroup([]).addTo(map);
         this.OSGridSquareLayer.options.ignore = true;
-        this.osMapLayer = L.featureGroup([]).addTo(map);
-        this.OSGrid = {};
-        this.OSGrid.basicgrid = false;
-        this.OSGrid.layer = L.layerGroup().addTo(map);
-        var _this = this;
-        map.on('zoomend', function () {
-            _this.displayOSGrid();
-        });
-        map.on('moveend', function () {
-            _this.displayOSGrid();
-        });
         if (L.Browser.mobile) {
             this._container.style.display = 'none';
         }
         this._readSettings();
-        this.displayOSGrid();
         return this._container;
     },
     changeDisplay: function (display) {
@@ -132,8 +113,151 @@ L.Control.Mouse = L.Control.extend({
         }
         return "";
     },
+
+    settingsForm: function (tag) {
+        try {
+
+            if (!L.Browser.mobile) {
+                var title = document.createElement('h3');
+                title.textContent = 'Mouse Position';
+                tag.appendChild(title);
+                title = document.createElement('p');
+                title.textContent = 'As you zoom in, the mouse can display a 100m and a 10m square showing the area covered by a 6 or 8 figure grid reference.';
+                tag.appendChild(title);
+                var osMouse = ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
+                this._controls.displayMouseGridSquare = osMouse;
+                osMouse.addEventListener("ra-input-change", function (e) {
+                    ra.settings.changed();
+                });
+            }
+
+
+        } catch (err) {
+            alert(err.message);
+        }
+    },
+    resetSettings: function () {
+        if (this._controls.displayMouseGridSquare !== null) {
+            ra.html.input.yesNoReset(this._controls.displayMouseGridSquare, true);
+        }
+    },
+    _readSettings: function () {
+        ra.settings.read('__mouseossquare', this._userOptions);
+    },
+    saveSettings: function (save) {
+        ra.settings.save(save, '__mouseossquare', this._userOptions);
+    }
+});
+
+
+L.control.mouse = function (options) {
+    return new L.Control.Mouse(options);
+};
+
+L.Control.OSInfo = L.Control.extend({
+    options: {
+        position: 'bottomleft'
+    },
+    _displayOSGrid: false,
+    _userOptions: {
+
+        osgridline: {
+            color: '#0080C0',
+            weight: 2,
+            opacity: 0.5}
+    },
+    _controls: {
+        osgridline: null
+    },
+
+    onAdd: function (map) {
+        self = this;
+        this._map = map;
+        this.osMapLayer = L.featureGroup([]).addTo(map);
+        this.OSGrid = {};
+        this.OSGrid.basicgrid = false;
+        this.OSGrid.layer = L.layerGroup().addTo(map);
+        this._containerAll = L.DomUtil.create('div', 'leaflet-control-osmaps leaflet-bar leaflet-control');
+        this._container = L.DomUtil.create('div', '', this._containerAll);
+        this._containerAll.title = "Display the coverage of all OS Explore/Landranger maps";
+
+        L.DomEvent.disableClickPropagation(this._container);
+        this._appendButtons(this._container);
+        this.holder.style.display = "none";
+        L.DomEvent.addListener(this._containerAll, 'mouseover', function () {
+            self.holder.style.display = "";
+        }, this);
+        L.DomEvent.addListener(this._containerAll, 'mouseout', function () {
+            self.holder.style.display = "none";
+        }, this);
+        L.DomEvent.addListener(this._containerAll, 'mouseover', function () {
+            if (this.osMapLayer.getLayers().length > 0) {
+                this.removeDiv.style.display = "";
+            } else {
+                this.removeDiv.style.display = "none";
+            }
+        }, this);
+        this._readSettings();
+
+        map.on('zoomend', function () {
+            self.displayOSGrid();
+        });
+        map.on('moveend', function () {
+            self.displayOSGrid();
+        });
+        this.displayOSGrid();
+        return this._containerAll;
+    },
+    _appendButtons: function (container) {
+        this.holder = L.DomUtil.create('div', 'leaflet-os-options', container);
+
+        var element = L.DomUtil.create('div', 'explorer', this.holder);
+        element.title = "Display coverage of all Explorer maps";
+        element.innerHTML = "Explorer 25K";
+        L.DomEvent.addListener(element, 'click', this._disp25K, this);
+
+        var element = L.DomUtil.create('div', 'landranger', this.holder);
+        element.title = "Display coverage of all Landranger maps";
+        element.innerHTML = "Landranger 50K";
+        L.DomEvent.addListener(element, 'click', this._disp50K, this);
+
+        this.removeDiv = L.DomUtil.create('div', 'remove', this.holder);
+        this.removeDiv.title = "Remove coverage of maps";
+        this.removeDiv.innerHTML = "Clear maps";
+        L.DomEvent.addListener(this.removeDiv, 'click', this._clear, this);
+
+        this.osGridMenuItem = L.DomUtil.create('div', 'osgrid', this.holder);
+        this.osGridMenuItem.title = "Display Ordnance Survey grid over the map";
+        this.osGridMenuItem.innerHTML = "OS Grid [OFF]";
+        L.DomEvent.addListener(this.osGridMenuItem, 'click', this._osgrid, this);
+
+
+    },
+    onRemove: function (map) {
+
+    },
+    _disp25K: function () {
+        this.osMapLayer.clearLayers();
+        this.displayOSMapOutlines('25K');
+    },
+    _disp50K: function () {
+        this.osMapLayer.clearLayers();
+        this.displayOSMapOutlines('50K');
+    },
+    _clear: function () {
+        this.osMapLayer.clearLayers();
+    },
+    _osgrid: function () {
+        this._displayOSGrid = !this._displayOSGrid;
+        if (this._displayOSGrid) {
+            this.osGridMenuItem.innerHTML = "OS Grid [ON]";
+        } else {
+            this.osGridMenuItem.innerHTML = "OS Grid [OFF]";
+        }
+        this.displayOSGrid();
+    },
     displayOSGrid: function () {
-        if (!this._userOptions.OSGridDisplay) {
+        if (!this._displayOSGrid) {
             this.OSGrid.layer.clearLayers();
             return;
         }
@@ -184,6 +308,25 @@ L.Control.Mouse = L.Control.extend({
         this.OSGrid.layer.clearLayers();
         this.drawOSMapGrid(ne, sw, gs, this.OSGrid.layer);
     },
+
+    displayOSMapOutlines: function (type) {
+        // type should be '25K' or '50K'
+        var self = this;
+        var url = "https://osmaps.theramblers.org.uk/index.php?mapscale=" + type;
+        ra.ajax.getJSON(url, function (err, items) {
+            if (err !== null) {
+                var msg = "Error: Something went wrong: " + err;
+            } else {
+                if (items.length !== 0) {
+                    for (i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        ra.map.os.display(item, self.osMapLayer);
+                    }
+                }
+                self._map.fitBounds(self.osMapLayer.getBounds());
+            }
+        });
+    },
     drawOSMapGrid: function (ne, sw, gs, layer) {
         var style;
         var color = this._userOptions.osgridline.color;
@@ -217,49 +360,20 @@ L.Control.Mouse = L.Control.extend({
     settingsForm: function (tag) {
         try {
             var _this = this;
-            this.osMapLayer.clearLayers();
-            var title = document.createElement('h4');
+            var title = document.createElement('h3');
             title.textContent = 'Ordnance Survey Grid';
             tag.appendChild(title);
-            var osGrid = ra.html.input.yesNo(tag, '', "Display OS Grid at 100km, 10km or 1km dependant on zoom level", this._userOptions, 'OSGridDisplay');
+            var comment = document.createElement('div');
+            comment.innerHTML = 'You can change the style of how the OS Grid is displayed';
+            tag.appendChild(comment);
             var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this._userOptions.osgridline);
-            this._controls.OSGridDisplay = osGrid;
             this._controls.osgridline = line;
-            if (_this._userOptions.OSGridDisplay) {
-                line.style.display = 'inherit';
-            } else {
-                line.style.display = 'none';
-            }
-            osGrid.addEventListener("ra-input-change", function (e) {
-                ra.settings.changed();
-                if (_this._userOptions.OSGridDisplay) {
-                    line.style.display = 'inherit';
-                } else {
-                    line.style.display = 'none';
-                }
-                _this.OSGrid.basicgrid = false;
-                _this.displayOSGrid();
-            });
+
             line.addEventListener("ra-input-change", function (e) {
                 ra.settings.changed();
                 _this.OSGrid.basicgrid = false;
                 _this.displayOSGrid();
             });
-            if (!L.Browser.mobile) {
-                tag.appendChild(document.createElement('hr'));
-                title = document.createElement('h4');
-                title.textContent = 'Mouse Operation';
-                tag.appendChild(title);
-                title = document.createElement('p');
-                title.textContent = 'As you zoom in, the mouse can display a 100m and a 10m square showing the area covered by a 6 or 8 figure grid reference.';
-                tag.appendChild(title);
-                var osMouse = ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
-                this._controls.displayMouseGridSquare = osMouse;
-                osMouse.addEventListener("ra-input-change", function (e) {
-                    ra.settings.changed();
-                });
-            }
-
             tag.appendChild(document.createElement('hr'));
             var title = document.createElement('h4');
             title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
@@ -274,110 +388,16 @@ L.Control.Mouse = L.Control.extend({
         }
     },
     resetSettings: function () {
-        ra.html.input.yesNoReset(this._controls.OSGridDisplay, false);
         ra.html.input.lineStyleReset(this._controls.osgridline, {
             color: '#0080C0',
             weight: 2,
             opacity: 0.5});
-        if (this._controls.displayMouseGridSquare !== null) {
-            ra.html.input.yesNoReset(this._controls.displayMouseGridSquare, true);
-        }
     },
     _readSettings: function () {
-        ra.settings.read('__mouseosmap', this._userOptions);
+        ra.settings.read('__osmapinfo', this._userOptions);
     },
     saveSettings: function (save) {
-        ra.settings.save(save, '__mouseosmap', this._userOptions);
-    }
-});
-
-
-L.control.mouse = function (options) {
-    return new L.Control.Mouse(options);
-};
-
-L.Control.OSInfo = L.Control.extend({
-    options: {
-        position: 'bottomleft'
-    },
-
-    onAdd: function (map) {
-        self = this;
-        this._map = map;
-        this.osMapLayer = L.featureGroup([]).addTo(map);
-        this._containerAll = L.DomUtil.create('div', 'leaflet-control-osmaps leaflet-bar leaflet-control');
-        this._container = L.DomUtil.create('div', '', this._containerAll);
-        this._containerAll.title = "Display the coverage of all OS Explore/Landranger maps";
-
-        L.DomEvent.disableClickPropagation(this._container);
-        this._appendButtons(this._container);
-        this.holder.style.display = "none";
-        L.DomEvent.addListener(this._containerAll, 'mouseover', function () {
-            self.holder.style.display = "";
-        }, this);
-        L.DomEvent.addListener(this._containerAll, 'mouseout', function () {
-            self.holder.style.display = "none";
-        }, this);
-        L.DomEvent.addListener(this._containerAll, 'mouseover', function () {
-            if (this.osMapLayer.getLayers().length > 0) {
-                this.removeDiv.style.display = "";
-            } else {
-                this.removeDiv.style.display = "none";
-            }
-        }, this);
-        return this._containerAll;
-    },
-    _appendButtons: function (container) {
-        this.holder = L.DomUtil.create('div', 'leaflet-os-options', container);
-
-        var element = L.DomUtil.create('div', 'explorer', this.holder);
-        element.title = "Display coverage of all Explorer maps";
-        element.innerHTML = "Explorer 25K";
-        L.DomEvent.addListener(element, 'click', this._disp25K, this);
-
-        var element = L.DomUtil.create('div', 'landranger', this.holder);
-        element.title = "Display coverage of all Landranger maps";
-        element.innerHTML = "Landranger 50K";
-        L.DomEvent.addListener(element, 'click', this._disp50K, this);
-
-        this.removeDiv = L.DomUtil.create('div', 'remove', this.holder);
-        this.removeDiv.title = "Remove coverage of maps";
-        this.removeDiv.innerHTML = "Clear maps";
-        L.DomEvent.addListener(this.removeDiv, 'click', this._clear, this);
-
-    },
-    onRemove: function (map) {
-
-    },
-    _disp25K: function () {
-        this.osMapLayer.clearLayers();
-        this.displayOSMapOutlines('25K');
-    },
-    _disp50K: function () {
-        this.osMapLayer.clearLayers();
-        this.displayOSMapOutlines('50K');
-    },
-    _clear: function () {
-        this.osMapLayer.clearLayers();
-    },
-
-    displayOSMapOutlines: function (type) {
-        // type should be '25K' or '50K'
-        var self = this;
-        var url = "https://osmaps.theramblers.org.uk/index.php?mapscale=" + type;
-        ra.ajax.getJSON(url, function (err, items) {
-            if (err !== null) {
-                var msg = "Error: Something went wrong: " + err;
-            } else {
-                if (items.length !== 0) {
-                    for (i = 0; i < items.length; i++) {
-                        var item = items[i];
-                        ra.map.os.display(item, self.osMapLayer);
-                    }
-                }
-                self._map.fitBounds(self.osMapLayer.getBounds());
-            }
-        });
+        ra.settings.save(save, '__osmapinfo', this._userOptions);
     }
 });
 
@@ -1046,7 +1066,7 @@ L.Control.Rightclick = L.Control.extend({
     settingsForm: function (tag) {
         var comment;
         // var mouse = this._ramblersMap.PostcodeStatus;
-        var title = document.createElement('h4');
+        var title = document.createElement('h3');
         title.textContent = 'Mouse right click/tap and hold';
         tag.appendChild(title);
         var comments = document.createElement('p');
