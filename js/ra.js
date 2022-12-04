@@ -666,8 +666,13 @@ ra.html = (function () {
         return ele;
     };
     html.displayInModal = function (tag) {
-        // used to display walk images
-        ra.modals.createModal(tag.cloneNode(true), false);
+        // used by ra.walk to display images
+        var ele = document.createElement("div");
+        // copy children as tag has an onclick whic creates another model
+        for (var child = tag.firstChild; child !== null; child = child.nextSibling) {
+            ele.appendChild(child.cloneNode(true));
+        }
+        ra.modals.createModal(ele, false);
     };
     html.generateTags = function (root, items) {
         var index;

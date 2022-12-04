@@ -253,6 +253,10 @@ ra.walkseditor.draftWalk = function (  ) {
 
         var walks = ra.getObjProperty(this.data, 'walks', null);
         if (walks.length > 0) {
+            if (walks.length > 1) {
+                var reason = "WM does not support led walks with more than one walk/distance";
+                this.walkNotSupported(reason);
+            }
             var walk1 = walks[0];
             var linear = ra.getObjProperty(walk1, 'type', '') === 'linear';
             if (linear) {
@@ -266,7 +270,11 @@ ra.walkseditor.draftWalk = function (  ) {
         } else {
             data.push('null');
         }
-        var start = ra.getObjProperty(this.data, 'start.location', null);
+        var area = ra.getObjProperty(this.data, 'start.type', null) === "area";
+        if (area) {
+            var reason = "WM does not support option to publish the general area of a walk";
+            this.walkNotSupported(reason);
+        }
         this._exportLocation(data, ra.getObjProperty(this.data, 'start.location', null));
         var meetloc = ra.getObjProperty(this.data, 'meeting.locations', []);
         if (meetloc.length > 0) {
@@ -352,6 +360,10 @@ ra.walkseditor.draftWalk = function (  ) {
         var walks = ra.getObjProperty(this.data, 'walks', null);
 
         if (walks.length > 0) {
+            if (walks.length > 1) {
+                var reason = "GWEM does not support led walks with more than one walk/distance";
+                this.walkNotSupported(reason);
+            }
             var walk1 = walks[0];
             difficulty = ra.getObjProperty(walk1, 'natgrade', '');
             localgrade = ra.getObjProperty(walk1, 'localgrade', '');
@@ -435,7 +447,15 @@ ra.walkseditor.draftWalk = function (  ) {
         }
 
     };
-
+    this.walkNotSupported = function (reason) {
+        var walkdate = ra.getObjProperty(this.data, 'basics.date', 'No date defined');
+        var title = ra.getObjProperty(this.data, 'basics.title', 'No title defined');
+        var msg = "Unable to export all features of this walk\n\r";
+        msg += "Reason: " + reason + "\n\r";
+        msg += "Walk date: " + walkdate + "\n\r";
+        msg += "Walk Tilte: " + title;
+        alert(msg);
+    };
     this.displayDetails = function () {
         var $html = "<div id='ramblers-details-buttons1' ></div>";
         $html += this.walkDetails();

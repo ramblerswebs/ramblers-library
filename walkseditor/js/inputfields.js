@@ -292,9 +292,10 @@ ra.walkseditor.inputFields = function () {
         inputTag.setAttribute('type', "date");
         inputTag.setAttribute('class', 'gwem');
         var spanItem = document.createElement('span');
+        spanItem.setAttribute('class', 'gwem dow');
         itemDiv.appendChild(_label);
-        itemDiv.appendChild(inputTag);
         itemDiv.appendChild(spanItem); // to hold day of the week
+        itemDiv.appendChild(inputTag);
         inputTag.raobject = raobject;
         inputTag.raproperty = property;
         if (raobject.hasOwnProperty(property)) {  // Initialise value
@@ -316,9 +317,9 @@ ra.walkseditor.inputFields = function () {
 
             var n = weekday[d.getDay()];
             if (typeof n === 'undefined') {
-                e.target.nextSibling.textContent = "";
+                e.target.previousSibling.textContent = "";
             } else {
-                e.target.nextSibling.textContent = "   " + n;
+                e.target.previousSibling.textContent = "   " + n;
             }
         });
         if (helpFunction !== null) {

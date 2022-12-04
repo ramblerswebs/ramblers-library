@@ -40,19 +40,19 @@ ra.walk = (function () {
         };
         xhttp.send();
 
-    },
-            my.registerWalks = function (walks) {
-                // my.testcsv();
-                var i, no, walk;
-                for (i = 0, no = walks.length; i < no; ++i) {
-                    walk = walks[i];
-                    my.walks[walk.id] = walks[i];
-                    var error = my._locationDiagnostics(walks[i]);
-                    if (error !== '') {
-                        console.log(error);
-                    }
-                }
-            };
+    };
+    my.registerWalks = function (walks) {
+        // my.testcsv();
+        var i, no, walk;
+        for (i = 0, no = walks.length; i < no; ++i) {
+            walk = walks[i];
+            my.walks[walk.id] = walks[i];
+            var error = my._locationDiagnostics(walks[i]);
+            if (error !== '') {
+                console.log(error);
+            }
+        }
+    };
     my.registerPHPWalks = function (mapOptions, data) {
         // stores walks for php walks displays
         var _allwalks = null;
@@ -357,14 +357,10 @@ ra.walk = (function () {
                     var caption = "<div>";
                     if (item.caption !== "") {
                         caption += item.caption;
-                    } else {
-                        caption += "<br/>";
-                    }
+                    } 
                     if (item.copyright !== "") {
                         caption += "<br/><i>&copy; " + item.copyright + "</i>";
-                    } else {
-                        caption += "<br/>";
-                    }
+                    } 
                     caption += "</div>";
                     $html += "<div class='walk-image' onclick='ra.html.displayInModal(this)'><img class='walkmedia' src='" + item.url + "'  >" + caption + "</div>";
                 }
@@ -374,6 +370,12 @@ ra.walk = (function () {
 
 
         $html += "<div class='walkitem walkdates'>" + PHP_EOL;
+        if ($walk.hasMeetPlace) {
+            $html += ra.html.addDiv("", "Walkers will travel together from the meeting place to the start of the walk, this may be by car, coach or public transport. Meeting times are often when the group will set off rather than when to arrive at the meet.");
+        }
+
+        $html += ra.html.addDiv("", "Start times are often when the group will start walking rather than when to get there.");
+
         if ($walk.detailsPageUrl !== '') {
             $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on National Web Site</a></div>" + PHP_EOL;
         }

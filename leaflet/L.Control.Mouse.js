@@ -178,11 +178,11 @@ L.Control.OSInfo = L.Control.extend({
         this.OSGrid.basicgrid = false;
         this.OSGrid.layer = L.layerGroup().addTo(map);
         this._containerAll = L.DomUtil.create('div', 'leaflet-control-osmaps leaflet-bar leaflet-control');
-        this._container = L.DomUtil.create('div', '', this._containerAll);
+       // this._container = L.DomUtil.create('div', '', this._containerAll);
         this._containerAll.title = "Display the coverage of all OS Explore/Landranger maps";
 
-        L.DomEvent.disableClickPropagation(this._container);
-        this._appendButtons(this._container);
+        L.DomEvent.disableClickPropagation(this._containerAll);
+        this._appendButtons(this._containerAll);
         this.holder.style.display = "none";
         L.DomEvent.addListener(this._containerAll, 'mouseover', function () {
             self.holder.style.display = "";

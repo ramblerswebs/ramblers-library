@@ -92,22 +92,23 @@ div.leaflet-os-options {
 div.leaflet-os-options div{
     width:95px;
     font-weight: bold;
-    padding:2px;
+    padding:5px;
     color:white;
     background-color: var(--xoption);
-    border-color:gray;
     border-radius: 5px;
-    border-width: 5px;
-    border-style:solid;
+    border-width: 0px;
+  
     margin-bottom:1px;
 }
 div.leaflet-os-options div.explorer:hover{
-    border-color: #FF7F50;
-}
+    background-color: #FF7F50;
+    }
 div.leaflet-os-options div.landranger:hover{
-    border-color: #C53283;
-}
+    background-color: #C53283;
+    }
 div.leaflet-os-options div.remove:hover{
-    border-color: gray;
-}
-
+    background-color: var(--xoptionHover);
+   }
+   div.leaflet-os-options div.osgrid:hover{
+    background-color: #0080C0;
+   }
