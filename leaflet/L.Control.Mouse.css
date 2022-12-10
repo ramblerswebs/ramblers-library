@@ -12,7 +12,8 @@
     border-color: #777777;
     border-style: solid;
     color: #333;
-    font: 11px/1.5 arial,Monaco, sans-serif;
+    font-size: 11px;
+    font-family: 'Monaco', monospace;
 }
 
 div.leaflet-control-container div.leaflet-control-resizer-corner-s{
@@ -60,10 +61,7 @@ div.leaflet-control-rightclick-container select.ra-mouse-options {
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
-    background-image: url(images/downtriangles.png) ;
-    background-repeat: no-repeat;
-    background-position: right .7em top 50%, 0 0;
-    background-size: .65em auto, 100%;
+    overflow: hidden;
 }
 select.ra-mouse-options::-ms-expand {
     display: none;
@@ -97,18 +95,21 @@ div.leaflet-os-options div{
     background-color: var(--xoption);
     border-radius: 5px;
     border-width: 0px;
-  
+
     margin-bottom:1px;
 }
 div.leaflet-os-options div.explorer:hover{
     background-color: #FF7F50;
-    }
+}
 div.leaflet-os-options div.landranger:hover{
     background-color: #C53283;
-    }
+}
 div.leaflet-os-options div.remove:hover{
     background-color: var(--xoptionHover);
-   }
-   div.leaflet-os-options div.osgrid:hover{
+}
+div.leaflet-os-options div.osgrid:hover{
     background-color: #0080C0;
-   }
+}
+div.leaflet-os-options div.disclaim:hover{
+    background-color: var(--xoptionHover);
+}

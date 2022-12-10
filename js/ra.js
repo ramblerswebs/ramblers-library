@@ -940,6 +940,10 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.classList.remove("button-p5565");
     };
     ra.html.input.yesNo = function (tag, divClass, label, raobject, property, options = ['Yes', 'No']) {
+        var colours = ["button-p0555", "button-p0186"];
+        if (options[0] !== 'Yes' || options[1] !== 'No') {
+            colours = ["granite", "granite"];
+        }
         var itemDiv = document.createElement('div');
         if (divClass !== '') {
             itemDiv.setAttribute('class', divClass);
@@ -949,17 +953,17 @@ if (typeof (ra.html.input) === "undefined") {
         _label.textContent = label;
         _label.style.display = "inline";
         var inputTag = document.createElement('button');
-        inputTag.setAttribute('class', 'small link-button white');
+        inputTag.setAttribute('class', 'small link-button granite');
         inputTag.style.display = "inline";
         inputTag.style.marginLeft = "10px";
         if (raobject[property]) {
             inputTag.textContent = options[0];
-            inputTag.classList.add("button-p0555");
-            inputTag.classList.remove("button-p0186");
+            inputTag.classList.remove(colours[1]);
+            inputTag.classList.add(colours[0]);
         } else {
             inputTag.textContent = options[1];
-            inputTag.classList.add("button-p0186");
-            inputTag.classList.remove("button-p0555");
+            inputTag.classList.remove(colours[0]);
+            inputTag.classList.add(colours[1]);
         }
         inputTag.ra = {};
         inputTag.ra.object = raobject;
@@ -967,28 +971,28 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.ra.options = options;
         inputTag.addEventListener("click", function (e) {
             var newvalue = !inputTag.ra.object[inputTag.ra.property];
-            ra.html.input.yesNoReset(inputTag, newvalue);
+            ra.html.input.yesNoReset(inputTag, newvalue, colours);
         });
         itemDiv.appendChild(_label);
         itemDiv.appendChild(inputTag);
         return inputTag;
     };
-    ra.html.input.yesNoReset = function (inputTag, value) {
+    ra.html.input.yesNoReset = function (inputTag, value, colours = ["button-p0555", "button-p0186"]) {
         var ra = inputTag.ra;
         if (ra.object[ra.property] !== value) {
             ra.object[ra.property] = value;
             if (value) {
                 inputTag.textContent = ra.options[0];
-                inputTag.classList.add("button-p0555");
-                inputTag.classList.remove("button-p0186");
+                inputTag.classList.remove(colours[1]);
+                inputTag.classList.add(colours[0]);
             } else {
                 inputTag.textContent = ra.options[1];
-                inputTag.classList.add("button-p0186");
-                inputTag.classList.remove("button-p0555");
+                inputTag.classList.remove(colours[0]);
+                inputTag.classList.add(colours[1]);
             }
             let event = new Event("ra-input-change");
             inputTag.dispatchEvent(event);
-        }
+    }
     };
     ra.html.input.combo = function (tag, divClass, label, raobject, property, options) {
         var itemDiv = document.createElement('div');

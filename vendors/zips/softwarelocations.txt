@@ -22,7 +22,8 @@ Display GPX file - https://github.com/mpetazzoni/leaflet-gpx
 Elevation plot - https://github.com/MrMufflon/Leaflet.Elevation - modified??
 Print - https://github.com/Igor-Vladyka/leaflet.browser.print
 
-OS to/from Lat/Long conversion - http://www.movable-type.co.uk/scripts/latlong-os-gridref.html	   
+OS to/from Lat/Long conversion - http://www.movable-type.co.uk/scripts/latlong-os-gridref.html	 
+and https://www.jsdelivr.com/package/npm/geodesy  
 
 Simplify - reduce number of points 
     http://mourner.github.io/simplify-js/

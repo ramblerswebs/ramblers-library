@@ -416,6 +416,39 @@ ra.loc = (function () {
 }
 ());
 
+/**
+ * Convert lat/long to string
+ * @param  {Number} lat value of latutude
+ * @param  {Number} long value of latutude
+ * @return {string} degrees minutes seconds string in the format 49°15'51.35"N4 9°15'51.35"E
+ */
+ra.latlongDecToDms = function (lat, long) {
+
+    return convert(lat, false) + "  " + convert(long, true);
+    /**
+     * Converts decimal degrees to degrees minutes seconds.
+     * 
+     * @param dd the decimal degrees value.
+     * @param isLng specifies whether the decimal degrees value is a longitude.
+     * @return degrees minutes seconds string in the format 49°15'51.35"N
+     */
+    function convert(dd, isLng) {
+        var dir = dd < 0
+                ? isLng ? 'W' : 'S'
+                : isLng ? 'E' : 'N';
+
+        var absDd = Math.abs(dd);
+        var deg = absDd | 0;
+        var frac = absDd - deg;
+        var min = (frac * 60) | 0;
+        var sec = frac * 3600 - min * 60;
+        // Round it to 2 decimal points.
+        sec = Math.round(sec * 100) / 100;
+        return deg + "°" + min.toString().padStart(2, '0') + "'" + sec.toString().padStart(5, '0') + '"' + dir;
+    }
+
+};
+
 function cluster(map) {
     var body = document.getElementsByTagName("BODY")[0];
     this.progressBar = document.createElement('div');
