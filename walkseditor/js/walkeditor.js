@@ -492,7 +492,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             walks[no] = {};
         }
         editor._dist = editor.input.addNumber(tag, 'dist', "Distance:", walks[no], 'distance', ra.walkseditor.help.walkDistance);
-        editor._dist.setAttribute('type', 'number');
+        editor._dist.setAttribute('step', '.1');
         editor._dist.setAttribute('min', 0);
 
         editor._unit = editor.input.addSelect(tag, 'distanceunits', 'Distance is in ', mUnits, walks[no], 'units', null, ra.walkseditor.help.walkUnits);

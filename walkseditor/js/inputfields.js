@@ -58,10 +58,8 @@ ra.walkseditor.inputFields = function () {
     };
     this.addNumber = function (tag, divClass, label, raobject, property, helpFunction = null) {
         var inputTag = this.addText(tag, divClass, label, raobject, property, '', helpFunction);
-
-        inputTag.addEventListener("input", function (e) {
-            e.target.value = e.target.value.toLowerCase();
-        });
+        inputTag.setAttribute('type', 'number');
+        inputTag.setAttribute('step', '.01');
         return inputTag;
     };
     this.addPostcodeDEL = function (tag, divClass, label, raobject, property, helpFunction = null) {
