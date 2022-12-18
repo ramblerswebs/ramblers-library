@@ -9,7 +9,7 @@ L.Control.MyLocation = L.Control.extend({
         },
         showPopup: true,
         setView: 'always', // have to set this to false because we have to do setView manually
-        flyTo: true,
+        flyTo: false,
         keepCurrentZoomLevel: false,
         returnToPrevBounds: false,
         showCompass: true,
@@ -36,9 +36,18 @@ L.Control.MyLocation = L.Control.extend({
     },
     onAdd: function (map) {
         this.map = map;
+        var _this = this;
         this._readSettings();
         var container = L.DomUtil.create('div', 'leaflet-control-mylocation');
+        container.addEventListener("mousedown", function (e) {
+            _this.map.stop(); // stop any cuurent flyTo
+        });
         this.location = L.control.locate(this.options).addTo(map);
+        // move control inside this one
+        var moveEl = this.location.getContainer();
+        var newParent = container;
+        newParent.appendChild(moveEl);
+
         return container;
     },
     getLocationControl: function () {
@@ -107,7 +116,7 @@ L.Control.MyLocation = L.Control.extend({
     resetSettings: function () {
         ra.html.input.yesNoReset(this._controls.showCompass, true);
         ra.html.input.yesNoReset(this._controls.enableHighAccuracy, true);
-        ra.html.input.yesNoReset(this._controls.flyTo, true);
+        ra.html.input.yesNoReset(this._controls.flyTo, false);
         ra.html.input.comboReset(this._controls.setView, 'always');
         ra.html.input.yesNoReset(this._controls.keepCurrentZoomLevel, false);
         ra.html.input.yesNoReset(this._controls.returnToPrevBounds, false);

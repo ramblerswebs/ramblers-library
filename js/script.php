@@ -121,8 +121,8 @@ class RJsScript {
         RLoad::addScript("libraries/ramblers/js/ra.walk.js");
         // my location start
         RLoad::addScript("libraries/ramblers/leaflet/L.Control.MyLocation.js");
-         $document->addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js");
-         $document->addStyleSheet("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css");
+        $document->addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js");
+        $document->addStyleSheet("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css");
         // my location finish
 
         RLoad::addScript("libraries/ramblers/leaflet/L.Control.RAContainer.js");

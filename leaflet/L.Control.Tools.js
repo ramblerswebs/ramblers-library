@@ -72,7 +72,8 @@ L.Control.ZoomAll = L.Control.extend({
             L.DomEvent.stopPropagation(ev);
             var result = _this._getBounds();
             if (result.isSet) {
-                _this._map.flyToBounds(result.bounds, {padding: [50, 50], duration: 1});
+                _this._map.stop(); // stop any cuurent flyTo
+                _this._map.fitBounds(result.bounds, {padding: [50, 50], duration: 1});
             }
         });
         document.addEventListener("ra-map-tools-open", function (e) {

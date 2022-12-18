@@ -115,10 +115,13 @@ ra.leafletmap = function (tag, options) {
     this.controls.print = L.control.browserPrint({
         title: 'Print',
         documentTitle: 'The Ramblers - working for walkers',
-        printModes: [L.control.browserPrint.mode.portrait(),
-            L.control.browserPrint.mode.landscape(),
+        printModes: [L.control.browserPrint.mode.portrait("Protrait", "A4"),
+            L.control.browserPrint.mode.landscape("Landscape", "A4"),
             L.control.browserPrint.mode.custom("Select Area", "A4")],
-        closePopupsOnPrint: true
+        contentSelector: "[leaflet-browser-print-content]",
+        pagesSelector: "[leaflet-browser-print-pages]",
+        manualMode: false,
+        closePopupsOnPrint: false
     }).addTo(this.map);
 
     if (options.bingkey) {
@@ -143,7 +146,7 @@ ra.leafletmap = function (tag, options) {
     this.controls.osinfo = L.control.osinfo().addTo(this.map);
     this.controls.rightclick = L.control.rightclick().addTo(this.map);
     this.controls.settings = L.control.settings();
-   // this.controls.settings.setHelpPage(options.helpPage);
+    // this.controls.settings.setHelpPage(options.helpPage);
     this.controls.settings.addTo(this.map);
     this.controls.settings.setLeafletMap(this);
 
@@ -151,7 +154,7 @@ ra.leafletmap = function (tag, options) {
     tools.moveMapControl(this.controls.zoom);
     tools.moveMapControl(this.controls.zoomAll);
     tools.moveMapControl(this.controls.print);
-    tools.moveMapControl(this.controls.mylocation.getLocationControl());
+    tools.moveMapControl(this.controls.mylocation);
     tools.moveMapControl(this.controls.search);
     tools.moveMapControl(this.controls.fullscreen);
     tools.moveMapControl(this.controls.rightclick);
@@ -281,7 +284,7 @@ ra.leafletmap = function (tag, options) {
     this.osInfoControl = function () {
         return this.controls.osinfo;
     };
-          
+
     this.errorDivControl = function () {
         return this.controls.errorDiv;
     };
