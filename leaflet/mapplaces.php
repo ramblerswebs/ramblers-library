@@ -21,7 +21,7 @@ class RLeafletMapplaces extends RLeafletMap {
         $this->options->mouseposition = true;
         $this->options->rightclick = true;
         $this->options->fitbounds = true;
-        $this->options->displayElevation = true;
+        $this->options->displayElevation = false;
         $this->options->cluster = false;
         $this->options->mylocation = true;
         $this->options->settings = true;
