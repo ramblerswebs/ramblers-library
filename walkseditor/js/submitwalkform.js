@@ -16,15 +16,18 @@ ra.walkseditor.submitwalkform = function (options, data) {
     this.emailURL = ra.baseDirectory() + "libraries/ramblers/walkseditor/sendemail.php";
     this.data = data;
     this.groups = this.data.groups;
+    this.localGrades = this.data.localGrades;
     this.email = {name: '',
         email: '',
         message: ''
     };
+    this.programme = new ra.walkseditor.programme();
     this.walk = null; // object rather than just the data
 
     this.load = function () {
         this.walk = new ra.walkseditor.draftWalk();
         this.walk.init("Draft", "", true);
+        this.programme.addWalk(this.walk);
         var tag = document.getElementById(options.divId);
         var topOptions = document.createElement('div');
         topOptions.setAttribute('class', 'ra-edit-options');
@@ -36,10 +39,11 @@ ra.walkseditor.submitwalkform = function (options, data) {
 
         this.editorDiv = document.createElement('div');
         tag.appendChild(this.editorDiv);
-        var editor = new ra.walkseditor.walkeditor(this.walk.data, true);
-        editor.sortData();
+        var editor = new ra.walkseditor.walkeditor();
+        // editor.sortData();
         editor.setGroups(this.groups);
-        editor.addEditForm(this.editorDiv);
+        editor.setLocalGrades(this.localGrades);
+        editor.load(this.editorDiv, this.walk.data, true);
 
     };
     this.addButtons = function (tag) {
@@ -55,7 +59,7 @@ ra.walkseditor.submitwalkform = function (options, data) {
         previewButton.title = 'Preview walk and see outstanding issues';
         previewButton.setAttribute('class', 'ra-button');
         previewButton.addEventListener("click", function () {
-            _this.walk.displayDetails();
+            _this.walk.previewWalk();
         });
         tag.appendChild(previewButton);
 
@@ -73,28 +77,45 @@ ra.walkseditor.submitwalkform = function (options, data) {
         saveButton.setAttribute('type', 'button');
         saveButton.setAttribute('class', 'ra-button');
         saveButton.textContent = "Save walk";
-        saveButton.title = "Save walk to PC as json file";
+        saveButton.title = "Save walk to PC to update later";
         saveButton.addEventListener("click", function (e) {
             _this._saveWalk();
         });
         tag.appendChild(saveButton);
 
-        var uploadButton = new ra.walkseditor.uploadFile();
-        var input = uploadButton.addButton(tag);
-        input.addEventListener("upload-walk-read", function (e) {
-            var walk = e.ra.walk;
-            _this.walk.data = walk;
-            _this.editorDiv.innerHTML = '';
-            var editor = new ra.walkseditor.walkeditor(_this.walk.data, true);
-            editor.sortData();
-            editor.setGroups(_this.groups);
-            editor.addEditForm(_this.editorDiv);
+        var uploadButton = document.createElement('button');
+        // uploadButton.setAttribute('type', 'button');
+        uploadButton.setAttribute('class', 'ra-button');
+        uploadButton.textContent = "Read walk";
+        uploadButton.title = "Read/Upload previously saved walk";
+        tag.appendChild(uploadButton);
+
+        var upload = new ra.uploadFile();
+        upload.addField(uploadButton, ".walks,.json");
+        uploadButton.addEventListener("upload-file-read", function (e) {
+            var walks = JSON.parse(e.ra.result);
+            if (walks.length > 1) {
+                alert("More than one walk in upload file, only the first walk has been read");
+            }
+            walks.every(function (walk, index) {
+                if (index > 0) {
+                    return false;
+                }
+                var newWalk = new ra.walkseditor.draftWalk();
+                newWalk.createFromObject(walk);
+                _this.programme.clearItems();
+                _this.programme.addWalk(newWalk);
+                _this.walk = newWalk;
+                _this.editorDiv.innerHTML = '';
+                var editor = new ra.walkseditor.walkeditor();
+                //   editor.sortData();
+                editor.setGroups(_this.groups);
+                editor.setLocalGrades(_this.localGrades);
+                editor.load(_this.editorDiv, newWalk.data, true);
+            });
+
         });
 
-        var wmexport = new ra.walkseditor.exportToWM();
-        wmexport.button(tag, this.walk);
-       var gwemexport = new ra.walkseditor.exportToGWEM();
-        gwemexport.button(tag, this.walk);
         return tag;
     };
     this.emailModal = function () {
@@ -133,10 +154,11 @@ ra.walkseditor.submitwalkform = function (options, data) {
         var fromSite = window.location.href;
         var data = {
             fromSite: fromSite,
-            walk: this.walk.data,
+            walk: [this.walk.data],
             walkbody: this.walk.walkDetails(),
             coords: this.data.coords,
-            email: this.email
+            email: this.email,
+            subject:'[Submit walk] from - '+this.email.name
         };
 
         var formData = new FormData();
@@ -166,71 +188,16 @@ ra.walkseditor.submitwalkform = function (options, data) {
 
 
     this._saveWalk = function () {
-        var walk = this.walk.data;
-        var data = JSON.stringify(walk, null, "    ");
+        var walks = [];
+        walks.push(this.walk.data);
+        var data = JSON.stringify(walks, null, "    ");
         try {
             var blob = new Blob([data], {type: "application/json"});
             // add date to file name??
-            name = "walk.json";
+            name = "groupwalk.walks";
             saveAs(blob, name);
         } catch (e) {
             blurt('Your web browser does not support his option!');
         }
     };
-};
-ra.walkseditor.uploadFile = function () {
-    this.input = null;
-    this.addButton = function (tag) {
-        var uploadButton = document.createElement('button');
-        // uploadButton.setAttribute('type', 'button');
-        uploadButton.setAttribute('class', 'ra-button');
-        uploadButton.textContent = "Upload walk";
-        uploadButton.title = "Upload/read walk previously saved in json forma";
-        tag.appendChild(uploadButton);
-        this.input = this._createInput(uploadButton);
-        var _this = this;
-        this.input.addEventListener('input', function (evt) {
-            var files = evt.target.files; // FileList object
-            var file = files[0];
-            var reader = new FileReader();
-            // Closure to capture the file information.
-            reader.onload = (function (theFile) {
-                return function (e) {
-                    _this._readWalk(reader.result);
-                };
-            })(file);
-            // Read in the image file as a data URL.
-            reader.readAsText(file);
-            _this.filename = file.name;
-            return false;
-        });
-        uploadButton.addEventListener("click", function (e) {
-            _this.input.click();
-        });
-        return uploadButton;
-    };
-    this._readWalk = function (result) {
-        var walk = JSON.parse(result);
-        let event = new Event("upload-walk-read", {bubbles: true}); // 
-
-        event.ra = {};
-        event.ra.walk = walk;
-        this.input.dispatchEvent(event);
-    };
-    this._createInput = function (container) {
-        var div = L.DomUtil.create('div', 'file-upload', container);
-        container.appendChild(div);
-        var input = document.createElement('input');
-        input.setAttribute('id', "gpx-file-upload");
-        input.style.display = 'none';
-        input.setAttribute('type', "file");
-        input.setAttribute('accept', ".json");
-        div.appendChild(input);
-        return input;
-    };
-//var xhr = new XMLHttpRequest();
-//xhr.open("POST", "{{ url('bewaarplaatsen/xhrTest/') }}", true);
-//xhr.setRequestHeader("Content-type", "application/json");
-//xhr.send(JSON.stringify(dataRows));
-
 };

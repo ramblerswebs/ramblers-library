@@ -14,6 +14,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
     this.tag = tag;
     this.raobject = raobject;
     this.location = location;
+    this.placesDisplayed = false;
     this.fields = {};
 
     this.addLocation = function () {
@@ -57,6 +58,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
 
         _locationdetails.appendChild(this.locationDetails);
         this.details = document.createElement('details');
+        this.details.classList.add("subsection");
         tag.appendChild(this.details);
         this.summary = document.createElement('summary');
         this.summary.innerHTML = 'Open/Close location/mapping options';
@@ -86,39 +88,24 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         editorDiv.setAttribute('class', 'location-editor');
         tag.appendChild(editorDiv);
         var tags = [
-            {name: 'left', parent: 'root', tag: 'div', attrs: {class: 'ra walksweditor left'}},
-            {name: 'locationDiv', parent: 'left', tag: 'div', attrs: {class: 'ra walksweditor location'}},
-            {name: 'extras', parent: 'left', tag: 'div', attrs: {class: 'ra walksweditor extras'}},
-            {name: 'map', parent: 'root', tag: 'div', attrs: {class: 'ra walksweditor mapcontainer'}},
-            {name: 'drag', parent: 'locationDiv', tag: 'p'},
-            {name: 'search', parent: 'locationDiv', tag: 'div'},
-            {name: 'pc', parent: 'extras', tag: 'div'},
-            {name: 'places', parent: 'extras', tag: 'div'},
-            {name: 'ptitle', parent: 'places', tag: 'h5'},
-            {name: 'addremove', parent: 'places', tag: 'span'}
+            {name: 'drag', parent: 'root', tag: 'p'},
+            {name: 'map', parent: 'root', tag: 'div', attrs: {class: 'ra walksweditor mapcontainer'}}
         ];
         this.elements = ra.html.generateTags(editorDiv, tags);
         this.elements.drag.innerHTML = "To change location <b>drag marker</b> and/or <b>search</b> for location";
-        this.updateStatus();
 
-        this.findButton = this.addMapFindLocationButton(this.elements.search);
         switch (this.location) {
             case ra.walkseditor.mapLocationInput.MEETING :
+                new ra.help(this.elements.drag, ra.walkseditor.help.locationMeet).add();
+                break;
             case ra.walkseditor.mapLocationInput.START :
-                var label = document.createElement('h5');
-                label.textContent = "Postcode";
-                this.elements.pc.appendChild(label);
-                this.addPostcode = this.addPostcodeButton(this.elements.pc);
-                this.deletePostcode = this.deletePostcodeButton(this.elements.pc);
-                new ra.help(this.elements.pc, ra.walkseditor.help.locationPostcode).add();
-
-                this.elements.ptitle.innerHTML = "Previously used Meeting/Starting places";
-                this.displayPlacesButton(this.elements.addremove);
-                this.removePlacesButton(this.elements.addremove);
-                new ra.help(this.elements.addremove, ra.walkseditor.help.locationStart).add();
-
+                new ra.help(this.elements.drag, ra.walkseditor.help.locationStart).add();
+                break;
+            case ra.walkseditor.mapLocationInput.AREA :
+                new ra.help(this.elements.drag, ra.walkseditor.help.locationArea).add();
                 break;
         }
+
         var mapoptions = Object.assign({}, ra.defaultMapOptions);
         mapoptions.mouseposition = true;
         mapoptions.maptools = true;
@@ -127,8 +114,44 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         this.map = this.lmap.map;
         this.layer = L.featureGroup().addTo(this.map);
         this.postcodeLayer = L.featureGroup().addTo(this.map);
-        //   this.placesLayer = L.featureGroup().addTo(this.map);
         this._rightclick = this.lmap.rightclickControl();
+
+        this.searchControl = new L.Control.RAContainer({position: 'topleft'}).addTo(this.map);
+        this.findButton = this.addMapFindLocationButton(this.searchControl.container);
+
+        switch (this.location) {
+            case ra.walkseditor.mapLocationInput.MEETING :
+            case ra.walkseditor.mapLocationInput.START :
+                this.placesControl = new L.Control.RAContainer({position: 'topleft'}).addTo(this.map);
+                this.placeButton = this._createControlsButtons(this.placesControl.container, "Previous Meeting/Starting places", "Places groups have used before", ra.walkseditor.help.locationPlaces);
+                this.postcodeControl = new L.Control.RAContainer({position: 'topleft'}).addTo(this.map);
+                this.postcodeButton = this._createControlsButtons(this.postcodeControl.container, "Postcode", "Add or remove satnav postcode", ra.walkseditor.help.locationPostcode);
+
+                var _this = this;
+                this.postcodeButton.addEventListener("click", function (e) {
+                    if (_this.raobject.hasOwnProperty('postcode')) {
+                        var ok = confirm("Do you wish to remove the postcode");
+                        if (ok) {
+                            _this.postcodeLayer.clearLayers();
+                            delete _this.raobject.postcode;
+                        }
+                        _this.updateStatus();
+                    } else {
+                        if (_this.raobject.isLatLongSet) {
+                            _this.displayPostcodes();
+                        } else {
+                            alert("You must position marker before adding postcode");
+                        }
+                    }
+
+                });
+                document.addEventListener("postcodes-loaded", function (e) {
+                    var bounds = _this.postcodeLayer.getBounds();
+                    _this.map.fitBounds(bounds, {padding: [20, 20]});
+                });
+                this._placesButton(this.placeButton);
+                break;
+        }
 
         if (this.raobject.hasOwnProperty('postcode')) {
             var pc = this.raobject.postcode.value;
@@ -163,9 +186,12 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
             var grid = OsGridRef.latLonToOsGrid(p);
             _this.raobject.gridref8 = grid.toString(6);
             _this.raobject.gridref10 = grid.toString(8);
-            _this.postcodeLayer.clearLayers();
             if (_this.raobject.hasOwnProperty('postcode')) {
-                delete _this.raobject.postcode;
+                var ok = confirm("Do you wish to remove the postcode");
+                if (ok) {
+                    _this.postcodeLayer.clearLayers();
+                    delete _this.raobject.postcode;
+                }
             }
             if (_this.raobject.hasOwnProperty('w3w')) {
                 delete _this.raobject.w3w;
@@ -183,14 +209,23 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
 
         });
 
-        this.findButton.addEventListener("locationfound", function (e) { 
-            let event = new Event("marker-moved", {bubbles: true}); 
+        this.findButton.addEventListener("locationfound", function (e) {
+            let event = new Event("marker-moved", {bubbles: true});
             var item = e.raData.item;
             event.ra = {};
             event.ra.latlng = L.latLng(parseFloat(item.lat), parseFloat(item.lon));
             _this.tag.dispatchEvent(event);
         });
-
+        this.updateStatus();
+    };
+    this._createControlsButtons = function (tag, title, tooltip, help) {
+        var button = document.createElement('button');
+        button.classList.add("locatemapbutton");
+        button.textContent = title;
+        button.title = tooltip;
+        tag.appendChild(button);
+        new ra.help(tag, help).add();
+        return button;
     };
     this.updateStatus = function () {
         var out = '';
@@ -226,10 +261,15 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
 
             }
             this.locationDetails.innerHTML = out;
-            this.elements.extras.style.display = '';
         } else {
             this.locationDetails.innerHTML = '<span style="color:red">Location not defined:  <i>Use mapping options to define location</i></span>';
-            this.elements.extras.style.display = 'none';
+        }
+        if (this.hasOwnProperty('postcodeButton')) {
+            if (this.raobject.hasOwnProperty('postcode')) {
+                this.postcodeButton.classList.add("active");
+            } else {
+                this.postcodeButton.classList.remove("active");
+            }
         }
     };
     this.fetchMaps = function (lat, lng) {
@@ -276,22 +316,21 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                 break;
             default:
                 img = ra.baseDirectory() + "libraries/ramblers/images/marker-route.png";
-                icon = L.icon({iconUrl: img, iconSize: [33, 50], iconAnchor: [17,45], popupAnchor: [0, 0]});
+                icon = L.icon({iconUrl: img, iconSize: [33, 50], iconAnchor: [17, 45], popupAnchor: [0, 0]});
         }
 
         var lat, long;
         if (this.raobject.isLatLongSet) {
             lat = this.raobject.latitude;
             long = this.raobject.longitude;
-            //  this.map.setView([lat, long], 15);
         } else {
             lat = 54;
             long = 1.9;
-            this.map.setView([54.5, -1.68], 5);
+            this.map.setZoom(5);
         }
         var _this = this;
         var marker = L.marker([lat, long], {draggable: true, icon: icon}).addTo(this.layer);
-        this.map.panTo([lat, long], {animate: true});
+        this.map.setView([lat, long]);
         marker.addEventListener('dragend', function (e) {
             let event = new Event("marker-moved", {bubbles: true}); // (2)
             event.ra = {};
@@ -303,8 +342,9 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
     this.addMapFindLocationButton = function (tag) {
         var findButton = document.createElement('button');
         findButton.setAttribute('type', 'button');
-        findButton.setAttribute('class', 'actionbutton');
-        findButton.textContent = "Location search";
+        findButton.setAttribute('class', 'locatemapbutton');
+        findButton.textContent = "Move marker to location";
+        findButton.title = "Search for a place and move marker to there";
         tag.appendChild(findButton);
         new ra.help(tag, ra.walkseditor.help.locationSearch).add();
         var _this = this;
@@ -341,42 +381,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         event.ra.latlng.lng = item.longitude;
         this.tag.dispatchEvent(event);
     };
-    this.addPostcodeButton = function (tag) {
-        var button = document.createElement('button');
-        button.setAttribute('type', 'button');
-        button.setAttribute('class', 'actionbutton');
-        button.textContent = "Add";
-        tag.appendChild(button);
-        //   var feed = new feeds();
-        //   button.feedhelper = feed;
-        var _this = this;
-        button.addEventListener("click", function (e) {
-            if (_this.raobject.isLatLongSet) {
-                _this.displayPostcodes();
-            } else {
-                alert("You must position marker before adding postcode");
-            }
-        });
-        document.addEventListener("postcodes-loaded", function (e) {
-            var bounds = _this.postcodeLayer.getBounds();
-            _this.map.fitBounds(bounds, {padding: [20, 20]});
-        });
-        return button;
-    };
-    this.deletePostcodeButton = function (tag) {
-        var button = document.createElement('button');
-        button.setAttribute('type', 'button');
-        button.setAttribute('class', 'actionbutton');
-        button.textContent = "Remove";
-        tag.appendChild(button);
-        var _this = this;
-        button.addEventListener("click", function (e) {
-            _this.postcodeLayer.clearLayers();
-            delete _this.raobject.postcode;
-            _this.updateStatus();
-        });
-        return button;
-    };
+
     this.displayPostcodes = function () {
         var p = new LatLon(this.raobject.latitude, this.raobject.longitude);
         var grid = OsGridRef.latLonToOsGrid(p);
@@ -427,39 +432,29 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
             }
         });
     };
-    this.displayPlacesButton = function (tag) {
-        var button = document.createElement('button');
-        button.setAttribute('type', 'button');
-        button.setAttribute('class', 'actionbutton');
-        button.innerHTML = "Display";
-        tag.appendChild(button);
-        var _this = this;
-        button.addEventListener("click", function (e) {
-            //_this.placesLayer.clearLayers();
-            if (_this.raobject.isLatLongSet) {
-                //  alert("The nearest places used by Ramblers' Groups will be displayed");
+    this._placesButton = function (button) {
 
-                var options = {
-                    location: {lat: _this.raobject.latitude, lng: _this.raobject.longitude},
-                    distance: 20,
-                    limit: 30,
-                    cluster: true};
-                _this._rightclick.rightClickDisplayPlaces(options);
-            } else {
-                alert("Marker position not set");
-            }
-        });
-        return button;
-    };
-    this.removePlacesButton = function (tag) {
-        var button = document.createElement('button');
-        button.setAttribute('type', 'button');
-        button.setAttribute('class', 'actionbutton');
-        button.innerHTML = "Remove";
-        tag.appendChild(button);
         var _this = this;
         button.addEventListener("click", function (e) {
-            _this._rightclick.rightClickClearPlaces();
+            if (_this.placesDisplayed) {
+                _this._rightclick.rightClickClearPlaces();
+                _this.placesDisplayed = false;
+                button.classList.remove("active");
+            } else {
+                if (_this.raobject.isLatLongSet) {
+                    var options = {
+                        location: {lat: _this.raobject.latitude, lng: _this.raobject.longitude},
+                        distance: 20,
+                        limit: 30,
+                        cluster: true};
+                    _this._rightclick.rightClickDisplayPlaces(options);
+                    _this.placesDisplayed = true;
+                    button.classList.add("active");
+                } else {
+                    alert("Marker position not set");
+                }
+            }
+
         });
         return button;
     };

@@ -5,14 +5,16 @@ if (typeof (ra) === "undefined") {
 if (typeof (ra.walkseditor) === "undefined") {
     ra.walkseditor = {};
 }
-ra.walkseditor.walkeditor = function (walk, formmode = false) {
-    this.walk = walk;
-    this.formmode = formmode;
+ra.walkseditor.walkeditor = function ( ) {
+
     this.input = new ra.walkseditor.inputFields;
     this.groups = null;
+    this.localGrades = null;
     this.expandDetails = true;
-    this.who = 'ra.walkseditor.walkeditor';  // what is this?
-    this.addEditForm = function (editDiv) {
+    this.who = 'ra.walkseditor.walkeditor'; // what is this?
+    this.load = function (editDiv, walk, formmode = false) {
+        this.walk = walk;
+        this.formmode = formmode;
         // first clear any old form from div
         editDiv.innerHTML = "";
         var form = document.createElement('div');
@@ -20,10 +22,8 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         form.setAttribute('class', 'ra_container');
         form.setAttribute('id', 'ra_container');
         editDiv.appendChild(form);
-
         // Expand/Collapse Button
         this.addExpandButtons(form);
-
         // Basics section
 
         var basicsDiv = document.createElement('details');
@@ -31,10 +31,8 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         //  basicsDiv.title= 'Click to open or close section';
         basicsDiv.setAttribute('open', true);
         form.appendChild(basicsDiv);
-
         this.input.addHeader(basicsDiv, "summary", "Basic Details");
         this.addBasics(basicsDiv);
-
         // Walks Section
 
         var walksDiv = document.createElement('details');
@@ -42,7 +40,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         //  walksDiv.title= 'Click to open or close section';
         walksDiv.setAttribute('open', true);
         form.appendChild(walksDiv);
-
         this.input.addHeader(walksDiv, "summary", "Walk");
         var walkItems = new raItems({
             editor: this,
@@ -52,11 +49,10 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             dataObject: this.walk,
             arrayProperty: 'walks',
             createFunction: this.addWalk,
-            sortFunction: this.sortWalks,
-            formmode: this.formmode
+            sortFunction: this.sortWalks
+
         });
         walkItems.display();
-
         // Meeting type section
 
         var optionsDiv = document.createElement('details');
@@ -64,10 +60,8 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         //  optionsDiv.title= 'Click to open or close section';
         optionsDiv.setAttribute('open', true);
         form.appendChild(optionsDiv);
-
         this.input.addHeader(optionsDiv, "summary", "Meeting");
         this.addMeetingType(optionsDiv);
-
         // Start Section
 
         var startDiv = document.createElement('details');
@@ -75,10 +69,8 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         // startDiv.title= 'Click to open or close section';
         startDiv.setAttribute('open', true);
         form.appendChild(startDiv);
-
         this.input.addHeader(startDiv, "summary", "Start");
         this.addStartType(startDiv);
-
         // Finish Section
 
         var finishDiv = document.createElement('details');
@@ -86,10 +78,8 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         // finishDiv.title= 'Click to open or close section';
         //  finishDiv.setAttribute('open', '');
         form.appendChild(finishDiv);
-
         this.input.addHeader(finishDiv, "summary", "Finish");
         this.addFinish(finishDiv);
-
         // Contacts Section
 
         var contactDiv = document.createElement('details');
@@ -97,31 +87,24 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         // contactDiv.title= 'Click to open or close section';
         contactDiv.setAttribute('open', true);
         form.appendChild(contactDiv);
-
         this.input.addHeader(contactDiv, "summary", "Contact");
         this.addContact(contactDiv);
-
         // Publicity
 
         var pubDiv = document.createElement('details');
         pubDiv.setAttribute('class', 'section publicity');
         //   pubDiv.title= 'Click to open or close section';
         form.appendChild(pubDiv);
-
         this.input.addHeader(pubDiv, "summary", "Facilities, Accessibility and Transport ", null);
-
         this.addFacilities(pubDiv);
-
         // Editors notes
 
         var notesDiv = document.createElement('details');
-        notesDiv.setAttribute('class', 'section notes');
-        //   notesDiv.title= 'Click to open or close section';
+        notesDiv.classList.add("notes");
+        notesDiv.classList.add("section");
         form.appendChild(notesDiv);
-
         this.input.addHeader(notesDiv, "summary", "Editor's Notes", ra.walkseditor.help.editorNotes);
         this.addNotes(notesDiv);
-
     };
     this.addExpandButtons = function (tag) {
         var self = this;
@@ -142,7 +125,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             }
             self.expandDetails = !self.expandDetails;
         });
-
     };
     this.expandAll = function () {
         ra.html.walkDOM(this.form, function (node) {
@@ -163,7 +145,12 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
     this.setGroups = function (groups) {
         this.groups = groups;
     };
-
+    this.setLocalGrades = function (localGrades) {
+        this.localGrades = localGrades;
+    };
+    this.getWalk = function () {
+        return this.walk;
+    };
     this.addBasics = function (tag) {
 
         if (tag === null) {
@@ -174,41 +161,15 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             this.walk.basics = {};
         }
         var basics = this.walk.basics;
-
         var itemDiv = this.input.itemsItemDivs(tag);
-
         if (this.groups !== null) {
-            var options = {};
-            var $default = null;
-            var first = true;
-            options.undefined = "Please select the group running the walk...";
-            for (var key in this.groups) {
-                var value = this.groups[key];
-                options[key] = value;
-                if (first) {
-                    $default = {code: key, group: value};
-                    first = false;
-                } else {
-                    $default = null;
-                }
-            }
-            if ($default !== null) {
-                delete  options.undefined;
-                basics.group = $default.code;
-                basics.groupName = $default.group;
-            }
-            this._group = this.input.addSelect(itemDiv, 'group', 'Group: ', options, basics, 'group', 'groupName', ra.walkseditor.help.basicGroup);
+            this._group = this.input.addSelect(itemDiv, 'group', 'Group: ', this.groups, basics, 'group', 'groupName', ra.walkseditor.help.basicGroup);
         }
         this._date = this.input.addDate(itemDiv, 'date', 'Date of walk', basics, 'date', ra.walkseditor.help.basicDate);
-
         this._title = this.input.addText(itemDiv, 'walktitle', "Title:", basics, 'title', 'Enter descriptive title of the walk', ra.walkseditor.help.basicTitle);
-
         this._desc = this.input.addHtmlArea(itemDiv, 'desc', "Description:", 4, basics, 'description', 'Add a description of walk so walkers know what to expect', ra.walkseditor.help.basicDesc);
-
         this._notes = this.input.addHtmlAreaSummary(itemDiv, 'notes', "Additional Notes:", 2, basics, 'notes', '', ra.walkseditor.help.basicNotes);
-
         return;
-
     };
     this.addMeetingType = function (tag) {
 
@@ -220,7 +181,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         }
         var meeting = this.walk.meeting;
         var options = {
-            undefined: "Please Select...",
             none: "We travel independently to the  start of the walk",
             car: "We can meet up and car share to start of walk",
             coach: 'We meet and catch a coach to the walk',
@@ -228,7 +188,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         };
         this._option = this.input.addSelect(tag, 'moptions', 'How do you get to the walk? ', options, meeting, 'type', null, ra.walkseditor.help.meetType);
         var _this = this;
-
         this._meetingsDiv = document.createElement('div');
         this._meetingsDiv.setAttribute('class', 'ra_meetings');
         tag.appendChild(this._meetingsDiv);
@@ -251,8 +210,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             dataObject: this.walk.meeting,
             arrayProperty: 'locations',
             createFunction: this.addMeetingLocation,
-            sortFunction: this.sortMeetingLocation,
-            formmode: this.formmode
+            sortFunction: this.sortMeetingLocation
         };
         switch (type) {
             case 'undefined':
@@ -298,7 +256,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
                 alert("Type error - please report this issue");
     }
     };
-    this.addMeetingLocation = function (formmode, editor, tag, no) {
+    this.addMeetingLocation = function (editor, tag, no) {
 
         var meeting = editor.walk.meeting;
         if (!meeting.hasOwnProperty('locations')) {
@@ -330,14 +288,12 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         }
 
     };
-
     this.addStartType = function (tag) {
         var startingsDiv;
         if (tag === null) {
             throw new Error("raWalkType tag is null");
         }
         var options = {
-            undefined: "Please Select...",
             start: "Start location for the walk",
             area: "General area for walk"
         };
@@ -346,12 +302,10 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         }
         var start = this.walk.start;
         this._option = this.input.addSelect(tag, 'moptions', 'Publish: ', options, start, 'type', null, ra.walkseditor.help.startType);
-
         startingsDiv = document.createElement('div');
         startingsDiv.setAttribute('class', 'js-start');
         startingsDiv.setAttribute('id', 'js-start');
         tag.appendChild(startingsDiv);
-
         this.setStartTypeOption(this._option.value);
         var _this = this;
         this._option.addEventListener("change", function () {
@@ -359,8 +313,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         });
         return;
     };
-
-
     this.setStartTypeOption = function (type) {
         var tag = document.getElementById("js-start");
         tag.innerHTML = "";
@@ -382,7 +334,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
                 alert("Starting Type error - please report this issue");
         }
     };
-
     this.addStart = function (tag) {
 
         if (tag === null) {
@@ -400,8 +351,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         var location = new ra.walkseditor.mapLocationInput(itemsDiv2, location, ra.walkseditor.mapLocationInput.START);
         location.addLocation();
     };
-
-
     this.addArea = function (tag) {
 
         if (tag === null) {
@@ -419,7 +368,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         var location = new ra.walkseditor.mapLocationInput(itemsDiv2, location, ra.walkseditor.mapLocationInput.AREA);
         location.addLocation();
     };
-
     this.addFinish = function (tag) {
         var finishDiv;
         if (tag === null) {
@@ -449,34 +397,28 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         this._time = this.input.addTime(itemsDiv2, 'time', 'Estimated Finish Time', location, 'time', ra.walkseditor.help.finishTime);
         var location = new ra.walkseditor.mapLocationInput(itemsDiv2, location, ra.walkseditor.mapLocationInput.FINISH);
         location.addLocation();
-
         return;
     };
-
-    this.addWalk = function (formmode, editor, tag, no) {
+    this.addWalk = function (editor, tag, no) {
 
         if (tag === null) {
             throw new Error("js-Walk container is null");
         }
         var mPace = {
-            undefined: "Please Select...",
             slow: "Slow",
             medium: "Medium",
             fast: "Fast"
         };
         var mWalk = {
-            undefined: "Please Select...",
             circular: "Circular",
             linear: "Linear",
             figure: "Figure of Eight"
         };
         var mUnits = {
-            undefined: "Please Select...",
             miles: "Miles",
             km: "Kilometres"
         };
         var mNatGrades = {
-            undefined: "Please Select...",
             'Easy Access': "Easy Access",
             'Easy': "Easy",
             'Leisurely': 'Leisurely',
@@ -494,17 +436,17 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         editor._dist = editor.input.addNumber(tag, 'dist', "Distance:", walks[no], 'distance', ra.walkseditor.help.walkDistance);
         editor._dist.setAttribute('step', '.1');
         editor._dist.setAttribute('min', 0);
-
         editor._unit = editor.input.addSelect(tag, 'distanceunits', 'Distance is in ', mUnits, walks[no], 'units', null, ra.walkseditor.help.walkUnits);
         editor._type = editor.input.addSelect(tag, 'walktype', 'The walk is ', mWalk, walks[no], 'type', null, ra.walkseditor.help.walkType);
         editor._natgrade = editor.input.addSelect(tag, 'natgrade', 'National Grade ', mNatGrades, walks[no], 'natgrade', null, ra.walkseditor.help.walkNatGrade);
-
         var detailTags = editor.input.addDetailsTag(tag);
         detailTags.summary.innerHTML = 'Additional details';
         detailTags.summary.title = 'Click to open or close section';
         editor._leader = editor.input.addText(detailTags.details, 'leader', 'Walk Leader Name', walks[no], 'leader', 'Walk leader(s) if different from contact', ra.walkseditor.help.walkLeader);
-        if (formmode) {
-            editor._localgrade = editor.input.addText(detailTags.details, 'localgrade', "Local Grade:", walks[no], 'localgrade', 'Local grade', ra.walkseditor.help.walkLocalGradeText);
+        if (this.editor.formmode) {
+            if (this.editor.localGrades !== null) {
+                editor._localgrade = editor.input.addSelect(detailTags.details, 'localgrade', "Local Grade:", this.editor.localGrades, walks[no], 'localgrade', 'localgradeName', ra.walkseditor.help.walkLocalGradeText);
+            }
         } else {
             editor._localgrade = editor.input.addLocalGradeSelect(detailTags.details, 'localgrade', "Local Grade:", walks[no], 'localgrade', ra.walkseditor.help.walkLocalGrade);
         }
@@ -512,16 +454,14 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         editor._pace = editor.input.addText(detailTags.details, 'pace', 'Pace ', mPace, walks[no], 'pace', ra.walkseditor.help.walkPace);
         editor._ascent = editor.input.addText(detailTags.details, 'ascent', "Ascent:", walks[no], 'ascent', '', ra.walkseditor.help.walkAscent);
         editor._duration = editor.input.addText(detailTags.details, 'duration', "Duration:", walks[no], 'duration', '', ra.walkseditor.help.walkDuration);
-
-    };
-
+    }
+    ;
     this.addContact = function (tag) {
 
         if (tag === null) {
             throw new Error("raWalkType container is null");
         }
         var options = {
-            undefined: "Please Select...",
             isLeader: "Yes - they are the Leader",
             isNotLeader: "No - not the leader"
         };
@@ -531,7 +471,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         var contact = this.walk.contact;
         var itemDiv = this.input.itemsItemDivs(tag);
         //  selectContactItem(itemDiv, contact);
-        if (!formmode) {
+        if (!this.formmode) {
             this.input.addPredefinedContactButton(itemDiv, contact, ra.walkseditor.help.contactPredefined);
         }
         this._displayName = this.input.addText(itemDiv, 'name', "Display Name:", contact, 'displayName', 'Published contact name', ra.walkseditor.help.contactName);
@@ -540,7 +480,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         this._tel2 = this.input.addText(itemDiv, 'tel2', "Contact Telephone 2:", contact, 'telephone2', '', ra.walkseditor.help.contactTel2);
         this._option = this.input.addSelect(itemDiv, 'moptions', 'Is the Contact the walk leader?', options, contact, 'contactType', null, ra.walkseditor.help.contactType);
         this._id = this.input.addNumber(itemDiv, 'id', "Contact ID:", contact, 'id', ra.walkseditor.help.contactID);
-
         var _this = this;
         itemDiv.addEventListener("predefinedContact", function (e) {
             var item = e.raData.item;
@@ -551,7 +490,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         });
         return;
     };
-
     this.sortData = function () {
         var walk = this.walk;
         if (!walk.hasOwnProperty('meeting')) {
@@ -566,7 +504,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         walk.meeting.locations = walk.meeting.locations.sort(this.dynamicSort("time"));
         walk.walks = walk.walks.sort(this.dynamicSort("distance"));
     };
-
     this.dynamicSort = function (property) {
         return function (tag1, tag2) {
             var value1 = tag1[property];
@@ -596,9 +533,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         comment.textContent = 'Change this secition to whatever options we agree upon';
         itemDiv.appendChild(comment);
         return;
-
     };
-
 //        if (tag === null) {
 //            throw new Error("raWalkType container is null");
 //        }
@@ -646,7 +581,6 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             family: 'Family-Friendly',
             wheelchair: 'Wheelchair accessible'
         };
-
         var itemDiv = this.input.itemsItemDivs(tag);
         //   var comment = document.createElement('p');
         //     comment.textContent = 'Change this secition to whatever options we agree upon';
@@ -654,9 +588,7 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
         this.input.addMultiChoice(itemDiv, 'facilities', 'Facilities', facilities, this.walk, 'facilities');
         this.input.addMultiChoice(itemDiv, 'transport', 'Transport', transport, this.walk, 'transport');
         this.input.addMultiChoice(itemDiv, 'accessibility', 'Accessibility', access, this.walk, 'accessibility');
-
         return;
-
     };
     this.addNotes = function (tag) {
 
@@ -677,27 +609,22 @@ ra.walkseditor.walkeditor = function (walk, formmode = false) {
             tag.setAttribute('open', true);
         }
         return;
-
     };
 };
-
-
 function raItems(options) {
     this.options = options;
     if (options.tag === null) {
         throw new Error("raWalkItems container is null");
     }
-    this.display = function ( ) {
+    this.display = function () {
 
         var tag = this.options.tag;
         var many = this.options.many;
         var itemName = this.options.dataClass;
-
         var itemsDiv = document.createElement('div');
         this.itemsDiv = itemsDiv;
         itemsDiv.setAttribute('class', 'js-items');
         tag.appendChild(itemsDiv);
-
         if (many) {
             this._addItem = document.createElement('button');
             this._addItem.setAttribute('type', 'button');
@@ -727,34 +654,33 @@ function raItems(options) {
         }
         // add extra items if they are in the input already
         var howmany;
-
-
         var arr = this.options.dataObject[this.options.arrayProperty];
-
         howmany = arr.length;
         var i = 0;
         do {
-            this.addItem(itemsDiv, itemName, i);
+            this.addItem(itemsDiv, itemName, i, many);
             i += 1;
         } while (i < howmany);
         return;
-
     };
-    this.addItem = function (itemsDiv, type, no) {
+    this.addItem = function (itemsDiv, type, no, many) {
         var itemDiv = document.createElement('div');
         itemDiv.setAttribute('class', 'js-item');
         itemsDiv.appendChild(itemDiv);
-        this._deleteItem = document.createElement('button');
-        this._deleteItem.setAttribute('type', 'button');
-        this._deleteItem.setAttribute('class', 'ra-button right');
-        this._deleteItem.setAttribute('data-object', type);
-        this._deleteItem.textContent = "Delete";
-        this._deleteItem.ra = {};
-        this._deleteItem.ra.raItems = this;
-        this._deleteItem.ra.itemDiv = itemDiv;
-        itemDiv.appendChild(this._deleteItem);
-        this.options.createFunction(this.options.formmode, this.options.editor, itemDiv, no);
-        this._deleteItem.addEventListener("click", this.deleteButton);
+        if (many) {
+            this._deleteItem = document.createElement('button');
+            this._deleteItem.setAttribute('type', 'button');
+            this._deleteItem.setAttribute('class', 'ra-button right');
+            this._deleteItem.setAttribute('data-object', type);
+            this._deleteItem.textContent = "Delete";
+            this._deleteItem.ra = {};
+            this._deleteItem.ra.raItems = this;
+            this._deleteItem.ra.itemDiv = itemDiv;
+            itemDiv.appendChild(this._deleteItem);
+            this._deleteItem.addEventListener("click", this.deleteButton);
+        }
+        this.options.createFunction(this.options.editor, itemDiv, no);
+
     };
     this.addButton = function () {
         var _raItems = this.ra.raItems;
@@ -762,8 +688,7 @@ function raItems(options) {
         var itemName = _raItems.options.dataClass;
         var arr = _raItems.options.dataObject[_raItems.options.arrayProperty];
         var no = arr.length;
-        _raItems.addItem(itemsDiv, itemName, no);
-
+        _raItems.addItem(itemsDiv, itemName, no, true);
     };
     this.deleteButton = function () {
         var _raItems = this.ra.raItems;
@@ -775,7 +700,7 @@ function raItems(options) {
         options.dataObject[options.arrayProperty] = _raItems.removeElement(options.dataObject[options.arrayProperty], no);
         // remove from web page
         itemsDiv.removeChild(itemDiv);
-// no needs to be worked out from the possition of itenDiv in itemDivs
+        // no needs to be worked out from the possition of itemDiv in itemDivs
     };
     this.removeElement = function (array, no) {
         var newArray = [];
@@ -800,11 +725,10 @@ function raItems(options) {
         }
         return 0;
     };
-
 }
 
 ra.walkseditor.exportToWM = function () {
-    this.button = function (tag, walks) {
+    this.button = function (tag, programme) {
 //        if (!this.allowWMExport) {
 //            return;
 //        }
@@ -815,26 +739,22 @@ ra.walkseditor.exportToWM = function () {
         tag.appendChild(wmexport);
         var _this = this;
         wmexport.addEventListener('click', function () {
-            _this._ExportWalksToWM(walks);
+            _this._ExportWalksToWM(programme);
         });
     };
-    this._ExportWalksToWM = function (items) {
+    this._ExportWalksToWM = function (programme) {
         // items is either an array or items or a single walk
         alert("This feature is being developed please let us know if you have any issues");
         var data = "";
         data = data + this._WMheader();
-        if (Array.isArray(items)) {
-            // array of items
-            var i, clen;
-            for (i = 0, clen = items.length; i < clen; ++i) {
-                var item = items[i];
-                if (item.walk.displayWalk) {
-                    data = data + item.walk.exportToWMLine();
-                }
+        var items = programme.getItems();
+        var i, clen;
+        for (i = 0, clen = items.length; i < clen; ++i) {
+            var item = items[i];
+            var walk = item.getWalk();
+            if (walk.displayWalk) {
+                data = data + walk.exportToWMLine();
             }
-        } else {
-            // single walk rather than array of items
-            data = data + items.exportToWMLine();
         }
 
         try {
@@ -874,27 +794,23 @@ ra.walkseditor.exportToWM = function () {
         data.push('Distance miles');
         data.push('Ascent metres');
         data.push('Ascent feet');
-
         data.push('Dog friendly');
         data.push('Introductory walk');
         data.push('No stiles');
         data.push('Family-friendly');
         data.push('Wheelchair accessible');
-
         data.push('Accessible by public transport');
         data.push('Car parking available');
         data.push('Car sharing available');
         data.push('Coach trip');
-
         data.push('Refreshments available (Pub/cafe)');
         data.push('Toilets available');
-
         var out = ra.arrayToCSV(data) + "\n\r";
         return out;
     };
 
     ra.walkseditor.exportToGWEM = function () {
-        this.button = function (tag, walks) {
+        this.button = function (tag, programme) {
 //        if (!this.allowWMExport) {
 //            return;
 //        }
@@ -905,26 +821,23 @@ ra.walkseditor.exportToWM = function () {
             tag.appendChild(wmexport);
             var _this = this;
             wmexport.addEventListener('click', function () {
-                _this._ExportWalksToGWEM(walks);
+                _this._ExportWalksToGWEM(programme);
             });
         };
-        this._ExportWalksToGWEM = function (items) {
+        this._ExportWalksToGWEM = function (programme) {
             // items is either an array or items or a single walk
             alert("This feature is being developed please let us know if you have any issues");
             var data = "";
             data = data + this._GWEMheader();
-            if (Array.isArray(items)) {
-                // array of items
-                var i, clen;
-                for (i = 0, clen = items.length; i < clen; ++i) {
-                    var item = items[i];
-                    if (item.walk.displayWalk) {
-                        data = data + item.walk.exportToGWEMLine();
-                    }
+
+            var items = programme.getItems();
+            var i, clen;
+            for (i = 0, clen = items.length; i < clen; ++i) {
+                var item = items[i];
+                var walk = item.getWalk();
+                if (walk.displayWalk) {
+                    data = data + walk.exportToGWEMLine();
                 }
-            } else {
-                // single walk rather than array of items
-                data = data + items.exportToGWEMLine();
             }
 
             try {
@@ -941,26 +854,22 @@ ra.walkseditor.exportToWM = function () {
             data.push('Title');
             data.push('Description');
             data.push('Linear or Circular');
-
             data.push('Starting location');
             data.push('Starting postcode');
             data.push('Starting gridref');
             data.push('Starting location details');
             data.push('Show exact starting point');
             data.push('Start time');
-
             data.push('Meeting location');
             data.push('Meeting postcode');
             data.push('Meeting gridref');
             data.push('Meeting location details');
             data.push('Show exact Meeting point');
             data.push('Meeting time');
-
             data.push('Finish location');
             data.push('Finish postcode');
             data.push('Finish gridref');
             data.push('Finish location details');
-
             data.push('Restriction');
             data.push('Difficulty');
             data.push('Local walk grade');
@@ -973,11 +882,8 @@ ra.walkseditor.exportToWM = function () {
             data.push('Festivals');
             data.push('Strands');
             data.push('Additional details');
-
             var out = ra.arrayToCSV(data) + "\n\r";
             return out;
         };
     };
-
-
 };

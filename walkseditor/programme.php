@@ -1,20 +1,9 @@
 <?php
 
-class RWalkseditorSubmitform extends RLeafletMap {
+class RWalkseditorProgramme extends RLeafletMap {
 
     private $groups = null;
-    private $coords = null;
     private $localGrades = null;
-  
-    public function setWalksCoordinators($values) {
-        if (is_array($values)) {
-            $this->coords = $values;
-        } else {
-            $text = "Walk coordinators not defined as an array";
-            $app = JApplicationCms::getInstance('site');
-            $app->enqueueMessage($text, 'error');
-        }
-    }
 
     public function setGroups($values) {
         if (is_array($values)) {
@@ -25,7 +14,8 @@ class RWalkseditorSubmitform extends RLeafletMap {
             $app->enqueueMessage($text, 'error');
         }
     }
-   public function setLocalGrades($values) {
+
+    public function setLocalGrades($values) {
         if (is_array($values)) {
             $this->localGrades = $values;
         } else {
@@ -42,14 +32,6 @@ class RWalkseditorSubmitform extends RLeafletMap {
             $app->enqueueMessage($text, 'error');
             return;
         }
-        if ($this->coords == null) {
-            $text = "No walks coordinators defined";
-            $app = JApplicationCms::getInstance('site');
-            $app->enqueueMessage($text, 'error');
-            return;
-        }
-
-        //  $this->help_page = "https://maphelp.ramblers-webs.org.uk/draw-walking-route.html";
 
         $this->options->settings = true;
         $this->options->mylocation = true;
@@ -62,13 +44,13 @@ class RWalkseditorSubmitform extends RLeafletMap {
         $this->options->cluster = false;
         $this->options->draw = false;
         $this->options->print = true;
+        $this->options->calendar = true;
         $this->options->ramblersPlaces = true;
         $this->options->controlcontainer = true;
 
         $this->data = new class {
             
         };
-        $this->data->coords = $this->coords;
         $this->data->groups = $this->groups;
         $this->data->localGrades = $this->localGrades;
         $this->data->user = new class {
@@ -79,10 +61,16 @@ class RWalkseditorSubmitform extends RLeafletMap {
         $this->data->user->loggedin = $user->id > 0;
         $this->data->user->name = $userinfo->name;
         $this->data->user->email = $userinfo->email;
+        $this->data->items=[];
 
         $path = "libraries/ramblers/walkseditor/";
-        RLoad::addScript($path . "js/submitwalkform.js", "text/javascript");
-        parent::setCommand('ra.walkseditor.submitwalkform');
+        RLoad::addScript($path . "js/walksprogramme.js", "text/javascript");
+        RLoad::addScript($path . "js/viewWalksProgramme.js", "text/javascript");
+        RLoad::addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+   
+        
+       
+        parent::setCommand('ra.walkseditor.walksprogramme');
         parent::setDataObject($this->data);
         parent::display();
         RWalkseditor::addScriptsandCss();

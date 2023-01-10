@@ -371,7 +371,7 @@ ra.walk = (function () {
 
         $html += "<div class='walkitem walkdates'>" + PHP_EOL;
         if ($walk.hasMeetPlace) {
-            $html += ra.html.addDiv("", "Walkers will travel together from the meeting place to the start of the walk, this may be by car, coach or public transport. Meeting times are often when the group will set off rather than when to arrive at the meet.");
+            $html += ra.html.addDiv("", "Walkers will travel together from the meeting place to the start of the walk, this may be by car, coach or public transport. Meeting times are often when the group will set off, rather than when you should arrive at the meeting place.");
         }
 
         $html += ra.html.addDiv("", "Start times are often when the group will start walking rather than when to get there.");

@@ -58,11 +58,41 @@ ra.display.gpxSingle = function (options, data) {
         g.on('loaded', function (e) {
             _map.fitBounds(e.target.getBounds(), {padding: [20, 20]});
             _this.displayGpxdetails(g, detailsDivId);
+            var clear = document.createElement('div');
+            clear.classList.add("clearBoth");
+            _this.pageDiv.appendChild(clear);
+            const collection = document.getElementsByClassName("leaflet-control-container");
+            const ele = collection[0].getElementsByClassName("elevation");
+            var elevation = ele[0];
+            var svg = elevation.childNodes[1];
+            var clone = svg.cloneNode(true);
+            var holder = document.createElement('div');
+            holder.classList.add("elevation");
+            holder.classList.add("steelblue-theme");
+            holder.classList.add("leaflet-control");
+            _this.pageDiv.appendChild(holder);
+            holder.appendChild(clone);
+            var clear = document.createElement('div');
+            clear.classList.add("clearBoth");
+            _this.pageDiv.appendChild(clear);
         });
         g.addTo(_map);
+        // copy elevation chart to page
+        // leaflet-control-container
+
+        var a = 1;
     };
     this.displayGpxdetails = function (g, divId) {
-        if (document.getElementById(divId) !== null) {
+        var container = document.getElementById(divId);
+
+        if (container !== null) {
+            var titleDiv = document.createElement('div');
+            titleDiv.setAttribute("leaflet-browser-print-content", true);
+            titleDiv.innerHTML = "";
+            container.appendChild(titleDiv);
+            var pageDiv = document.createElement('div');
+            pageDiv.setAttribute("leaflet-browser-print-pages", true);
+            container.appendChild(pageDiv);
             var info = g._info;
             var header = "";
             if (info !== "undefined" && info !== null) {
@@ -81,13 +111,36 @@ ra.display.gpxSingle = function (options, data) {
                     header += '<b>Elevation Gain:</b> ' + info.elevation.gain.toFixed(0) + ' m<br/>';
                 }
                 header += "<b>Est time:</b> " + ra.math.naismith(info.length, info.elevation.gain);
-                document.getElementById(divId).innerHTML = header;
-                //////////////////////////////////////////////
+                pageDiv.innerHTML = header;
+                this.pageDiv = pageDiv;
+
             }
         }
     };
 
 
+};
+ra.display.gpxGetElevationSVG = function () {
+    const collection = document.getElementsByClassName("leaflet-control-container");
+    const ele = collection[0].getElementsByClassName("elevation");
+    var elevation = ele[0];
+    var svg = elevation.childNodes[1];
+    return svg;
+};
+ra.display.gpxGetElevationSVGCopy = function (svg, tag) {
+    var clear = document.createElement('div');
+    clear.classList.add("clearBoth");
+    tag.appendChild(clear);
+    var clone = svg.cloneNode(true);
+    var holder = document.createElement('div');
+    holder.classList.add("elevation");
+    holder.classList.add("steelblue-theme");
+    holder.classList.add("leaflet-control");
+    tag.appendChild(holder);
+    holder.appendChild(clone);
+    var clear = document.createElement('div');
+    clear.classList.add("clearBoth");
+    tag.appendChild(clear);
 };
 
 ra.display.gpxFolder = function (options, data) {

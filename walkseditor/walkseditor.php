@@ -10,6 +10,7 @@ class RWalkseditor {
         RLoad::addStyleSheet("libraries/ramblers/jsonwalks/css/ramblerslibrary.css", "text/css");
 
         $path = "libraries/ramblers/walkseditor/";
+        RLoad::addScript($path . "js/programmeitems.js", "text/javascript");
         RLoad::addScript($path . "js/draftwalk.js", "text/javascript");
         RLoad::addScript($path . "js/inputfields.js", "text/javascript");
         RLoad::addScript($path . "js/loader.js", "text/javascript");

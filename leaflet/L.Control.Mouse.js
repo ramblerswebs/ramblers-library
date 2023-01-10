@@ -111,13 +111,16 @@ L.Control.Mouse = L.Control.extend({
         }
         var grtext = '<span class="osgridref">' + gr + "</span>";
         if (this._map.getSize().y > 300) {
-            grtext = gridref + grtext + "<br/>";
+            grtext = gridref + grtext;
         }
         if (!this._userOptions.displayGridRef) {
             grtext = '';
         }
         if (!this._userOptions.displayLatLong) {
             latlong = '';
+        }
+        if (grtext !== "" && latlong !== "") {
+            grtext = grtext + "<br/>";
         }
         this._container.innerHTML = grtext + latlong;
         return;
@@ -191,7 +194,6 @@ L.Control.OSInfo = L.Control.extend({
         this._map = map;
         this.osMapLayer = L.featureGroup([]).addTo(map);
         this.OSGrid = {};
-        this.OSGrid.basicgrid = false;
         this.OSGrid.layer = L.layerGroup().addTo(map);
         this._containerAll = L.DomUtil.create('div', 'leaflet-control-osmaps leaflet-bar leaflet-control');
         // this._container = L.DomUtil.create('div', '', this._containerAll);
@@ -294,8 +296,8 @@ L.Control.OSInfo = L.Control.extend({
         ra.modals.createModal(container, false);
     },
     displayOSGrid: function () {
+        this.OSGrid.layer.clearLayers();
         if (!this._displayOSGrid) {
-            this.OSGrid.layer.clearLayers();
             return;
         }
         var gs = 100000;
@@ -330,19 +332,11 @@ L.Control.OSInfo = L.Control.extend({
         }
 
         if (gs === 100000) {
-            if (this.OSGrid.basicgrid) {
-                return;
-            } else {
-                sw.easting = 0;
-                sw.northing = 0;
-                ne.easting = 700000;
-                ne.northing = 1400000;
-                this.OSGrid.basicgrid = true;
-            }
-        } else {
-            this.OSGrid.basicgrid = false;
+            sw.easting = 0;
+            sw.northing = 0;
+            ne.easting = 700000;
+            ne.northing = 1400000;
         }
-        this.OSGrid.layer.clearLayers();
         this.drawOSMapGrid(ne, sw, gs, this.OSGrid.layer);
     },
 
@@ -406,7 +400,6 @@ L.Control.OSInfo = L.Control.extend({
             var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this._userOptions.osgridline);
             line.addEventListener("ra-input-change", function (e) {
                 ra.settings.changed();
-                _this.OSGrid.basicgrid = false;
                 _this.displayOSGrid();
             });
         } catch (err) {

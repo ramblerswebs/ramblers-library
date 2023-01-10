@@ -17,12 +17,14 @@ $email = $data->email;
 $fromSite = $data->fromSite;
 $reason = "<p class='smaller'>This email was sent from the web page: " . $fromSite . "<br/>You are receiving this email as you are defined as a Programme Sec/Walks coordinator on that web site</p><hr/>";
 $coords = $data->coords;
-$message = "<p>" . $email->message . "</p>";
+$message = "<p>Message: " . $email->message . "</p>";
+$subject = $data->subject;
 $fromname = $email->name;
 $fromemail = $email->email;
-$sig = "<p></p><p>Walk submitted by: " . $fromname . "  email: " . $fromemail . "</p>";
-$fullbody = $reason . $sig . $message . "<p></p><hr/><p></p>" . $walkbody;
-sendEmail($coords, $fullbody, $swalk, $result);
+$sig = "<p></p><p>Walk submitted by: " . $fromname . "</p><p>Email: " . $fromemail . "</p>";
+$comment = "<p>Walk details are below, attached is a file containing the walk</p><hr/>";
+$fullbody = $reason . $sig . $message . $comment . $walkbody;
+sendEmail($subject, $coords, $fullbody, $swalk, $result);
 
 header("Access-Control-Allow-Origin: *");
 header("Content-type: application/json");
@@ -41,7 +43,7 @@ function checkDecode() {
     }
 }
 
-function sendEmail($coords, $body, $walk, $res) {
+function sendEmail($subject, $coords, $body, $walk, $res) {
     require_once('../../../configuration.php');
     require_once('../../vendor/phpmailer/phpmailer/class.smtp.php');
     require_once('../../vendor/phpmailer/phpmailer/class.phpmailer.php');
@@ -66,9 +68,10 @@ function sendEmail($coords, $body, $walk, $res) {
     foreach ($coords as $key => $value) {
         $mail->addAddress($key, $value);
     }
-    $mail->AddStringAttachment($walk, 'walk.json');
+    $timestamp = date("YmdHis");
+    $mail->AddStringAttachment($walk, 'submitwalk' . $timestamp . '.walks');
 
-    $mail->Subject = 'Test Email sending new walk details';
+    $mail->Subject = $subject;
     $style = file_get_contents('css/styleemail.css');
     $mail->msgHTML($body . "<style>" . $style . "</style>");
 

@@ -2331,3 +2331,52 @@ if (typeof (ra.ics) === "undefined") {
 
 
 }
+
+// create input field to allow uploading a file
+// add field to a tag like a button
+ra.uploadFile = function () {
+    this.inputTag = null;
+    this.addField = function (tag, extensions) {
+        this.tag = tag;
+        this.extensions = extensions;
+        this.inputTag = this._createInput(tag);
+        var _this = this;
+        this.inputTag.addEventListener('input', function (evt) {
+            var files = evt.target.files; // FileList object
+            var file = files[0];
+            _this.filename = file.name;
+            var reader = new FileReader();
+            // Closure to capture the file information.
+            reader.onload = (function (theFile) {
+                return function (e) {
+                    _this._readFile(reader.result);
+                };
+            })(file);
+            reader.readAsText(file);
+            return false;
+        });
+        this.tag.addEventListener("click", function (e) {
+            _this.inputTag.click();
+        });
+        return tag;
+    };
+    this._readFile = function (result) {
+        let event = new Event("upload-file-read"); // 
+        event.ra = {};
+        event.ra.result = result;
+        this.tag.dispatchEvent(event);
+    };
+    this._createInput = function (container) {
+        var div = L.DomUtil.create('div', 'file-upload', container);
+        container.appendChild(div);
+        var input = document.createElement('input');
+        //input.setAttribute('id', "gpx-file-upload");
+        input.style.display = 'none';
+        input.setAttribute('type', "file");
+        input.setAttribute('accept', this.extensions);
+        div.appendChild(input);
+        return input;
+    };
+
+
+};

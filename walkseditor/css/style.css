@@ -110,8 +110,8 @@ button.ra-button{
 button.ra-button:hover{
     background-color: var(--sunrise);
 }
-DELbutton.actionbutton {
-    background-color: var(--mintcake);
+button.locatemapbutton {
+    background-color: var(--granite);
     color:#FFFFFF;
     padding: 1px;
     padding-left: 5px;
@@ -120,15 +120,16 @@ DELbutton.actionbutton {
     border-radius:10px;
     border-width: 0px;
 }
+button.locatemapbutton:hover {
+    background-color: var(--midgrey);
+}
 button.right {
 
     float:right;
 }
-DELbutton.actionbutton.delete {
-    float:right;
-}
-DELbutton.actionbutton.noLocation {
-    visibility: hidden;
+
+button.locatemapbutton.active{
+    background-color: var(--mintcake);
 }
 button.predefinedlist {
     background-color: #f2946c;
@@ -156,11 +157,10 @@ div.location-group table.no-extra td{
     padding:0px;
 }
 div.gpxouter table{
-    table-layout:fixed;
+    table-layout:auto;
     width:100%;
     overflow-wrap: break-word;
 }
-
 
 select.gwem {
     border: 0;
@@ -334,19 +334,9 @@ div.display.section {
 }
 div.location-editor{
     background-color: #DDDDDD;
-}
-div.ra.walksweditor.extras{
-    padding-bottom:20px;
-    padding-left:10px;
-    border: 2px solid #cccccc  ;
     border-radius: 10px;
-    margin:10px;
-    margin-top:30px;
 }
-div.ra.walksweditor.extras button{
-    margin-left:20px;
 
-}
 @media only screen and (min-width: 769px){
     div.display {
         -webkit-column-count: 2; /* Chrome, Safari, Opera */
@@ -358,10 +348,10 @@ div.ra.walksweditor.extras button{
         background-color: #ffffff;
         min-width: 200px;
     }
-    div.location-editor{
+    div.location-editorXXX{
         display: flex;
     }
-    div.ra.walksweditor.mapcontainer{
+    div.ra.walksweditor.mapcontainerXXX{
         width:70%;
     }
     div.ra-edit-options {
@@ -371,10 +361,10 @@ div.ra.walksweditor.extras button{
     }
 }
 @media only screen and (max-width: 769px){
-    div.gpxouter table tr th:nth-child(3) ,
-    div.gpxouter table tr td:nth-child(3) ,
-    div.gpxouter table tr th:nth-child(6) ,
-    div.gpxouter table tr td:nth-child(6) {
+    div.gpxouter table tr th:nth-child(4) ,
+    div.gpxouter table tr td:nth-child(4) ,
+    div.gpxouter table tr th:nth-child(7) ,
+    div.gpxouter table tr td:nth-child(7) {
         display:none;
     }
 }
@@ -436,11 +426,13 @@ details summary:hover {
 details summary > * {
     display: inline;
 }
-details.section > summary {
+details.section > summary,
+details.subsection > summary {
     list-style-type: none;
 }
 
-details.section > summary::-webkit-details-marker {
+details.section > summary::-webkit-details-marker,
+details.subsection > summary::-webkit-details-marker {
     display: none;
 }
 
@@ -452,16 +444,24 @@ details[open].section > summary::before {
     content: url(open.png);
 }
 
+details.subsection > summary::before {
+    content: url(subclose.png);
+}
+
+details[open].subsection > summary::before {
+    content: url(subopen.png);
+}
+
 button.expand {
     padding-top:5px;
 }
 button.expand::before {
-    content: url(close.png);
+    content: url(subclose.png);
     vertical-align: middle;
 }
 
 button.expand[expand]::before {
-    content: url(open.png);
+    content: url(subopen.png);
     vertical-align: middle;
 }
 
@@ -498,11 +498,11 @@ details[open].section > summary {
     background-color:  var(--mintcake)!important;
 }
 div.draftwalk.first {
-    border-top: 50px solid var(--skyBlue) !important;
+    border-top: 20px solid var(--skyBlue) !important;
 }
 
 tr.first td  {
-    border-top: 50px solid var(--skyBlue) !important;
+    border-top: 20px solid var(--skyBlue) !important;
 }
 .status-Draft:hover,
 .status-Awaiting_Approval:hover,

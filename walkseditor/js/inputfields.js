@@ -152,7 +152,8 @@ ra.walkseditor.inputFields = function () {
     };
     this.addHtmlAreaSummary = function (tag, divClass, label, rows, raobject, property, placeholder = '', helpFunction = null) {
         var itemDiv = document.createElement('details');
-        itemDiv.setAttribute('class', divClass);
+        itemDiv.classList.add(divClass);
+        itemDiv.classList.add("subsection");
         tag.appendChild(itemDiv);
         var _label = document.createElement('summary');
         _label.title = 'Click to open or close section';
@@ -165,23 +166,6 @@ ra.walkseditor.inputFields = function () {
         //   itemDiv.appendChild(inputTag);
 
         var inputTag = this.addHtmlArea(itemDiv, divClass, '', rows, raobject, property, placeholder);
-
-//        var inputTag = document.createElement('textarea');
-//        inputTag.setAttribute('class', ' gwem');
-//        inputTag.setAttribute('class', 'gwem');
-//        inputTag.setAttribute('rows', rows);
-//        inputTag.setAttribute('placeholder', placeholder);
-//        inputTag.style.width = '95%';
-//        inputTag.raobject = raobject;
-//        inputTag.raproperty = property;
-//        if (raobject.hasOwnProperty(property)) {  // Initialise value
-//            inputTag.value = raobject[property];
-//        }
-//        inputTag.addEventListener("change", function (e) {
-//            e.target.raobject[e.target.raproperty] = e.target.value;
-//        });
-
-
         return inputTag;
     };
     this.addTextArea = function (tag, divClass, label, rows, raobject, property, placeholder = '', helpFunction = null) {
@@ -397,14 +381,30 @@ ra.walkseditor.inputFields = function () {
         inputTag.raproperty = property;
         inputTag.rapropertyDesc = propertyDesc;
         div.appendChild(inputTag);
+        var no = 0;
+        for (var key in values) {
+            no += 1;
+        }
+        if (no > 1) {
+            var option = document.createElement("option");
+            option.value = "undefined";
+            option.text = "Please Select...";
+            inputTag.appendChild(option);
+        }
+
         for (var key in values) {
             var value = values[key];
             var option = document.createElement("option");
             option.value = key;
             option.text = value;
-//            if (values.length===1){
-//                option.selected=true;
-//            }
+            if (no === 1) {
+                raobject[property] = key;
+                if (propertyDesc!==null){
+                     raobject[propertyDesc] = value;
+                }
+               
+            }
+
             inputTag.appendChild(option);
         }
         if (raobject.hasOwnProperty(property)) {  // Initialise value
@@ -560,6 +560,7 @@ ra.walkseditor.inputFields = function () {
     };
     this.addDetailsTag = function (tag) {
         var details = document.createElement('details');
+        details.classList.add("subsection");
         tag.appendChild(details);
         var summary = document.createElement('summary');
         details.appendChild(summary);

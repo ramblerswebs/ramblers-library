@@ -10,13 +10,18 @@ ra.walkseditor.DATETYPE = {
     Past: 2,
     Future: 3
 };
-ra.walkseditor.draftWalk = function (  ) {
+ra.walkseditor.preview = {};
+ra.walkseditor.preview.editButton = false;
+ra.walkseditor.preview.deleteButton = false;
+ra.walkseditor.preview.duplicateButton = false;
+
+ra.walkseditor.draftWalk = function () {
     const isERROR = 'error';
     const isWarning = 'warning';
     const isInformation = 'warning';
     //   this.status = "None";
     this.category = "None";
-    this.loggedOn = false;
+    this.privacy = false;
     this.displayWalk = true;
     this.data = {
         admin: {version: '1.0',
@@ -38,57 +43,53 @@ ra.walkseditor.draftWalk = function (  ) {
         }
     };
 
-    this.buttons = {delete: null,
-        edit: null,
-        duplicate: null};
-
-    this.init = function (status, category, loggedOn) {
+    this.init = function (status, category, privacy) {
         this.setWalkStatus(status);
         this.category = category;
-        this.loggedOn = loggedOn;
+        this.privacy = privacy;
     };
     this.createWithDate = function (date) {
         this.date = date;
     };
-    this.setButtons = function (value) {
-        this.buttons = value;
-    };
+    //  this.setButtons = function (value) {
+    //      this.buttons = value;
+    //  };
     this.createFromJson = function (json) {
-        var data;
         try {
-            data = JSON.parse(json);
-            if (typeof data.basics !== 'undefined') {
-                this.data.basics = data.basics;
-            }
-            if (typeof data.meeting !== 'undefined') {
-                this.data.meeting = data.meeting;
-            }
-            if (typeof data.start !== 'undefined') {
-                this.data.start = data.start;
-            }
-            if (typeof data.walks !== 'undefined') {
-                this.data.walks = data.walks;
-            }
-            if (typeof data.contact !== 'undefined') {
-                this.data.contact = data.contact;
-            }
-            if (typeof data.facilities !== 'undefined') {
-                this.data.facilities = data.facilities;
-            }
-            if (typeof data.transport !== 'undefined') {
-                this.data.transport = data.transport;
-            }
-            if (typeof data.accessibility !== 'undefined') {
-                this.data.accessibility = data.accessibility;
-            }
-            if (typeof data.notes !== 'undefined') {
-                this.data.notes = data.notes;
-            }
-
+            var data = JSON.parse(json);
+            this.createFromObject(data);
         } catch (err) {
             alert('Cannot process walk (json=' + json + ' )');
         }
-
+    };
+    this.createFromObject = function (data) {
+        if (typeof data.basics !== 'undefined') {
+            this.data.basics = data.basics;
+        }
+        if (typeof data.meeting !== 'undefined') {
+            this.data.meeting = data.meeting;
+        }
+        if (typeof data.start !== 'undefined') {
+            this.data.start = data.start;
+        }
+        if (typeof data.walks !== 'undefined') {
+            this.data.walks = data.walks;
+        }
+        if (typeof data.contact !== 'undefined') {
+            this.data.contact = data.contact;
+        }
+        if (typeof data.facilities !== 'undefined') {
+            this.data.facilities = data.facilities;
+        }
+        if (typeof data.transport !== 'undefined') {
+            this.data.transport = data.transport;
+        }
+        if (typeof data.accessibility !== 'undefined') {
+            this.data.accessibility = data.accessibility;
+        }
+        if (typeof data.notes !== 'undefined') {
+            this.data.notes = data.notes;
+        }
     };
 
     this.setDisplayWalk = function (filters) {
@@ -100,6 +101,11 @@ ra.walkseditor.draftWalk = function (  ) {
 
         var category = "RA_Category_" + this.category;
         if (!filters[category]) {
+            return;
+        }
+
+        var contact = "RA_Contact_" + this.getContact();
+        if (!filters[contact]) {
             return;
         }
 
@@ -231,6 +237,9 @@ ra.walkseditor.draftWalk = function (  ) {
         } else {
             return null;
         }
+    };
+    this.getContact = function () {
+        return ra.getObjProperty(this.data, 'contact.displayName', 'Undefined');
     };
 
     this.exportToWMLine = function () {
@@ -456,16 +465,16 @@ ra.walkseditor.draftWalk = function (  ) {
         msg += "Walk Tilte: " + title;
         alert(msg);
     };
-    this.displayDetails = function () {
+    this.previewWalk = function () {
         var $html = "<div id='ramblers-details-buttons1' ></div>";
         $html += this.walkDetails();
         $html += "<div id='ramblers-details-buttons2' ></div>";
         $html += "<div id='ramblers-diagnostics' ></div>";
-        ra.modals.createModal($html, false);
+        var modal = ra.modals.createModal($html, false);
         this._addMaptoWalk();
         this.addButtons(document.getElementById('ramblers-details-buttons1'));
         this.addButtons(document.getElementById('ramblers-details-buttons2'));
-        if (this.loggedOn) {
+        if (this.privacy) {
             var tag = document.getElementById('ramblers-diagnostics');
             var details = document.createElement('details');
             tag.appendChild(details);
@@ -476,25 +485,28 @@ ra.walkseditor.draftWalk = function (  ) {
             details.appendChild(div);
             div.innerHTML = "<pre>" + JSON.stringify(this.data, undefined, 4) + "</pre>";
         }
+        document.addEventListener('preview-close-modal', function (e) {
+            modal.close();
+        });
     };
 
 
     this.addButtons = function (tag) {
 
         //      this.addButton(div, 'View', item.viewUrl);
-        if (this.buttons.edit !== null) {
-            this.addButton(tag, 'Edit', this.buttons.edit, ra.walkseditor.help.editQuestion());
+        if (ra.walkseditor.preview.editButton) {
+            this.addButton(tag, 'Edit', ra.walkseditor.help.editQuestion());
         }
-        if (this.buttons.duplicate !== null) {
-            this.addButton(tag, 'Duplicate', this.buttons.duplicate);
+        if (ra.walkseditor.preview.duplicateButton) {
+            this.addButton(tag, 'Duplicate');
         }
-        if (this.buttons.delete !== null) {
-            this.addButton(tag, 'Delete', this.buttons.delete, ra.walkseditor.help.deleteQuestion());
+        if (ra.walkseditor.preview.deleteButton) {
+            this.addButton(tag, 'Delete', ra.walkseditor.help.deleteQuestion());
         }
 
         return;
     };
-    this.addButton = function (div, name, url, confirmMsg = '') {
+    this.addButton = function (div, name, confirmMsg = '') {
         var button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.classList.add('ra-button');
@@ -511,7 +523,13 @@ ra.walkseditor.draftWalk = function (  ) {
                 }
             }
             if (ok) {
-                window.location.replace(url);
+                let ev = new Event("preview-close-modal");
+                document.dispatchEvent(ev);
+
+                let event = new Event("preview-walk-" + name.toLowerCase());
+                event.ra = {};
+                event.ra.walk = _this;
+                document.dispatchEvent(event);
             }
         });
         div.appendChild(button);
@@ -758,13 +776,13 @@ ra.walkseditor.draftWalk = function (  ) {
         var out = type;
         switch (type) {
             case 'car':
-                out = startTag + 'Car Share' + endTag;
+                out = startTag + 'Car Share ' + endTag;
                 break;
             case 'coach':
-                out = startTag + 'Coach walk' + endTag;
+                out = startTag + 'Coach walk ' + endTag;
                 break;
             case 'public':
-                out = startTag + 'Using public transport' + endTag;
+                out = startTag + 'Using public transport ' + endTag;
                 break;
             case 'none':
                 out = startTag + 'Meet at start of walk' + endTag;
@@ -841,7 +859,7 @@ ra.walkseditor.draftWalk = function (  ) {
             if (gr === null) {
                 gr = '[?no grid ref?]';
             } else {
-                gr = gr + "/" + gr10;
+                gr = gr + " [" + gr10 + "]";
             }
         }
 
@@ -882,11 +900,7 @@ ra.walkseditor.draftWalk = function (  ) {
         return out;
     };
     this.getWalkTitle = function (view = 'default') {
-        var d = ra.getObjProperty(this.data, 'basics.title');
-        if (d !== null) {
-            return  "<b>" + d + "</b>";
-        }
-        return '????';
+        return ra.getObjProperty(this.data, 'basics.title', '????');
     };
     this.getWalkDifficulty = function (view) {
         var out = '';
@@ -948,29 +962,29 @@ ra.walkseditor.draftWalk = function (  ) {
         switch (view) {
             case 'table':
                 if (typeof (d.email) !== "undefined") {
-                    out += '<br/>' + this.obscureInfo(d.email, this.loggedOn);
+                    out += '<br/>' + this.obscureInfo(d.email, this.privacy);
                 }
                 if (typeof (d.telephone1) !== "undefined") {
-                    out += '<br/>' + this.obscureInfo(d.telephone1, this.loggedOn);
+                    out += '<br/>' + this.obscureInfo(d.telephone1, this.privacy);
                 }
                 if (typeof (d.telephone2) !== "undefined") {
-                    out += '<br/>' + this.obscureInfo(d.telephone2, this.loggedOn);
+                    out += '<br/>' + this.obscureInfo(d.telephone2, this.privacy);
                 }
                 break;
             case 'list':
                 if (typeof (d.telephone1) !== "undefined") {
-                    out += ', ' + this.obscureInfo(d.telephone1, this.loggedOn);
+                    out += ', ' + this.obscureInfo(d.telephone1, this.privacy);
                 }
                 break;
             case 'details':
                 if (typeof (d.email) !== "undefined") {
-                    out += '<br/>' + this.obscureInfo(d.email, this.loggedOn);
+                    out += '<br/>' + this.obscureInfo(d.email, this.privacy);
                 }
                 if (typeof (d.telephone1) !== "undefined") {
-                    out += '<br/>' + this.obscureInfo(d.telephone1, this.loggedOn);
+                    out += '<br/>' + this.obscureInfo(d.telephone1, this.privacy);
                 }
                 if (typeof (d.telephone2) !== "undefined") {
-                    out += '<br/>' + this.obscureInfo(d.telephone2, this.loggedOn);
+                    out += '<br/>' + this.obscureInfo(d.telephone2, this.privacy);
                 }
                 break;
         }
@@ -1150,7 +1164,7 @@ ra.walkseditor.draftWalk = function (  ) {
         pp.setAttribute('title', 'View walk details');
         pp.innerHTML = popup;
         pp.addEventListener('click', function () {
-            _this.displayDetails();
+            _this.previewWalk();
         });
         var marker = cluster.addMarker(pp, lat, lng, {icon: icon, title: title, riseOnHover: true});
 
@@ -1370,8 +1384,8 @@ ra.walkseditor.draftWalk = function (  ) {
         }
         return $class;
     };
-    this.obscureInfo = function ($text, $canedit) {
-        if ($canedit) {
+    this.obscureInfo = function ($text, privacy) {
+        if (!privacy) {
             return $text;
         } else {
             var $no = $text.length;
@@ -1405,3 +1419,32 @@ ra.walkseditor.draftWalk = function (  ) {
 
 
 };
+
+//ra.walkseditor.previewButton = function (name, buttonActionFunction, confirmMsg) {
+//    this.name = name;
+//    this.fnctn = buttonActionFunction;
+//    this.confirmMsg = confirmMsg;
+//
+//    this.addButton = function (div, name, url, confirmMsg = '') {
+//        var button = document.createElement('button');
+//        button.setAttribute('type', 'button');
+//        button.classList.add('ra-button');
+//        button.innerHTML = name;
+//        var _this = this;
+//        button.addEventListener('click', function () {
+//            var ok = true;
+//            if (confirmMsg !== '') {
+//                switch (_this.getWalkStatus()) {
+//                    case "Published":
+//                    case "Cancelled":
+//                        ok = confirm(confirmMsg);
+//                        break;
+//                }
+//            }
+//            if (ok) {
+//                window.location.replace(url);
+//            }
+//        });
+//        div.appendChild(button);
+//    };
+//};

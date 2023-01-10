@@ -7,6 +7,7 @@ if (typeof (ra) === "undefined") {
 }
 ra.walkseditor.help = (function () {
     var help = {};
+    help.locateButtons = "<p>You can also specify a postcode and display previously used Meeting and Starting places</p>";
     help.editButtons = function () {
         return '<h4>Status</h4><p>The walk can be defined as Draft, Awaiting Approval, Published or Cancelled. Which options you can see depends on your authority and if there are outstanding issues with the walk.</p>' +
                 'Published and Cancelled walks are viewable by the public and are displayed within the Group\'s walks programme' +
@@ -21,12 +22,25 @@ ra.walkseditor.help = (function () {
     };
     help.deleteQuestion = function () {
         return ('This is a published or cancelled walk that is viewable by the public\r\n\r\nAre you sure you wish to delete this walk?');
-
     };
-    help.locationPostcode = function () {
-        return "Use this option if you wish to publish a postcode to aid walkers with their Satnav. <br/>The <b>Add</b> option will display postcodes nearest to the marker. <br/>NOTE: the postcodes may take a few seconds to appear<br/>Select the most appropriate postcode by clicking on it. <br/>NOTE: if you move the marker the postcode will be removed. ";
+    help.locationMeet = function () {
+        var out = "Position the marker to indicate the meeting place for the walk.<br>You can <ul><li>Drag the marker to the correct location</li><li>Use the <b>Move Marker</b> option to move the marker to a specific place</li></ul>";
+        out += help.locateButtons;
+        return out;
     };
     help.locationStart = function () {
+        var out = "Position the marker to indicate the start of the walk.<br>You can <ul><li>Drag the marker to the correct location</li><li>Use the <b>Move Marker</b> option to move the marker to a specific place</li></ul>";
+        out += help.locateButtons;
+        return out;
+    };
+    help.locationArea = function () {
+        return "Position the marker to indicate the general area of the walk.<br>You can <ul><li>Drag the marker to the correct location</li><li>Use the <b>Move Marker</b> option to move the marker to a specific place</li></ul>";
+    };
+
+    help.locationPostcode = function () {
+        return "Use this option if you wish to publish a postcode to aid walkers with their Satnav.<br/>The option will either <ul><li>display postcodes near to the marker, select the most appropriate postcode by clicking on it.<br/>NOTE: the postcodes may take a few seconds to appear</li><li>or if a postcode has been defined it will ask if you wish to delete it</li></ul>";
+    };
+    help.locationPlaces = function () {
         return "This option displays Meeting / Start locations that have been used by Ramblers Groups in the past.<br/>It displays a number of locations around the position of the marker. <br/>Some of these may help you locate a suitable location.";
     };
     help.locationSearch = function () {
@@ -99,7 +113,7 @@ ra.walkseditor.help = (function () {
         return "If Walk Leader is different from Contact listed lower down then enter it here as you would like it displayed (optional)";
     };
     help.walkLocalGrade = function () {
-        return "Select local grade from drop down (optional)";
+        return "Select local grade from drop down";
     };
     help.walkLocalGradeText = function () {
         return "Enter the grade as per your groups grading system";
@@ -142,7 +156,13 @@ ra.walkseditor.help = (function () {
                 '<h4>Email walk to group</h4><p>Email the walk to your group\'s Programme Secretary/Walks coordinators</p>' +
                 '<h4>Save walk</h4><p>Save the walk so you can upload it later and add additional information.</p>' +
                 '<h4>Upload walk</h4><p>Upload a previously saved walk, so you can change or add information</p>' +
-                '<p>Please note that any information in the form will be overwritten.</p>' +
+                '<p>Please note that any existing information in the form will be overwritten.</p>';
+    };
+    help.programmeOptions = function () {
+        return  '<h4>Preview walk</h4><p>View the walk as a whole to review the information you have entered</p>' +
+                '<h4>Save walk</h4><p>Save the walk so you can upload it later and add additional information.</p>' +
+                '<h4>Upload walk</h4><p>Upload a previously saved walk, so you can change or add information</p>' +
+                '<p>Please note that any existing information in the form will be overwritten.</p>' +
                 '<h4>WM Export</h4><p>Save the walk in a CSV file suitable for uploading to Walks Manager</p>';
     };
 
