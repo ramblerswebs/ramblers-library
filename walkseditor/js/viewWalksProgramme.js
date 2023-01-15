@@ -17,7 +17,7 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
 
     this.jplistGroup = ra.uniqueID();
     this.myjplist = new ra.jplist(this.jplistGroup);
-    this.tableColumns = [{name: 'Select'},
+    this.tableColumns = [{name: 'CHECKBOX'},
         {name: 'Status'},
         {name: 'Date', sortxx: {type: 'text', colname: 'wDate'}},
         {name: 'Meeting'},
@@ -80,7 +80,7 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
     };
     this.setWalkDisplay = function () {
         var items = this.programme.getItems();
-        var i;
+        var i, clen;
         for (i = 0, clen = items.length; i < clen; ++i) {
             var item = items[i];
             var walk = item.getWalk();
@@ -189,8 +189,8 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         var comment = document.createElement('p');
         comment.innerHTML = "Click on walk to view details";
         tag.appendChild(comment);
-        var wmexport = new ra.walkseditor.exportToWM();
-        wmexport.button(tag, items);
+        //   var wmexport = new ra.walkseditor.exportToWM();
+        //   wmexport.button(tag, items);
         var pagination = document.createElement('div');
         tag.appendChild(pagination);
         this.itemsPerPage = 10;
@@ -391,7 +391,12 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         for (index = 0, len = this.tableColumns.length; index < len; ++index) {
             col = this.tableColumns[index];
             var th = document.createElement('th');
-            th.innerHTML = col.name;
+            if (col.name !== 'CHECKBOX') {
+                th.innerHTML = col.name;
+            } else {
+                th.innerHTML = "<input type='checkbox' class='' >";
+            }
+
             if (typeof (col.sort) !== "undefined") {
                 this.myjplist.sortButton(th, col.sort.colname, col.sort.type, "asc", "▲");
                 this.myjplist.sortButton(th, col.sort.colname, col.sort.type, "desc", "▼");
@@ -433,8 +438,8 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
 
     this.tableValue = function (walk, name) {
         switch (name) {
-            case "Select":
-                return   "<input type='checkbox' id='vehicle1' >";
+            case "CHECKBOX":
+                return   "<input type='checkbox' class='' >";
                 break;
             case "State":
                 return   walk.getWalkStatus();

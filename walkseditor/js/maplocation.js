@@ -16,6 +16,15 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
     this.location = location;
     this.placesDisplayed = false;
     this.fields = {};
+    this._defaultMapView = {lat: 53.233,
+        long: -1.722,
+        zoom: 5
+    };
+    this.setDefaultMapView = function (lat, long, zoom) {
+        this._defaultMapView.lat = lat;
+        this._defaultMapView.long = long;
+        this._defaultMapView.zoom = zoom;
+    };
 
     this.addLocation = function () {
         this.raobject.isLatLongSet = false;
@@ -81,7 +90,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
     this.zoomMap = function () {
         var lat = this.raobject.latitude;
         var long = this.raobject.longitude;
-        this.map.setView([lat, long], 15);
+        this.map.setView([lat, long], 12);
     };
     this.addLocationEditor = function (tag) {
         var editorDiv = document.createElement('div');
@@ -92,8 +101,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
             {name: 'map', parent: 'root', tag: 'div', attrs: {class: 'ra walksweditor mapcontainer'}}
         ];
         this.elements = ra.html.generateTags(editorDiv, tags);
-        this.elements.drag.innerHTML = "To change location <b>drag marker</b> and/or <b>search</b> for location";
-
+        this.elements.drag.innerHTML = "To change location <b>drag marker</b> and/or use <b>Move marker to location</b>";
         switch (this.location) {
             case ra.walkseditor.mapLocationInput.MEETING :
                 new ra.help(this.elements.drag, ra.walkseditor.help.locationMeet).add();
@@ -304,33 +312,49 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         switch (this.location) {
             case ra.walkseditor.mapLocationInput.AREA :
                 img = ra.baseDirectory() + "libraries/ramblers/images/marker-area.png";
-                icon = L.icon({iconUrl: img, iconSize: [35, 40], iconAnchor: [17, 20], popupAnchor: [0, 0]});
+                icon = L.icon({iconUrl: img, iconSize: [35, 40], iconAnchor: [17, 20], popupAnchor: [0, -30]});
                 break;
             case ra.walkseditor.mapLocationInput.START :
                 img = ra.baseDirectory() + "libraries/ramblers/images/marker-start.png";
-                icon = L.icon({iconUrl: img, iconSize: [35, 40], iconAnchor: [17, 20], popupAnchor: [0, 0]});
+                icon = L.icon({iconUrl: img, iconSize: [35, 40], iconAnchor: [17, 20], popupAnchor: [0, -30]});
                 break;
             case ra.walkseditor.mapLocationInput.FINISH :
                 img = ra.baseDirectory() + "libraries/ramblers/images/marker-finish.png";
-                icon = L.icon({iconUrl: img, iconSize: [35, 40], iconAnchor: [5, 37], popupAnchor: [0, 0]});
+                icon = L.icon({iconUrl: img, iconSize: [35, 40], iconAnchor: [5, 37], popupAnchor: [0, -30]});
                 break;
             default:
                 img = ra.baseDirectory() + "libraries/ramblers/images/marker-route.png";
-                icon = L.icon({iconUrl: img, iconSize: [33, 50], iconAnchor: [17, 45], popupAnchor: [0, 0]});
+                icon = L.icon({iconUrl: img, iconSize: [33, 50], iconAnchor: [17, 45], popupAnchor: [0, -30]});
         }
 
         var lat, long;
+        var popup;
         if (this.raobject.isLatLongSet) {
             lat = this.raobject.latitude;
             long = this.raobject.longitude;
+            var p = new LatLon(lat, long);
+            var grid = OsGridRef.latLonToOsGrid(p);
+            var grStr = grid.toString(6);
+            if (grStr === "") {
+                grStr = "Outside OS Grid";
+            }
+            popup = "Grid Ref: " + grStr + "<br/>Lat: " + lat.toFixed(5) + "<br/>Long: " + long.toFixed(5);
+
         } else {
-            lat = 54;
-            long = 1.9;
-            this.map.setZoom(5);
+            lat = this._defaultMapView.lat;
+            long = this._defaultMapView.long;
+            popup = "Move marker to the correct location either by<ul><li>dragging it with the mouse</li><li>and/or using the <b>Move marker to location</b></li></ul>";
+
         }
         var _this = this;
         var marker = L.marker([lat, long], {draggable: true, icon: icon}).addTo(this.layer);
-        this.map.setView([lat, long]);
+        if (this.raobject.isLatLongSet) {
+            marker.bindPopup(popup);
+        } else {
+            marker.bindPopup(popup).openPopup();
+        }
+
+        this.map.panTo([lat, long]);
         marker.addEventListener('dragend', function (e) {
             let event = new Event("marker-moved", {bubbles: true}); // (2)
             event.ra = {};
