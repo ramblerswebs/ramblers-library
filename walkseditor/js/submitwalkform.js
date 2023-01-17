@@ -26,7 +26,7 @@ ra.walkseditor.submitwalkform = function (options, data) {
 
     this.load = function () {
         this.walk = new ra.walkseditor.draftWalk();
-        this.walk.init("Draft", "", true);
+        this.walk.init("Draft", "", false);
         this.programme.addWalk(this.walk);
         var tag = document.getElementById(options.divId);
         var topOptions = document.createElement('div');
