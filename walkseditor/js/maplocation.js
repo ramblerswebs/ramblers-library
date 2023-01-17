@@ -74,7 +74,10 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         this.summary.title = 'Click to open or close section';
         this.details.appendChild(this.summary);
         this.addLocationEditor(this.details);
-        this.details.open = !this.raobject.isLatLongSet;
+        if (this.location !== ra.walkseditor.mapLocationInput.FINISH) {
+            // bug where map does not display correctly if not displayed
+            this.details.open = !this.raobject.isLatLongSet;
+        }
         var _this = this;
         this.details.addEventListener("toggle", function () {
             var open = _this.details.open;
@@ -82,7 +85,6 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                 if (_this.raobject.isLatLongSet) {
                     _this.zoomMap();
                 }
-
             }
         });
 
@@ -348,18 +350,18 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         }
         var _this = this;
         var marker = L.marker([lat, long], {draggable: true, icon: icon}).addTo(this.layer);
-        if (this.raobject.isLatLongSet) {
-            marker.bindPopup(popup);
-        } else {
-            marker.bindPopup(popup).openPopup();
-        }
-
+        marker.bindPopup(popup);
         this.map.panTo([lat, long]);
         marker.addEventListener('dragend', function (e) {
             let event = new Event("marker-moved", {bubbles: true}); // (2)
             event.ra = {};
             event.ra.latlng = e.target.getLatLng();
             _this.tag.dispatchEvent(event);
+        });
+        this.map.on("mouseover", function (event) {
+            if (!_this.raobject.isLatLongSet) {
+                marker.openPopup();
+            }
         });
     };
 

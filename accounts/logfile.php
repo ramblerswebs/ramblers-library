@@ -13,7 +13,7 @@
  */
 class RAccountsLogfile {
 
-    const CACHE = "../cache01/cache";
+    const CACHE = "../cache02/cache";
     const FILE_HTACCESS = 0;
     const FILE_PHPINI = 1;
     const FILE_USERINI = 2;

@@ -16,6 +16,10 @@ define("ACCOUNTTABLE", "j8eh1_rw_accounts_domains");
 class RAccounts {
 
     private $dbresults;
+      public function __construct() {
+        $this->readAccounts();
+  
+    }
 
     public function updateAccounts() {
         $this->getAccounts(false);

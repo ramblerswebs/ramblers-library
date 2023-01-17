@@ -31,7 +31,6 @@ class RAccountsAccount {
     private $domain;
     private $log;
     private $timeperiod;
-    public static $watchful = null;
 
     public function __construct($domain, $status, $webmaster) {
         $this->domain = trim($domain);
@@ -39,9 +38,7 @@ class RAccountsAccount {
         $this->webmaster = $webmaster;
         $this->log = new RAccountsLogfile($domain);
         $this->timeperiod = new DateInterval("P2D");
-        if (RAccountsAccount::$watchful == null) {
-            RAccountsAccount::$watchful = new RWatchfulWatchful();
-        }
+  
     }
 
     Public static function formatsArray() {
@@ -98,7 +95,6 @@ class RAccountsAccount {
             case self::FORMAT_FOLDERS:
                 $array[] = $this->domainLink() . "<br/>  " . $this->log->getFileDate();
                 $noJoomla = $this->log->getNoJoomlaInstalls();
-                $array[] = self::$watchful->getSitesList($this->domain, $noJoomla);
                 $folders = $this->log->getFolders();
                 $array[] = $this->formatFolder($folders);
                 $array[] = $this->log->getCMSFolders();
@@ -244,7 +240,7 @@ class RAccountsAccount {
                 }
                 return ["Domain<br/>  Date", ".htaccess", "php.ini", ".user.ini", "public_html/.htaccess", "public_html/php.ini", "public_html/.user.ini", "Details"];
             case self::FORMAT_FOLDERS:
-                return ["Domain<br/>  Date", "Watchful/Joomla Sites", "Public_html/Folders", "CMS Folder", "CMS Version"];
+                return ["Domain<br/>  Date", "Public_html/Folders", "CMS Folder", "CMS Version"];
             case self::FORMAT_LARGESTFILES:
                 return ["Domain<br/>  Date", "Largest Files", "Size"];
             case self::FORMAT_AKEEBA:
