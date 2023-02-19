@@ -14,6 +14,9 @@ L.Control.RAContainer = L.Control.extend({
         }
         return container;
     },
+    getContainer: function () {
+        return  this.container;
+    },
     setText: function (text) {
         this.container.innerHTML = text;
     },

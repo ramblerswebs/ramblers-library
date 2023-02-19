@@ -478,6 +478,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         }
         var filter = new ra.filter(this.settings.filter);
         var result = this.getWalksStats(walks);
+        filter.setFilterGroup(result.group);
         filter.setFilterGroup(result.status);
         filter.setFilterGroup(result.category);
         filter.setFilterGroup(result.issues);
@@ -494,6 +495,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
             div.setAttribute('class', 'filter-columns');
             div.style.display = "none";
             tag.appendChild(div);
+            filter.addFilter(div, 'Group', result.group);
             filter.addFilter(div, 'Status', result.status);
             filter.addFilter(div, 'Category', result.category, true);
             filter.addFilter(div, 'Issues', result.issues);
@@ -509,6 +511,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
     };
     this.getWalksStats = function (walks) {
         var result = {
+            group: {},
             status: {},
             category: {},
             issues: {None: {no: 0, name: 'No Issues', id: 'RA_NoIssues'},
@@ -537,6 +540,15 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
 
         for (i = 0, len = walks.length; i < len; ++i) {
             walk = walks[i];
+            var code = walk.getGroupCode();
+            var name = walk.getGroupName();
+            if (!result.group.hasOwnProperty(code)) {
+                result.group[code] = {no: 0};
+                result.group[code].name = name;
+                result.group[code].id = 'RA_Group_' + code;
+            }
+            result.group[code].no += 1;
+
             var status = walk.getStatus();
             if (!result.status.hasOwnProperty(status)) {
                 result.status[status] = {no: 0};

@@ -157,6 +157,12 @@ ra.walkseditor.walk = function () {
 
     this.setDisplayWalk = function (filters) {
         this.displayWalk = false;
+
+        var code = "RA_Group_" + this.getGroupCode();
+        if (!filters[code]) {
+            return;
+        }
+
         var status = "RA_Status_" + this.getStatus();
         if (!filters[status]) {
             return;
@@ -755,6 +761,12 @@ ra.walkseditor.walk = function () {
             this.data.admin.cancelledReason = "";
     }
     };
+    this.getGroupCode = function () {
+        return this.data.basics.group;
+    };
+    this.getGroupName = function () {
+        return this.data.basics.groupName;
+    };
     this.getStatus = function () {
         return this.data.admin.status;
     };
@@ -810,22 +822,35 @@ ra.walkseditor.walk = function () {
         return 'Date not defined';
     };
     this.getWalkBasics = function (view) {
-        var title = ra.getObjProperty(this.data, 'basics.title');
-        var description = ra.getObjProperty(this.data, 'basics.description');
-        var notes = ra.getObjProperty(this.data, 'basics.notes');
-        var out = '';
-        out += '<h3>Title: ' + title + '</h3>';
-        out += '<h3>Date: ' + this.getWalkDate('details') + '</h3>';
-        if (description === null) {
-            description = '';
-        }
-        if (notes === null) {
-            notes = '';
-        }
-        out += '<h4>Description: </h4>' + description;
-        out += '<h4>Notes: </h4>' + notes;
+        switch (view) {
+            case 'details':
+                var group = ra.getObjProperty(this.data, 'basics.groupName');
+                var title = ra.getObjProperty(this.data, 'basics.title');
+                var description = ra.getObjProperty(this.data, 'basics.description');
+                var notes = ra.getObjProperty(this.data, 'basics.notes');
+                var out = '';
+                if (group !== null) {
+                    out += '<h3>Group: ' + group + '</h3>';
+                }
+                out += '<h3>Title: ' + title + '</h3>';
+                out += '<h3>Date: ' + this.getWalkDate('details') + '</h3>';
+                if (description === null) {
+                    description = '';
+                }
+                if (notes === null) {
+                    notes = '';
+                }
+                out += '<h4>Description: </h4>' + description;
+                out += '<h4>Notes: </h4>' + notes;
 
-        return out;
+                return out;
+                break;
+            default:
+                break;
+        }
+
+
+        return "";
     };
     this.getWalkMeeting = function (view) {
         var startTag = "", endTag = "";

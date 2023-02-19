@@ -19,7 +19,7 @@ ra.leafletmap = function (tag, options) {
         rightclick: null,
         search: null,
         plotroute: null,
-      //  zoomlevelOSMsg: null,
+        zoomlevelOSMsg: null,
         osinfo: null};
 
     this._mapDiv = null;
@@ -62,9 +62,9 @@ ra.leafletmap = function (tag, options) {
             this.mapLayers["Bing Aerial"] = new L.BingLayer(options.bingkey, {type: 'Aerial'});
             this.mapLayers["Bing Aerial (Labels)"] = new L.BingLayer(options.bingkey, {type: 'AerialWithLabels'});
             this.mapLayers["Ordnance Survey"] = new L.BingLayer(options.bingkey, {type: 'ordnanceSurvey',
-                minZoom: 11.5,
-                minNativeZoom: 11.5,
-                maxZoom: 15.5,
+                //    minZoom: 11.5,
+                //   minNativeZoom: 11.5,
+                //   maxZoom: 18,
                 attribution: 'Bing/OS Crown Copyright'});
         } catch (err) {
 
@@ -84,8 +84,8 @@ ra.leafletmap = function (tag, options) {
     // top right control for error messages
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
     //this.controls.errorDiv.setText(ra.html.getBrowserStatus());
- //   this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
-
+    this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
+    this.controls.zoomlevelOSMsg.getContainer().style.backgroundColor = "#eeeeee";
     // top left controls
     if (options.displayElevation) {
         this.controls.elevation = L.control.elevation({
@@ -228,21 +228,22 @@ ra.leafletmap = function (tag, options) {
 
 
     this.osZoomLevel = function () {
-      //  this.controls.zoomlevelOSMsg.setText("");
+        this.controls.zoomlevelOSMsg.setText("");
         if (this.baseTiles === 'Ordnance Survey') {
             var zoom = this.map.getZoom();
-            if (zoom > 15) {
-                this.map.setZoom(15);
+            if (zoom === 17) {
+                this.controls.zoomlevelOSMsg.setErrorText("Ordnance Survey Maps: Cannot zoom in any further");
             }
-            //  console.log("zoom:" + zoom);
-          
-//            if (zoom <= 11) {
-//                this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom in to see Ordnance Survey Maps");
-//            }
-//
-//            if (zoom > 17) {
-//                this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom out to see Ordnance Survey Maps");
-//            }
+            if (zoom > 17) {
+                this.map.setZoom(17);
+            }
+            if (zoom === 11.5) {
+                this.controls.zoomlevelOSMsg.setErrorText("Ordnance Survey Maps: Cannot zoom out any further");
+            }
+            if (zoom < 11.5) {
+                this.map.setZoom(11.5);
+            }
+            // console.log("zoom:" + zoom);
         }
     };
     this.map.on('browser-print-end', function (e) {
