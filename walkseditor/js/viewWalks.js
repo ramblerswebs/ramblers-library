@@ -5,11 +5,13 @@ if (typeof (ra) === "undefined") {
 if (typeof (ra.walkseditor) === "undefined") {
     ra.walkseditor = {};
 }
-ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
+ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = false) {
     this.masterdiv = tag;
     this.programme = programme;
     this.mapOptions = mapOptions;
     this.allowWMExport = false;
+    // this._newUrl = null;
+    this._loggedOn = loggedOn;
     this.settings = {
         currentDisplay: "Table",
         filter: {}
@@ -28,11 +30,9 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
 
     this.load = function () {
         var tags = [
-            {name: 'heading', parent: 'root', tag: 'h2'},
             {name: 'buttons', parent: 'root', tag: 'div', attrs: {class: 'alignRight'}},
             {name: 'walksFilter', parent: 'root', tag: 'div', attrs: {class: 'walksFilter'}},
             {name: 'container', parent: 'root', tag: 'div'},
-
             {name: 'table', parent: 'container', tag: 'table', attrs: {class: 'ra-tab-options'}},
             {name: 'row', parent: 'table', tag: 'tr'},
             {name: 'table', parent: 'row', tag: 'td', attrs: {class: 'ra-tab'}, textContent: 'Table'},
@@ -40,38 +40,40 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
             {name: 'map', parent: 'row', tag: 'td', attrs: {class: 'ra-tab'}, textContent: 'Map'},
             {name: 'calendar', parent: 'row', tag: 'td', attrs: {class: 'ra-tab'}, textContent: 'Calendar'},
             //          {name: 'issues', parent: 'row', tag: 'td', attrs: {class: 'ra-tab'}, textContent: 'Issues'},
-            {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {class: 'gpxouter'}},
-            {name: 'legend', parent: 'root', tag: 'div'},
-            {name: 'diagnostics', parent: 'root', tag: 'div', attrs: {class: 'diagnostics'}}
+            {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {class: 'gpxouter'}}
         ];
 
         this.elements = ra.html.generateTags(this.masterdiv, tags);
-        //   this.legend(this.elements.legend);
-        this.elements.heading.innerHTML = 'Display Draft Walks Programme';
 
         var self = this;
 
-        this.elements.table.addEventListener("click", function () {
-            self.removeRecordDisplay();
+        this.elements.table.addEventListener("click", function (e) {
+            if (e.altKey) {
+                self.displayDiagnostics();
+            }
             self.ra_format("Table");
         });
-        this.elements.list.addEventListener("click", function () {
-            self.removeRecordDisplay();
+        this.elements.list.addEventListener("click", function (e) {
+            if (e.altKey) {
+                self.displayDiagnostics();
+            }
             self.ra_format("List");
         });
-        this.elements.map.addEventListener("click", function () {
-            self.removeRecordDisplay();
+        this.elements.map.addEventListener("click", function (e) {
+            if (e.altKey) {
+                self.displayDiagnostics();
+            }
             self.ra_format("Map");
         });
-        this.elements.calendar.addEventListener("click", function () {
-            self.removeRecordDisplay();
+        this.elements.calendar.addEventListener("click", function (e) {
+            if (e.altKey) {
+                self.displayDiagnostics();
+            }
             self.ra_format("Calendar");
         });
 
         this.setFilters();
         self.ra_format(self.settings.currentDisplay);
-        this.displayDiagnostics(this.elements.diagnostics);
-
         document.addEventListener("reDisplayWalks", function () {
             self.setWalkDisplay();
             self.removeRecordDisplay();
@@ -79,29 +81,21 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         });
     };
     this.setWalkDisplay = function () {
-        var items = this.programme.getItems();
+        var walks = this.programme.getWalks();
         var i, clen;
-        for (i = 0, clen = items.length; i < clen; ++i) {
-            var item = items[i];
-            var walk = item.getWalk();
+        for (i = 0, clen = walks.length; i < clen; ++i) {
+            var walk = walks[i];
             walk.setDisplayWalk(this.settings.filter);
         }
     };
-    this.displayDiagnostics = function (tag) {
-
-        var details = document.createElement('details');
-        tag.appendChild(details);
-        var summary = document.createElement('summary');
-        summary.textContent = "Diagnostics";
-        details.appendChild(summary);
+    this.displayDiagnostics = function () {
+        var tag = document.createElement('div');
+        var heading = document.createElement('h3');
+        tag.appendChild(heading);
         var div = document.createElement('div');
-        details.appendChild(div);
-        var _this = this;
-        details.addEventListener("toggle", function () {
-            div.innerHTML = "<pre>" + JSON.stringify(_this.programme, undefined, 4) + "</pre>";
-
-        });
-
+        tag.appendChild(div);
+        div.innerHTML = "<pre>" + JSON.stringify(this.programme, undefined, 4) + "</pre>";
+        ra.modals.createModal(tag, true);
     };
     this.removeRecordDisplay = function () {
         this.elements.gpxouter.innerHTML = '';
@@ -109,6 +103,7 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
 
     this.ra_format = function (option) {
         this.settings.currentDisplay = option;
+        this.removeRecordDisplay();
         //    this.elements.status.classList.remove('active');
         this.elements.table.classList.remove('active');
         this.elements.list.classList.remove('active');
@@ -135,8 +130,8 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
     };
 
     this.displayTable = function (tag) {
-        var items = this.programme.getItems();
-        var i, clen, item;
+        var walks = this.programme.getWalks();
+        var i, clen;
         var comment = document.createElement('p');
         comment.innerHTML = "Click on walk to view details";
         tag.appendChild(comment);
@@ -145,7 +140,7 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         var pagination = document.createElement('div');
         tag.appendChild(pagination);
         this.itemsPerPage = 10;
-        this.myjplist.addPagination(items.length, pagination, this.jplistGroup, this.itemsPerPage);
+        this.myjplist.addPagination(walks.length, pagination, this.jplistGroup, this.itemsPerPage);
 
         var table = document.createElement('table');
         tag.appendChild(table);
@@ -157,9 +152,9 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         var $class = "odd";
         var first = false;
         var done = false;
-        for (i = 0, clen = items.length; i < clen; ++i) {
-            item = items[i];
-            var walk = item.getWalk();
+        for (i = 0, clen = walks.length; i < clen; ++i) {
+            var walk = walks[i];
+
             if (walk.displayWalk) {
                 var status = walk.dateStatus();
                 if (!done) {
@@ -169,12 +164,13 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
                     }
                 }
 
-                this.displayWalkRow(this.tableColumns, tbody, item, $class, first);
+                this.displayWalkRow(this.tableColumns, tbody, walk, $class, first);
                 first = false;
                 if ($class === 'odd') {
                     $class = 'even';
                 } else {
                     $class = 'odd';
+                    ``
                 }
             }
         }
@@ -184,8 +180,8 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
 
     this.displayList = function (tag) {
 
-        var items = this.programme.getItems();
-        var i, clen, item;
+        var walks = this.programme.getWalks();
+        var i, clen;
         var comment = document.createElement('p');
         comment.innerHTML = "Click on walk to view details";
         tag.appendChild(comment);
@@ -194,7 +190,7 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         var pagination = document.createElement('div');
         tag.appendChild(pagination);
         this.itemsPerPage = 10;
-        this.myjplist.addPagination(items.length, pagination, this.jplistGroup, this.itemsPerPage);
+        this.myjplist.addPagination(walks.length, pagination, this.jplistGroup, this.itemsPerPage);
 
         var div = document.createElement('div');
         div.setAttribute('data-jplist-group', this.jplistGroup);
@@ -204,9 +200,9 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         var first = false;
         var done = false;
 
-        for (i = 0, clen = items.length; i < clen; ++i) {
-            item = items[i];
-            var walk = item.getWalk();
+        for (i = 0, clen = walks.length; i < clen; ++i) {
+            var walk = walks[i];
+
             if (walk.displayWalk) {
                 var status = walk.dateStatus();
                 if (!done) {
@@ -225,7 +221,7 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
 
                 walkDiv.setAttribute('data-jplist-item', '');
 
-                // var walk = item.walk;
+
                 odd = !odd;
                 walkDiv.classList.add("pointer");
                 if (first) {
@@ -241,15 +237,14 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
                         walk.getWalkTitle() + ', ' +
                         walk.getWalkDifficulty('list') +
                         walk.getWalkContact('list');
-                out += "<br/><div class='alignRight'>" + walk.getStatusCategory(' ', this.settings.noCategories) + "</div>";
+                out += "<br/><div class='alignRight'>" + walk.getStatusCategory(' ', this.settings.singleCategory) + "</div>";
                 walkDiv.innerHTML = out;
                 first = false;
-                var _this = this;
                 walkDiv.ra = {};
                 walkDiv.ra.walk = walk;
                 walkDiv.setAttribute('title', 'View walk details');
                 walkDiv.addEventListener('click', function () {
-                    this.ra.walk.previewWalk();
+                    walk.previewWalk();
 
                 });
             }
@@ -270,11 +265,11 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         var map = lmap.map;
         //  var layer = L.featureGroup().addTo(map);
         var mycluster = new cluster(map);
-        var items = this.programme.getItems();
-        var i, clen, item;
-        for (i = 0, clen = items.length; i < clen; ++i) {
-            item = items[i];
-            var walk = item.getWalk();
+        var walks = this.programme.getWalks();
+        var i, clen;
+        for (i = 0, clen = walks.length; i < clen; ++i) {
+
+            var walk = walks[i];
             if (walk.displayWalk) {
                 walk.getAsMarker(mycluster);
             }
@@ -328,31 +323,27 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
                 }
             },
             eventClick: function (info) {
-                var items = _this.programme.getItems();
-                var i, clen, item;
-                for (i = 0, clen = items.length; i < clen; ++i) {
-                    item = items[i];
-                    var walk = item.getWalk();
-                    if (item._eventid === info.event.id) {
+                var walks = _this.programme.getWalks();
+                var i, clen;
+                for (i = 0, clen = walks.length; i < clen; ++i) {
+                    var walk = walks[i];
+                    if (walk._eventid === info.event.id) {
                         walk.previewWalk();
                     }
                 }
             },
             select: function (info) {
-                var option;
-
-                if (_this.newUrl !== null) {
-                    if (_this.newUrl.includes('?')) { // allow for SEO
-                        option = "&";
-                    } else {
-                        option = "?";
-                    }
+                if (_this._loggedOn !== null) {
                     var walkdate = info.startStr;
                     var today = new Date();
                     var now = ra.date.YYYYMMDD(today);
                     if (walkdate > now) {
-                        var url = _this.newUrl + option + "date=" + walkdate.replaceAll("-", "%20");
-                        window.location.replace(url);
+                        //     var url = _this._newUrl + option + "date=" + walkdate.replaceAll("-", "%20");
+                        //    window.location.replace(url);
+                        let event = new Event("preview-walk-newdate");
+                        event.ra = {};
+                        event.ra.date = walkdate;
+                        document.dispatchEvent(event);
                     } else {
                         alert('Walk MUST be in the future');
                     }
@@ -365,16 +356,16 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
     };
     this.getEvents = function () {
         var events = [];
-        var items = this.programme.getItems();
-        var i, clen, item;
-        for (i = 0, clen = items.length; i < clen; ++i) {
-            item = items[i];
-            var walk = item.getWalk();
+        var walks = this.programme.getWalks();
+        var i, clen;
+        for (i = 0, clen = walks.length; i < clen; ++i) {
+
+            var walk = walks[i];
             if (walk.displayWalk) {
 
                 var event = walk.getAsEvent();
-                item._eventid = i.toString();
-                event.id = item._eventid;
+                walk._eventid = i.toString();
+                event.id = walk._eventid;
                 events.push(event);
             }
         }
@@ -405,8 +396,7 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         }
     };
 
-    this.displayWalkRow = function (columns, table, item, $class, $first) {
-        var walk = item.getWalk();
+    this.displayWalkRow = function (columns, table, walk, $class, $first) {
         var tr = document.createElement('tr');
         tr.setAttribute('data-jplist-item', '');
         walk.addDisplayClasses(tr.classList);
@@ -442,10 +432,10 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
                 return   "<input type='checkbox' class='' >";
                 break;
             case "State":
-                return   walk.getWalkStatus();
+                return   walk.getStatus();
                 break;
             case "Category":
-                return   walk.getWalkCategory();
+                return   walk.getCategory();
                 break;
             case "Date":
                 return   walk.getWalkDate('table');
@@ -475,19 +465,19 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
                 return  walk.getWalkNotes('table');
                 break;
             case "Status":
-                return  walk.getStatusCategory('<br/>', this.settings.noCategories);
+                return  walk.getStatusCategory('<br/>', this.settings.singleCategory);
                 break;
         }
         return 'unknown';
     };
 
     this.setFilters = function () {
-        var items = this.programme.getItems();
-        if (items.length === 0) {
+        var walks = this.programme.getWalks();
+        if (walks.length === 0) {
             return;
         }
         var filter = new ra.filter(this.settings.filter);
-        var result = this.getWalksStats(items);
+        var result = this.getWalksStats(walks);
         filter.setFilterGroup(result.status);
         filter.setFilterGroup(result.category);
         filter.setFilterGroup(result.issues);
@@ -517,7 +507,7 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
 
         }
     };
-    this.getWalksStats = function (items) {
+    this.getWalksStats = function (walks) {
         var result = {
             status: {},
             category: {},
@@ -542,12 +532,12 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
         };
         var i, len;
         var walk, yyyymmdd;
-        len = items.length;
+        len = walks.length;
 
 
-        for (i = 0, len = items.length; i < len; ++i) {
-            walk = items[i].getWalk();
-            var status = items[i].getStatus();
+        for (i = 0, len = walks.length; i < len; ++i) {
+            walk = walks[i];
+            var status = walk.getStatus();
             if (!result.status.hasOwnProperty(status)) {
                 result.status[status] = {no: 0};
                 result.status[status].name = status;
@@ -555,7 +545,7 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
             }
             result.status[status].no += 1;
 
-            var category = items[i].getCategory();
+            var category = walk.getCategory();
             if (!result.category.hasOwnProperty(category)) {
                 result.category[category] = {no: 0};
                 result.category[category].name = category;
@@ -608,32 +598,8 @@ ra.walkseditor.viewWalksProgramme = function (tag, mapOptions, programme) {
             }
 
         }
-        this.settings.noCategories = Object.keys(result.category).length;
+        this.settings.singleCategory = Object.keys(result.category).length === 1;
         return result;
     };
-    this.legend = function (tag) {
 
-        var tags = [
-            {name: 'details', parent: 'root', tag: 'details', attrs: {open: true}},
-            {name: 'summary', parent: 'details', tag: 'summary', textContent: 'Legend', attrs: {class: 'ra legendsummary'}},
-            {name: 'draft', parent: 'details', tag: 'div', attrs: {class: 'ra legend draft'}},
-            {parent: 'draft', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Draft'},
-
-            {name: 'waiting', parent: 'details', tag: 'div', attrs: {class: 'ra legend waiting'}},
-            {parent: 'waiting', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Awaiting Approval'},
-
-            {name: 'publicwalks', parent: 'details', tag: 'h5', textContent: 'Viewable by Public'},
-            {name: 'published', parent: 'details', tag: 'div', attrs: {class: 'ra legend published'}},
-            {parent: 'published', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Published'},
-
-            {name: 'cancelled', parent: 'details', tag: 'div', attrs: {class: 'ra legend cancelled'}},
-            {parent: 'cancelled', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Cancelled'}
-
-            //        {name: 'pastheading', parent: 'details', tag: 'h5', textContent: 'Past Walks'},
-            //        {name: 'past', parent: 'details', tag: 'div', attrs: {class: 'ra legend past'}},
-            //        {parent: 'past', tag: 'div', attrs: {class: 'legendbox status-Past'}, textContent: 'Past'}
-
-        ];
-        ra.html.generateTags(tag, tags);
-    };
 };

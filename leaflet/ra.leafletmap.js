@@ -19,7 +19,7 @@ ra.leafletmap = function (tag, options) {
         rightclick: null,
         search: null,
         plotroute: null,
-        zoomlevelOSMsg: null,
+      //  zoomlevelOSMsg: null,
         osinfo: null};
 
     this._mapDiv = null;
@@ -62,6 +62,9 @@ ra.leafletmap = function (tag, options) {
             this.mapLayers["Bing Aerial"] = new L.BingLayer(options.bingkey, {type: 'Aerial'});
             this.mapLayers["Bing Aerial (Labels)"] = new L.BingLayer(options.bingkey, {type: 'AerialWithLabels'});
             this.mapLayers["Ordnance Survey"] = new L.BingLayer(options.bingkey, {type: 'ordnanceSurvey',
+                minZoom: 11.5,
+                minNativeZoom: 11.5,
+                maxZoom: 15.5,
                 attribution: 'Bing/OS Crown Copyright'});
         } catch (err) {
 
@@ -81,7 +84,7 @@ ra.leafletmap = function (tag, options) {
     // top right control for error messages
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
     //this.controls.errorDiv.setText(ra.html.getBrowserStatus());
-    this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
+ //   this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
 
     // top left controls
     if (options.displayElevation) {
@@ -225,16 +228,21 @@ ra.leafletmap = function (tag, options) {
 
 
     this.osZoomLevel = function () {
-        this.controls.zoomlevelOSMsg.setText("");
+      //  this.controls.zoomlevelOSMsg.setText("");
         if (this.baseTiles === 'Ordnance Survey') {
             var zoom = this.map.getZoom();
-            //  this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom "+zoom);
-            if (zoom <= 11) {
-                this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom in to see Ordnance Survey Maps");
+            if (zoom > 15) {
+                this.map.setZoom(15);
             }
-            if (zoom > 17) {
-                this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom out to see Ordnance Survey Maps");
-            }
+            //  console.log("zoom:" + zoom);
+          
+//            if (zoom <= 11) {
+//                this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom in to see Ordnance Survey Maps");
+//            }
+//
+//            if (zoom > 17) {
+//                this.controls.zoomlevelOSMsg.setErrorText("Info: Zoom out to see Ordnance Survey Maps");
+//            }
         }
     };
     this.map.on('browser-print-end', function (e) {

@@ -11,9 +11,12 @@ if (typeof (ra) === "undefined") {
 if (typeof (ra.walkseditor) === "undefined") {
     ra.walkseditor = {};
 }
+if (typeof (ra.walkseditor.form) === "undefined") {
+    ra.walkseditor.form = {};
+}
 
-ra.walkseditor.walksprogramme = function (options, data) {
-    this.programme = new ra.walkseditor.programme();
+ra.walkseditor.form.programme = function (options, data) {
+    this.programme = new ra.walkseditor.walks();
     this.groups = data.groups;
     this.mapoptions = options;
     this.localGrades = data.localGrades;
@@ -35,13 +38,21 @@ ra.walkseditor.walksprogramme = function (options, data) {
         viewer.load(viewerDiv, this.mapoptions, this.programme);
 
         document.addEventListener("walk-create-new", function (e) {
-            var item = new ra.walkseditor.programmeItem();
-            _this.programme.addItem(item);
-            _this.editWalk(item.getWalk());
+            var walk = new ra.walkseditor.walk();
+            _this.programme.addWalk(walk);
+            _this.editWalk(walk);
             document.addEventListener('ra-modal-closing', function (e) {
                 let ev = new Event("editor-done");
                 document.dispatchEvent(ev);
             });
+        });
+
+        document.addEventListener('preview-walk-newdate', function (e) {
+            var walkdate = e.ra.date;
+            var walk = new ra.walkseditor.walk();
+            walk.setWalkDate(walkdate);
+            _this.programme.addWalk(walk);
+            _this.editWalk(walk);
         });
 
         document.addEventListener("editor-done", function (e) {
@@ -97,7 +108,7 @@ ra.walkseditor.walksprogrammeViewer = function () {
     this.refresh = function () {
         this.tag.innerHTML = "";
         this.addButtons(this.tag);
-        this.viewer = new ra.walkseditor.viewWalksProgramme(this.tag, this.mapoptions, this.programme);
+        this.viewer = new ra.walkseditor.viewWalks(this.tag, this.mapoptions, this.programme);
         this.viewer.load();
     };
 
@@ -165,7 +176,7 @@ ra.walkseditor.walksprogrammeViewer = function () {
         uploadButton.addEventListener("upload-file-read", function (e) {
             var walks = JSON.parse(e.ra.result);
             walks.forEach(function (walk, index) {
-                var newWalk = new ra.walkseditor.draftWalk();
+                var newWalk = new ra.walkseditor.walk();
                 newWalk.createFromObject(walk);
                 _this.programme.addWalk(newWalk);
             });

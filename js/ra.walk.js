@@ -10,6 +10,7 @@ ra.walk = (function () {
     my.DisplayWalkFunction = "ra.walk.displayWalkID";
     my.mapFormat = ["{dowddmm}", "{;title}", "{,distance}"];
     my.mapLinks = ["{startOSMap}", "{startDirections}"];
+    my._startup = true;
     my.walks = {};
     my.testcsv = function () {
         var allText = [];
@@ -52,6 +53,14 @@ ra.walk = (function () {
                 console.log(error);
             }
         }
+        if (my._startup) {
+            my._startup = false;
+            setTimeout(function () {
+                // check url parameters and display walk in popup
+                my._displayWalkPopup();
+            }, 1500);
+        }
+
     };
     my.registerPHPWalks = function (mapOptions, data) {
         // stores walks for php walks displays
@@ -63,6 +72,14 @@ ra.walk = (function () {
         this.load = function () {
 
         };
+    };
+    my._displayWalkPopup = function () {
+        var search = window.location.search;
+        const urlParams = new URLSearchParams(search);
+        if (urlParams.has('walkid')) {
+            var walkid = urlParams.getAll('walkid')[0];
+            my.displayWalkID(new Event("dummy"), walkid);
+        }
     };
     my.getWalk = function (id) {
         if (my.walks.hasOwnProperty(id)) {
@@ -137,7 +154,7 @@ ra.walk = (function () {
             callback(event, walk);
             return;
         }
-        alert('Program error, unable to display walk details, please contact webmaster, we will attempt to view walk on National Site');
+        alert('SORRY unable to display specified walk, we will attempt to view walk on National Site');
         $url = "https://www.ramblers.org.uk/go-walking/find-a-walk-or-route/walk-detail.aspx?walkID=" + id;
         window.open($url);
     };
@@ -357,10 +374,10 @@ ra.walk = (function () {
                     var caption = "<div>";
                     if (item.caption !== "") {
                         caption += item.caption;
-                    } 
+                    }
                     if (item.copyright !== "") {
                         caption += "<br/><i>&copy; " + item.copyright + "</i>";
-                    } 
+                    }
                     caption += "</div>";
                     $html += "<div class='walk-image' onclick='ra.html.displayInModal(this)'><img class='walkmedia' src='" + item.url + "'  >" + caption + "</div>";
                 }
@@ -370,18 +387,22 @@ ra.walk = (function () {
 
 
         $html += "<div class='walkitem walkdates'>" + PHP_EOL;
-        if ($walk.hasMeetPlace) {
-            $html += ra.html.addDiv("", "Walkers will travel together from the meeting place to the start of the walk, this may be by car, coach or public transport. Meeting times are often when the group will set off, rather than when you should arrive at the meeting place.");
-        }
-
-        $html += ra.html.addDiv("", "Start times are often when the group will start walking rather than when to get there.");
-
         if ($walk.detailsPageUrl !== '') {
             $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on National Web Site</a></div>" + PHP_EOL;
         }
         $html += "<div class='updated'>Walk ID " + $walk.id + "</div>" + PHP_EOL;
+        //var link = window.location.href + "&walkid=" + $walk.id;
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        params.delete("walkid");
+        params.append("walkid", +$walk.id);
+        var link = new URL(`${url.origin}${url.pathname}?${params}`);
+        var text = escape(link.href);
+        $html += "<div><a href=\"javascript:ra.clipboard.set(\'" + text + "')\" >Copy url of this popup to clipboard</a></div>" + PHP_EOL;
         $html += "<div class='updated walk" + $walk.status + "'>Last update: " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "</div>" + PHP_EOL;
         $html += "</div>" + PHP_EOL;
+
+
 
         $html += "</div>" + PHP_EOL;
         //    var mapdiv = "div" + $walk.id;
@@ -466,8 +487,19 @@ ra.walk = (function () {
 //    };
     my.getEmailLink = function ($walk) {
         var $link;
-        $link = "javascript:ra.walk.emailContact(\"" + $walk.id + "\")";
-        return "<span><a href='" + $link + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
+        //   $link = "javascript:ra.walk.emailContact(\"" + $walk.id + "\")";
+        //  return "<span><a href='" + $link + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
+        var $gwemlink;
+        if ($walk.email === "") {
+            return "";
+        }
+        if ($walk.contactForm !== "") {
+            $link = "<span><a target='_blank' href='" + $walk.contactForm + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
+        } else {
+            $gwemlink = "javascript:ra.walk.emailContact(\"" + $walk.id + "\")";
+            $link = "<span><a href='" + $gwemlink + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
+        }
+        return $link;
     };
     my.emailContact = function ($id) {
 
@@ -978,6 +1010,13 @@ ra.walk = (function () {
             if ($location.postcode !== null) {
                 $out += _displayPostcode($location);
             }
+            if ($location.type === "Meeting") {
+                $out += ra.html.addDiv("location notes", "Walkers will travel together from the meeting place to the start of the walk, this may be by car, coach or public transport. Meeting times are often when the group will set off, rather than when you should arrive at the meeting place.");
+            }
+            if ($location.type === "Start") {
+                $out += ra.html.addDiv("location notes", "Start times are often when the group will start walking rather than when to get there.");
+            }
+
         } else {
             if ($location.type === "Start") {
                 $out = "<div class='place'>";

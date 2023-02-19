@@ -15,18 +15,76 @@ ra.walkseditor.preview.editButton = false;
 ra.walkseditor.preview.deleteButton = false;
 ra.walkseditor.preview.duplicateButton = false;
 
-ra.walkseditor.draftWalk = function () {
-    const isERROR = 'error';
-    const isWarning = 'warning';
-    const isInformation = 'warning';
-    //   this.status = "None";
-    this.category = "None";
+ra.walkseditor.walks = function () {
+    this._walks = [];
+    this.getWalks = function () {
+        return this._walks;
+    };
+    this.getWalksJson = function () {
+        var walksdata = [];
+        this._walks.forEach(function (_walk, index) {
+
+            walksdata.push(_walk.data);
+        });
+        return JSON.stringify(walksdata, null, 5);
+    };
+    this.addWalk = function (walk) {
+        this._walks.push(walk);
+        this._sortWalks();
+    };
+    this.duplicateWalk = function (walk) {
+        var newJson = JSON.stringify(walk.data);
+        var newWalk = new ra.walkseditor.walk();
+        newWalk.createFromJson(newJson);
+        this.addWalk(newWalk);
+    };
+    this.deleteWalk = function (walk) {
+        this._walks.forEach(function (_walk, index) {
+
+            if (_walk === walk) {
+                this._walks.removeItem(_walk);
+            }
+        });
+    };
+
+    this.clearWalks = function () {
+        this._walks = [];
+    };
+    this.sort = function () {
+        this._sortWalks();
+    };
+
+    this._sortWalks = function () {
+        this._walks.sort(function (a, b) {
+            var da = a.data.basics.date;
+            var db = b.data.basics.date;
+            if (!ra.date.isValidString(da)) {
+                da = '';
+            }
+            if (!ra.date.isValidString(db)) {
+                db = '';
+            }
+            if (da < db) {
+                return -1;
+            }
+            if (da > db) {
+                return 1;
+            }
+            return 0;
+        });
+    };
+};
+
+ra.walkseditor.walk = function () {
+
+    this.notifications = new ra.walkseditor.notifications();
     this.privacy = false;
     this.displayWalk = true;
     this.data = {
         admin: {version: '1.0',
             created: new Date(),
             updated: null,
+            category: 'None',
             status: 'Draft',
             cancelledReason: ''},
         basics: {},
@@ -41,25 +99,30 @@ ra.walkseditor.draftWalk = function () {
         notes: {
             comments: ''
         }
-    };
 
+    };
+    this.editUrl = null; // used by component
+    this.deleteUrl = null;
+    this.duplicateUrl = null;
     this.init = function (status, category, privacy) {
-        this.setWalkStatus(status);
-        this.category = category;
+        this.setStatus(status);
+        this.setCategory(category);
         this.privacy = privacy;
     };
     this.createWithDate = function (date) {
         this.date = date;
     };
-    //  this.setButtons = function (value) {
-    //      this.buttons = value;
-    //  };
+//    this.setButtons = function (value) {
+//        this.buttons = value;
+//    };
     this.createFromJson = function (json) {
         try {
             var data = JSON.parse(json);
             this.createFromObject(data);
         } catch (err) {
-            alert('Cannot process walk (json=' + json + ' )');
+            alert('Error processing walk (json=' + json + ' )');
+            var data = {};
+            this.createFromObject(data);
         }
     };
     this.createFromObject = function (data) {
@@ -94,12 +157,12 @@ ra.walkseditor.draftWalk = function () {
 
     this.setDisplayWalk = function (filters) {
         this.displayWalk = false;
-        var status = "RA_Status_" + this.getWalkStatus();
+        var status = "RA_Status_" + this.getStatus();
         if (!filters[status]) {
             return;
         }
 
-        var category = "RA_Category_" + this.category;
+        var category = "RA_Category_" + this.getCategory();
         if (!filters[category]) {
             return;
         }
@@ -199,7 +262,7 @@ ra.walkseditor.draftWalk = function () {
         return;
     };
     this.addDisplayClasses = function (cl) {
-        cl.add(this.getWalkStatusClass());
+        cl.add(this.getStatusClass());
         if (this.dateStatus() === ra.walkseditor.DATETYPE.Past) {
             cl.add('status-Past');
         }
@@ -208,7 +271,7 @@ ra.walkseditor.draftWalk = function () {
     this.getEventClassesArray = function () {
         var out = [];
         out.push('pointer');
-        out.push(this.getWalkStatusClass());
+        out.push(this.getStatusClass());
 
         switch (this.dateStatus()) {
             case ra.walkseditor.DATETYPE.Past:
@@ -474,7 +537,7 @@ ra.walkseditor.draftWalk = function () {
         this._addMaptoWalk();
         this.addButtons(document.getElementById('ramblers-details-buttons1'));
         this.addButtons(document.getElementById('ramblers-details-buttons2'));
-        if (this.privacy) {
+        if (!this.privacy) {
             var tag = document.getElementById('ramblers-diagnostics');
             var details = document.createElement('details');
             tag.appendChild(details);
@@ -515,7 +578,7 @@ ra.walkseditor.draftWalk = function () {
         button.addEventListener('click', function () {
             var ok = true;
             if (confirmMsg !== '') {
-                switch (_this.getWalkStatus()) {
+                switch (_this.getStatus()) {
                     case "Published":
                     case "Cancelled":
                         ok = confirm(confirmMsg);
@@ -536,8 +599,7 @@ ra.walkseditor.draftWalk = function () {
     };
 
     this.checkFields = function () {
-        this.errors = 0;
-        this.notifications = [];
+        this.notifications.clear();
         this.checkFieldsBasics();
         this.checkFieldsMeeting();
         this.checkFieldsStart();
@@ -547,35 +609,35 @@ ra.walkseditor.draftWalk = function () {
     this.checkFieldsBasics = function () {
         var walk = this.data;
         if (ra.getObjProperty(walk, 'basics') === null) {
-            this.notificationMsg("No basics section found");
+            this.notifications.addItem("No basics section found");
         }
         if (ra.getObjProperty(walk, 'basics.date') === null) {
-            this.notificationMsg("Basics: No walk date found");
+            this.notifications.addItem("Basics: No walk date found");
         }
         if (ra.getObjProperty(walk, 'basics.title') === null) {
-            this.notificationMsg("Basics: No walk title found");
+            this.notifications.addItem("Basics: No walk title found");
         }
         if (ra.getObjProperty(walk, 'basics.description') === null) {
-            this.notificationMsg("Basics: No walk description found", isWarning);
+            this.notifications.addItem("Basics: No walk description found", false);
         }
         if (ra.getObjProperty(walk, 'basics.description') === '') {
-            this.notificationMsg("Basics: No walk description found", isWarning);
+            this.notifications.addItem("Basics: No walk description found", false);
         }
     };
     this.checkFieldsMeeting = function () {
         var walk = this.data;
         if (ra.getObjProperty(walk, 'meeting') === null) {
-            this.notificationMsg("No meeting found");
+            this.notifications.addItem("No meeting found");
         }
         var meet = ra.getObjProperty(walk, 'meeting');
         var type = ra.getObjProperty(meet, 'type');
         if (type === null) {
-            this.notificationMsg("Meeting type not defined");
+            this.notifications.addItem("Meeting type not defined");
         }
 
         switch (type) {
             case 'undefined':
-                this.notificationMsg("Meeting type not defined");
+                this.notifications.addItem("Meeting type not defined");
                 break;
             case 'car':
             case 'coach':
@@ -583,14 +645,14 @@ ra.walkseditor.draftWalk = function () {
                 var meets = ra.getObjProperty(meet, 'locations');
                 meets.forEach(element => {
                     if (ra.getObjProperty(element, 'time') === null) {
-                        this.notificationMsg("Meeting time not defined");
+                        this.notifications.addItem("Meeting time not defined");
                     }
                     if (ra.getObjProperty(element, 'name') === null) {
-                        this.notificationMsg("Meeting location name not defined");
+                        this.notifications.addItem("Meeting location name not defined");
                     }
 
                     if (ra.getObjProperty(element, 'latitude') === null) {
-                        this.notificationMsg("Meeting location latitude/longitude not defined");
+                        this.notifications.addItem("Meeting location latitude/longitude not defined");
                     }
                 });
                 break;
@@ -605,53 +667,53 @@ ra.walkseditor.draftWalk = function () {
             case 'area':
                 var meetingType = ra.getObjProperty(walk, 'meeting.type');
                 if (meetingType === null || meetingType === 'undefined' || meetingType === 'none') {
-                    this.notificationMsg("Information: You have not supplied a meeting point nor a starting place", isWarning);
+                    this.notifications.addItem("Information: You have not supplied a meeting point nor a starting place", false);
                 }
                 if (ra.getObjProperty(walk, 'start.location.name') === null) {
-                    this.notificationMsg("Walk area name not defined");
+                    this.notifications.addItem("Walk area name not defined");
                 }
                 if (ra.getObjProperty(walk, 'start.location.latitude') === null) {
-                    this.notificationMsg("Walk area latitude/longitude not defined");
+                    this.notifications.addItem("Walk area latitude/longitude not defined");
                 }
                 break;
             case 'start':
                 if (ra.getObjProperty(walk, 'start.location.time') === null) {
-                    this.notificationMsg("Start time not defined");
+                    this.notifications.addItem("Start time not defined");
                 }
                 if (ra.getObjProperty(walk, 'start.location.name') === null) {
-                    this.notificationMsg("Start name not defined");
+                    this.notifications.addItem("Start name not defined");
                 }
                 if (ra.getObjProperty(walk, 'start.location.latitude') === null) {
-                    this.notificationMsg("Start latitude/longitude not defined");
+                    this.notifications.addItem("Start latitude/longitude not defined");
                 }
                 break;
             default:
-                this.notificationMsg("Start information not defined");
+                this.notifications.addItem("Start information not defined");
         }
     };
     this.checkFieldsWalks = function () {
         var walk = this.data;
         var walks = ra.getObjProperty(walk, 'walks');
         if (walks === null) {
-            this.notificationMsg("No walk defined");
+            this.notifications.addItem("No walk defined");
         } else {
             walks.forEach(singlewalk => {
                 var dist = ra.getObjProperty(singlewalk, 'distance');
                 if (dist === null || dist === '') {
-                    this.notificationMsg("Walk - No distance specified");
+                    this.notifications.addItem("Walk - No distance specified");
                 }
                 if (ra.getObjProperty(singlewalk, 'units') === null) {
-                    this.notificationMsg("Walk - No distance units (miles/km) specified");
+                    this.notifications.addItem("Walk - No distance units (miles/km) specified");
                 }
                 if (ra.getObjProperty(singlewalk, 'natgrade') === null) {
-                    this.notificationMsg("Walk - No national grade has been assigned");
+                    this.notifications.addItem("Walk - No national grade has been assigned");
 
                 }
                 if (ra.getObjProperty(singlewalk, 'type') === null) {
-                    this.notificationMsg("Walk - No walk shape assigned, circular,linear");
+                    this.notifications.addItem("Walk - No walk shape assigned, circular,linear");
                 }
                 if (ra.getObjProperty(singlewalk, 'type') === "undefined") {
-                    this.notificationMsg("Walk - No walk shape assigned, circular,linear");
+                    this.notifications.addItem("Walk - No walk shape assigned, circular,linear");
                 }
             });
         }
@@ -660,14 +722,14 @@ ra.walkseditor.draftWalk = function () {
         var walk = this.data;
 
         if (ra.getObjProperty(walk, 'contact') === null) {
-            this.notificationMsg("Contact - Not defined");
+            this.notifications.addItem("Contact - Not defined");
         }
         if (ra.getObjProperty(walk, 'contact.displayName') === null) {
-            this.notificationMsg("Contact - No name defined");
+            this.notifications.addItem("Contact - No name defined");
         }
         var type = ra.getObjProperty(walk, 'contact.contactType');
         if (type === null || type === 'undefined') {
-            this.notificationMsg("Contact - No type, Leader/Not leader, defined");
+            this.notifications.addItem("Contact - No type, Leader/Not leader, defined");
         }
         var email = ra.getObjProperty(walk, 'email.title') !== null;
         var tel1 = ra.getObjProperty(walk, 'contact.telephone1') !== null;
@@ -675,21 +737,29 @@ ra.walkseditor.draftWalk = function () {
         if (email || tel1 || tel2) {
             // at least one contact method defined
         } else {
-            this.notificationMsg("Information:  Contact - No contact method defined (email or telephone)", isWarning);
+            this.notifications.addItem("Information:  Contact - No contact method defined (email or telephone)", false);
         }
     };
 
-    this.setWalkStatus = function (status, reason = '') {
+    this.setCategory = function (category, reason = '') {
+        this.data.admin.category = category;
+    };
+    this.getCategory = function () {
+        return this.data.admin.category;
+    };
+    this.setStatus = function (status, reason = '') {
         this.data.admin.status = status;
         if (status === "Cancelled") {
             this.data.admin.cancelledReason = reason;
+        } else {
+            this.data.admin.cancelledReason = "";
     }
     };
-    this.getWalkStatus = function () {
+    this.getStatus = function () {
         return this.data.admin.status;
     };
-    this.getWalkStatusClass = function () {
-        var status = this.getWalkStatus().replace(/ /g, "_");
+    this.getStatusClass = function () {
+        var status = this.getStatus().replace(/ /g, "_");
         switch (status) {
             case 'Approved':
             case 'Cancelled':
@@ -715,9 +785,10 @@ ra.walkseditor.draftWalk = function () {
         }
         return ra.walkseditor.DATETYPE.NoDate;
     };
-    this.getWalkCategory = function () {
-        return this.category;
+    this.setWalkDate = function (odate) {
+        this.data.basics.date = odate;
     };
+
     this.getWalkDate = function (view) {
         var d = ra.getObjProperty(this.data, 'basics.date');
         var past = '';
@@ -920,22 +991,23 @@ ra.walkseditor.draftWalk = function () {
                     out += distance + ' ' + units + ', ';
                     break;
                 case 'details':
-                    var localgrade = ra.getObjProperty(element, 'localgrade');
-                    var leader = ra.getObjProperty(element, 'leader');
-                    var ascent = ra.getObjProperty(element, 'ascent');
-                    var duration = ra.getObjProperty(element, 'duration');
-                    out += '<li>' + distance + ' ' + units + ' ' + natgrade;
-                    if (localgrade !== null) {
+                    var type = ra.getObjProperty(element, 'type', "");
+                    var localgrade = ra.getObjProperty(element, 'localgrade', "");
+                    var leader = ra.getObjProperty(element, 'leader', "");
+                    var ascent = ra.getObjProperty(element, 'ascent', "");
+                    var duration = ra.getObjProperty(element, 'duration', "");
+                    out += '<li>' + type + " " + distance + ' ' + units + ' ' + natgrade;
+                    if (localgrade !== "") {
                         out += " / " + localgrade;
                     }
-                    if (ascent !== null) {
-                        out += " A: " + ascent;
+                    if (ascent !== "") {
+                        out += " Ascent: " + ascent;
                     }
-                    if (duration !== null) {
-                        out += " D: " + duration;
+                    if (duration !== "") {
+                        out += " Duration: " + duration;
                     }
-                    if (leader !== null) {
-                        out += " L: " + leader;
+                    if (leader !== "") {
+                        out += " Leader: " + leader;
                     }
                     out += '</li>';
 
@@ -990,11 +1062,11 @@ ra.walkseditor.draftWalk = function () {
         }
         return out;
     };
-    this.getStatusCategory = function (delimiter, noCategories) {
+    this.getStatusCategory = function (delimiter, singleCategory) {
         var notes = '';
-        notes += '[' + this.getWalkStatus() + "]";
-        if (noCategories > 1) {
-            notes += delimiter + "[" + this.category + "]";
+        notes += '[' + this.getStatus() + "]";
+        if (!singleCategory) {
+            notes += delimiter + "[" + this.getCategory() + "]";
         }
         if (this.hasEditorNotes()) {
             notes += delimiter + "[Editor Notes]";
@@ -1036,20 +1108,11 @@ ra.walkseditor.draftWalk = function () {
 
     this.getNoWalkIssues = function () {
         this.checkFields();
-        return this.errors;
-
+        return this.notifications.getNumberErrors();
     };
     this.getWalkMessages = function (view = 'all') {
         this.checkFields();
-        switch (view) {
-            case 'summary':
-                //  var sum = this.notifications.slice(0, 3);
-                //  return sum.join('<br/>');
-                break;
-            case 'all':
-                break;
-        }
-        return this.notifications.join('');
+        return this.notifications.getHtmlMsgs();
 
     };
     this.getWalkNotes = function (view) {
@@ -1110,11 +1173,11 @@ ra.walkseditor.draftWalk = function () {
         var icon, popup, popupoffset, title;
         var lat;
         var lng;
-        var date = ra.getObjProperty(this.data, 'basics.date');
-        var title = ra.getObjProperty(this.data, 'basics.title');
-        var time = ra.getObjProperty(this.data, 'start.location.time');
-        var name = ra.getObjProperty(this.data, 'start.location.name');
-        var gr = ra.getObjProperty(this.data, 'start.location.gridref8');
+        var date = ra.getObjProperty(this.data, 'basics.date', 'Date not set');
+        var title = ra.getObjProperty(this.data, 'basics.title', 'Walk title not set');
+        var time = ra.getObjProperty(this.data, 'start.location.time', 'Time not set');
+        var name = ra.getObjProperty(this.data, 'start.location.name', 'Location name not set');
+        var gr = ra.getObjProperty(this.data, 'start.location.gridref8', '');
         var _this = this;
         popup = "<b>Date: " + date + "<br/>Title: " + title + "</b><br/>";
         switch (type) {
@@ -1131,7 +1194,7 @@ ra.walkseditor.draftWalk = function () {
                 popup += "<br/>Name:" + name;
                 popup += "<br/>GR: " + gr;
                 icon = ra.map.icon.markerStart();
-                title = 'Start of walk';
+                title = 'Start of walk, ' + date;
                 popupoffset = [0, -10];
                 break;
             case 'area':
@@ -1146,14 +1209,14 @@ ra.walkseditor.draftWalk = function () {
                 popup += "<b>General area for walk only</b><br/>Name: " + name;
                 popup += "<br/>Contact group if you wish to join the walk at the start";
                 icon = ra.map.icon.markerArea();
-                title = 'General area of walk';
+                title = 'General area of walk, ' + date;
                 popupoffset = [0, -10];
                 break;
             default:
                 lat = 53.70774;
                 lng = 0.76326;
                 icon = ra.map.icon.markerArea();
-                title = 'Start not defined';
+                title = 'Start not defined, +date';
                 popup = 'Start not defined';
                 popupoffset = [0, -10];
         }
@@ -1195,19 +1258,7 @@ ra.walkseditor.draftWalk = function () {
         details.appendChild(div);
         div.innerHTML = "<pre>" + JSON.stringify(gwemWalk, undefined, 4) + "</pre>";
     };
-    this.notificationMsg = function (msg, type = isERROR) {
-        if (type === isERROR) {
-            this.errors += 1;
-        }
-        var iclass = "ra-we-issues";
-        if (type === isERROR) {
-            iclass += " error";
-        }
-        this.notifications.push('<div class="' + iclass + '">' + msg + '</div>');
-    };
-    this.setWalkValues = function () {
 
-    };
 
     this.walkDetails = function () {
 
@@ -1215,7 +1266,7 @@ ra.walkseditor.draftWalk = function () {
         var $html = "";
 
         $html += "<div class='walkstdfulldetails stdfulldetails walk draft' >" + PHP_EOL;
-        $html += "<div class=\'group " + this.getWalkStatusClass() + "'><b>Walk details/preview- " + this.getWalkStatus() + " </b></div>" + PHP_EOL;
+        $html += "<div class=\'group " + this.getStatusClass() + "'><b>Walk details/preview- " + this.getStatus() + " </b></div>" + PHP_EOL;
 
         $html += "<div class='ra preview section'>" + PHP_EOL;
         $html += '<b>Basics:</b><br/>' + this.getWalkBasics('details');
@@ -1419,32 +1470,40 @@ ra.walkseditor.draftWalk = function () {
 
 
 };
+ra.walkseditor.notifications = function () {
+    this._notifications = [];
+    this._noErrors = 0;
+    this.clear = function () {
+        this._notifications = [];
+        this._noErrors = 0;
+    };
+    this.addItem = function (msg, error = true) {
+        if (error) {
+            this._noErrors += 1;
+        }
+        var item = new ra.walkseditor.notification(msg, error);
+        this._notifications.push(item);
+    };
+    this.getNumberErrors = function () {
+        return this._noErrors;
 
-//ra.walkseditor.previewButton = function (name, buttonActionFunction, confirmMsg) {
-//    this.name = name;
-//    this.fnctn = buttonActionFunction;
-//    this.confirmMsg = confirmMsg;
-//
-//    this.addButton = function (div, name, url, confirmMsg = '') {
-//        var button = document.createElement('button');
-//        button.setAttribute('type', 'button');
-//        button.classList.add('ra-button');
-//        button.innerHTML = name;
-//        var _this = this;
-//        button.addEventListener('click', function () {
-//            var ok = true;
-//            if (confirmMsg !== '') {
-//                switch (_this.getWalkStatus()) {
-//                    case "Published":
-//                    case "Cancelled":
-//                        ok = confirm(confirmMsg);
-//                        break;
-//                }
-//            }
-//            if (ok) {
-//                window.location.replace(url);
-//            }
-//        });
-//        div.appendChild(button);
-//    };
-//};
+    };
+    this.getHtmlMsgs = function () {
+        var html = "";
+        this._notifications.forEach(function (item, index) {
+            html += item.getHtmlMsg();
+        });
+        return html;
+    };
+};
+ra.walkseditor.notification = function (msg, isError) {
+    this._msg = msg;
+    this._isError = isError;
+    this.getHtmlMsg = function () {
+        var iclass = "ra-we-issues";
+        if (this._isError) {
+            iclass += " error";
+        }
+        return '<div class="' + iclass + '">' + this._msg + '</div>';
+    };
+};

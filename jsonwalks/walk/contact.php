@@ -19,5 +19,6 @@ class RJsonwalksWalkContact {
     public $telephone1 = "";        // first telephone number of contact
     public $telephone2 = "";        // second telephone number of contact
     public $walkLeader = '';
+    public $contactForm = "";       // The contact form on the Ramblers Site
 
 }

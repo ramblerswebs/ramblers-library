@@ -8,8 +8,8 @@ L.Control.MyLocation = L.Control.extend({
             title: "My Location - Show me where I am"
         },
         showPopup: true,
-        setView: 'always', // have to set this to false because we have to do setView manually
-        flyTo: false,
+        setView: 'untilPanOrZoom', 
+        flyTo: false,// have to set this to false because we have to do setView manually
         keepCurrentZoomLevel: false,
         returnToPrevBounds: false,
         showCompass: true,
@@ -117,7 +117,7 @@ L.Control.MyLocation = L.Control.extend({
         ra.html.input.yesNoReset(this._controls.showCompass, true);
         ra.html.input.yesNoReset(this._controls.enableHighAccuracy, true);
         ra.html.input.yesNoReset(this._controls.flyTo, false);
-        ra.html.input.comboReset(this._controls.setView, 'always');
+        ra.html.input.comboReset(this._controls.setView, 'untilPanOrZoom');
         ra.html.input.yesNoReset(this._controls.keepCurrentZoomLevel, false);
         ra.html.input.yesNoReset(this._controls.returnToPrevBounds, false);
     },

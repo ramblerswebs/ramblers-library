@@ -64,13 +64,13 @@ class RWalkseditorProgramme extends RLeafletMap {
         $this->data->items=[];
 
         $path = "libraries/ramblers/walkseditor/";
-        RLoad::addScript($path . "js/walksprogramme.js", "text/javascript");
-        RLoad::addScript($path . "js/viewWalksProgramme.js", "text/javascript");
+        RLoad::addScript($path . "js/form/programme.js", "text/javascript");
+        RLoad::addScript($path . "js/viewWalks.js", "text/javascript");
         RLoad::addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
    
         
        
-        parent::setCommand('ra.walkseditor.walksprogramme');
+        parent::setCommand('ra.walkseditor.form.programme');
         parent::setDataObject($this->data);
         parent::display();
         RWalkseditor::addScriptsandCss();

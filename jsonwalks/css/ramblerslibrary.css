@@ -107,7 +107,11 @@ div.walkstdfulldetails div.group.grade-t {
     color: var(--cloudy) !important;
 }
 div.walkstdfulldetails div.walkitem.walkdates {
-    font-size: 80%;
+    font-size: 90%;
+    font-style: italic;
+}
+div.location.notes {
+    font-size: 90%;
     font-style: italic;
 }
 

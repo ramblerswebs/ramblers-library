@@ -1311,6 +1311,21 @@ ra.link = (function () {
     return link;
 }
 ());
+ra.clipboard = (function () {
+    var clipboard = {};
+    clipboard.set = function (text) {
+        // Copy the text inside the text field
+        navigator.clipboard.writeText(text);
+
+        // Alert the copied text
+        alert("Copied the text: " + text);
+    };
+
+    return clipboard;
+}
+());
+
+
 
 
 ra.loading = (function () {

@@ -63,12 +63,14 @@ ra.walkseditor.editwalk = function (options, data) {
 
     this.load = function () {
         var data = this.data;
-        data.walk = new ra.walkseditor.draftWalk();
+        data.walk = new ra.walkseditor.walk();
         var date = null;
         if (this.data.walkdate !== null) {
             date = this.data.walkdate.replaceAll(' ', '-');
         }
-        this.setupWalksRecord(date);
+        var content = document.getElementById(this.data.fields.content);
+
+        this.setupWalksRecord(content, date);
 
         var tag = document.getElementById(options.divId);
         var topOptions = document.createElement('div');
@@ -83,8 +85,14 @@ ra.walkseditor.editwalk = function (options, data) {
         var _this = this;
         var soptions = this.getElementOptions(this.data.fields.status);
         var coptions = this.getElementOptions(this.data.fields.category);
-        this.statusSelect = this.setElementOptions(topOptions, 'Status', soptions, ra.walkseditor.help.editButtons);
-         this.categorySelect = this.setElementOptions(topOptions, 'Category', coptions);
+        //   this.statusSelect = this.setElementOptions(topOptions, 'Status', soptions, ra.walkseditor.help.editButtons);
+        //   this.categorySelect = this.setElementOptions(topOptions, 'Category', coptions);
+
+        var resultStatus = this.setElementOptions('Status', soptions, ra.walkseditor.help.editButtons);
+        this.statusSelect = resultStatus.selecttab;
+
+        var resultCategory = this.setElementOptions('Category', coptions);
+        this.categorySelect = resultCategory.selecttab;
         if (coptions.items.length < 2) {
             this.categorySelect.style.display = 'none';
         }
@@ -106,14 +114,23 @@ ra.walkseditor.editwalk = function (options, data) {
             if (option === "Cancelled") {
                 reason = prompt("Please say why the walk is being cancelled");
             }
-            draftwalk.setWalkStatus(option, reason);
+            draftwalk.setStatus(option, reason);
+        });
+        this.categorySelect.addEventListener("change", function (e) {
+            var draftwalk = _this.data.walk;
+            var ele = e.target;
+            var option = ele.options[ele.selectedIndex].text;
+            draftwalk.setCategory(option);
         });
 
         var editorDiv = document.createElement('div');
         tag.appendChild(editorDiv);
-        var editor = new ra.walkseditor.walkeditor(this.data.walk.data);
-        editor.sortData();
-        editor.addEditForm(editorDiv);
+        this.editor = new ra.walkseditor.walkeditor();
+        this.editor.setStatusSelect(resultStatus.container);
+        this.editor.setCategorySelect(resultCategory.container);
+        this.editor.load(editorDiv, this.data.walk.data, false);
+        this.editor.sortData();
+        // editor.addEditForm();
 
     };
     this.getElementOptions = function (id) {
@@ -133,13 +150,14 @@ ra.walkseditor.editwalk = function (options, data) {
         return options;
     };
 
-    this.setElementOptions = function (tag, name, options, helpPage = null) {
+    this.setElementOptions = function (name, options, helpPage = null) {
         var container = document.createElement('div');
-        tag.appendChild(container);
+        //  tag.appendChild(container);
         var label = document.createElement('label');
+        label.setAttribute('class', 'we-label gwem');
         label.textContent = name;
         container.appendChild(label);
-     
+
         var select = document.createElement('select');
         select.setAttribute('class', 'gwem');
         container.appendChild(select);
@@ -156,11 +174,13 @@ ra.walkseditor.editwalk = function (options, data) {
                 optionTag.setAttribute('selected', true);
             }
         }
-           if (helpPage !== null) {
+        if (helpPage !== null) {
             var help = new ra.help(container, helpPage);
             help.add();
         }
-        return select;
+        var result = {container: container,
+            selecttab: select};
+        return result;
     };
     this.addButtons = function (tag) {
         var _this = this;
@@ -190,8 +210,8 @@ ra.walkseditor.editwalk = function (options, data) {
             walk.admin.updated = new Date();
             var errors = draftwalk.getNoWalkIssues();
             _this.resetStatusButton(errors);
-            var editor = new ra.walkseditor.walkeditor(walk);
-            editor.sortData();
+
+            _this.editor.sortData();
             var content = document.getElementById(_this.data.fields.content);
             content.value = JSON.stringify(walk);
             var date = document.getElementById(_this.data.fields.date);
@@ -215,7 +235,7 @@ ra.walkseditor.editwalk = function (options, data) {
         previewButton.innerHTML = 'Preview';
         previewButton.setAttribute('class', 'ra-button');
         previewButton.addEventListener("click", function () {
-            _this.data.walk.displayDetails();
+            _this.data.walk.previewWalk();
         });
         tag.appendChild(previewButton);
     };
@@ -235,11 +255,10 @@ ra.walkseditor.editwalk = function (options, data) {
             }
         }
     };
-    this.setupWalksRecord = function (date) {
-        var tag = document.getElementById(this.data.fields.content);
+    this.setupWalksRecord = function (content, date) {
 
-        if (tag !== null) {
-            var json = tag.value;
+        if (content !== null) {
+            var json = content.value;
             if (json === "") {
                 json = "{}";
 
@@ -253,53 +272,4 @@ ra.walkseditor.editwalk = function (options, data) {
 
     };
 
-
 };
-
-//ra.walkseditor.editplace = function (options, data) {
-//
-//    this.data = data;
-//    //   var masterdiv = document.getElementById(options.divId);
-//    //   this.lmap = new ra.leafletmap(masterdiv, options);
-//    this.load = function () {
-//
-//        var data = this.data;
-//        ramblers = new Ramblers();
-//        ramblers.fields = data.fields;
-//        ramblers.editMode = true;
-//        ramblers.record = {};
-//        var fields = ramblers.fields;
-//        var property;
-//        for (property in fields) {
-//            if (fields.hasOwnProperty(property)) {
-//                var buttonID = fields[property];
-//                ramblers.record[property] = document.getElementById(buttonID).value;
-//            }
-//        }
-//        if (ramblers.record.latitude === "") {
-//            ramblers.record.latitude = 0;
-//        } else {
-//            ramblers.record.latitude = parseFloat(ramblers.record.latitude);
-//        }
-//        if (ramblers.record.longitude === "") {
-//            ramblers.record.longitude = 0;
-//        } else {
-//            ramblers.record.longitude = parseFloat(ramblers.record.longitude);
-//        }
-//
-//        if (ramblers.record.latitude === 0 && ramblers.record.longitude === 0) {
-//            ramblers.record.isLatLongSet = false;
-//        } else {
-//            ramblers.record.isLatLongSet = true;
-//        }
-//
-//        var tag = document.getElementById(options.divId);
-//        ramblers.controller = new placecontroller(tag);
-//        ramblers.controller.placeEditor();
-//        ramblers.controller.setSubmitButton();
-//
-//    };
-//
-//
-//};
-

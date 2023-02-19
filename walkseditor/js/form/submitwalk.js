@@ -11,8 +11,11 @@ if (typeof (ra) === "undefined") {
 if (typeof (ra.walkseditor) === "undefined") {
     ra.walkseditor = {};
 }
+if (typeof (ra.walkseditor.form) === "undefined") {
+    ra.walkseditor.form = {};
+}
 
-ra.walkseditor.submitwalkform = function (options, data) {
+ra.walkseditor.form.submitwalk = function (options, data) {
     this.emailURL = ra.baseDirectory() + "libraries/ramblers/walkseditor/sendemail.php";
     this.data = data;
     this.groups = this.data.groups;
@@ -21,11 +24,11 @@ ra.walkseditor.submitwalkform = function (options, data) {
         email: '',
         message: ''
     };
-    this.programme = new ra.walkseditor.programme();
+    this.programme = new ra.walkseditor.walks();
     this.walk = null; // object rather than just the data
 
     this.load = function () {
-        this.walk = new ra.walkseditor.draftWalk();
+        this.walk = new ra.walkseditor.walk();
         this.walk.init("Draft", "", false);
         this.programme.addWalk(this.walk);
         var tag = document.getElementById(options.divId);
@@ -101,7 +104,7 @@ ra.walkseditor.submitwalkform = function (options, data) {
                 if (index > 0) {
                     return false;
                 }
-                var newWalk = new ra.walkseditor.draftWalk();
+                var newWalk = new ra.walkseditor.walk();
                 newWalk.createFromObject(walk);
                 _this.programme.clearItems();
                 _this.programme.addWalk(newWalk);

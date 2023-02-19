@@ -10,6 +10,8 @@ ra.walkseditor.walkeditor = function ( ) {
     this.input = new ra.walkseditor.inputFields;
     this.groups = null;
     this.localGrades = null;
+    this._statusSelect = null;
+    this._categorySelect = null;
     this.expandDetails = true;
     this.who = 'ra.walkseditor.walkeditor'; // what is this?
     this.load = function (editDiv, walk, formmode = false) {
@@ -106,6 +108,12 @@ ra.walkseditor.walkeditor = function ( ) {
         this.input.addHeader(notesDiv, "summary", "Editor's Notes", ra.walkseditor.help.editorNotes);
         this.addNotes(notesDiv);
     };
+    this.setStatusSelect = function (tag) {
+        this._statusSelect = tag;
+    };
+    this.setCategorySelect = function (tag) {
+        this._categorySelect = tag;
+    };
     this.addExpandButtons = function (tag) {
         var self = this;
         var expand = document.createElement('button');
@@ -162,6 +170,12 @@ ra.walkseditor.walkeditor = function ( ) {
         }
         var basics = this.walk.basics;
         var itemDiv = this.input.itemsItemDivs(tag);
+        if (this._statusSelect !== null) {
+            itemDiv.appendChild(this._statusSelect);
+        }
+        if (this._categorySelect !== null) {
+            itemDiv.appendChild(this._categorySelect);
+        }
         if (this.groups !== null) {
             this._group = this.input.addSelect(itemDiv, 'group', 'Group: ', this.groups, basics, 'group', 'groupName', ra.walkseditor.help.basicGroup);
         }
@@ -747,11 +761,11 @@ ra.walkseditor.exportToWM = function () {
         alert("This feature is being developed please let us know if you have any issues");
         var data = "";
         data = data + this._WMheader();
-        var items = programme.getItems();
+        var walks = programme.getWalks();
         var i, clen;
-        for (i = 0, clen = items.length; i < clen; ++i) {
-            var item = items[i];
-            var walk = item.getWalk();
+        for (i = 0, clen = walks.length; i < clen; ++i) {
+            var walk = walks[i];
+
             if (walk.displayWalk) {
                 data = data + walk.exportToWMLine();
             }
@@ -808,82 +822,80 @@ ra.walkseditor.exportToWM = function () {
         var out = ra.arrayToCSV(data) + "\n\r";
         return out;
     };
-
-    ra.walkseditor.exportToGWEM = function () {
-        this.button = function (tag, programme) {
+};
+ra.walkseditor.exportToGWEM = function () {
+    this.button = function (tag, programme) {
 //        if (!this.allowWMExport) {
 //            return;
 //        }
-            var wmexport = document.createElement('button');
-            wmexport.setAttribute('class', 'ra-button');
-            wmexport.title = 'Create CSV Upload file for Walks Manager';
-            wmexport.textContent = 'Export to GWEM';
-            tag.appendChild(wmexport);
-            var _this = this;
-            wmexport.addEventListener('click', function () {
-                _this._ExportWalksToGWEM(programme);
-            });
-        };
-        this._ExportWalksToGWEM = function (programme) {
-            // items is either an array or items or a single walk
-            alert("This feature is being developed please let us know if you have any issues");
-            var data = "";
-            data = data + this._GWEMheader();
+        var wmexport = document.createElement('button');
+        wmexport.setAttribute('class', 'ra-button');
+        wmexport.title = 'Create CSV Upload file for Walks Manager';
+        wmexport.textContent = 'Export to GWEM';
+        tag.appendChild(wmexport);
+        var _this = this;
+        wmexport.addEventListener('click', function () {
+            _this._ExportWalksToGWEM(programme);
+        });
+    };
+    this._ExportWalksToGWEM = function (programme) {
+        // items is either an array or items or a single walk
+        alert("This feature is being developed please let us know if you have any issues");
+        var data = "";
+        data = data + this._GWEMheader();
 
-            var items = programme.getItems();
-            var i, clen;
-            for (i = 0, clen = items.length; i < clen; ++i) {
-                var item = items[i];
-                var walk = item.getWalk();
-                if (walk.displayWalk) {
-                    data = data + walk.exportToGWEMLine();
-                }
+        var walks = programme.getWalks();
+        var i, clen;
+        for (i = 0, clen = walks.length; i < clen; ++i) {
+            var walk = walks[i];
+            if (walk.displayWalk) {
+                data = data + walk.exportToGWEMLine();
             }
+        }
 
-            try {
-                var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
-                var name = "GWEMUpload.csv";
-                saveAs(blob, name);
-            } catch (e) {
-                alert('Your web browser does not support this option!');
-            }
-        };
-        this._GWEMheader = function () {
-            var data = [];
-            data.push('Date');
-            data.push('Title');
-            data.push('Description');
-            data.push('Linear or Circular');
-            data.push('Starting location');
-            data.push('Starting postcode');
-            data.push('Starting gridref');
-            data.push('Starting location details');
-            data.push('Show exact starting point');
-            data.push('Start time');
-            data.push('Meeting location');
-            data.push('Meeting postcode');
-            data.push('Meeting gridref');
-            data.push('Meeting location details');
-            data.push('Show exact Meeting point');
-            data.push('Meeting time');
-            data.push('Finish location');
-            data.push('Finish postcode');
-            data.push('Finish gridref');
-            data.push('Finish location details');
-            data.push('Restriction');
-            data.push('Difficulty');
-            data.push('Local walk grade');
-            data.push('Distance km');
-            data.push('Distance miles');
-            data.push('Est finish time');
-            data.push('Contact id');
-            data.push('Is walk leader');
-            data.push('Walks leader name');
-            data.push('Festivals');
-            data.push('Strands');
-            data.push('Additional details');
-            var out = ra.arrayToCSV(data) + "\n\r";
-            return out;
-        };
+        try {
+            var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
+            var name = "GWEMUpload.csv";
+            saveAs(blob, name);
+        } catch (e) {
+            alert('Your web browser does not support this option!');
+        }
+    };
+    this._GWEMheader = function () {
+        var data = [];
+        data.push('Date');
+        data.push('Title');
+        data.push('Description');
+        data.push('Linear or Circular');
+        data.push('Starting location');
+        data.push('Starting postcode');
+        data.push('Starting gridref');
+        data.push('Starting location details');
+        data.push('Show exact starting point');
+        data.push('Start time');
+        data.push('Meeting location');
+        data.push('Meeting postcode');
+        data.push('Meeting gridref');
+        data.push('Meeting location details');
+        data.push('Show exact Meeting point');
+        data.push('Meeting time');
+        data.push('Finish location');
+        data.push('Finish postcode');
+        data.push('Finish gridref');
+        data.push('Finish location details');
+        data.push('Restriction');
+        data.push('Difficulty');
+        data.push('Local walk grade');
+        data.push('Distance km');
+        data.push('Distance miles');
+        data.push('Est finish time');
+        data.push('Contact id');
+        data.push('Is walk leader');
+        data.push('Walks leader name');
+        data.push('Festivals');
+        data.push('Strands');
+        data.push('Additional details');
+        var out = ra.arrayToCSV(data) + "\n\r";
+        return out;
     };
 };

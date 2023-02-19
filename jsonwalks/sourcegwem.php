@@ -61,6 +61,8 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
         $gwemfeedurl = "";
         if ($this->groups !== null) {
             $gwemfeedurl = "https://www.ramblers.org.uk/api/lbs/walks?groups=" . $this->groups;
+
+            //    $gwemfeedurl = "https://gwemfeed.ramblers-webs.org.uk/index.php?groups=" . $this->groups;
         }
 
         return $gwemfeedurl;
@@ -126,8 +128,16 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
                 $contact->contactName = trim($item->walkContact->contact->displayName);
                 // $walk->emailAddr = $item->walkContact->contact->email;
                 if (strlen($item->walkContact->contact->email) > 0) {
+                    // Check to see if this is a contact form.
                     $contact->email = $item->walkContact->contact->email;
                 }
+                if (property_exists($item->walkContact->contact, "form")) {
+                    if (strlen($item->walkContact->contact->form) > 0) {
+                        // Check to see if this is a contact form.
+                        $contact->contactForm = $item->walkContact->contact->form;
+                    }
+                }
+
                 $contact->telephone1 = $item->walkContact->contact->telephone1;
                 $contact->telephone2 = $item->walkContact->contact->telephone2;
                 $contact->walkLeader = $item->walkLeader;

@@ -81,8 +81,8 @@ class RWalkseditorSubmitform extends RLeafletMap {
         $this->data->user->email = $userinfo->email;
 
         $path = "libraries/ramblers/walkseditor/";
-        RLoad::addScript($path . "js/submitwalkform.js", "text/javascript");
-        parent::setCommand('ra.walkseditor.submitwalkform');
+        RLoad::addScript($path . "js/form/submitwalk.js", "text/javascript");
+        parent::setCommand('ra.walkseditor.form.submitwalk');
         parent::setDataObject($this->data);
         parent::display();
         RWalkseditor::addScriptsandCss();

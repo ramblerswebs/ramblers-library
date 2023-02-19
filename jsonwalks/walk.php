@@ -29,7 +29,8 @@ class RJsonwalksWalk extends REvent {
     public $walkLeader = "";        // walk leader if isLeader is false
     public $contactName = "";       // contact name
     public $email = "";             // email address for contact
-    public $key = "";             // email address for contact
+    public $contactForm = "";       // Contact form from Ramblers CO
+    public $key = "";               // ENCRYPTED email address for contact 
     public $telephone1 = "";        // first telephone number of contact
     public $telephone2 = "";        // second telephone number of contact
 // meeting place
@@ -149,7 +150,10 @@ class RJsonwalksWalk extends REvent {
             $this->email = 'yes';
             $this->key = $this->encrypt($walk->email);
         }
-
+        if ($walk->contactForm != "") {
+            $this->email = 'yes';
+            $this->contactForm = $walk->contactForm;
+        }
         $this->telephone1 = $walk->telephone1;
         $this->telephone2 = $walk->telephone2;
         $this->walkLeader = $walk->walkLeader;
