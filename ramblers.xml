@@ -11,7 +11,7 @@
     <version>4.2.21</version>
     <description>Ramblers Library to provide diplay walks, GPX routes etc</description>
     
-    <files>
+   <files>
         <filename>ramblers.xml</filename>
         <filename>readme.md</filename>
         <folder>accounts</folder>

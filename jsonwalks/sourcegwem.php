@@ -61,8 +61,8 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
         $gwemfeedurl = "";
         if ($this->groups !== null) {
             $gwemfeedurl = "https://www.ramblers.org.uk/api/lbs/walks?groups=" . $this->groups;
-
-            //    $gwemfeedurl = "https://gwemfeed.ramblers-webs.org.uk/index.php?groups=" . $this->groups;
+            // $gwemfeedurl = "https://gwemfeed.wiltsswindonramblers.org.uk?groups=" . $this->groups;
+            // $gwemfeedurl = "https://gwemfeed.ramblers-webs.org.uk/index.php?groups=" . $this->groups;
         }
 
         return $gwemfeedurl;

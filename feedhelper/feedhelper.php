@@ -37,7 +37,7 @@ class RFeedhelper {
         $this->timeout = $value;
     }
 
-    public function getFeed($feedurl,$title) {
+    public function getFeed($feedurl, $title) {
 
         $url = trim($feedurl);
         if ($this->startsWith($url, "http://www.ramblers.org.uk")) {
@@ -55,7 +55,7 @@ class RFeedhelper {
         }
 
         if ($this->status == self::OK) {
-            $cachedFile = $this->createCachedFileFromUrl($url,$title);
+            $cachedFile = $this->createCachedFileFromUrl($url, $title);
             if ($cachedFile != '') {
                 $contents = file_get_contents($cachedFile);
                 if ($contents === false) {
@@ -70,7 +70,7 @@ class RFeedhelper {
     }
 
     // Get remote file
-    private function createCachedFileFromUrl($url,$title) {
+    private function createCachedFileFromUrl($url, $title) {
         jimport('joomla.filesystem.file');
         $result = '';
         $tmpFile = $this->getCacheName($url);
@@ -89,13 +89,15 @@ class RFeedhelper {
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);  // allow xx seconds for timeout
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);  // allow xx seconds for timeout
         curl_setopt($ch, CURLOPT_REFERER, JURI::base()); // say who wants the feed
-  
+
         $fgcOutput = curl_exec($ch);
         $error = curl_error($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
- 
+
         if ($httpCode !== 200) {
+            $app = JFactory::getApplication();
+            $app->enqueueMessage('Feed error: ' . $error, 'error');
             $this->status = self::READFAILED;
             $response = "Return code " . $httpCode . " Error " . $error;
             RErrors::notifyError('FETCH: Unable to fetch ' . $title . ', data may be out of date', $url, 'warning', $response);
@@ -162,4 +164,5 @@ class RFeedhelper {
         $len = strlen($startString);
         return (substr($string, 0, $len) === $startString);
     }
+
 }
