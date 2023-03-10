@@ -3,15 +3,15 @@
     <name>RamblersLibrary</name>
     <libraryname>ramblers</libraryname>
     <author>Chris Vaughan Derby and South Derbyshire</author>
-    <creationDate>17 January 2023</creationDate>
+    <creationDate>9 March 2023</creationDate>
     <copyright>Copyright (C) 2016/2023</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>https://github.com/ramblerswebs/ramblers-library/</authorUrl>
-    <version>4.2.21</version>
+    <version>4.5.0</version>
     <description>Ramblers Library to provide diplay walks, GPX routes etc</description>
     
-   <files>
+    <files>
         <filename>ramblers.xml</filename>
         <filename>readme.md</filename>
         <folder>accounts</folder>
@@ -21,29 +21,17 @@
         <folder>conf/phpini</folder>
         <folder>conf/userini</folder>
         <folder>directory</folder>
-        <folder>event</folder>
+        <folder>dns</folder>
         <folder>errors</folder>
+        <folder>event</folder>
         <folder>feedhelper</folder>
         <folder>geometry</folder>
         <folder>gpx</folder>
         <folder>gpxsymbols</folder>
         <folder>html</folder>
         <folder>ics</folder>
-        <folder>images</folder>
-        <folder>images/grades</folder>
-        <folder>js</folder>
         <folder>jsonwalks</folder>
-        <folder>jsonwalks/av01</folder>
-        <folder>jsonwalks/css</folder>
-        <folder>jsonwalks/de02</folder>
-        <folder>jsonwalks/leaflet</folder>
-        <folder>jsonwalks/sr02</folder>
-        <folder>jsonwalks/std</folder>
-        <folder>jsonwalks/sx05</folder>
         <folder>leaflet</folder>
-        <folder>leaflet/csv</folder>
-        <folder>leaflet/gpx</folder>
-        <folder>leaflet/images</folder>
         <folder>license</folder>
         <folder>load</folder>
         <folder>organisation</folder>
@@ -53,6 +41,20 @@
         <folder>vendors</folder>
         <folder>walkseditor</folder>
     </files>
+    <media folder="media" destination="lib_ramblers">
+        <folder>accounts</folder>
+        <folder>calendar</folder>
+        <folder>css</folder>
+        <folder>gpxsymbols</folder>
+        <folder>images</folder>
+        <folder>js</folder>
+        <folder>jsonwalks</folder>
+        <folder>leaflet</folder>
+        <folder>organisation</folder>
+        <folder>pages</folder>
+        <folder>vendors</folder>
+        <folder>walkseditor</folder>
+    </media>
     
     <updateservers>
         <server type="extension" priority="1" name="Ramblers-webs Update Site">https://raw.githubusercontent.com/ramblerswebs/updates/master/updates/ramblerslibrary.xml</server>

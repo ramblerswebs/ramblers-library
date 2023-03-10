@@ -42,7 +42,7 @@ abstract class RJsonwalksDisplaybase {
             $jinput = JFactory::getApplication()->getInput();
             $this->printOn = $jinput->getVar('print') == 1;
         }
-        $this->script = new RJsScript();
+        $this->script = new RLeafletScript();
         $this->options = new RLeafletMapoptions();
         // default map options for display of walk
         $this->options->mapHeight = "250px";

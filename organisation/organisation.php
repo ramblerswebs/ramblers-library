@@ -14,8 +14,8 @@
 class ROrganisation {
 
     private $srfr;
-    public $groups;
-    public $areas;
+    public $groups=[];
+    public $areas=[];
     public $showLinks = true;
     public $showCodes = true;
     public $showGroups = true;
@@ -52,14 +52,17 @@ class ROrganisation {
             case RFeedhelper::READFAILED:
                 $app = JApplicationCms::getInstance('site');
                 $app->enqueueMessage(JText::_('Unable to fetch organisation data, data may be out of date: ' . $rafeedurl), 'warning');
+                $contents = "[]";
                 break;
             case RFeedhelper::FEEDERROR;
                 $app = JApplicationCms::getInstance('site');
                 $app->enqueueMessage(JText::_('Feed must use HTTP protocol: ' . $rafeedurl), 'error');
+                $contents = "[]";
                 break;
             case RFeedhelper::FEEDFOPEN:
                 $app = JApplicationCms::getInstance('site');
                 $app->enqueueMessage(JText::_('Not able to read feed using fopen: ' . $rafeedurl), 'error');
+                $contents = "[]";
                 break;
             default:
                 break;
@@ -164,8 +167,8 @@ class ROrganisation {
 
     public function display($map) {
         if (isset($map)) {
-            RLoad::addScript("libraries/ramblers/organisation/organisation.js", "text/javascript");
-            RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
+            RLoad::addScript("media/lib_ramblers/organisation/organisation.js", "text/javascript");
+            RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
             $map->setCommand('ra.display.organisationMap');
             $map->help_page = "";
             $map->options->fullscreen = true;
@@ -178,7 +181,7 @@ class ROrganisation {
             $map->options->settings = true;
             $map->options->draw = true;
             $map->options->print = true;
-         //   $map->options->ramblersPlaces = true;
+            //   $map->options->ramblersPlaces = true;
 
             $data = new class {
                 
@@ -194,8 +197,8 @@ class ROrganisation {
         $myGroup = strtoupper($myGroup);
         $map = new RLeafletMap();
 
-        RLoad::addScript("libraries/ramblers/organisation/organisation.js", "text/javascript");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
+        RLoad::addScript("media/lib_ramblers/organisation/organisation.js", "text/javascript");
+        RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
         $map->setCommand('ra.display.organisationMyGroup');
         $map->help_page = "";
         $map->options->fullscreen = true;

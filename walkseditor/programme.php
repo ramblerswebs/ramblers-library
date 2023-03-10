@@ -63,10 +63,10 @@ class RWalkseditorProgramme extends RLeafletMap {
         $this->data->user->email = $userinfo->email;
         $this->data->items=[];
 
-        $path = "libraries/ramblers/walkseditor/";
+        $path = "media/lib_ramblers/walkseditor/";
         RLoad::addScript($path . "js/form/programme.js", "text/javascript");
         RLoad::addScript($path . "js/viewWalks.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
    
         
        

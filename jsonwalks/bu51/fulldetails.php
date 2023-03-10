@@ -21,7 +21,7 @@ class RJsonwalksBU51Fulldetails extends RJsonwalksStdSimplelist {
         parent::__construct();
         parent::customFormat($this->listFormat);
         parent::setWalksClass($this->walkClass);
-        RLoad::addStyleSheet("libraries/ramblers/jsonwalks/bu51/bu51style.css", "text/css");
+        RLoad::addStyleSheet("media/lib_ramblers/jsonwalks/bu51/bu51style.css", "text/css");
     }
 
     public function noWalks($no) {

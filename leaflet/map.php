@@ -20,7 +20,7 @@ class RLeafletMap {
 
     function __construct() {
         $this->options = new RLeafletMapoptions();
-        $this->script = new RJsScript($this->options);
+        $this->script = new RLeafletScript($this->options);
     }
 
     public function setCommand($command) {

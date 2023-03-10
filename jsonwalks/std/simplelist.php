@@ -80,7 +80,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
         }
         echo "</div>" . PHP_EOL;
         
-        RJsScript::registerWalks(array_values($items));
+        RLeafletScript::registerWalks(array_values($items));
 
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);

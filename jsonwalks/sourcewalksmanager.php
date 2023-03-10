@@ -2,29 +2,35 @@
 
 /**
  * @version		0.0
- * @package		Simple JSON Feed reader
+ * @package		Process WM walk and convert into internal format
  * @author              Chris Vaughan Ramblers-webs.org.uk
  * @copyright           Copyright (c) 2021 Chris Vaughan. All rights reserved.
- * @license		GNU/GPL license: http://www.gnu.org/copyleft/gpl.html
+ * @license		
  */
 // no direct access
 defined('_JEXEC') or die('Restricted access');
+define("WALKSFEED", "https://walks-manager.ramblers.org.uk/api/volunteers/walksevents?types=group-walk");
+define("TESTWALKSFEED", "https://uat-be.ramblers.nomensa.xyz/api/volunteers/walksevents?types=group-walk");
 
-class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
+class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
 
     private $rafeedurl = '';
     private $srfr;
+    private $lastGroupUpdate;
 
     //   private $groups;
 
     const TIMEFORMAT = "Y-m-d\TH:i:s";
 
     public function __construct($groups) {
-        parent::__construct(SourceOfWalk::GWEM, $groups);
-        $this->rafeedurl = $this->getGwemUrl();
+        parent::__construct(SourceOfWalk::WManager, $groups);
+        $this->rafeedurl = $this->getWMUrl();
+        $org = new RJsonwalksGroups($groups);
+        $this->lastGroupUpdate = $org->getUpdateDate();
     }
 
     public function getWalks($walks) {
+
         $CacheTime = 15; // minutes
         $time = getdate();
         if ($time["hours"] < 7) {
@@ -33,9 +39,10 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(15);
+        // need to find date/time of last update and clear ask feedhelper to read feed
         $json = $this->readFeed($this->rafeedurl);
         If ($json !== null) {
-            foreach ($json as $item) {
+            foreach ($json->data as $item) {
                 $walk = new RJsonwalksWalk();
                 $this->convertToInternalFormat($walk, $item);
                 $walks->addWalk($walk);
@@ -45,25 +52,26 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
     }
 
     private function readFeed($rafeedurl) {
-        $properties = array("id", "status", "difficulty", "strands", "linkedEvent", "festivals",
-            "walkContact", "linkedWalks", "linkedRoute", "title", "description", "groupCode", "groupName",
-            "additionalNotes", "date", "distanceKM", "distanceMiles", "finishTime", "suitability",
-            "surroundings", "theme", "specialStatus", "facilities", "pace", "ascentMetres", "ascentFeet",
-            "gradeLocal", "attendanceMembers", "attendanceNonMembers", "attendanceChildren", "cancellationReason",
-            "dateUpdated", "dateCreated", "media", "points", "groupInvite", "isLinear", "url");
+//        $properties = array("id", "status", "difficulty", "strands", "linkedEvent", "festivals",
+//            "walkContact", "linkedWalks", "linkedRoute", "title", "description", "groupCode", "groupName",
+//            "additionalNotes", "date", "distanceKM", "distanceMiles", "finishTime", "suitability",
+//            "surroundings", "theme", "specialStatus", "facilities", "pace", "ascentMetres", "ascentFeet",
+//            "gradeLocal", "attendanceMembers", "attendanceNonMembers", "attendanceChildren", "cancellationReason",
+//            "dateUpdated", "dateCreated", "media", "points", "groupInvite", "isLinear", "url");
 
         $result = $this->srfr->getFeed($rafeedurl, "Group Walks Programme");
-        $json = RErrors::checkJsonFeed($rafeedurl, "Walks", $result, $properties);
+        $json = RErrors::checkJsonFeed($rafeedurl, "Walks", $result, null);
         return $json;
     }
 
-    public function getGwemUrl() {
-        $gwemfeedurl = "";
+    public function getWMUrl() {
+        $feedurl = "";
         if ($this->groups !== null) {
-            $gwemfeedurl = "https://www.ramblers.org.uk/api/lbs/walks?groups=" . $this->groups;
+            $feedurl = TESTWALKSFEED;
+            //   $feedurl = $feedurl . '&groups=' . $this->groups;
         }
 
-        return $gwemfeedurl;
+        return $feedurl;
     }
 
     private function convertToInternalFormat($walk, $item) {
@@ -71,16 +79,25 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
         try {
 
             $admin = new RJsonwalksWalkAdmin();
-            $admin->source = SourceOfWalk::GWEM;
+            $admin->source = SourceOfWalk::WManager;
             $admin->id = $item->id;
-            $admin->status = $item->status->value;
-            $admin->groupCode = $item->groupCode;
-            $admin->groupName = $item->groupName;
-            $dateUpdated = substr($item->dateUpdated, 0, 19);
-            $dateCreated = substr($item->dateCreated, 0, 19);
+            switch ($item->status) {
+                case "confirmed":
+                    $admin->status = "published";
+                    break;
+                case "concelled":
+                    $admin->status = "cancelled";
+                    $admin->cancellationReason = $item->cancellation_reason;
+                    break;
+                default:
+            }
+
+            $admin->groupCode = $item->group_code;
+            $admin->groupName = $item->group_name;
+            $dateUpdated = substr($item->date_updated, 0, 19);
+            $dateCreated = substr($item->date - created, 0, 19);
             $admin->dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, $dateUpdated);
             $admin->dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, $dateCreated);
-            $admin->cancellationReason = $item->cancellationReason;
             $admin->displayUrl = $item->url;
             $walk->setAdmin($admin);
 

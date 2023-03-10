@@ -23,7 +23,7 @@ class RJsonwalksBU51Tabs extends RJsonwalksStdDisplay {
         parent::setTabOrder($this->tabOrder);
         parent::setCustomListFormat($this->listFormat);
    //     parent::setWalksClass($this->walkClass);
-        RLoad::addStyleSheet("libraries/ramblers/jsonwalks/bu51/bu51style.css", "text/css");
+        RLoad::addStyleSheet("media/lib_ramblers/jsonwalks/bu51/bu51style.css", "text/css");
     }
 
     public function DisplayWalks($walks) {

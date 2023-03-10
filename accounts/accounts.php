@@ -90,8 +90,8 @@ class RAccounts {
     }
 
     public function addMapMarkers($map) {
-        RLoad::addScript("libraries/ramblers/accounts/accounts.js", "text/javascript");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
+        RLoad::addScript("media/lib_ramblers/accounts/accounts.js", "text/javascript");
+        RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
         $map->setCommand('ra.display.accountsMap');
         $map->options->fullscreen = true;
         $map->options->mouseposition = true;

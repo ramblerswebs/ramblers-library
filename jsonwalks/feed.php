@@ -171,7 +171,7 @@ class RJsonwalksFeed {
             echo "No walks found";
             return;
         }
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
+        RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
         $version = new JVersion();
         // Joomla4 Update to use correct call.
         if (version_compare($version->getShortVersion(), '4.0', '<')) {

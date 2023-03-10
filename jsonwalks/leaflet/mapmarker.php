@@ -56,7 +56,7 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $data->legendposition = $this->legendposition;
         $this->map->setDataObject($data);
         $this->map->display();
-        RLoad::addScript("libraries/ramblers/jsonwalks/leaflet/mapmarker.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/jsonwalks/leaflet/mapmarker.js", "text/javascript");
     }
 
 }

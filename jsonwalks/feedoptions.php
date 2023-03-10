@@ -11,6 +11,8 @@ class RJsonwalksFeedoptions {
     private $distance = null;
     private $days = null;
     private $sources = [];
+    private $walksmanageractive = false;
+    private $gwemactive = true;
 
     public function __construct($value = "") {
         // input can be a list of groups 
@@ -25,10 +27,15 @@ class RJsonwalksFeedoptions {
             If ($groups === false) {
                 return;
             }
-            $source = new RJsonwalksSourcegwem($groups);
-            $this->sources[] = $source;
         } else {
-            $source = new RJsonwalksSourcegwem($value);
+            $groups = $value;
+        }
+        if ($this->walksmanageractive) {
+            $source = new RJsonwalksSourcewalksmanager($groups);
+            $this->sources[] = $source;
+        }
+        if ($this->gwemactive) {
+            $source = new RJsonwalksSourcegwem($groups);
             $this->sources[] = $source;
         }
     }

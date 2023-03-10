@@ -96,9 +96,9 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
         $this->map->setDataObject($data);
         $this->map->display();
-        RLoad::addScript("libraries/ramblers/jsonwalks/std/display.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/jsonwalks/std/display.js", "text/javascript");
         $document = JFactory::getDocument();
-        $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        $document->addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
     }

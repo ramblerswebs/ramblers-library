@@ -9,9 +9,9 @@ class RWalkseditor {
     public static function addScriptsandCss() {
 
         JHtml::_('jquery.framework');
-        RLoad::addStyleSheet("libraries/ramblers/jsonwalks/css/ramblerslibrary.css", "text/css");
+        RLoad::addStyleSheet("media/lib_ramblers/css/ramblerslibrary.css", "text/css");
 
-        $path = "libraries/ramblers/walkseditor/";
+        $path = "media/lib_ramblers/walkseditor/";
         //RLoad::addScript($path . "js/programmeitems.js", "text/javascript");
         RLoad::addScript($path . "js/walk.js", "text/javascript");
         RLoad::addScript($path . "js/inputfields.js", "text/javascript");

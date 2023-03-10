@@ -34,7 +34,7 @@ class RHtml {
     static function convert_mails($text) {
         $emails = RHtml::fetch_mails($text);
         foreach ($emails as $value) {
-            $img = '<img src="' . JURI::base(true) . '/libraries/ramblers/images/symbol_at.png" alt="@ sign" />';
+            $img = '<img src="' . JURI::base(true) . '/media/lib_ramblers/images/symbol_at.png" alt="@ sign" />';
             $email = str_replace("@", $img, $value);
             $text = str_replace($value, $email, $text);
         }

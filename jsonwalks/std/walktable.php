@@ -71,7 +71,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
             $odd = !$odd;
         }
         echo "</table>" . PHP_EOL;
-        RJsScript::registerWalks(array_values($items));
+        RLeafletScript::registerWalks(array_values($items));
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
     }

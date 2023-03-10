@@ -80,31 +80,41 @@ class RFeedhelper {
             return $tmpFile; // Use existing cached version
         }
 
-        // cached version does not exist or needs refreshing
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, false); // do not include header in output
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // do not follow redirects
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // do not output result
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);  // allow xx seconds for timeout
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);  // allow xx seconds for timeout
-        curl_setopt($ch, CURLOPT_REFERER, JURI::base()); // say who wants the feed
-
-        $fgcOutput = curl_exec($ch);
-        $error = curl_error($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode !== 200) {
-            $app = JFactory::getApplication();
-            $app->enqueueMessage('Feed error: ' . $error, 'error');
-            $this->status = self::READFAILED;
-            $response = "Return code " . $httpCode . " Error " . $error;
+        $fgcOutput = file_get_contents($url);
+        if ($fgcOutput === false) {
+            $response = "Error from file_get_contents";
             RErrors::notifyError('FETCH: Unable to fetch ' . $title . ', data may be out of date', $url, 'warning', $response);
+            $fgcOutput = "[]";
         } else {
             JFile::write($tmpFile, $fgcOutput);
         }
 
+//        // cached version does not exist or needs refreshing
+//        $ch = curl_init();
+//        curl_setopt($ch, CURLOPT_URL, $url);
+//        curl_setopt($ch, CURLOPT_HEADER, false); // do not include header in output
+//        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // do not follow redirects
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // do not output result
+//        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);  // allow xx seconds for timeout
+//        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);  // allow xx seconds for timeout
+//        curl_setopt($ch, CURLOPT_REFERER, JURI::base()); // say who wants the feed
+//
+//        $fgcOutput = curl_exec($ch);
+//        $error = curl_error($ch);
+//        $errorCode = curl_errno($ch);
+//        $info = curl_getinfo($ch);
+//        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+//
+//        curl_close($ch);
+//        if ($errorCode > 0) {
+//            $app = JFactory::getApplication();
+//            $app->enqueueMessage('Feed error: ' . $error, 'error');
+//            $this->status = self::READFAILED;
+//            $response = "Return code " . $httpCode . " Error " . $error;
+//            RErrors::notifyError('FETCH: Unable to fetch ' . $title . ', data may be out of date', $url, 'warning', $response);
+//        } else {
+//            JFile::write($tmpFile, $fgcOutput);
+//        }
         // if cached file exists (new or old) then return it.
         if (file_exists($tmpFile) && is_readable($tmpFile)) {
             $result = $tmpFile;

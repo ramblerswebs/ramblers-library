@@ -31,12 +31,12 @@ class RLeafletMapplaces extends RLeafletMap {
     
         parent::display();
 
-        RLoad::addScript("libraries/ramblers/leaflet/ra-display-places.js", "text/javascript");
-    //    RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-gpx-tools.css", "text/css");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
+        RLoad::addScript("media/lib_ramblers/leaflet/ra-display-places.js", "text/javascript");
+    //    RLoad::addStyleSheet("media/lib_ramblers/leaflet/ra-gpx-tools.css", "text/css");
+        RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
 
     //    $document = JFactory::getDocument();
-    //    $path = "libraries/ramblers/vendors/Leaflet.draw-1.0.4/dist/";
+    //    $path = "media/lib_ramblers/vendors/Leaflet.draw-1.0.4/dist/";
     //    $document->addStyleSheet($path . "leaflet.draw.css", "text/css");
     }
 }

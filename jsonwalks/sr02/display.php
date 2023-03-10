@@ -21,7 +21,7 @@ class RJsonwalksSr02Display extends RJsonwalksStdDisplay {
     public function __construct() {
         parent::__construct();
         parent::setCustomTableFormat($this->tableFormat);
-        RLoad::addScript("libraries/ramblers/jsonwalks/sr02/display.js", "text/javascript");
-        RLoad::addStyleSheet("libraries/ramblers/jsonwalks/sr02/style.css");
+        RLoad::addScript("media/lib_ramblers/jsonwalks/sr02/display.js", "text/javascript");
+        RLoad::addStyleSheet("media/lib_ramblers/jsonwalks/sr02/style.css");
     }
 }

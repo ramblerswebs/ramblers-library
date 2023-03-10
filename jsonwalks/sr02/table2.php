@@ -23,7 +23,7 @@ class RJsonwalksSr02Table2 extends RJsonwalksStdWalktable {
         parent::setRowClass($this, 'rowClass');
         RJsonwalksWalk::setCustomValues($this, "customValue");
         $document = JFactory::getDocument();
-        $document->addStyleSheet("libraries/ramblers/jsonwalks/sr02/style.css");
+        $document->addStyleSheet("media/lib_ramblers/jsonwalks/sr02/style.css");
         parent::setWalksClass("sr02prog");
     }
 
@@ -38,11 +38,11 @@ class RJsonwalksSr02Table2 extends RJsonwalksStdWalktable {
             case "{xSymbol}":
                 /* Picnic or Pub icon */
                 if (stristr($walk->additionalNotes, "picnic")) {
-                    $response->out = '<img src="libraries/ramblers/jsonwalks/sr02/Sandwich-icon.png" title="Picnic Required" width="24" height="24" align="left"/>';
+                    $response->out = '<img src="media/lib_ramblers/jsonwalks/sr02/Sandwich-icon.png" title="Picnic Required" width="24" height="24" align="left"/>';
                     break;
                 }
                 if (stristr($walk->additionalNotes, "pub")) {
-                    $response->out = '<img src="libraries/ramblers/jsonwalks/sr02/beer.png" title="Pub Lunch" width="24" height="24" align="left"/>';
+                    $response->out = '<img src="media/lib_ramblers/jsonwalks/sr02/beer.png" title="Pub Lunch" width="24" height="24" align="left"/>';
                 }
                 break;
             case "{xNationalGrade}":

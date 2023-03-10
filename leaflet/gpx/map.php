@@ -13,8 +13,8 @@ class RLeafletGpxMap extends RLeafletMap {
     private $data = null;
 
     public function displayPath($gpx) {
-        RLoad::addScript("libraries/ramblers/leaflet/gpx/maplist.js", "text/javascript");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
+        RLoad::addScript("media/lib_ramblers/leaflet/gpx/maplist.js", "text/javascript");
+        RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
         $this->help_page = "singleroute.html";
         $this->options->fullscreen = true;
         $this->options->cluster = false;
@@ -73,7 +73,7 @@ class RLeafletGpxMap extends RLeafletMap {
                     break;
             }
             if ($link) {
-                echo '<b>Download route:</b> <a href="' . $gpx . '"><img alt="gpx" src="libraries/ramblers/images/orange-gpx-32.png" width="20" height="20"></a><br/><br/>';
+                echo '<b>Download route:</b> <a href="' . $gpx . '"><img alt="gpx" src="media/lib_ramblers/images/orange-gpx-32.png" width="20" height="20"></a><br/><br/>';
             }
         }
 

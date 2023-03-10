@@ -25,9 +25,9 @@ class RLeafletMapdraw extends RLeafletMap {
         if ($this->displayDescription) {
             echo "<div id='ra-description' class='clearfix'>";
             if (RLicense::isOpenRoutingServiceKeySet()) {
-                echo $intro = file_get_contents(JURI::base() . "libraries/ramblers/leaflet/drawintrosmart.html");
+                echo $intro = file_get_contents(JURI::base() . "media/lib_ramblers/leaflet/drawintrosmart.html");
             } else {
-                echo $intro = file_get_contents(JURI::base() . "libraries/ramblers/leaflet/drawintro.html");
+                echo $intro = file_get_contents(JURI::base() . "media/lib_ramblers/leaflet/drawintro.html");
             }
             echo "</div>";
         }
@@ -49,23 +49,23 @@ class RLeafletMapdraw extends RLeafletMap {
 
         parent::display();
 
-        RLoad::addScript("libraries/ramblers/leaflet/ra.display.plotRoute.js", "text/javascript");
-        RLoad::addStyleSheet("libraries/ramblers/leaflet/ra-gpx-tools.css", "text/css");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.GpxUpload.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.GpxDownload.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.ReverseRoute.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.SmartRoute.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/leaflet/L.Control.GpxSimplify.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/leaflet/ra.display.plotRoute.js", "text/javascript");
+        RLoad::addStyleSheet("media/lib_ramblers/leaflet/ra-gpx-tools.css", "text/css");
+        RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
+        RLoad::addScript("media/lib_ramblers/leaflet/L.Control.GpxUpload.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/leaflet/L.Control.GpxDownload.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/leaflet/L.Control.ReverseRoute.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/leaflet/L.Control.SmartRoute.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/leaflet/L.Control.GpxSimplify.js", "text/javascript");
 
         $document = JFactory::getDocument();
-        $path = "libraries/ramblers/vendors/Leaflet.draw-1.0.4/dist/";
+        $path = "media/lib_ramblers/vendors/Leaflet.draw-1.0.4/dist/";
         $document->addStyleSheet($path . "leaflet.draw.css", "text/css");
         $document->addScript($path . "leaflet.draw-src.js", "text/javascript");
-        $document->addScript("libraries/ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");
-        $document->addScript("libraries/ramblers/vendors/blurt-1.0.2/dist/js/blurt.min.js", "text/javascript");
-        $document->addStyleSheet("libraries/ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
-        $document->addScript("libraries/ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
+        $document->addScript("media/lib_ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");
+        $document->addScript("media/lib_ramblers/vendors/blurt-1.0.2/dist/js/blurt.min.js", "text/javascript");
+        $document->addStyleSheet("media/lib_ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
+        $document->addScript("media/lib_ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
     }
 
 }

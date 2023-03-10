@@ -16,8 +16,8 @@ class RJsonwalksStdAreawalks extends RJsonwalksDisplaybase{
     public function DisplayWalks() {
 
         $app = JFactory::getApplication();
-        RLoad::addScript("libraries/ramblers/js/ra.js", "text/javascript");
-        RLoad::addScript("libraries/ramblers/js/ramblerswalks.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/js/ra.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/js/ramblerswalks.js", "text/javascript");
 
         // Set the cookie
         //   $time = time() + 604800; // 1 week

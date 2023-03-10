@@ -53,12 +53,12 @@ class RLeafletCsvList extends RLeafletMap {
         parent::setCommand('ra.display.csvList.display');
         parent::setDataObject($data);
         parent::display();
-        RLoad::addScript("libraries/ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
-        RLoad::addStyleSheet("libraries/ramblers/leaflet/csv/csvlist.css", "text/css");
-        RLoad::addStyleSheet('libraries/ramblers/jsonwalks/css/ramblerslibrary.css');
+        RLoad::addScript("media/lib_ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
+        RLoad::addStyleSheet("media/lib_ramblers/leaflet/csv/csvlist.css", "text/css");
+        RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
 
         $document = JFactory::getDocument();
-        $document->addScript("libraries/ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        $document->addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
         $document->addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1a/polyfill.min.js", "text/javascript");
     }
