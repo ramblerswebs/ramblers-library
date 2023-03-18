@@ -88,7 +88,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             this.elements.rapagination2.style.diaplay = 'none';
         }
         var b = ra.baseDirectory();
-        var sImg = b + "medai/lib_ramblers/images/marker-start.png";
+        var sImg = b + "media/lib_ramblers/images/marker-start.png";
         var cImg = b + "media/lib_ramblers/images/marker-cancelled.png";
         var aImg = b + "media/lib_ramblers/images/marker-area.png";
         var $legend1 = '<strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.';
