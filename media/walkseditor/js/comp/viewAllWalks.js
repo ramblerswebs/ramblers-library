@@ -102,8 +102,12 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
         });
 
         document.addEventListener('preview-walk-delete', function (e) {
-            var walk = e.ra.walk;
-            document.location.href = walk.deleteUrl;
+            var $okay = confirm("This walk will be permanently deleted");
+            if ($okay) {
+                var walk = e.ra.walk;
+                document.location.href = walk.deleteUrl;
+            }
+
         });
 
 

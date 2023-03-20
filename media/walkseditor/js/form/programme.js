@@ -75,8 +75,11 @@ ra.walkseditor.form.programme = function (options, data) {
         });
 
         document.addEventListener('preview-walk-delete', function (e) {
-            _this.programme.deleteWalk(e.ra.walk);
-            viewer.refresh();
+            var $okay = confirm("This walk will be permanently deleted");
+            if ($okay) {
+                _this.programme.deleteWalk(e.ra.walk);
+                viewer.refresh();
+            }
         });
 
     };

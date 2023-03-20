@@ -2,13 +2,13 @@
 <extension type="library"  version="3.0" client="site" method="upgrade">
     <name>RamblersLibrary</name>
     <libraryname>ramblers</libraryname>
-    <author>Chris Vaughan Derby and South Derbyshire / Keith Grimes Wiltshire Ramblers</author>
-    <creationDate>19 March 2023</creationDate>
+    <author>Chris Vaughan Derby and South Derbyshire</author>
+    <creationDate>20 March 2023</creationDate>
     <copyright>Copyright (C) 2016/2023</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>https://github.com/ramblerswebs/ramblers-library/</authorUrl>
-    <version>4.5.2</version>
+    <version>4.5.3</version>
     <description>Ramblers Library to provide diplay walks, GPX routes etc</description>
     
     <files>
