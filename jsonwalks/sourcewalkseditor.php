@@ -171,7 +171,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $singleWalk->nationalGrade = $walkitem->natgrade;
         $singleWalk->localGrade = $walkitem->gradeLocal;
         if ($walkitem->units === 'miles') {
-            $singleWalk->distanceKm = $walkitem->distance * 0.621371;
+            $singleWalk->distanceKm = $walkitem->distance/ 0.621371;
         } else {
             $singleWalk->distanceKm = $walkitem->distance;
         }

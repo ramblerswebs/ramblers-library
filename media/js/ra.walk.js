@@ -332,7 +332,7 @@ ra.walk = (function () {
             $html += ra.html.addDiv("ascent", "<b>Ascent</b>: " + $walk.ascentMetres + " m/" + $walk.ascentFeet + " ft");
         }
         $html += "</div>" + PHP_EOL;
-        $html += "<div class='walkitem walkcontact'>";
+        $html += "<div class='walkitem walk'>";
         if ($walk.isLeader === false) {
             $html += "<b>Contact: </b>";
         } else {
@@ -556,7 +556,8 @@ ra.walk = (function () {
             "{mediathumbl}",
             "{meetOSMap}", "{meetDirections}", "{startOSMap}", "{startDirections}"];
         var index, len, option, $value;
-        var $html = "<table><tr><th style='min-width: 30px;'>No</th><th  style='min-width: 120px;'>Name</th><th>Value</th><th>HTML</th></tr>";
+        var $html;
+        $html = "<table><tr><th style='min-width: 30px;'>No</th><th  style='min-width: 120px;'>Name</th><th>Value</th><th>HTML</th></tr>";
         for (index = 0, len = options.length; index < len; ++index) {
             option = options[index];
             $html += "<tr>";
@@ -566,6 +567,7 @@ ra.walk = (function () {
             $html += "</tr>";
         }
         $html += "</table>";
+        $html += "<pre>" + JSON.stringify($walk, undefined, 4) + "</pre>";
         return  my._locationDiagnostics($walk) + $html;
     };
     my._locationDiagnostics = function ($walk) {

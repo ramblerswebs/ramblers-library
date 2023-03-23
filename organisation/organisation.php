@@ -157,7 +157,6 @@ class ROrganisation {
                                 break;
                         }
                     }
-//    Echo "<div class='ra_group'>" . $code . $group->getLink($this->showLinks) . "</div>";
                     echo RHtml::addTableRow(["", $code . $group->getLink($this->showLinks), $group->website, $group->status]);
                 }
             }
