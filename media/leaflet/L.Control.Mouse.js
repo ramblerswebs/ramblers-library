@@ -482,7 +482,7 @@ L.Control.Rightclick = L.Control.extend({
         this.enabled = true;
 
         this._containerAll = L.DomUtil.create('div', 'leaflet-control-rightclick leaflet-bar leaflet-control');
-        this._containerAll.title = "Mouse right click/ Tap & hold";
+        this._containerAll.title = "Mouse right click/ Tap & hold setting";
 
         this._appendButtons(this._containerAll);
 
@@ -516,6 +516,10 @@ L.Control.Rightclick = L.Control.extend({
             holder.style.display = "";
 
         }, this);
+        L.DomEvent.addListener(container, 'click', function (event) {
+            holder.style.display = "";
+            event.stopPropagation();
+        }, this);
         L.DomEvent.addListener(container, 'mouseout', function () {
             holder.style.display = "none";
         }, this);
@@ -532,13 +536,13 @@ L.Control.Rightclick = L.Control.extend({
             self._places.clearLayers();
         });
 
-        L.DomEvent.addListener(container, 'mouseover', function () {
-            if (this.noLayers() > 0) {
-                clearDiv.style.display = "";
-            } else {
-                clearDiv.style.display = "none";
-            }
-        }, this);
+//        L.DomEvent.addListener(container, 'mouseover', function () {
+//            if (this.noLayers() > 0) {
+//                clearDiv.style.display = "";
+//            } else {
+//                clearDiv.style.display = "none";
+//            }
+//        }, this);
 
         var options = ['<optgroup label="General Information">',
             '<option selected value="details">Display map co-ordinates</option>',
