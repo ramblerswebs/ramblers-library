@@ -11,12 +11,22 @@ L.Control.Places = L.Control.extend({
     _diagnosticslayer: null,
     _masterlayer: null,
     _placeslayer: null,
+    _popupinfo: true,
     _numberOfMarkers: [],
     onAdd: function (map) {
         if (this._test) {
             this._urlbase = 'http://localhost/mapplacesv4/';
         }
         this._map = map;
+        this._notice = "This feature is likely to be withdrawn once the new Ramblers system for led walks is implemented, May 2023. " +
+                "The reason for this is that the new Ramblers system requires Starting places for walks. " +
+                "This means that groups who do not wish to publish, for whatever reason, the true starting place of a walk" +
+                " will have to say in the text for the walk that the walker should " +
+                "not go to the start and that the start is not valid. This is in place of just showing the General Area for a walk. " +
+                "This software cannot distinguish if the start is valid or not. " +
+                "Hence it will end up displaying both valid and invalid starting places. " +
+                "If you are unhappy with this then please contact Ramblers via the ramblers.org.uk web site.";
+
         this._container = L.DomUtil.create('div', 'leaflet-control-places');
         this._container.style.display = 'none';
         L.DomEvent.disableClickPropagation(this._container);
@@ -170,17 +180,21 @@ L.Control.Places = L.Control.extend({
     },
     noLayers: function () {
         var no;
-        no = this._placeslayer[1].getLayers(). length;
+        no = this._placeslayer[1].getLayers().length;
         for (var i = 2; i < 6; i++) {
-            no += this._placeslayer[i].getLayers(). length;
+            no += this._placeslayer[i].getLayers().length;
         }
-        return no ;
+        return no;
     },
     displayPlaces: function (locationOptions) {
         var _locationOptions = {location: {lat: 52, lng: -2},
             distance: 20,
             limit: 100
         };
+        if (this._popupinfo) {
+            this._popupinfo = false;
+            alert(this._notice);
+        }
         _locationOptions = L.setOptions(_locationOptions, locationOptions);
         this._clearPlacesLayers();
         this._container.style.display = 'inherit';
@@ -237,6 +251,9 @@ L.Control.Places = L.Control.extend({
                 self._processItems(items, 2000);
             }
         });
+        this._container.addEventListener("display-item-complete", function (e) {
+            alert(self._notice);
+        });
     },
     _processItems: function (items, chunk) {
         var i = 0;
@@ -250,10 +267,13 @@ L.Control.Places = L.Control.extend({
             self._processItemChucks(items, i * chunk, chunk);
             i++; // Increment the position
             if (i * chunk < items.length) { // If there are more items, schedule another
-                setTimeout(processChunk, 20);
+                setTimeout(processChunk, 5);
+            } else {
+                let event = new Event("display-item-complete", {bubbles: true}); // 
+                self._container.dispatchEvent(event);
             }
         }
-        processChunk(); // Print the first entry/char
+        processChunk();
     },
     _processItemChucks: function (items, start, number) {
         var no = 0;
