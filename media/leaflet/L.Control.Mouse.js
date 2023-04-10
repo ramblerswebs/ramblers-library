@@ -514,15 +514,23 @@ L.Control.Rightclick = L.Control.extend({
         L.DomEvent.disableClickPropagation(holder);
         L.DomEvent.addListener(container, 'mouseover', function () {
             holder.style.display = "";
-
         }, this);
         L.DomEvent.addListener(container, 'click', function (event) {
             holder.style.display = "";
             event.stopPropagation();
         }, this);
-        L.DomEvent.addListener(container, 'mouseout', function () {
-            holder.style.display = "none";
-        }, this);
+        this.closeHolder = false;
+        holder.addEventListener("mouseover", function () {
+            self.closeHolder = true;
+        });
+        holder.addEventListener("mouseout", function () {
+            if (self.closeHolder) {
+                self.closeHolder = false;
+                holder.style.display = "none";
+            }
+        });
+
+
         holder.addEventListener("click", function (ev) {
             ev.stopPropagation();
         });
