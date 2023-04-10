@@ -536,13 +536,13 @@ L.Control.Rightclick = L.Control.extend({
             self._places.clearLayers();
         });
 
-//        L.DomEvent.addListener(container, 'mouseover', function () {
-//            if (this.noLayers() > 0) {
-//                clearDiv.style.display = "";
-//            } else {
-//                clearDiv.style.display = "none";
-//            }
-//        }, this);
+        L.DomEvent.addListener(container, 'mouseover', function () {
+            if (this.noLayers() > 0) {
+                clearDiv.style.display = "";
+            } else {
+                clearDiv.style.display = "none";
+            }
+        }, this);
 
         var options = ['<optgroup label="General Information">',
             '<option selected value="details">Display map co-ordinates</option>',
