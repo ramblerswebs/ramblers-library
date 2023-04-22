@@ -285,9 +285,12 @@ ra.walk = (function () {
             $out = "<div><b>Meeting time " + $walk.meetLocation.timeHHMMshort + "</b></div>";
             $html += $out + PHP_EOL;
         }
-        if ($walk.startLocation.exact) {
-            $out = "<div><b>Start time " + $walk.startLocation.timeHHMMshort + "</b></div>";
-            $html += $out + PHP_EOL;
+        if ($walk.startLocation !== null)
+        {
+            if ($walk.startLocation.exact) {
+                $out = "<div><b>Start time " + $walk.startLocation.timeHHMMshort + "</b></div>";
+                $html += $out + PHP_EOL;
+            }
         }
         if ($walk.finishTime !== null) {
             $out = "<div>(Estimated finish time " + ra.time.HHMMshort($walk.finishTime) + ")</div>";
@@ -300,13 +303,16 @@ ra.walk = (function () {
             $html += $out;
             $html += "</div>" + PHP_EOL;
         }
-        if ($walk.startLocation.exact) {
-            $html += "<div class='walkitem startplace'>";
-        } else {
-            $html += "<div class='walkitem nostartplace'><b>No start place - Rough location only</b>: ";
+        if ($walk.startLocation !== null)
+        {
+            if ($walk.startLocation.exact) {
+                $html += "<div class='walkitem startplace'>";
+            } else {
+                $html += "<div class='walkitem nostartplace'><b>No start place - Rough location only</b>: ";
+            }
+            $html += _addLocationInfo("Start", $walk.startLocation);
+            $html += "</div>" + PHP_EOL;
         }
-        $html += _addLocationInfo("Start", $walk.startLocation);
-        $html += "</div>" + PHP_EOL;
         if ($walk.isLinear) {
             $html += "<div class='walkitem finishplace'>";
             if ($walk.finishLocation !== null) {
@@ -575,20 +581,30 @@ ra.walk = (function () {
         if ($walk.hasMeetPlace) {
             out += my._locationAccuray('Meet', $walk.meetLocation);
         }
-        if ($walk.startLocation.exact) {
-            out += my._locationAccuray('Start', $walk.startLocation);
+        if ($walk.startLocation !== null)
+        {
+            if ($walk.startLocation.exact) {
+                out += my._locationAccuray('Start', $walk.startLocation);
+            }    
         }
         return out;
     };
     my._locationAccuray = function (type, location) {
-        var out = "";
-        var gridref1 = OsGridRef.parse(location.gridref).toString(6);
-        var latlng = LatLon(location.latitude, location.longitude, LatLon.datum.WGS84);
-        var gr = OsGridRef.latLonToOsGrid(latlng);
-        var gridref2 = gr.toString(6);
-        var gridref3 = gr.toString(8);
-        if (gridref2 !== location.gridref) {
-            out = "<p>Error in " + type + "GR from lat.long not equal to supplied value: " + gridref1 + "/" + gridref2 + '/' + gridref3 + '</p>\n';
+        if (location.gridref != "")
+        {
+            var out = "";
+            var gridref1 = OsGridRef.parse(location.gridref).toString(6);
+            var latlng = LatLon(location.latitude, location.longitude, LatLon.datum.WGS84);
+            var gr = OsGridRef.latLonToOsGrid(latlng);
+            var gridref2 = gr.toString(6);
+            var gridref3 = gr.toString(8);
+            if (gridref2 !== location.gridref) {
+                out = "<p>Error in " + type + "GR from lat.long not equal to supplied value: " + gridref1 + "/" + gridref2 + '/' + gridref3 + '</p>\n';
+            }
+        }
+        else
+        {
+            out = "";
         }
         return out;
     };
@@ -656,34 +672,49 @@ ra.walk = (function () {
             case "{meetMapCode}":
                 break;
             case "{start}":
-                if ($walk.startLocation.exact) {
-                    out = $walk.startLocation.timeHHMMshort;
-                    if ($walk.startLocation.description) {
-                        out += " at " + $walk.startLocation.description;
+                if ($walk.startLocation !== null)
+                {
+                    if ($walk.startLocation.exact) {
+                        out = $walk.startLocation.timeHHMMshort;
+                        if ($walk.startLocation.description) {
+                            out += " at " + $walk.startLocation.description;
+                        }
                     }
                 }
                 break;
             case "{startTime}":
-                if ($walk.startLocation.exact) {
-                    out = $walk.startLocation.timeHHMMshort;
+                if ($walk.startLocation !== null)
+                {
+                    if ($walk.startLocation.exact) {
+                        out = $walk.startLocation.timeHHMMshort;
+                    }
                 }
                 break;
             case "{startPlace}":
-                if ($walk.startLocation.exact) {
-                    if ($walk.startLocation.description) {
-                        out += $walk.startLocation.description;
+                if ($walk.startLocation !== null)
+                {
+                    if ($walk.startLocation.exact) {
+                        if ($walk.startLocation.description) {
+                            out += $walk.startLocation.description;
+                        }
                     }
                 }
                 break;
             case "{startGR}":
-                if ($walk.startLocation.exact) {
-                    out = $walk.startLocation.gridref;
+                if ($walk.startLocation !== null)
+                {
+                    if ($walk.startLocation.exact) {
+                        out = $walk.startLocation.gridref;
+                    }
                 }
                 break;
             case "{startPC}":
-                if ($walk.startLocation.exact) {
-                    if ($walk.startLocation.postcode !== null) {
-                        out = $walk.startLocation.postcode;
+                if ($walk.startLocation !== null)
+                {
+                    if ($walk.startLocation.exact) {
+                        if ($walk.startLocation.postcode !== null) {
+                            out = $walk.startLocation.postcode;
+                        }
                     }
                 }
                 break;
@@ -1091,21 +1122,32 @@ ra.walk = (function () {
         var index, len, $walk;
         for (index = 0, len = $walks.length; index < len; ++index) {
             $walk = $walks[index];
-            $walk.description = ra.convert_mails($walk.description);
-            $walk.descriptionHtml = ra.convert_mails($walk.descriptionHtml);
-            $walk.dateUpdated = $walk.dateUpdated.date;
-            $walk.dateCreated = $walk.dateCreated.date;
-            $walk.walkDate = $walk.walkDate.date;
-            // delete $walk.day;
-            // delete $walk.dayofweek;
-            if ($walk.hasMeetPlace) {
-                my.convertPHPLocation($walk.meetLocation);
+            try {
+                $walk.description = ra.convert_mails($walk.description);
+                $walk.descriptionHtml = ra.convert_mails($walk.descriptionHtml);
+                $walk.dateUpdated = $walk.dateUpdated.date;
+                $walk.dateCreated = $walk.dateCreated.date;
+                $walk.walkDate = $walk.walkDate.date;
+                // delete $walk.day;
+                // delete $walk.dayofweek;
+                if ($walk.hasMeetPlace) {
+                    my.convertPHPLocation($walk.meetLocation);
+                }
+                if ($walk.startLocation !== null)
+                {
+                    my.convertPHPLocation($walk.startLocation);
+                }
+                else{
+                    console.warn("Error: Start Location not provided for walk " + $walk.id + " (" + $walk.groupCode + " - " + $walk.walkDate.substring(0,10) + " - " + $walk.title + ")");
+                }
+                if ($walk.finishTime !== null) {
+                    $walk.finishTime = $walk.finishTime.date;
+                }
+            }    
+            catch(err) {
+                // Log that the walk failed to be converted.
+                console.warn("(ra.walks.convertPHPWalks) Walk id (" + "[" + $walk.groupCode + "]" + $walk.id + " on " + $walk.walkDate.substring(0,10) + " - " + $walk.title + ") Failed to be converted due to error - " + err);
             }
-            my.convertPHPLocation($walk.startLocation);
-            if ($walk.finishTime !== null) {
-                $walk.finishTime = $walk.finishTime.date;
-            }
-
         }
         return $walks;
     };
@@ -1121,45 +1163,48 @@ ra.walk = (function () {
         var $long, $lat, $icon, $class;
         var $popup;
         //  var $this = this.settings;
-        $long = $walk.startLocation.longitude;
-        $lat = $walk.startLocation.latitude;
-        if ($walk.startLocation.exact) {
-            $icon = ra.map.icon.markerStart();
-        } else {
-            $icon = ra.map.icon.markerArea();
+        if ($walk.startLocation !== null)
+        {
+            $long = $walk.startLocation.longitude;
+            $lat = $walk.startLocation.latitude;
+            if ($walk.startLocation.exact) {
+                $icon = ra.map.icon.markerStart();
+            } else {
+                $icon = ra.map.icon.markerArea();
+            }
+            if (ra.walk.isCancelled($walk)) {
+                $icon = ra.map.icon.markerCancelled();
+            }
+            $popup = document.createElement('div');
+            var summary = document.createElement('div');
+            summary.setAttribute('class', 'pointer');
+            summary.innerHTML = ra.walk.getWalkValues($walk, my.mapFormat, false);
+            var id = $walk.id;
+            summary.addEventListener("click", function (e) {
+                cluster.turnOffFullscreen();
+                ra.walk.displayWalkID(e, id);
+            });
+            var link = document.createElement('div');
+            link.innerHTML = ra.walk.getWalkValues($walk, my.mapLinks, false);
+            var grade = document.createElement('div');
+            grade.setAttribute('class', 'pointer');
+            grade.style.float = "right";
+            grade.innerHTML = my.grade.image($walk.nationalGrade) + "<br/>" + $walk.nationalGrade;
+            grade.addEventListener("click", function (e) {
+                cluster.turnOffFullscreen();
+                ra.walk.dGH();
+            });
+            $popup.appendChild(grade);
+            $popup.appendChild(summary);
+            $popup.appendChild(link);
+            var dist = '';
+            if ($walk.distanceMiles > 0) {
+                dist = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
+            }
+            var title = ra.date.dowShortddmm($walk.walkDate) + ra.walk.addYear($walk) + ", " + dist;
+            $class = walkClass + $walk.status;
+            cluster.addMarker($popup, $lat, $long, {icon: $icon, title: title, riseOnHover: true});
         }
-        if (ra.walk.isCancelled($walk)) {
-            $icon = ra.map.icon.markerCancelled();
-        }
-        $popup = document.createElement('div');
-        var summary = document.createElement('div');
-        summary.setAttribute('class', 'pointer');
-        summary.innerHTML = ra.walk.getWalkValues($walk, my.mapFormat, false);
-        var id = $walk.id;
-        summary.addEventListener("click", function (e) {
-            cluster.turnOffFullscreen();
-            ra.walk.displayWalkID(e, id);
-        });
-        var link = document.createElement('div');
-        link.innerHTML = ra.walk.getWalkValues($walk, my.mapLinks, false);
-        var grade = document.createElement('div');
-        grade.setAttribute('class', 'pointer');
-        grade.style.float = "right";
-        grade.innerHTML = my.grade.image($walk.nationalGrade) + "<br/>" + $walk.nationalGrade;
-        grade.addEventListener("click", function (e) {
-            cluster.turnOffFullscreen();
-            ra.walk.dGH();
-        });
-        $popup.appendChild(grade);
-        $popup.appendChild(summary);
-        $popup.appendChild(link);
-        var dist = '';
-        if ($walk.distanceMiles > 0) {
-            dist = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
-        }
-        var title = ra.date.dowShortddmm($walk.walkDate) + ra.walk.addYear($walk) + ", " + dist;
-        $class = walkClass + $walk.status;
-        cluster.addMarker($popup, $lat, $long, {icon: $icon, title: title, riseOnHover: true});
         return;
     };
     my.gradeCSS = function (nationalGrade) {
