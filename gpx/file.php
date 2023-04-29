@@ -26,7 +26,7 @@ class RGpxFile {
     public $links = [];
     //   public $copyright = '';
     private $file = null;
-    private $registered = false;
+    private static $registered = false;
 
     public function __construct($file) {
         $this->file = $file;
@@ -34,17 +34,11 @@ class RGpxFile {
     }
 
     private function parse() {
-        if (!$this->registered) {
-            if (version_compare(JVERSION, '4', 'lt'))
-            {
-                    JLoader::registerNamespace('phpGPX', "libraries/ramblers/vendors/phpGPX-1.0.1/src");
-            }
-            else
-            {
-                //JLoader::registerNamespace('phpGPX', "libraries/ramblers/vendors/phpGPX-1.0.1/src");
-                JLoader::registerNamespace('phpGPX', JPATH_BASE . "/libraries/ramblers/vendors/phpGPX-1.0.1/src/phpGPX");
-            }
-            $this->registered = true;
+        if (!self::$registered) {
+            $regPath = JPATH_BASE . "/libraries/ramblers/vendors/phpGPX-1.0.1/src";
+            $regPath .= Joomla\CMS\Version::MAJOR_VERSION > 3  ? "/phpGPX" : ""; 
+            JLoader::registerNamespace('phpGPX', $regPath);
+            self::$registered = true;
         }
         $gpxfile = new phpGPX\phpGPX();
 
