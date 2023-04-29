@@ -1090,8 +1090,8 @@ ra.walk = (function () {
                 $distclass = " distfar";
             }
             if ($dist > 10000) {
-                $note = $this.postcode + " location unknown";
-                $note2 = 'Postcode location not known';
+                $note = $this.postcode;
+                //$note2 = 'Postcode distance from location not known';
             }
         }
         $pc = "<b>Postcode</b>: <abbr title='" + $note2 + "'>" + $note + "</abbr>";

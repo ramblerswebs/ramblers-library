@@ -35,7 +35,15 @@ class RGpxFile {
 
     private function parse() {
         if (!$this->registered) {
-            JLoader::registerNamespace('phpGPX', "libraries/ramblers/vendors/phpGPX-1.0.1/src");
+            if (version_compare(JVERSION, '4', 'lt'))
+            {
+                    JLoader::registerNamespace('phpGPX', "libraries/ramblers/vendors/phpGPX-1.0.1/src");
+            }
+            else
+            {
+                //JLoader::registerNamespace('phpGPX', "libraries/ramblers/vendors/phpGPX-1.0.1/src");
+                JLoader::registerNamespace('phpGPX', JPATH_BASE . "/libraries/ramblers/vendors/phpGPX-1.0.1/src/phpGPX");
+            }
             $this->registered = true;
         }
         $gpxfile = new phpGPX\phpGPX();
