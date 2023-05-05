@@ -340,30 +340,39 @@ ra.walk = (function () {
         $html += "</div>" + PHP_EOL;
         $html += "<div class='walkitem walk'>";
         if ($walk.isLeader === false) {
-            $html += "<b>Contact: </b>";
+            $html += "<b>Contact Details: </b>";
         } else {
             $html += "<b>Contact Leader: </b>";
         }
-        $html += ra.html.addDiv("contactname", "<b>Name</b>: " + $walk.contactName);
-        if ($walk.email !== "") {
-            $html += my.getEmailLink($walk);
+        // Only display the name if we have one.
+        if (($walk.contactName == "") && ($walk.email == "") && ($walk.telephone1 + $walk.telephone2 == ""))
+        {
+            $html += ra.html.addDiv("contactname", "<b>No contact details available</b>");
         }
-        if ($walk.telephone1 + $walk.telephone2 !== "") {
-            $text = "<b>Telephone</b>: ";
-            if ($walk.telephone1 !== "") {
-                $text += $walk.telephone1;
-                if ($walk.telephone2 !== "") {
-                    $text += ", ";
+        else
+        {
+            $name = $walk.contactName !== "" ? "<b>Name</b>: " + $walk.contactName : "";
+            $html += ra.html.addDiv("contactname", $name);
+            if ($walk.email !== "") {
+                $html += my.getEmailLink($walk);
+            }
+            if ($walk.telephone1 + $walk.telephone2 !== "") {
+                $text = "<b>Telephone</b>: ";
+                if ($walk.telephone1 !== "") {
+                    $text += $walk.telephone1;
+                    if ($walk.telephone2 !== "") {
+                        $text += ", ";
+                    }
                 }
+                if ($walk.telephone2 !== "") {
+                    $text += $walk.telephone2;
+                }
+                $html += ra.html.addDiv("telephone", $text);
             }
-            if ($walk.telephone2 !== "") {
-                $text += $walk.telephone2;
-            }
-            $html += ra.html.addDiv("telephone", $text);
-        }
-        if ($walk.isLeader === false) {
-            if ($walk.walkLeader !== "") {
-                $html += "<div class='walkleader'><b>Walk Leader</b>: " + $walk.walkLeader + "</div>" + PHP_EOL;
+            if ($walk.isLeader === false) {
+                if ($walk.walkLeader !== "") {
+                    $html += "<div class='walkleader'><b>Walk Leader</b>: " + $walk.walkLeader + "</div>" + PHP_EOL;
+                }
             }
         }
         $html += "</div>" + PHP_EOL;
@@ -503,7 +512,7 @@ ra.walk = (function () {
             return "";
         }
         if ($walk.contactForm !== "") {
-            $link = "<span><a target='_blank' href='" + $walk.contactForm + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
+            $link = "<span><a target='_blank' href='" + $walk.contactForm + "' title='Click to send an email to leader/contact or group'>Email contact</a></span>";
         } else {
             $gwemlink = "javascript:ra.walk.emailContact(\"" + $walk.id + "\")";
             $link = "<span><a href='" + $gwemlink + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
