@@ -126,10 +126,12 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
                 $contact->isLeader = $item->walkContact->isWalkLeader == "true";
                 $contact->contactName = trim($item->walkContact->contact->displayName);
                 // $walk->emailAddr = $item->walkContact->contact->email;
-                if (strlen($item->walkContact->contact->email) > 0) {
+                if (property_exists($item->walkContact->contact, "email")) {
+                    if (strlen($item->walkContact->contact->email) > 0) {
                     // Check to see if this is a contact form.
                     $contact->email = $item->walkContact->contact->email;
                 }
+                }   
                 if (property_exists($item->walkContact->contact, "form")) {
                     if (strlen($item->walkContact->contact->form) > 0) {
                         // Check to see if this is a contact form.
