@@ -90,7 +90,7 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
             $basics->title = $item->title;
             $basics->descriptionHtml = $item->description;
             $basics->additionalNotes = $item->additionalNotes;
-            $basics->external_url = property_exists($basics, "external_url") ? $item->external_url : null;
+            $basics->external_url = property_exists($item, "external_url") ? $item->external_url : null;
 
             $walk->setBasics($basics);
             $walk->checkCancelledStatus();
