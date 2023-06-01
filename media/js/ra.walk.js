@@ -276,6 +276,10 @@ ra.walk = (function () {
         if ($walk.additionalNotes !== "") {
             $html += "<div class='additionalnotes'><b>Additional Notes</b>: " + $walk.additionalNotes + "</div>" + PHP_EOL;
         }
+        if ($walk.external_url !== null && $walk.external_url !== "")
+        {
+            $html += "<div><b>Website:</b>&nbsp;<a href='" + $walk.external_url + "'>" + $walk.external_url + "</a><br/></div>" + PHP_EOL;
+        }
         if ($walk.isLinear) {
             $html += "<b>Linear Walk</b>";
         } else {

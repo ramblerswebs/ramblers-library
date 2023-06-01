@@ -30,6 +30,7 @@ class RJsonwalksWalk extends REvent {
     public $contactName = "";       // contact name
     public $email = "";             // email address for contact
     public $contactForm = "";       // Contact form from Ramblers CO
+    public $external_url = "";      // External URL provided
     public $key = "";               // ENCRYPTED email address for contact 
     public $telephone1 = "";        // first telephone number of contact
     public $telephone2 = "";        // second telephone number of contact
@@ -105,6 +106,7 @@ class RJsonwalksWalk extends REvent {
         $this->descriptionHtml = $basics->descriptionHtml;
         $this->descriptionHtml = RHtml::convert_mails($this->descriptionHtml);
         $this->additionalNotes = $basics->additionalNotes;
+        $this->external_url = $basics->external_url;
     }
 
     public function setWalk($walk) {
@@ -265,7 +267,7 @@ class RJsonwalksWalk extends REvent {
         if ($this->meetLocation != NULL) {
             $this->sortTime = $this->meetLocation->time;
         }
-        if ($this->sortTime == NULL) {
+        if (!is_null($this->sortTime)) {
             $this->sortTime = $this->startLocation->time;
         }
     }

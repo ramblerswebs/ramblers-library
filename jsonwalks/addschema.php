@@ -21,7 +21,7 @@ class RJsonwalksAddschema {
             if (!$walk->isCancelled()) {
                 $date = $walk->walkDate->format('D, jS F');
                 $performer = new RJsonwalksStructuredperformer($walk->groupName . " - Ramblers");
-                $location = new RJsonwalksStructuredlocation($walk->startLocation->description, $walk->startLocation->postcode);
+                $location = !is_null($walk->startLocation) ? new RJsonwalksStructuredlocation($walk->startLocation->description, $walk->startLocation->postcode) : null;
                 $schemawalk = new RJsonwalksStructuredevent($performer, $location);
                 $schemawalk->name = "Ramblers led walk on " . $date . ", " . $walk->title;
                 $schemawalk->description = "A " . $walk->nationalGrade . " " . $walk->distanceMiles . "mile / " . $walk->distanceKm . "km walk";
