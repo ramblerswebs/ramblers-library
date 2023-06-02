@@ -108,7 +108,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $basics->walkDate = new DateTime($item->basics->date);
         $basics->title = $item->basics->title;
         $basics->descriptionHtml = $item->basics->description;
-        $basics->additionalNotes = '';
+        $basics->additionalNotes = $item->basics->notes;
         $walk->setBasics($basics);
         $walk->checkCancelledStatus();
         // meeting
