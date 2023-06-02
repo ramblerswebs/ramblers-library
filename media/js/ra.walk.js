@@ -278,7 +278,7 @@ ra.walk = (function () {
         }
         if ($walk.external_url !== null && $walk.external_url !== "")
         {
-            $html += "<div><b>Website:</b>&nbsp;<a href='" + $walk.external_url + "'>" + $walk.external_url + "</a><br/></div>" + PHP_EOL;
+            $html += "<div><b>Website:</b>&nbsp;<a href='" + $walk.external_url + "' target='_blank'>" + $walk.external_url + "</a><br/></div>" + PHP_EOL;
         }
         if ($walk.isLinear) {
             $html += "<b>Linear Walk</b>";
