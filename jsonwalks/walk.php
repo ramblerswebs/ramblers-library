@@ -281,11 +281,14 @@ class RJsonwalksWalk extends REvent {
         if ($this->hasMeetPlace) {
             $text .= $this->meetLocation->timeHHMMshort;
         }
-        if ($this->startLocation->time != "") {
-            if ($text != "") {
-                $text .= "/";
+        if ($this->startLocation != null)
+        {
+            if ($this->startLocation->time != "") {
+                if ($text != "") {
+                    $text .= "/";
+                }
+                $text .= $this->startLocation->timeHHMMshort;
             }
-            $text .= $this->startLocation->timeHHMMshort;
         }
         $text = $text . ", " . $this->title;
         if ($this->distanceMiles > 0) {
@@ -304,9 +307,11 @@ class RJsonwalksWalk extends REvent {
             $out .= "Meet:" . $this->meetLocation->getOSMap("OS Map");
             $out .= " " . $this->meetLocation->getDirectionsMap("Directions");
         }
-
-        $out .= " Start:" . $this->startLocation->getOSMap("OS Map");
-        $out .= " " . $this->startLocation->getMap("Directions", "Area Map");
+        if ($this->startLocation != null)
+        {
+            $out .= " Start:" . $this->startLocation->getOSMap("OS Map");
+            $out .= " " . $this->startLocation->getMap("Directions", "Area Map");
+        }
         return $out;
     }
 
