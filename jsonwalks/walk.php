@@ -326,7 +326,7 @@ class RJsonwalksWalk extends REvent {
         } else {
             $meetLocation = "";
         }
-        $startLocation = $this->startLocation->getTextDescription();
+        $startLocation = ($this->startLocation != null) ? $this->startLocation->getTextDescription() : "";
         $before = $meetLocation . $startLocation . "\\nDescription: ";
         $after = "\\nContact: " . $this->contactName . " (" . $this->telephone1 . " " . $this->telephone2 . "); \\n";
         if ($this->localGrade <> "") {

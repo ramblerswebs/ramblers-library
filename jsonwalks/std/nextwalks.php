@@ -15,6 +15,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksStdSimplelist {
     private $listFormat = ["{gradeimg}","{dowddmm}",
         "{,title}", "{,distance}"];
     private $nowalks = 5;
+    private $titles = array();
 
     public function __construct() {
         parent::__construct();
@@ -26,8 +27,17 @@ class RJsonwalksStdNextwalks extends RJsonwalksStdSimplelist {
         $this->nowalks = $no;
     }
 
+    public function appendWalkTitle($group, $title)
+    {
+        // Remove the old entry if it already exists
+        $group = strtoupper($group);
+        if (isset($this->titles[$group])) unset($this->titles[$group]);
+        $this->titles[$group] = $title;
+    }
+
     public function DisplayWalks($walks) {
         $walks->noWalks($this->nowalks);
+        $walks->appendWalkTitle($this->titles);
         parent::DisplayWalks($walks);
     }
 

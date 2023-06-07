@@ -251,6 +251,16 @@ class RJsonwalksWalks {
         $this->limitNumberWalks($no);
     }
 
+    public function appendWalkTitle($titles)
+    {
+        foreach ($this->arrayofwalks as $key => $value) {
+            if (isset($titles[$value->groupCode]))
+            {
+                $value->title = $value->title . $titles[$value->groupCode]  ;
+            }
+        }
+    }
+
     public function walksInFuture($period) {
         $today = new DateTime(NULL);
         $interval = new DateInterval($period);
