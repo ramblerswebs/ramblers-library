@@ -46,7 +46,7 @@ class RJsonwalksFeedoptions {
             echo 'Invalid GWEM url supplied';
             return false;
         }
-        if ($parts['path'] !== "/api/volunteers/walksevents") {
+        if (($parts['path'] !== "/api/volunteers/walksevents") && ($parts['path'] !== "/api/lbs/walks")) {
             echo 'Invalid GWEM url supplied';
             return false;
         }
