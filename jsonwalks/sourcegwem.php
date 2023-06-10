@@ -61,11 +61,14 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
 
     public function getGwemUrl() {
         $gwemfeedurl = "";
+        $types = ($this->include_walks) ? "&incwalks=1" : "&incwalks=0" ;
+        $types = ($this->include_events) ? $types . "&incevents=1" : $types . "&incevents=0" ;
         if ($this->groups !== null) {
-            $types = ($include_walks) ? "&incwalks=1" : "&incwalks=0" ;
-            $types = $types . ($include_events) ? "&incevents=1" : "&incevents=0" ;
             $gwemfeedurl = "https://gwem.theramblers.org.uk/?types=" . $types .  "groups=" . $this->groups ;
             //$gwemfeedurl = "http://apache82/?types=" . $types .  "groups=" . $this->groups ;
+        }
+        else{
+            $gwemfeedurl = "https://gwem.theramblers.org.uk/?types=" . $types .  "groups=" ;
         }
 
         return $gwemfeedurl;

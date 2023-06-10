@@ -46,7 +46,7 @@ class RJsonwalksFeedoptions {
     {
         foreach ($this->sources as $source)
         {
-            if ($source instanceof(RJsonwalksSourcegwem))
+            if ($source instanceof RJsonwalksSourcegwem)
             {
                 // This is a GWEM feed so set the value.
                 $source->include_events = true;
@@ -57,7 +57,7 @@ class RJsonwalksFeedoptions {
     {
         foreach ($this->sources as $source)
         {
-            if ($source instanceof(RJsonwalksSourcegwem))
+            if ($source instanceof RJsonwalksSourcegwem)
             {
                 // This is a GWEM feed so set the value.
                 $source->include_events = false;
@@ -68,7 +68,7 @@ class RJsonwalksFeedoptions {
     {
         foreach ($this->sources as $source)
         {
-            if ($source instanceof(RJsonwalksSourcegwem))
+            if ($source instanceof RJsonwalksSourcegwem)
             {
                 // This is a GWEM feed so set the value.
                 $source->include_walks = true;
@@ -79,7 +79,7 @@ class RJsonwalksFeedoptions {
     {
         foreach ($this->sources as $source)
         {
-            if ($source instanceof(RJsonwalksSourcegwem))
+            if ($source instanceof RJsonwalksSourcegwem)
             {
                 // This is a GWEM feed so set the value.
                 $source->include_walks = false;
