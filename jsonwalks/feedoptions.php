@@ -13,8 +13,6 @@ class RJsonwalksFeedoptions {
     private $sources = [];
     private $walksmanageractive = false;
     private $gwemactive = true;
-    private $include_walks = true;
-    private $include_events = false;
 
     public function __construct($value = "") {
         // input can be a list of groups 
@@ -42,68 +40,13 @@ class RJsonwalksFeedoptions {
         }
     }
 
-    public function includeEvents()
-    {
-        foreach ($this->sources as $source)
-        {
-            if ($source instanceof RJsonwalksSourcegwem)
-            {
-                // This is a GWEM feed so set the value.
-                $source->include_events = true;
-            }
-        }
-    }
-    public function excludeEvents()
-    {
-        foreach ($this->sources as $source)
-        {
-            if ($source instanceof RJsonwalksSourcegwem)
-            {
-                // This is a GWEM feed so set the value.
-                $source->include_events = false;
-            }
-        }
-    }
-    public function includeWalks()
-    {
-        foreach ($this->sources as $source)
-        {
-            if ($source instanceof RJsonwalksSourcegwem)
-            {
-                // This is a GWEM feed so set the value.
-                $source->include_walks = true;
-            }
-        }
-    }
-    public function excludeWalks()
-    {
-        foreach ($this->sources as $source)
-        {
-            if ($source instanceof RJsonwalksSourcegwem)
-            {
-                // This is a GWEM feed so set the value.
-                $source->include_walks = false;
-            }
-        }
-    }
-
-    public function getWalkStatus()
-    {
-        return $include_walks;
-    }
-
-    public function getEventStatus()
-    {
-        return $include_events;
-    }
-
     private function processGWEMurl($value) {
         $parts = parse_url($value);
         if ($parts === false) {
             echo 'Invalid GWEM url supplied';
             return false;
         }
-        if ($parts['path'] !== "/api/lbs/walks") {
+        if ($parts['path'] !== "/api/volunteers/walksevents") {
             echo 'Invalid GWEM url supplied';
             return false;
         }
@@ -123,6 +66,13 @@ class RJsonwalksFeedoptions {
         }
         if (array_key_exists('days', $queryParts)) {
             $this->days = $queryParts['days'];
+        }
+        if (array_key_exists('incwalks', $queryParts)){
+            $groups = $groups . "&incwalks=" . $queryParts['incwalks'];
+        }
+        if (array_key_exists('incevents', $queryParts))
+        {
+            $groups = $groups . "&incevents=" . $queryParts['incevents'];
         }
 
         return $groups;
