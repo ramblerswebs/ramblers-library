@@ -13,6 +13,8 @@ class RJsonwalksFeedoptions {
     private $sources = [];
     private $walksmanageractive = false;
     private $gwemactive = true;
+    private $include_walks = true;
+    private $include_events = false;
 
     public function __construct($value = "") {
         // input can be a list of groups 
@@ -38,6 +40,61 @@ class RJsonwalksFeedoptions {
             $source = new RJsonwalksSourcegwem($groups);
             $this->sources[] = $source;
         }
+    }
+
+    public function includeEvents()
+    {
+        foreach ($this->sources as $source)
+        {
+            if ($source instanceof(RJsonwalksSourcegwem))
+            {
+                // This is a GWEM feed so set the value.
+                $source->include_events = true;
+            }
+        }
+    }
+    public function excludeEvents()
+    {
+        foreach ($this->sources as $source)
+        {
+            if ($source instanceof(RJsonwalksSourcegwem))
+            {
+                // This is a GWEM feed so set the value.
+                $source->include_events = false;
+            }
+        }
+    }
+    public function includeWalks()
+    {
+        foreach ($this->sources as $source)
+        {
+            if ($source instanceof(RJsonwalksSourcegwem))
+            {
+                // This is a GWEM feed so set the value.
+                $source->include_walks = true;
+            }
+        }
+    }
+    public function excludeWalks()
+    {
+        foreach ($this->sources as $source)
+        {
+            if ($source instanceof(RJsonwalksSourcegwem))
+            {
+                // This is a GWEM feed so set the value.
+                $source->include_walks = false;
+            }
+        }
+    }
+
+    public function getWalkStatus()
+    {
+        return $include_walks;
+    }
+
+    public function getEventStatus()
+    {
+        return $include_events;
     }
 
     private function processGWEMurl($value) {

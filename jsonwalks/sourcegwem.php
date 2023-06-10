@@ -14,6 +14,8 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
 
     private $rafeedurl = '';
     private $srfr;
+    public $include_events = false;
+    public $include_walks = true;
 
     //   private $groups;
 
@@ -60,8 +62,10 @@ class RJsonwalksSourcegwem extends RJsonwalksSourcebase {
     public function getGwemUrl() {
         $gwemfeedurl = "";
         if ($this->groups !== null) {
-            $gwemfeedurl = "https://gwem.theramblers.org.uk/?groups=" . $this->groups;
-            //$gwemfeedurl = "http://apache82/?groups=" . $this->groups;
+            $types = ($include_walks) ? "&incwalks=1" : "&incwalks=0" ;
+            $types = $types . ($include_events) ? "&incevents=1" : "&incevents=0" ;
+            $gwemfeedurl = "https://gwem.theramblers.org.uk/?types=" . $types .  "groups=" . $this->groups ;
+            //$gwemfeedurl = "http://apache82/?types=" . $types .  "groups=" . $this->groups ;
         }
 
         return $gwemfeedurl;
