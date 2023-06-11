@@ -68,7 +68,7 @@ class RJsonwalksWalks {
 
     public function filterDistanceFromLatLong($lat, $lon, $distanceKm) {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if ($walk->distanceFromLatLong($lat, $lon) > $distanceKm) {
+            if ($walk->distanceFromLatLong($lat, $lon, $distanceKm) > $distanceKm) {
                 unset($this->arrayofwalks[$key]);
             }
         }
