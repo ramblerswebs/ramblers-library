@@ -790,7 +790,10 @@ ra.walk = (function () {
             case "{grade}":
                 out = "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
-                    out += BR + $walk.localGrade;
+                    if ($walk.localGrade.localeCompare($walk.nationalGrade) != 0)
+                    {
+                        out += BR + $walk.localGrade;
+                    }
                 }
                 break;
             case "{grade+}":
@@ -798,7 +801,10 @@ ra.walk = (function () {
                 out += ra.walk.grade.disp($walk.nationalGrade, "middle");
                 out += "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
-                    out += BR + $walk.localGrade;
+                    if ($walk.localGrade.localeCompare($walk.nationalGrade) != 0)
+                    {
+                        out += BR + $walk.localGrade;
+                    }
                 }
                 break;
             case "{nationalGrade}":
