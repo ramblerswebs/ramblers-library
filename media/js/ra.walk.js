@@ -767,7 +767,10 @@ ra.walk = (function () {
                 out = my.getWalkValue($walk, "{distance}");
                 out += "<br/><span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
-                    out += BR + $walk.localGrade;
+                    if ($walk.localGrade.localeCompare($walk.nationalGrade) != 0)
+                    {
+                        out += BR + $walk.localGrade;
+                    }
                 }
                 break;
             case "{difficulty+}":
@@ -775,7 +778,10 @@ ra.walk = (function () {
                 out += BR + ra.walk.grade.disp($walk.nationalGrade, "middle") + BR;
                 out += "<span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
                 if ($walk.localGrade !== "") {
-                    out += BR + $walk.localGrade;
+                    if ($walk.localGrade.localeCompare($walk.nationalGrade) != 0)
+                    {
+                        out += BR + $walk.localGrade;
+                    }
                 }
                 break;
             case "{gradeimg}":
