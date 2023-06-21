@@ -268,7 +268,10 @@ class RJsonwalksWalk extends REvent {
             $this->sortTime = $this->meetLocation->time;
         }
         if (!is_null($this->sortTime)) {
-            $this->sortTime = $this->startLocation->time;
+            if ($this->startLocation !== null)
+            {
+                $this->sortTime = $this->startLocation->time;
+            }
         }
     }
 
