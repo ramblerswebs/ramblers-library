@@ -1030,7 +1030,7 @@ ra.walk = (function () {
         if ($walk.status.toLowerCase() === "cancelled") {
             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
         }
-        if ($walk.status === "New") {
+        if ($walk.status.toLowerCase() === "new") {
             return "<span data-descr='Walk updated " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";
         }
         return $text;
@@ -1311,7 +1311,7 @@ ra.walk = (function () {
             if (walk.distanceMiles > 0) {
                 $summary += ", " + walk.distanceMiles + "mi/" + walk.distanceKm + "km";
             }
-            if (walk.status === 'Cancelled') {
+            if (walk.status.toLowerCase() === 'cancelled') {
                 ev.method("CANCEL");
                 $summary = " CANCELLED " + $summary;
                 $description = "CANCELLED - REASON: " + walk.cancellationReason + " (" + walk.description + ")";

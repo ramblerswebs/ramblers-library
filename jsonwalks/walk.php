@@ -250,10 +250,10 @@ class RJsonwalksWalk extends REvent {
     }
 
     public function setNewWalk($date) {
-        if ($this->status == "New") {
+        if (strtolower($this->status) == "new") {
             $this->status = "Published";
         }
-        if ($this->status == "Published") {
+        if (strtolower($this->status) == "published") {
             if ($this->dateUpdated > $date) {
                 $this->status = "New";
             }
@@ -319,6 +319,7 @@ class RJsonwalksWalk extends REvent {
     }
 
     public function EventStatus() {
+        if ($this->status == "published") $this->status = "Published";
         return "walk" . $this->status;
     }
 
@@ -942,7 +943,7 @@ class RJsonwalksWalk extends REvent {
         if ($this->isCancelled()) {
             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" . $text . "</span>";
         }
-        if ($this->status === "New") {
+        if (strtolower($this->status) === "new") {
             return "<span data-descr='Walk updated " . $this->dateUpdated->format('D, jS M') . "' class=' walkNew'>" . $text . "</span>";
         }
         return $text;

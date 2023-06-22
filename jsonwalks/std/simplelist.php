@@ -101,6 +101,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
 
     private function displayWalk($walk, $oddeven) {
         $out = "";
+        if ($walk->status == "published") $walk->status = "Published";
         if ($this->inLineDisplay) {
             $DisplayWalkFunction = "ra.walk.toggleDisplay";
             $text = $walk->addTooltip($walk->getWalkValues($this->listFormat, false));
