@@ -1293,12 +1293,22 @@ ra.walk = (function () {
             } else {
                 $meetLocation = "";
             }
-            var start = new ra.gwemLocation(walk.startLocation);
-            $startLocation = start.getTextDescription();
+            if (typeof walk.startlocation !== 'undefined')
+            {
+                var start = new ra.gwemLocation(walk.startLocation);
+                $startLocation = start.getTextDescription();    
+            } else {
+                $startLocation = "";
+            }
             $before = $meetLocation + $startLocation + "<br/>Description: ";
             $after = "<br/>Contact: " + walk.contactName + " (" + walk.telephone1 + " " + walk.telephone2 + "); <br/>";
             if (walk.localGrade !== "") {
-                $after += "Grade: " + walk.localGrade + "/" + walk.nationalGrade + "; <br/> ";
+                if (walk.localGrade.localeCompare(walk.nationalGrade) != 0)
+                {
+                    $after += "Grade: " + walk.localGrade + "/" + walk.nationalGrade + "; <br/> ";
+                } else {
+                    $after += "Grade: " + walk.nationalGrade + "; <br/> ";
+                }
             } else {
                 $after += "Grade: " + walk.nationalGrade + "; <br/> ";
             }
