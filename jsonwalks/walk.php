@@ -665,7 +665,10 @@ class RJsonwalksWalk extends REvent {
                 $out = $this->getWalkValue("{distance}");
                 $out .= $BR . "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    $out .= $BR . $this->localGrade;
+                    if (strcmp($this->nationalGrade, $this->localGrade) != 0)
+                    {
+                        $out .= $BR . $this->localGrade;
+                    }
                 }
                 break;
             case "{difficulty+}":
@@ -674,7 +677,10 @@ class RJsonwalksWalk extends REvent {
                 $out .= $this->getGradeSpan("middle");
                 $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    $out .= $BR . $this->localGrade;
+                    if (strcmp($this->nationalGrade, $this->localGrade) != 0)
+                    {
+                        $out .= $BR . $this->localGrade;
+                    }
                 }
                 break;
             case "{distance}":
@@ -701,14 +707,20 @@ class RJsonwalksWalk extends REvent {
             case "{grade}":
                 $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    $out .= $BR . $this->localGrade;
+                    if (strcmp($this->nationalGrade, $this->localGrade) != 0)
+                    {
+                        $out .= $BR . $this->localGrade;
+                    }
                 }
                 break;
             case "{grade+}":
                 $out = $this->getGradeSpan("middle");
                 $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    $out .= $BR . $this->localGrade;
+                    if (strcmp($this->nationalGrade, $this->localGrade) != 0)
+                    {
+                        $out .= $BR . $this->localGrade;
+                    }
                 }
                 break;
             case "{nationalGrade}":
