@@ -158,14 +158,14 @@ class RJsonwalksLocation {
         return "";
     }
 
-//    public function distanceFrom($easting, $northing) {
-//        $dele = ($this->easting - $easting) / 1000;
-//        $deln = ($this->northing - $northing) / 1000;
-//        $dist = sqrt($dele * $dele + $deln * $deln);
-//        return $dist;
-//    }
+    public function distanceFrom($easting, $northing) {
+        $dele = ($this->easting - $easting) / 1000;
+        $deln = ($this->northing - $northing) / 1000;
+        $dist = sqrt($dele * $dele + $deln * $deln);
+        return $dist;
+    }
 
-    public function distanceFromLatLong($lat1, $lon2) {
+    public function distanceFromLatLong($lat1, $lon1) {
         $lat2 = $this->latitude;
         $lon2 = $this->longitude;
         $dist = RGeometryGreatcircle::distance($lat1, $lon1, $lat2, $lon2, "KM");

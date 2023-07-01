@@ -478,7 +478,15 @@ class RJsonwalksWalk extends REvent {
     }
 
     public function distanceFromLatLong($lat, $long, $distanceKm) {
-        return $this->startLocation->distanceFromLatLong($lat, $long, $distanceKm);
+        $distance = 1000; // Default to far away.
+        if (property_exists($this,"startLocation"))
+        {
+            if ($this->startLocation != null)
+            {
+                $distance = $this->startLocation->distanceFrom($easting, $northing, $distanceKm);
+            }
+        }
+        return $distance;
     }
 
 //   private function endsWith($haystack, $needle) {
