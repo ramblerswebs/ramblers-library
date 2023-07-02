@@ -48,7 +48,7 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
         if ($walk->isCancelled()) {
             $text = "";
             $out .= "<div class='" . $this->walkClass . "' >" . PHP_EOL;
-            $out .= "<b>" . $walk->groupName . " " . "Walk: " . $walk->walkDate->format('F l, jS') . "</b>";
+            $out .= "<b>" . $walk->groupName . " " . "Walk: " . $walk->walkDate->format('l, jS F') . "</b>";
             if ($walk->hasMeetPlace) {
                 $text = ", " . $walk->meetLocation->timeHHMMshort . " at " . $walk->meetLocation->description;
             }
