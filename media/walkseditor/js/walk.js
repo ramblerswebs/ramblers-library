@@ -791,8 +791,9 @@ ra.walkseditor.walk = function () {
     this.dateStatus = function () {
         var d = ra.getObjProperty(this.data, 'basics.date', null);
         if (ra.date.isValidString(d)) {
-            var value = ra.date.getDateTime(d);
+            var value = ra.date.YYYYMMDD(d);
             var today = new Date();
+            today=ra.date.YYYYMMDD(today);
             if (value < today) {
                 return ra.walkseditor.DATETYPE.Past;
             } else {
