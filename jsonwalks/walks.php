@@ -68,7 +68,7 @@ class RJsonwalksWalks {
 
     public function filterDistanceFromLatLong($lat, $lon, $distanceKm) {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if ($walk->distanceFromLatLong($lat, $lon, $distanceKm) > $distanceKm) {
+            if ($walk->distanceFromLatLong($lat, $lon) > $distanceKm) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -246,17 +246,16 @@ class RJsonwalksWalks {
             }
         }
     }
-     public function noWalks($no) {
-         // deprecated
+
+    public function noWalks($no) {
+        // deprecated
         $this->limitNumberWalks($no);
     }
 
-    public function appendWalkTitle($titles)
-    {
+    public function appendWalkTitle($titles) {
         foreach ($this->arrayofwalks as $key => $value) {
-            if (isset($titles[$value->groupCode]))
-            {
-                $value->title = $value->title . $titles[$value->groupCode]  ;
+            if (isset($titles[$value->groupCode])) {
+                $value->title = $value->title . $titles[$value->groupCode];
             }
         }
     }
