@@ -11,6 +11,7 @@ class RJsonwalksLocation {
     public $timeHHMMshort;      // time as $timeHHMM but without minutes if zero
     public $gridref;            // OS grid reference of the location
     public $latitude;           // Latitude of the location
+    public $longitude;           // Longitude of the location
     public $postcode;           // either a postcode or null
     public $postcodeDistance;   // Distance of postcode from location or null
     public $postcodeDirection;   // Distance of postcode from location or null
