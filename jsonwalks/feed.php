@@ -85,7 +85,7 @@ class RJsonwalksFeed {
     }
 
     public function filterDistanceFromLatLong($lat, $lon, $distanceKm) {
-        $this->walks->filterDistanceFromLatLong($lat, $lon, $distanceKm);
+        $this->walks->filterDistanceFromLatLong(floatval($lat), floatval($lon), floatval($distanceKm));
     }
 
     public function filterGroups($filter) {
