@@ -30,13 +30,14 @@ L.Control.GpxUpload = L.Control.extend({
             reader.onload = (function (theFile) {
                 return function (e) {
                     _this._gpxreader(reader.result, {async: true});
+                    _this.input.value = ''; // fix for chrome browser
                 };
             })(file);
             // Read in the image file as a data URL.
             reader.readAsText(file);
             _this.filename = file.name;
             _this.filename = _this.filename.replace(/.gpx$/i, '');
-            return false;
+            return;
         });
         return container;
     },
@@ -146,7 +147,7 @@ L.Control.GpxUpload = L.Control.extend({
                 cb(input, options);
             }
         } else {
-            alert("File does not appear to be an GPX file");
+            alert("File does not appear to be a GPX file");
         }
     },
     _ra_gpx_parse_gpx_data: function (xml, options) {
