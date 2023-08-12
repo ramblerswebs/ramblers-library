@@ -22,11 +22,7 @@ L.Control.Settings = L.Control.extend({
         container.addEventListener("click", function (e) {
             var settingsDiv = document.createElement('div');
             settingsDiv.setAttribute('class', 'settings');
-            _this.fullscreen = _this._map.isFullscreen();
-            if (_this.fullscreen) {
-                _this._map.toggleFullscreen();
-            }
-            _this.modal = ra.modals.createModal(settingsDiv, false);
+            _this.modal = ra.modals.createModal(settingsDiv, false,true, _this._map);
             var title = document.createElement('h4');
             title.textContent = "Settings";
             settingsDiv.appendChild(title);

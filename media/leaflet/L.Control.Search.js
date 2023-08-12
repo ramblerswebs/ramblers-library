@@ -18,14 +18,10 @@ L.Control.Search = L.Control.extend({
         L.DomEvent.disableClickPropagation(this.container);
         L.DomEvent.on(this.container, 'click', function (ev) {
             L.DomEvent.stopPropagation(ev);
-            _this.fullscreen = map.isFullscreen();
-            if (_this.fullscreen) {
-                _this._map.toggleFullscreen();
-            }
             _this.searchLayer.clearLayers();
             var searchDiv = document.createElement('div');
             searchDiv.setAttribute('class', 'search');
-            _this.modal = ra.modals.createModal(searchDiv, false);
+            _this.modal = ra.modals.createModal(searchDiv, false, true, _this._map);
             _this._addSearch(searchDiv);
         });
         return this.container;

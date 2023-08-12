@@ -1418,7 +1418,7 @@ ra.modals = (function () {
     modals.items = [];
 
     modals.masterdiv = null;
-    modals.createModal = function ($html, printButton = true, cancelButton = true) {
+    modals.createModal = function ($html, printButton = true, cancelButton = true, fullscreen = null) {
         if (modals.masterdiv === null) {
             var body = document.getElementsByTagName("BODY")[0];
             modals.masterdiv = document.createElement('div');
@@ -1426,6 +1426,12 @@ ra.modals = (function () {
             body.appendChild(modals.masterdiv);
         }
         var item = new ra.modal();
+        if (fullscreen !== null) {
+            if (fullscreen.isFullscreen()) {
+                fullscreen.toggleFullscreen();
+                item.fullscreen = fullscreen;
+            }
+        }
         item.setContent($html, printButton, cancelButton);
         modals.items.push(item);
         modals.masterdiv.innerHTML = '';
@@ -1454,6 +1460,7 @@ ra.modals = (function () {
 ra.modal = function () {
     this.elements = {};
     this.content;
+    this.fullscreen = null;
     this.setContent = function ($html, printButton = true, closeButton = true) {
         var _this = this;
         this._createModalTag(printButton, closeButton);
@@ -1479,6 +1486,9 @@ ra.modal = function () {
         let e = new Event("ra-modal-closing");
         document.dispatchEvent(e);
         event.stopImmediatePropagation();
+        if (this.fullscreen !== null) {
+            this.fullscreen.toggleFullscreen();
+        }
     };
 
     this._createModalTag = function (print = true, closeButton = true) {

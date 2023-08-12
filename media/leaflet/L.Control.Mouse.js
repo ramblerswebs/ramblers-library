@@ -210,9 +210,9 @@ L.Control.OSInfo = L.Control.extend({
         }, this);
         L.DomEvent.addListener(this._containerAll, 'mouseover', function () {
             if (this.osMapLayer.getLayers().length > 0) {
-                this.removeDiv.style.display = "";
+                self.removeDiv.style.display = "";
             } else {
-                this.removeDiv.style.display = "none";
+                self.removeDiv.style.display = "none";
             }
         }, this);
         this._readSettings();
@@ -293,7 +293,7 @@ L.Control.OSInfo = L.Control.extend({
         comment.innerHTML = 'Please note that our information showing the area covered be OS maps is unofficial and may be incorrect.<br/>Please check before buying a map.';
         comment.innerHTML += '<br/>If you notice any errors then do contact us via the help option.';
         container.appendChild(comment);
-        ra.modals.createModal(container, false);
+        ra.modals.createModal(container, false,true,this._map);
     },
     displayOSGrid: function () {
         this.OSGrid.layer.clearLayers();
