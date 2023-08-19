@@ -56,6 +56,8 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $options->settings = true;
         $options->rightclick = true;
         $options->calendar = true;
+        $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
+
         $items = $walks->allWalks();
         $display = new RJsonwalksStdCancelledwalks();
         $number = $this->noCancelledWalks($items);
