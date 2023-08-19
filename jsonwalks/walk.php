@@ -267,7 +267,7 @@ class RJsonwalksWalk extends REvent {
         if ($this->meetLocation != NULL) {
             $this->sortTime = $this->meetLocation->time;
         }
-        if (!is_null($this->sortTime)) {
+        if (is_null($this->sortTime)) {
             if ($this->startLocation !== null)
             {
                 $this->sortTime = $this->startLocation->time;
@@ -477,13 +477,13 @@ class RJsonwalksWalk extends REvent {
         return $url;
     }
 
-    public function distanceFromLatLong($lat, $long) {
+    public function distanceFromLatLong($lat, $long, $distanceKm) {
         $distance = 1000; // Default to far away.
         if (property_exists($this,"startLocation"))
         {
             if ($this->startLocation != null)
             {
-                $distance = $this->startLocation->distanceFromLatLong($lat,$long);
+                $distance = $this->startLocation->distanceFrom($easting, $northing, $distanceKm);
             }
         }
         return $distance;
