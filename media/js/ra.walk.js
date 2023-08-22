@@ -516,7 +516,7 @@ ra.walk = (function () {
             return "";
         }
         if ($walk.contactForm !== "") {
-            $link = "<span><a target='_blank' href='" + $walk.contactForm + "' title='Click to send an email to leader/contact or group'>Email contact</a></span>";
+            $link = "<span><b>Contact link: </b><a target='_blank' href='" + $walk.contactForm + "' title='Click to send an email to leader/contact or group'>Email walk contact</a></span>";
         } else {
             $gwemlink = "javascript:ra.walk.emailContact(\"" + $walk.id + "\")";
             $link = "<span><a href='" + $gwemlink + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
@@ -1066,7 +1066,7 @@ ra.walk = (function () {
             $out += '<span id="' + tagname + '"></span>';
             // getWhat3Words($location.latitude, $location.longitude, tagname,true);
             setTimeout(function () {
-                ra.w3w.get($location.latitude, $location.longitude, tagname, true);
+                ra.w3w.get($location.latitude, $location.longitude, tagname, false);
             }, 500);
             if ($location.postcode !== null) {
                 $out += _displayPostcode($location);

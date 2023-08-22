@@ -40,7 +40,7 @@ div.js-modal.ramblers {
     background: linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(91 73 31 / .6));
 }
 
-.modal-content {
+.ra-modal-content {
     margin: auto;
     width: 95%;
     max-width: 75rem;
@@ -50,14 +50,14 @@ div.js-modal.ramblers {
     border: solid 1px #D7A901;
     }
 
-.modal-content > div {
+.ra-modal-content > div {
 	background-color:#fff;
 }
-.modal-content > div > p, .modal-content > div > ul {
+.ra-modal-content > div > p, .ra-modal-content > div > ul {
 	padding:1px 5px;
 }
 
-.modal-content .modal-header {
+.ra-modal-content .ra-modal-header {
     padding: 4px;
     border-bottom: 0px solid #eee;
     width: 100%;
@@ -68,7 +68,7 @@ div.js-modal.ramblers {
     background-color: rgb(91 73 31 / 90%);
  }
 	
-.modal-header .btn, div#rainner button {
+.ra-modal-header .btn, div#rainner button {
 	border: none;
 	background: none;
 	color:#fff;
@@ -97,7 +97,7 @@ div.js-modal.ramblers {
     margin-right: 4px;
 }
 
-.modal-header .btn:hover, div#rainner button:hover, span.mappopup:hover{
+.ra-modal-header .btn:hover, div#rainner button:hover, span.mappopup:hover{
  background-color: #C75B12;
  color: #fff;
 }

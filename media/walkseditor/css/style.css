@@ -265,14 +265,14 @@ button.tablinks{
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
 }
-.modal-header {
+.ra-modal-header {
     content: "";
     display: table;
     clear: both;
     float:right;
 }
 /* Modal Content */
-.modal-content {
+.ra-modal-content {
     margin: auto;
     width: 85%;
     max-height:85%;
@@ -294,7 +294,7 @@ button.tablinks{
 #btnClose, #btnPrint{
     margin-right:15px;
 }
-div.modal-header button#btnPrint{
+div.ra-modal-header button#btnPrint{
     visibility: hidden;
 }
 #js-display-location{
