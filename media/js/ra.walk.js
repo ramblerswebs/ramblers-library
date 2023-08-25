@@ -516,7 +516,7 @@ ra.walk = (function () {
             return "";
         }
         if ($walk.contactForm !== "") {
-            $link = "<span><b>Contact link: </b><a target='_blank' href='" + $walk.contactForm + "' title='Click to send an email to leader/contact or group'>Email walk contact</a></span>";
+            $link = "<span><b>Contact link: </b><a target='_blank' href='" + $walk.contactForm + "' title='Click to send an email to leader/contact or group'>Email contact</a></span>";
         } else {
             $gwemlink = "javascript:ra.walk.emailContact(\"" + $walk.id + "\")";
             $link = "<span><a href='" + $gwemlink + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
