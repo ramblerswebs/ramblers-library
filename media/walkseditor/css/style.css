@@ -646,6 +646,13 @@ button.topbutton {
 button.topbutton:hover {
     background-color: #555;
 }
+div.walksFilter.walksPast >
+h3.ra_openclose.tiny {
+    margin-right:10px;
+    font-size: 100%;
+    width:auto;
+    padding-right:10px;
+}
 
 
 .clocklet-tick--minute[data-clocklet-tick-value='1'],

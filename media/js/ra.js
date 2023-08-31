@@ -773,6 +773,11 @@ ra.html = (function () {
     html.insertAfter = function (referenceNode, newNode) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     };
+    html.triggerEvent = function (element, eventName) {
+        var event = document.createEvent("HTMLEvents");
+        event.initEvent(eventName, false, true);
+        element.dispatchEvent(event);
+    };
     html.getCoords = function (elem) { // crossbrowser version
         var box = elem.getBoundingClientRect();
 
