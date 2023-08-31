@@ -773,6 +773,11 @@ ra.html = (function () {
     html.insertAfter = function (referenceNode, newNode) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     };
+    html.triggerEvent = function (element, eventName) {
+        var event = document.createEvent("HTMLEvents");
+        event.initEvent(eventName, false, true);
+        element.dispatchEvent(event);
+    };
     html.getCoords = function (elem) { // crossbrowser version
         var box = elem.getBoundingClientRect();
 
@@ -1494,10 +1499,10 @@ ra.modal = function () {
     this._createModalTag = function (print = true, closeButton = true) {
         var tags = [
             {name: 'modaltag', parent: 'root', tag: 'div', attrs: {class: 'js-modal ramblers'}, style: {display: 'none'}},
-            {name: 'content', parent: 'modaltag', tag: 'div', attrs: {class: 'modal-content'}},
-            {name: 'header', parent: 'content', tag: 'div', attrs: {class: 'modal-header'}},
-            {name: 'print', parent: 'header', tag: 'button', attrs: {class: 'btn modal-print'}, textContent: 'Print'},
-            {name: 'close', parent: 'header', tag: 'button', attrs: {class: 'btn modal-close'}, textContent: 'Close'},
+            {name: 'content', parent: 'modaltag', tag: 'div', attrs: {class: 'ra-modal-content'}},
+            {name: 'header', parent: 'content', tag: 'div', attrs: {class: 'ra-modal-header'}},
+            {name: 'print', parent: 'header', tag: 'button', attrs: {class: 'link-button granite tiny modal-print'}, textContent: 'Print'},
+            {name: 'close', parent: 'header', tag: 'button', attrs: {class: 'link-button granite tiny modal-close'}, textContent: 'Close'},
             {parent: 'content', tag: 'p', style: {clear: 'right'}},
             {name: 'data', parent: 'content', tag: 'div'},
             {parent: 'content', tag: 'hr'}

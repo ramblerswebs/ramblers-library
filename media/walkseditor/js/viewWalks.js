@@ -32,6 +32,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         var tags = [
             {name: 'buttons', parent: 'root', tag: 'div', attrs: {class: 'alignRight'}},
             {name: 'walksFilter', parent: 'root', tag: 'div', attrs: {class: 'walksFilter'}},
+            {name: 'pastwalks', parent: 'root', tag: 'div', attrs: {class: 'walksPast walksFilter'}},
             {name: 'container', parent: 'root', tag: 'div'},
             {name: 'table', parent: 'container', tag: 'table', attrs: {class: 'ra-tab-options'}},
             {name: 'row', parent: 'table', tag: 'tr'},
@@ -73,6 +74,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         });
 
         this.setFilters();
+        this.addPastWalksOption(this.elements.pastwalks);
         self.ra_format(self.settings.currentDisplay);
         document.addEventListener("reDisplayWalks", function () {
             self.setWalkDisplay();
@@ -470,7 +472,22 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         }
         return 'unknown';
     };
+    this.addPastWalksOption = function (tag) {
+        var el = document.querySelectorAll('[data-filter-id="RA_DatePast"]');
+        if (el !== null) {
+            var button = document.createElement('h3');
+            button.setAttribute('class', 'ra_openclose tiny');
 
+            button.textContent = "Past Walks";
+            tag.appendChild(button);
+            button.addEventListener("click", function (event) {
+                el[0].checked = !el[0].checked;
+                ra.html.triggerEvent(el[0], 'change');
+            });
+
+
+        }
+    };
     this.setFilters = function () {
         var walks = this.programme.getWalks();
         if (walks.length === 0) {
