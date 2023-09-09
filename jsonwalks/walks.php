@@ -37,7 +37,7 @@ class RJsonwalksWalks {
     }
 
     public function setNewWalks($days) {
-        $date = new DateTime(NULL);
+        $date = new DateTime();
         If ($days <= 0) {
             $interval = "P" . 10 . "D";
         } else {
@@ -261,7 +261,7 @@ class RJsonwalksWalks {
     }
 
     public function walksInFuture($period) {
-        $today = new DateTime(NULL);
+        $today = new DateTime();
         $interval = new DateInterval($period);
         $today->add($interval);
         foreach ($this->arrayofwalks as $key => $value) {
