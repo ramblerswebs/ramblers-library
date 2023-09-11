@@ -142,7 +142,7 @@ class RJsonwalksWalks {
     public function filterCancelled() {
         foreach ($this->arrayofwalks as $key => $value) {
             $walk = $this->arrayofwalks[$key];
-            if ($walk->status == "Cancelled") {
+            if (strtoupper($walk->status) == "CANCELLED") {
                 unset($this->arrayofwalks[$key]);
             }
         }
