@@ -74,6 +74,10 @@ class RJsonwalksFeed {
         $this->walks->filterCancelled();
     }
 
+    public function filterStatus($status) {
+        $this->walks->filterStatus($status);
+    }
+
     public function filterWalksDistance($minDistance, $maxDistance) {
         $this->walks->filterDistance(floatval($minDistance), floatval($maxDistance));
     }
