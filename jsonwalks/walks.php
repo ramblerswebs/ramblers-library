@@ -139,13 +139,16 @@ class RJsonwalksWalks {
         return strpos($haystack, $needle) !== false;
     }
 
-    public function filterCancelled() {
+    public function filterStatus($status) {
         foreach ($this->arrayofwalks as $key => $value) {
             $walk = $this->arrayofwalks[$key];
-            if (strtoupper($walk->status) == "CANCELLED") {
+            if (strtoupper($walk->status) == strtoupper($status)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
+    }
+    public function filterCancelled() {
+        $this->filterStatus("CANCELLED");
     }
 
     public function filterDayofweek($days) {
