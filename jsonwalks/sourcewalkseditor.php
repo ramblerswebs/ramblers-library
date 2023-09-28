@@ -20,15 +20,19 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
 
     const TIMEFORMAT = "Y-m-d";
 
-    public function __construct($groupCode, $groupName, $site) {
-        parent::__construct(SourceOfWalk::WEditor, $groupCode);
+    public function __construct($type = SourceOfWalk::WEditor) {
+        parent::__construct(SourceOfWalk::WEditor);
+    }
+
+    public function _initialise($groupCode= null, $groupName= null, $site= null) {
         $this->groupCode = $groupCode;
         $this->groupName = $groupName;
         $this->site = $site;
-        $this->rafeedurl = $site . $this->feedPath;
     }
 
     public function getWalks($walks) {
+      
+        $this->rafeedurl = $this->site  . $this->feedPath;
         $CacheTime = 5; // minutes
         $time = getdate();
         if ($time["hours"] < 7) {
@@ -102,6 +106,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $admin->dateCreated = new DateTime();
         $admin->cancellationReason = $item->admin->cancelledReason;
         $admin->displayUrl = '';
+        $admin->type = TypeOfWalk::GroupWalk;
         $walk->setAdmin($admin);
 
         $basics = new RJsonwalksWalkBasics();
@@ -130,7 +135,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         }
 
         // start
-        $location = null;
+
         $publish = null;
         $time = null;
         $start = $item->start;
@@ -152,6 +157,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $loc->gridref = $location->gridref8;
         $loc->latitude = $location->latitude;
         $loc->longitude = $location->longitude;
+        $loc->w3w = $location->w3w;
         if (property_exists($location, 'postcode')) {
             $loc->postcode = $location->postcode->value;
             $loc->postcodeLatitude = $location->postcode->latitude;
@@ -171,7 +177,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $singleWalk->nationalGrade = $walkitem->natgrade;
         $singleWalk->localGrade = $walkitem->gradeLocal;
         if ($walkitem->units === 'miles') {
-            $singleWalk->distanceKm = $walkitem->distance/ 0.621371;
+            $singleWalk->distanceKm = $walkitem->distance / 0.621371;
         } else {
             $singleWalk->distanceKm = $walkitem->distance;
         }

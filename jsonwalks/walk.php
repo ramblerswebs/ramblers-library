@@ -8,6 +8,7 @@ class RJsonwalksWalk extends REvent {
 // administration items
     public $source = SourceOfWalk::Unknown;  // where the walk was created
     public $id;                     // database ID of walk on Walks Finder as string
+    Public $type = "walk";            // type is either a walk , an event, or a well being walk
     public $status;                 // whether the walk is published, cancelled etc
     public $groupCode;              // group code e.g. SR01
     public $groupName;              // the group name e.g. Derby & South Derbyshire
@@ -53,13 +54,6 @@ class RJsonwalksWalk extends REvent {
     Public $ascentMetres;           // the ascent in metres or null
     Public $ascentFeet;             // the ascent in feet or null
     Public $flags = [];                  // flags to describe walk 
-//    Public $strands;                // RJsonwalksItems object or null
-//    Public $festivals;              // RJsonwalksItems object or null
-//    public $suitability;            // RJsonwalksItems object or null
-//    public $surroundings;           // RJsonwalksItems object or null
-//    public $theme;                  // RJsonwalksItems object or null
-//    public $specialStatus;          // RJsonwalksItems object or null
-//    public $facilities;             // RJsonwalksItems object or null
     public $media = [];                  // array of image infomation
 // extra derived values
     private $sortTime;
@@ -95,6 +89,7 @@ class RJsonwalksWalk extends REvent {
         $this->dateCreated = $admin->dateCreated;
         $this->cancellationReason = $admin->cancellationReason;
         $this->detailsPageUrl = $admin->displayUrl;
+        $this->type = $admin->type;
     }
 
     public function setBasics($basics) {
@@ -159,6 +154,10 @@ class RJsonwalksWalk extends REvent {
         $this->telephone1 = $walk->telephone1;
         $this->telephone2 = $walk->telephone2;
         $this->walkLeader = $walk->walkLeader;
+    }
+
+    public function setMedia($media) {
+        $this->media = $media;
     }
 
     public function setFlags($flags) {
@@ -268,8 +267,7 @@ class RJsonwalksWalk extends REvent {
             $this->sortTime = $this->meetLocation->time;
         }
         if (is_null($this->sortTime)) {
-            if ($this->startLocation !== null)
-            {
+            if ($this->startLocation !== null) {
                 $this->sortTime = $this->startLocation->time;
             }
         }
@@ -284,8 +282,7 @@ class RJsonwalksWalk extends REvent {
         if ($this->hasMeetPlace) {
             $text .= $this->meetLocation->timeHHMMshort;
         }
-        if ($this->startLocation != null)
-        {
+        if ($this->startLocation != null) {
             if ($this->startLocation->time != "") {
                 if ($text != "") {
                     $text .= "/";
@@ -310,8 +307,7 @@ class RJsonwalksWalk extends REvent {
             $out .= "Meet:" . $this->meetLocation->getOSMap("OS Map");
             $out .= " " . $this->meetLocation->getDirectionsMap("Directions");
         }
-        if ($this->startLocation != null)
-        {
+        if ($this->startLocation != null) {
             $out .= " Start:" . $this->startLocation->getOSMap("OS Map");
             $out .= " " . $this->startLocation->getMap("Directions", "Area Map");
         }
@@ -319,7 +315,9 @@ class RJsonwalksWalk extends REvent {
     }
 
     public function EventStatus() {
-        if ($this->status == "published") $this->status = "Published";
+        if ($this->status == "published") {
+            $this->status = "Published";
+        }
         return "walk" . $this->status;
     }
 
@@ -479,11 +477,9 @@ class RJsonwalksWalk extends REvent {
 
     public function distanceFromLatLong($lat, $long) {
         $distance = 1000; // Default to far away.
-        if (property_exists($this,"startLocation"))
-        {
-            if ($this->startLocation != null)
-            {
-                $distance = $this->startLocation->distanceFromLatLong($lat,$long);
+        if (property_exists($this, "startLocation")) {
+            if ($this->startLocation != null) {
+                $distance = $this->startLocation->distanceFromLatLong($lat, $long);
             }
         }
         return $distance;
@@ -617,6 +613,11 @@ class RJsonwalksWalk extends REvent {
                     }
                 }
                 break;
+            case "{meetw3w}":
+                if ($this->hasMeetPlace) {
+                    $out = $this->meetLocation->w3w;
+                }
+                break;
             case "{meetOLC}":
                 break;
             case "{meetMapCode}":
@@ -653,6 +654,11 @@ class RJsonwalksWalk extends REvent {
                     }
                 }
                 break;
+            case "{startw3w}":
+                if ($this->startLocation->exact) {
+                    $out = $this->startLocation->w3w;
+                }
+                break;
             case "{startOLC}":
                 break;
             case "{startMapCode}":
@@ -673,8 +679,7 @@ class RJsonwalksWalk extends REvent {
                 $out = $this->getWalkValue("{distance}");
                 $out .= $BR . "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    if (strcmp($this->nationalGrade, $this->localGrade) != 0)
-                    {
+                    if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
                         $out .= $BR . $this->localGrade;
                     }
                 }
@@ -685,8 +690,7 @@ class RJsonwalksWalk extends REvent {
                 $out .= $this->getGradeSpan("middle");
                 $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    if (strcmp($this->nationalGrade, $this->localGrade) != 0)
-                    {
+                    if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
                         $out .= $BR . $this->localGrade;
                     }
                 }
@@ -715,8 +719,7 @@ class RJsonwalksWalk extends REvent {
             case "{grade}":
                 $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    if (strcmp($this->nationalGrade, $this->localGrade) != 0)
-                    {
+                    if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
                         $out .= $BR . $this->localGrade;
                     }
                 }
@@ -725,8 +728,7 @@ class RJsonwalksWalk extends REvent {
                 $out = $this->getGradeSpan("middle");
                 $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
-                    if (strcmp($this->nationalGrade, $this->localGrade) != 0)
-                    {
+                    if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
                         $out .= $BR . $this->localGrade;
                     }
                 }
@@ -801,7 +803,7 @@ class RJsonwalksWalk extends REvent {
             case "{email}":
             case "{emailat}":
                 if ($this->email !== "") {
-                    $contact = $this->getEmailLink($this);
+                    $out = $this->getEmailLink($this);
                 }
                 break;
             case "{emaillink}":
@@ -812,13 +814,13 @@ class RJsonwalksWalk extends REvent {
             case "{mediathumbr}":
                 $out = '';
                 if (count($this->media) > 0) {
-                    $out = "<img class='mediathumbr' src='" . $this->media[0]->url . "' >";
+                    $out = "<img class='mediathumbr' src='" . $this->media[0]->styles[1]->url . "' >";
                 }
                 break;
             case "{mediathumbl}":
                 $out = '';
                 if (count($this->media) > 0) {
-                    $out = "<img class='mediathumbl' src='" . $this->media[0]->url . "' >";
+                    $out = "<img class='mediathumbl' src='" . $this->media[0]->styles[1]->url . "' >";
                 }
                 break;
             case "{meetOSMap}":

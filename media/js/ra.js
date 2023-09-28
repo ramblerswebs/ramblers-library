@@ -1283,7 +1283,7 @@ ra.link = (function () {
     link.getOSMap = function (lat, long, text) {
         var $out;
         $out = "<abbr title='Click Map to see Ordnance Survey map of location'>";
-        $out = "<span class='mappopup' onClick=\"javascript:ra.link.streetmap(" + lat + "," + long + ")\">[" + text + "]</span>";
+        $out = "<a class='mappopup' href=\"javascript:ra.link.streetmap(" + lat + "," + long + ")\" >[" + text + "]</a>";
         $out += "</abbr>";
         return $out;
     };
@@ -1369,15 +1369,27 @@ ra.w3w = (function () {
             if (err !== null || tag === null) {
                 tag.innerHTML = "Error accessing What3Words: " + err + "<br/>";
             } else {
-                var out = '<a class="w3w" href="https://what3words.com/about-us/" target="_blank">What3Words: </a>';
-                out += '<a href="https://what3words.com/' + items.words + '" target="_blank"> ///' + items.words + '</a><br/>';
+                var out;
                 if (place) {
-                    out += '<b>Nearest Place: </b>' + items.nearestPlace + '<br/>';
+                    out = w3w.toText(items.words, items.nearestPlace);
+                } else {
+                    out = w3w.toText(items.words, "");
                 }
                 tag.innerHTML = out;
             }
         });
     };
+    w3w.toText = function (words, nearestPlace) {
+        if (words === "") {
+            return "";
+        }
+        var out = '<a class="w3w" href="https://what3words.com/about-us/" target="_blank">What3Words: </a>';
+        out += '<a class="mappopup" href="https://what3words.com/' + words + '" target="_blank"> ///' + words + '</a><br/>';
+        if (nearestPlace !== "") {
+            out += '<b>Nearest Place: </b>' + nearestPlace + '<br/>';
+        }
+        return out;
+    }
     w3w.toLocation = function (tag, words) {
         var url = "https://api.what3words.com/v3/convert-to-coordinates?words=" + words + "&key=6AZYMY7P";
         ra.ajax.getJSON(url, function (err, item) {

@@ -22,41 +22,7 @@ class RJsonwalksLocation {
     public $exact;              // true or false
 
     function __construct() {
-//        function __construct($value, $walkDate) {
-//        $this->description = RHtml::convertToText($value->description);
-//        $day = $walkDate->format('Ymd ');
-//        $this->time = DateTime::createFromFormat('Ymd H:i:s', $day . $value->time);
-//        If ($this->time === false) {
-//            $this->time = "";
-//            $this->timeHHMM = "No time";
-//            $this->timeHHMMshort = "No time";
-//        } else {
-//            $this->timeHHMM = $this->time->format('g:ia');
-//            $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
-//            if ($this->timeHHMMshort == "12am") {
-//                $this->time = "";
-//                $this->timeHHMM = "No time";
-//                $this->timeHHMMshort = "No time";
-//            }
-//        }
-//        $this->gridref = $value->gridRef;
-//        //   $this->easting = $value->easting;
-//        //   $this->northing = $value->northing;
-//        $this->latitude = $value->latitude;
-//        $this->longitude = $value->longitude;
-//        $this->postcode = $value->postcode;
-//        $this->postcodeLatitude = $value->postcodeLatitude;
-//        $this->postcodeLongitude = $value->postcodeLongitude;
-//        $this->type = $value->typeString;
-//        $this->exact = $value->showExact == "true";
-//        if ($this->postcode != null) {
-//            $lat1 = $this->postcodeLatitude;
-//            $lon1 = $this->postcodeLongitude;
-//            $lat2 = $this->latitude;
-//            $lon2 = $this->longitude;
-//            $this->postcodeDistance = 1000 * round(RGeometryGreatcircle::distance($lat1, $lon1, $lat2, $lon2, "KM"), 3); // metres
-//            $this->postcodeDirection = RGeometryGreatcircle::direction($lat1, $lon1, $lat2, $lon2);
-//        }
+        
     }
 
     public function setLocation($type, $placetime, $walkDate) {
@@ -102,6 +68,7 @@ class RJsonwalksLocation {
         $this->gridref = $location->gridref;
         $this->latitude = $location->latitude;
         $this->longitude = $location->longitude;
+        $this->w3w = $location->w3w;
         $this->postcode = $location->postcode;
         if ($this->postcode !== null) {
             $this->postcodeLatitude = $location->postcodeLatitude;
@@ -256,7 +223,7 @@ class RJsonwalksLocation {
             $code = str_replace("[lat]", $this->latitude, $code);
             $code = str_replace("[long]", $this->longitude, $code);
 
-            $out = "<span class='mappopup' onClick=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" . $text . "]</span>";
+            $out = "<a class='mappopup' href=\"javascript:window.open('" . $code . "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" . $text . "]</a>";
             return $out;
         } else {
             return "";
@@ -265,7 +232,7 @@ class RJsonwalksLocation {
 
     public function getOSMap($text) {
         if ($this->exact) {
-            return "<span class='mappopup' onclick='javascript:ra.link.streetmap(" . $this->latitude . "," . $this->longitude . ")' >[" . $text . "]</span>";
+            return "<a class='mappopup' href='javascript:ra.link.streetmap(" . $this->latitude . "," . $this->longitude . ")' >[" . $text . "]</a>";
         } else {
             return "";
         }

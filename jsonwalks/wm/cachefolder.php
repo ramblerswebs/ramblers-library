@@ -1,0 +1,55 @@
+<?php
+
+//
+//     @version		2.0
+//     @package		Cache folder for Walks Manager walks
+//     @author                 Chris Vaughan
+//     @copyright              Copyright (c) 2023 Chris Vaughan 
+//     @license		GNU/GPL license: http://www.gnu.org/copyleft/gpl.html
+//
+//
+// no direct access
+defined('_JEXEC') or die('Restricted access');
+
+class RJsonwalksWmCachefolder {
+
+    private $cacheFolderPath;
+
+    public function __construct($cacheLocation) {
+        $this->cacheFolderPath = JPATH_SITE . DIRECTORY_SEPARATOR . "cache" . DIRECTORY_SEPARATOR . $cacheLocation;
+        $this->createCacheFolder();
+        $this->clearOldFiles();
+    }
+
+    public function clearOldFiles() {
+        // Check if the cache folder exists
+        if (file_exists($this->cacheFolderPath) && is_dir($this->cacheFolderPath)) {
+            // clear files from folder
+            $files = glob($this->cacheFolderPath . '/*'); // get all file names
+            foreach ($files as $file) { // iterate files
+                if (is_file($file)) {
+                    if (time() - filemtime($file) > 24 * 7 * 3600) {
+                        // file older than 7 days
+                        unlink($file); // delete file}
+                    }
+                }
+            }
+        }
+    }
+
+    public function getCacheNameFromUrl($feedurl, $ext) {
+        $url = strtolower(trim($feedurl));
+        $tmpFile = $this->cacheFolderPath . DS . "WM_" . md5($url) . "." . $ext;
+        return $tmpFile;
+    }
+
+    private function createCacheFolder() {
+        // Check if the cache folder exists
+        if (file_exists($this->cacheFolderPath) && is_dir($this->cacheFolderPath)) {
+            // all OK
+        } else {
+            mkdir($this->cacheFolderPath);
+        }
+    }
+
+}

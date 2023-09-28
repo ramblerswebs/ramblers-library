@@ -22,6 +22,7 @@ class RJsonwalksWalkAdmin {
     public $status="";                 // whether the walk is published, cancelled etc
     public $cancellationReason="";     // text reason walk cancelled
     public $displayUrl = "";    // url to access the ramblers.org.uk page for this walk
+    public $type=TypeOfWalk::Unknown; // type of item,, walk, event or well being walk
 
     
     

@@ -12,15 +12,15 @@
  * @author chris
  */
 class RJsonwalksWalkMeeting {
-   
+
     public $location;
     public $time;
-    Public $travel="";
-    
-    public function __construct($time, $travel,$location) {
-        $this->time=$time;
-        $this->travel=$travel;
-        $this->location=$location;
+    Public $travel = "";
+
+    public function __construct($time, $travel, $location) {
+        $this->time = $time;
+        $this->travel = $travel;
+        $this->location = $location;
     }
 
 }

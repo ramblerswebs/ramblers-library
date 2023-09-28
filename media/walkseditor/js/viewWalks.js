@@ -477,15 +477,12 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         if (el !== null) {
             var button = document.createElement('h3');
             button.setAttribute('class', 'ra_openclose tiny');
-
             button.textContent = "Past Walks";
             tag.appendChild(button);
             button.addEventListener("click", function (event) {
                 el[0].checked = !el[0].checked;
                 ra.html.triggerEvent(el[0], 'change');
             });
-
-
         }
     };
     this.setFilters = function () {

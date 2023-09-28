@@ -73,11 +73,11 @@ class RJsonwalksFeed {
     public function filterCancelled() {
         $this->walks->filterCancelled();
     }
-
+    
     public function filterStatus($status) {
         $this->walks->filterStatus($status);
     }
-
+    
     public function filterWalksDistance($minDistance, $maxDistance) {
         $this->walks->filterDistance(floatval($minDistance), floatval($maxDistance));
     }
@@ -97,7 +97,18 @@ class RJsonwalksFeed {
     }
 
     public function filterStrands($filter) {
+        // no longer supported
+        $app = JFactory::getApplication();
+        $app->enqueueMessage("DEPRECATED: \$feed->filterStrands() is no longer supported", 'error');
         $this->walks->filterStrands($filter);
+    }
+
+    public function filterEvents() {
+        $this->walks->filterEvents();
+    }
+
+    public function filterWalks() {
+        $this->walks->filterWalks();
     }
 
     public function filterTitle($filter, $option = 'remove') {
@@ -126,11 +137,13 @@ class RJsonwalksFeed {
 
     public function filterDateRange($datefrom, $dateto) {
         if (!is_a($datefrom, 'DateTime')) {
-            echo "filterDateRange: first parameter is NOT Datetime";
+            $app = JFactory::getApplication();
+            $app->enqueueMessage("filterDateRange: first parameter is NOT Datetime", 'error');
             return;
         }
         if (!is_a($dateto, 'DateTime')) {
-            echo "filterDateRange: second parameter is NOT Datetime";
+            $app = JFactory::getApplication();
+            $app->enqueueMessage("filterDateRange: second parameter is NOT Datetime", 'error');
             return;
         }
         $dateto->setTime(0, 0, 0);

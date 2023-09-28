@@ -7,37 +7,31 @@
  */
 class RJsonwalksFeedoptions {
 
-    private $limit = null;
-    private $distance = null;
-    private $days = null;
+    private $limit = null;  // IS NOW DEPRECATED
+    private $distance = null; // IS NOW DEPRECATED
+    private $days = null;  // IS NOW DEPRECATED
     private $sources = [];
-    private $walksmanageractive = false;
-    private $gwemactive = true;
 
-    public function __construct($value = "") {
-        // input can be a list of groups 
-        // a full url
-        // or a null string
-        if ($value === '') {
+    public function __construct($value = null) {
+        // input can be a list of groups or a null string
+        // a full url IS NOW DEPRECATED
+        // 
+        if ($value === null) {
             return;
         }
         $value = strtolower($value);
         if ($this->startsWith(strtolower($value), 'http')) {
+            $app = JFactory::getApplication();
+            $app->enqueueMessage('Deprecated: Use of old style walks feed URL is no longer supported', 'information');
             $groups = $this->processGWEMurl($value);
             If ($groups === false) {
+                $app->enqueueMessage('Error: URL must specify one or more groups', 'error');
                 return;
             }
         } else {
             $groups = $value;
         }
-        if ($this->walksmanageractive) {
-            $source = new RJsonwalksSourcewalksmanager($groups);
-            $this->sources[] = $source;
-        }
-        if ($this->gwemactive) {
-            $source = new RJsonwalksSourcegwem($groups);
-            $this->sources[] = $source;
-        }
+        $this->addWalksMangerGroupWalks($groups);
     }
 
     private function processGWEMurl($value) {
@@ -67,19 +61,55 @@ class RJsonwalksFeedoptions {
         if (array_key_exists('days', $queryParts)) {
             $this->days = $queryParts['days'];
         }
-        if (array_key_exists('incwalks', $queryParts)){
-            $groups = $groups . "&incwalks=" . $queryParts['incwalks'];
-        }
-        if (array_key_exists('incevents', $queryParts))
-        {
-            $groups = $groups . "&incevents=" . $queryParts['incevents'];
-        }
+//        if (array_key_exists('incwalks', $queryParts)) {
+//            $groups = $groups . "&incwalks=" . $queryParts['incwalks'];
+//        }
+//        if (array_key_exists('incevents', $queryParts)) {
+//            $groups = $groups . "&incevents=" . $queryParts['incevents'];
+//        }
 
         return $groups;
     }
 
+    public function addWalksMangerGroupWalks($groups) {
+        $readwalks = true;
+        $readevents = true;
+        $wellbeingWalks = false;
+        $source = new RJsonwalksSourcewalksmanager();
+        $source->_initialise($groups, $readwalks, $readevents, $wellbeingWalks);
+        $this->sources[] = $source;
+    }
+
+    public function addWalksMangerWellbeingWalks($groups) {
+        $readwalks = false;
+        $readevents = false;
+        $wellbeingWalks = true;
+        $source = new RJsonwalksSourcewalksmanager();
+        $source->_initialise($groups, $readwalks, $readevents, $wellbeingWalks);
+        $this->sources[] = $source;
+    }
+
+    public function addWalksManagerGroupsInArea($lat, $long, $km) {
+        $readwalks = true;
+        $readevents = true;
+        $wellbeingWalks = false;
+        $source = new RJsonwalksSourcewalksmanagerarea();
+        $source->_initialiseArea($lat, $long, $km, $readwalks, $readevents, $wellbeingWalks);
+        $this->sources[] = $source;
+    }
+
+    public function addWalksManagerWellbeingInArea($lat, $long, $km) {
+        $readwalks = false;
+        $readevents = false;
+        $wellbeingWalks = true;
+        $source = new RJsonwalksSourcewalksmanagerarea();
+        $source->_initialiseArea($lat, $long, $km, $readwalks, $readevents, $wellbeingWalks);
+        $this->sources[] = $source;
+    }
+
     public function addWalksEditorWalks($groupCode, $groupName, $site) {
-        $source = new RJsonwalksSourcewalkseditor($groupCode, $groupName, $site);
+        $source = new RJsonwalksSourcewalkseditor();
+        $source->_initialise($groupCode, $groupName, $site);
         $this->sources[] = $source;
     }
 
@@ -91,15 +121,17 @@ class RJsonwalksFeedoptions {
         return;
     }
 
-    public function setLimit($limit) {
+    public function setLimit($limit) { // IS NOW DEPRECATED
+        $app = JFactory::getApplication();
+        $app->enqueueMessage('Deprecated: Use of setLimit() function of RJsonwalksFeedoptions is no longer supported', 'information');
         $this->limit = $limit;
     }
 
-    public function getLimit() {
+    public function getLimit() { // IS NOW DEPRECATED
         return $this->limit;
     }
 
-    public function getDistance() {
+    public function getDistance() { // IS NOW DEPRECATED
         if ($this->distance !== null) {
             $distance = explode('-', $this->distance);
             return $distance;
@@ -107,7 +139,7 @@ class RJsonwalksFeedoptions {
         return $this->distance;
     }
 
-    public function getDays() {
+    public function getDays() { // IS NOW DEPRECATED
         if ($this->days !== null) {
             $days = explode(',', $this->days);
             return $days;
@@ -120,5 +152,4 @@ class RJsonwalksFeedoptions {
         return (substr($string, 0, $len) === $startString);
     }
 
-// repeat for other gwem options
 }

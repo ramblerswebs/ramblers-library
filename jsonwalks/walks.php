@@ -140,13 +140,13 @@ class RJsonwalksWalks {
     }
 
     public function filterStatus($status) {
-        foreach ($this->arrayofwalks as $key => $value) {
-            $walk = $this->arrayofwalks[$key];
+        foreach ($this->arrayofwalks as $key => $walk) {
             if (strtoupper($walk->status) == strtoupper($status)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
     }
+
     public function filterCancelled() {
         $this->filterStatus("CANCELLED");
     }
@@ -238,6 +238,22 @@ class RJsonwalksWalks {
             }
         }
         return true;
+    }
+
+    public function filterEvents() {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($walk->type === TypeOfWalk::GroupEvent) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
+    }
+
+    public function filterWalks() {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($walk->type === TypeOfWalk::GroupWalk) {
+                unset($this->arrayofwalks[$key]);
+            }
+        }
     }
 
     public function limitNumberWalks($no) {

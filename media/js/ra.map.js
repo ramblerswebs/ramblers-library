@@ -406,7 +406,7 @@ if (typeof (ra.data.location) === "undefined") {
 ra.loc = (function () {
     var loc = {};
     loc.directionsSpan = function ($lat, $long) {
-        return "<span class='mappopup' onclick='javascript:ra.loc.directions(" + $lat + "," + $long + ")' >[Directions]</span>";
+        return "<a class='mappopup' href='javascript:ra.loc.directions(" + $lat + "," + $long + ")' >[Directions]</a>";
 
     };
     loc.directions = function ($lat, $long) {

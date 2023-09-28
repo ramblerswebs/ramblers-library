@@ -18,5 +18,5 @@ class RJsonwalksWalkBasics {
     public $additionalNotes = "";   // the additional notes field as text
     public $title="";                 // whether the walk is published, cancelled etc
     public $external_url;           // external url for booking form
-        
+           
 }

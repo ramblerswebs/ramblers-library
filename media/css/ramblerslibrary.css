@@ -11,6 +11,7 @@
     --lightgrey: #C0C0C0;
     --midgrey: #808080;
     --cancelled:#C60C30;
+    --gradeNONE:#A0A0A0;
     --gradeEA:#808080;
     --gradeE:#A0A0A0;
     --gradeL:#9BC8AB;
@@ -129,8 +130,15 @@ div.walkstdfulldetails div.walkitem {
     line-height: 1.5em;
     font-size: 115%;
 }
+div.walkitem ul,
+div.walkitem ul li{
+    padding: 0;
+    margin: 0 0 0px 25px;
+}
 div.walkstdfulldetails div.walkitem.map {
-    padding: 5px;
+    padding: 0px;
+    margin: 0px;
+    border: 0px solid #cccccc  ;
 }
 div.walkstdfulldetails div.festivals > ul,
 div.walkstdfulldetails div.strands > ul,
@@ -141,15 +149,17 @@ div.walkstdfulldetails div.specialStatus > ul,
 div.walkstdfulldetails div.facilities > ul {
     margin-bottom: 0px;
 }
-div.walkstdfulldetails.walkCancelled.stdfulldetails div.reason{
+div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem.reason{
     text-decoration: none !important;
+    font-weight: bold;
     color:var(--cancelled);
 }
-/*div.walkstdfulldetails.walkCancelled.stdfulldetails {
-        color:var(--pantone0186);
-}*/
+div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem.group{
+    color:#000000;
+}
+
 div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
-    text-decoration: line-through;
+    color: var(--lightgrey);
 }
 
 /* Popups */
@@ -163,15 +173,9 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
     content: url(../images/google20.jpg);
 }
 .mappopup {
-    color:var(--sunset);
-    cursor: pointer;
-    padding-right:15px;
+    font-weight: normal;
 }
-span.mappopup:hover{
-    content:' ';
-    text-decoration: underline;
-    background: url(../images/new-win.png) no-repeat right ;
-}
+
 .place .mappopup {
     font-size:  90%
 }
@@ -224,6 +228,9 @@ div.groupA,div.groupG,div.groupS {
     }
 }
 
+#grade-none {
+    background-color: var(--gradeNONE);
+}
 #grade-ea {
     background-color: var(--gradeEA);
 }
@@ -243,6 +250,9 @@ div.groupA,div.groupG,div.groupS {
     background-color: var(--gradeT);
 }
 
+.grade-none {
+    background-color: var(--gradeNONE) !important;
+}
 .grade-ea {
     background-color: var(--gradeEA) !important;
 }
@@ -357,6 +367,9 @@ div.js-modal.ramblers {
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
+}
+div.clear {
+    clear: both;
 }
 .ra-modal-header {
     content: "";
@@ -758,6 +771,9 @@ span[data-descr="Easy"]:hover::after {
 }
 span[data-descr="Easy Access"]:hover::after {
     background-color: var(--gradeEA);
+}
+span[data-descr="None"]:hover::after {
+    background-color: var(--gradeNONE);
 }
 
 img.mediathumbl{

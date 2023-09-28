@@ -12,16 +12,16 @@
  * @author chris
  */
 abstract class RJsonwalksSourcebase {
-    
-    protected $groups;
+
     protected $type;
+
+    public function __construct($type = "") {
+        $this->type = $type;
+    }
 
     abstract protected function getWalks($walk);
 
-    public function __construct($type, $groups) {
-        $this->type = $type;
-        $this->groups = $groups;
-    }
+  //  abstract protected function _initialise($arg1 = null, $arg2 = null, $arg3 = null);
 
     protected function CacheLocation() {
         if (!defined('DS')) {
@@ -29,6 +29,7 @@ abstract class RJsonwalksSourcebase {
         }
         return 'cache' . DS . 'ra_feed';
     }
+
 }
 
 abstract class SourceOfWalk {
@@ -37,5 +38,14 @@ abstract class SourceOfWalk {
     const GWEM = 'gwem';
     const WManager = 'wm';
     const WEditor = 'we';
+
+}
+
+abstract class TypeOfWalk {
+
+    const Unknown = '?';
+    const GroupWalk = 'walk';
+    const GroupEvent = 'event';
+    const WellbeingWalk = 'wb-walk';
 
 }

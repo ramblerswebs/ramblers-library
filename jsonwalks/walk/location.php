@@ -17,6 +17,9 @@ class RJsonwalksWalkLocation {
     public $latitude;
     public $longitude;
     public $gridref;
+    public $w3w;
     public $postcode = null;
+    public $postcodeLatitude = 0;
+    public $postcodeLongitude = 0;
 
 }
