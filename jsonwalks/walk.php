@@ -619,8 +619,10 @@ class RJsonwalksWalk extends REvent {
                 }
                 break;
             case "{meetOLC}":
+                $out = "Deprecated";
                 break;
             case "{meetMapCode}":
+                 $out = "Deprecated";
                 break;
             case "{start}":
                 if ($this->startLocation->exact) {
@@ -660,8 +662,10 @@ class RJsonwalksWalk extends REvent {
                 }
                 break;
             case "{startOLC}":
+                 $out = "Deprecated";
                 break;
             case "{startMapCode}":
+                 $out = "Deprecated";
                 break;
             case "{finishTime}":
                 if ($this->finishTime) {

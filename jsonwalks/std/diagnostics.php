@@ -6,8 +6,8 @@ class RJsonwalksStdDiagnostics extends RJsonwalksDisplaybase {
 
     private $options = ["{lf}", "{group}", "{dowShortdd}", "{dowShortddmm}", "{dowShortddyyyy}",
         "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}", "{meet}",
-        "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}", "{meetOLC}", "{meetMapCode}",
-        "{start}", "{startTime}", "{startPlace}", "{startGR}", "{startPC}", "{startOLC}",
+        "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}","{meetw3w}", "{meetOLC}", "{meetMapCode}",
+        "{start}", "{startTime}", "{startPlace}", "{startGR}", "{startPC}","{startw3w}", "{startOLC}",
         "{startMapCode}", "{finishTime}", "{title}", "{description}", "{difficulty}", "{difficulty+}",
         "{distance}", "{distanceMi}", "{distanceKm}", "{gradeimg}", "{gradeimgRight}",
         "{grade}", "{grade+}", "{nationalGrade}", "{nationalGradeAbbr}", "{localGrade}",
