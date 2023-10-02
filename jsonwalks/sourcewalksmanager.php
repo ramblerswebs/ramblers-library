@@ -250,8 +250,9 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
         $loc->latitude = $location->latitude;
         $loc->longitude = $location->longitude;
         $loc->w3w = $location->w3w;
+        $loc->postcode=new RJsonwalksWalkPostcode();
         if (property_exists($location, 'postcode')) {
-            $loc->postcode = $location->postcode;
+            $loc->postcode->text = $location->postcode;
         }
     }
 

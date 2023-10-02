@@ -1430,6 +1430,8 @@ ra.w3w = (function () {
 ());
 
 
+
+
 ra.modals = (function () {
     var modals = {};
     modals.items = [];
@@ -1600,7 +1602,7 @@ ra.geom = (function () {
             return MI;
         }
     };
-    geom.position = function ($lat1, $lon1, $lat2, $lon2, $unit = 'KM') {
+    geom.position = function ($lat1, $lon1, $lat2, $lon2, $unit = "KM") {
         var out = {};
         out.distance = geom.distance($lat1, $lon1, $lat2, $lon2, $unit);
         out.bearing = geom.bearing($lat1, $lon1, $lat2, $lon2);
@@ -1611,7 +1613,7 @@ ra.geom = (function () {
 
 // Takes two sets of geographic coordinates in decimal degrees and produces distance along the great circle line.
 // Optionally takes a fifth argument with one of the predefined units of measurements, or planet radius in custom units.
-    geom.distance = function ($lat1, $lon1, $lat2, $lon2, $unit = KM) {
+    geom.distance = function ($lat1, $lon1, $lat2, $lon2, $unit = "KM") {
         var $r = geom.validateRadius($unit);
         $lat1 = ra.math.deg2rad($lat1);
         $lon1 = ra.math.deg2rad($lon1);
@@ -1654,8 +1656,7 @@ ra.geom = (function () {
     geom.direction = function ($lat1, $lon1, $lat2, $lon2) {
         var $bearing = geom.bearing($lat1, $lon1, $lat2, $lon2);
         var $inc = 11.25;
-        //     var $direction = array("North", "North East", "East", "South East", "South", "South West", "West", "North West", "North");
-        var $i = 0;
+       var $i = 0;
         var index, len, item, angle;
         for (index = 0, len = directions.length; index < len; ++index) {
             item = directions[$i];
@@ -1666,13 +1667,6 @@ ra.geom = (function () {
 
             $i += 1;
         }
-//        var $ang;
-//        for ($ang = 0; $ang <= 360; $ang += 45) {
-//            if ($bearing >= $ang - $inc && $bearing <= $ang + $inc) {
-//                return $direction[$i];
-//            }
-//            
-//        }
         return "direction error";
     };
     geom.test = function () {

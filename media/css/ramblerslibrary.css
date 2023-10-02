@@ -175,6 +175,9 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
 .mappopup {
     font-weight: normal;
 }
+div.place div.notexact{
+    font-size:  80%;
+}
 
 .place .mappopup {
     font-size:  90%

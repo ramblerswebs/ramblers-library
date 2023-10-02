@@ -7,14 +7,14 @@
  */
 
 /**
- * Description of basics
+ * Description of postcode
  *
  * @author chris
  */
 class RJsonwalksWalkPostcode {
 
-    public $postcode;
-    public $latitude;
-    public $longitude;
+    public $text = "";
+    public $latitude = 0;
+    public $longitude = 0;
 
 }

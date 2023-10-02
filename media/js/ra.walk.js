@@ -186,11 +186,11 @@ ra.walk = (function () {
         var popupoffset = [0, -30];
         if (location.exact) {
             if (location.postcode !== null) {
-                if (location.postcodeDistance < 10000) {
-                    var pcpop = "<b>" + location.postcode + "</b>";
-                    pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
+                if (location.postcode.distance < 10000) {
+                    var pcpop = "<b>" + location.postcode.text + "</b>";
+                    pcpop += "<br/>" + location.type + " location is " + location.postcode.distance.toFixed() + " metres to the " + location.postcode.direction.name;
                     var pcIcon = ra.map.icon.postcode();
-                    var marker = L.marker([location.postcodeLatitude, location.postcodeLongitude], {icon: pcIcon, riseOnHover: true}).addTo(layer);
+                    var marker = L.marker([location.postcode.latitude, location.postcode.longitude], {icon: pcIcon, riseOnHover: true}).addTo(layer);
                     marker.bindPopup(pcpop).closePopup();
                 }
             }
@@ -358,7 +358,7 @@ ra.walk = (function () {
             $html += "<b>Contact Leader: </b>";
         }
         // Only display the name if we have one.
-        if (($walk.contactName == "") && ($walk.email == "") && ($walk.telephone1 + $walk.telephone2 == ""))
+        if (($walk.contactName === "") && ($walk.email === "") && ($walk.telephone1 + $walk.telephone2 === ""))
         {
             $html += ra.html.addDiv("contactname", "<b>No contact details available</b>");
         } else
@@ -679,7 +679,7 @@ ra.walk = (function () {
             case "{meetPC}":
                 if ($walk.hasMeetPlace) {
                     if ($walk.meetLocation.postcode !== null) {
-                        out = $walk.meetLocation.postcode;
+                        out = $walk.meetLocation.postcode.text;
                     }
                 }
                 break;
@@ -729,7 +729,7 @@ ra.walk = (function () {
                 if ($walk.startLocation !== null) {
                     if ($walk.startLocation.exact) {
                         if ($walk.startLocation.postcode !== null) {
-                            out = $walk.startLocation.postcode;
+                            out = $walk.startLocation.postcode.text;
                         }
                     }
                 }
@@ -1063,18 +1063,18 @@ ra.walk = (function () {
                     tag.remove();
                 }
                 $out += ra.w3w.toText($location.w3w, "");
-                $out += _displayPostcode($location);
+                $out += my._displayPostcode($location);
             }
             if ($notes !== "") {
                 $out += ra.html.addDiv("location notes", $notes);
             }
-
-
         } else {
             if ($location.type === "Start") {
                 $out = "<div class='place'>";
+                $out += "<div class='notexact'>";
                 $out += "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
-                $out += "<br/>Contact group if you wish to meet at the start";
+                $out += " Contact group if you wish to meet at the start";
+                $out += "</div>";
                 if ($location.timeHHMMshort !== '') {
                     $out += "<div class='starttime'>Start time: " + $location.timeHHMMshort + "</div>";
                 }
@@ -1085,28 +1085,59 @@ ra.walk = (function () {
 
         return $out;
     };
-    _displayPostcode = function ($location) {
+    my._displayPostcode = function ($location) {
+        var $out = "";
         if ($location.postcode === null) {
-            return "";
+            return $out = "";
         }
+        var tagid = "ra-loc=" + $location.type;
+        var tag = document.getElementById(tagid);
+        if (tag !== null) {
+            tag.remove();
+        }
+        $out += '<span id="' + tagid + '">' + ra.postcode.toText($location) + '</span>';
+        if ($location.postcode.latitude !== 0) {
+            return $out;
+        }
+        setTimeout(function () {
+            var tag = ra.html.getTag(tagid);
+
+            if (tag !== null) {
+                tag.addEventListener("postcode-data-retrieved", function (e) {
+                    if (e.raData.error !== null) {
+                        $location.postcode.latitude = 0;
+                        $location.postcode.longitude = 0;
+                    } else {
+                        var latlng = e.raData.latlng;
+                        var pc = $location.postcode;
+                        pc.latitude = latlng.lat;
+                        pc.longitude = latlng.lon;
+                        pc.distance = ra.geom.distance($location.latitude, $location.longitude, latlng.lat, latlng.lon) * 1000;
+                        pc.direction = ra.geom.direction($location.latitude, $location.longitude, latlng.lat, latlng.lon);
+                        tag.innerHTML = ra.postcode.toText($location);
+                    }
+                });
+                ra.postcode.get($location, tag);
+            }
+        }, 200);
+        return $out;
+
+    };
+    my._listPostcodeData = function ($location) {
         var $pc, $note2, $note, $distclass, $out;
-        var $this = $location;
-        var $dist = $this.postcodeDistance;
-        //var $direction = $this.postcodeDirection;
-        if ($dist <= 100) {
-            $note = $this.postcode;
+        if ($location.postcodeDistance <= 100) {
+            $note = $location.postcode;
             $note2 = "Postcode is within 100m of location";
-            $distclass = " distclose";
         } else {
-            $note = "Location is " + $location.postcodeDistance.toFixed() + " metres to the " + $location.postcodeDirection + " of " + $this.postcode;
+            $note = "Location is " + $location.postcodeDistance.toFixed() + " metres to the " + $location.postcode.direction.name + " of " + $location.postcode;
             $note2 = "Check postcode suitablility on map";
-            if ($dist < 500) {
+            if ($location.postcodeDistance < 500) {
                 $distclass = " distnear";
             } else {
                 $distclass = " distfar";
             }
-            if ($dist > 10000) {
-                $note = $this.postcode;
+            if ($location.postcodeDistance > 10000) {
+                $note = $location.postcode;
                 $note2 = 'Postcode distance from location not known';
             }
         }
@@ -1294,12 +1325,7 @@ ra.walk = (function () {
             $before = $meetLocation + $startLocation + "<br/>Description: ";
             $after = "<br/>Contact: " + walk.contactName + " (" + walk.telephone1 + " " + walk.telephone2 + "); <br/>";
             if (walk.localGrade !== "") {
-                if (walk.localGrade.localeCompare(walk.nationalGrade) != 0)
-                {
-                    $after += "Grade: " + walk.localGrade + "/" + walk.nationalGrade + "; <br/> ";
-                } else {
-                    $after += "Grade: " + walk.nationalGrade + "; <br/> ";
-                }
+                $after += "Grade: " + walk.localGrade + "/" + walk.nationalGrade + "; <br/> ";
             } else {
                 $after += "Grade: " + walk.nationalGrade + "; <br/> ";
             }
@@ -1541,3 +1567,50 @@ ra.gwemLocation = function (location) {
         return $textdescription;
     };
 };
+ra.postcode = (function () {
+    var postcode = {};
+    postcode.get = function (location, tag) {
+        var pc = location.postcode;
+        var postcodeurl = "https://postcodes.theramblers.org.uk/?postcode=";
+        var url = postcodeurl + pc.text;
+        ra.ajax.getJSON(url, function (err, items) {
+            let event = new Event("postcode-data-retrieved", {bubbles: false});
+            event.raData = {};
+            event.raData.error = err;
+            if (items.length === 1) {
+                var item = items[0];
+                var pt = new OsGridRef(item.Easting, item.Northing);
+                var latlng = OsGridRef.osGridToLatLon(pt);
+                event.raData.latlng = latlng;
+            }
+            tag.dispatchEvent(event);
+        });
+    };
+    postcode.toText = function (location) {
+        var $pc, $note2, $note, $distclass, $out;
+        var pc = location.postcode;
+        if (pc.distance <= 100) {
+            $note = pc.text;
+            $note2 = "Postcode is within 100m of location";
+            $distclass = " distclose";
+        } else {
+            $note = "Location is " + pc.distance.toFixed() + " metres to the " + pc.direction.name + " of " + pc.text;
+            $note2 = "Check postcode suitablility on map";
+            if (pc.dstance < 500) {
+                $distclass = " distnear";
+            } else {
+                $distclass = " distfar";
+            }
+            if (pc.distance > 10000) {
+                $note = location.postcode.text;
+                $note2 = 'Postcode distance from location not known';
+            }
+        }
+        $pc = "<b>Postcode</b>: <abbr title='" + $note2 + "'>" + $note + "</abbr>";
+        $out = ra.html.addDiv("postcode " + $distclass, $pc);
+        return $out;
+    };
+
+    return postcode;
+}
+());

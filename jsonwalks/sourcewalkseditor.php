@@ -24,15 +24,15 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         parent::__construct(SourceOfWalk::WEditor);
     }
 
-    public function _initialise($groupCode= null, $groupName= null, $site= null) {
+    public function _initialise($groupCode = null, $groupName = null, $site = null) {
         $this->groupCode = $groupCode;
         $this->groupName = $groupName;
         $this->site = $site;
     }
 
     public function getWalks($walks) {
-      
-        $this->rafeedurl = $this->site  . $this->feedPath;
+
+        $this->rafeedurl = $this->site . $this->feedPath;
         $CacheTime = 5; // minutes
         $time = getdate();
         if ($time["hours"] < 7) {
@@ -121,15 +121,16 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
             $meet = $item->meeting->locations[0];
             $time = $meet->time . ":00";
             $loc = new RJsonwalksWalkLocation();
-            $loc->name = $meet->name;
-            $loc->gridref = $meet->gridref8;
-            $loc->latitude = $meet->latitude;
-            $loc->longitude = $meet->longitude;
-            if (property_exists($meet, 'postcode')) {
-                $loc->postcode = $meet->postcode->value;
-                $loc->postcodeLatitude = $meet->postcode->latitude;
-                $loc->postcodeLongitude = $meet->postcode->longitude;
-            }
+            $this->processLocation($loc,$meet);
+//            $loc->name = $meet->name;
+//            $loc->gridref = $meet->gridref8;
+//            $loc->latitude = $meet->latitude;
+//            $loc->longitude = $meet->longitude;
+//            if (property_exists($meet, 'postcode')) {
+//                $loc->postcode = $meet->postcode->value;
+//                $loc->postcodeLatitude = $meet->postcode->latitude;
+//                $loc->postcodeLongitude = $meet->postcode->longitude;
+//            }
             $meeting = new RJsonwalksWalkMeeting($time, $item->meeting->type, $loc);
             $walk->setMeeting($meeting);
         }
@@ -152,17 +153,20 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
                 $publish = false;
                 break;
         }
-        $loc = new RJsonwalksWalkLocation();
-        $loc->name = $location->name;
-        $loc->gridref = $location->gridref8;
-        $loc->latitude = $location->latitude;
-        $loc->longitude = $location->longitude;
-        $loc->w3w = $location->w3w;
-        if (property_exists($location, 'postcode')) {
-            $loc->postcode = $location->postcode->value;
-            $loc->postcodeLatitude = $location->postcode->latitude;
-            $loc->postcodeLongitude = $location->postcode->longitude;
-        }
+        $loc = new RJsonwalksWalkLocation(); 
+        $this->processLocation($loc, $location);
+//        $loc->name = $location->name;
+//        $loc->gridref = $location->gridref8;
+//        $loc->latitude = $location->latitude;
+//        $loc->longitude = $location->longitude;
+//        $loc->w3w = $location->w3w;
+//        $loc->postcode = new RJsonwalksWalkPostcode();
+//       
+//        if (property_exists($location, 'postcode')) {
+//            $loc->postcode = $location->postcode->value;
+//            $loc->postcodeLatitude = $location->postcode->latitude;
+//            $loc->postcodeLongitude = $location->postcode->longitude;
+//        }
         $startitem = new RJsonwalksWalkStart($time, $publish, $loc);
         $walk->setStart($startitem);
 
@@ -212,6 +216,20 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $walk->setFlags($flags);
 
         //     $walk->media = $walk->getMedia($item);
+    }
+
+    private function processLocation($loc, $location) {
+        $loc->name = $location->name;
+        $loc->gridref = $location->gridref8;
+        $loc->latitude = $location->latitude;
+        $loc->longitude = $location->longitude;
+        $loc->w3w = $location->w3w;
+        $loc->postcode = new RJsonwalksWalkPostcode();
+        if (property_exists($location, 'postcode')) {
+            $loc->postcode->text = $location->postcode;
+            $loc->postcode->latitude = $location->postcode->latitude;
+            $loc->postcode->longitude = $location->postcode->longitude;
+        }
     }
 
     private function contains($needle, $haystack) {

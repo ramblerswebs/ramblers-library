@@ -11,18 +11,13 @@ class RJsonwalksLocation {
     public $timeHHMMshort;      // time as $timeHHMM but without minutes if zero
     public $gridref;            // OS grid reference of the location
     public $latitude;           // Latitude of the location
-    public $longitude;           // Longitude of the location
-    public $postcode;           // either a postcode or null
-    public $postcodeDistance;   // Distance of postcode from location or null
-    public $postcodeDirection;   // Distance of postcode from location or null
-    //   public $postcodeDirectionAbbr;
-    public $postcodeLatitude = 0;   // Longitude of the postcode or null
-    public $postcodeLongitude = 0;  // Latitude of the postcode or null
+    public $longitude;          // Longitude of the location
+    public $postcode;           // postcode object
     public $type;               // type of location, meet,start,finish
     public $exact;              // true or false
 
     function __construct() {
-        
+        $this->postcode = new RJsonwalksPostcode();
     }
 
     public function setLocation($type, $placetime, $walkDate) {
@@ -69,17 +64,15 @@ class RJsonwalksLocation {
         $this->latitude = $location->latitude;
         $this->longitude = $location->longitude;
         $this->w3w = $location->w3w;
-        $this->postcode = $location->postcode;
-        if ($this->postcode !== null) {
-            $this->postcodeLatitude = $location->postcodeLatitude;
-            $this->postcodeLongitude = $location->postcodeLongitude;
-            $lat1 = $this->postcodeLatitude;
-            $lon1 = $this->postcodeLongitude;
-            $lat2 = $this->latitude;
-            $lon2 = $this->longitude;
-            $this->postcodeDistance = 1000 * round(RGeometryGreatcircle::distance($lat1, $lon1, $lat2, $lon2, "KM"), 3); // metres
-            $this->postcodeDirection = RGeometryGreatcircle::direction($lat1, $lon1, $lat2, $lon2);
-        }
+        $this->postcode->text = $location->postcode->text;
+        $this->postcode->latitude = $location->postcode->latitude;
+        $this->postcode->longitude = $location->postcode->longitude;
+        $lat1 = $this->postcode->latitude;
+        $lon1 = $this->postcode->longitude;
+        $lat2 = $this->latitude;
+        $lon2 = $this->longitude;
+        $this->postcode->distance = 1000 * round(RGeometryGreatcircle::distance($lat1, $lon1, $lat2, $lon2, "KM"), 3); // metres
+        $this->postcode->direction = RGeometryGreatcircle::direction($lat1, $lon1, $lat2, $lon2);
     }
 
     public function getTextDescription() {

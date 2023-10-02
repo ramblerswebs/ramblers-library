@@ -609,7 +609,7 @@ class RJsonwalksWalk extends REvent {
             case "{meetPC}":
                 if ($this->hasMeetPlace) {
                     if ($this->meetLocation->postcode !== null) {
-                        $out = $this->meetLocation->postcode;
+                        $out = $this->meetLocation->postcode->text;
                     }
                 }
                 break;
@@ -652,7 +652,7 @@ class RJsonwalksWalk extends REvent {
             case "{startPC}":
                 if ($this->startLocation->exact) {
                     if ($this->startLocation->postcode !== null) {
-                        $out = $this->startLocation->postcode;
+                        $out = $this->startLocation->postcode->text;
                     }
                 }
                 break;
