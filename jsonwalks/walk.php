@@ -119,7 +119,7 @@ class RJsonwalksWalk extends REvent {
         $this->localGrade = $walk->localGrade;
         $this->distanceKm = $walk->distanceKm;
         $this->distanceMiles = $walk->distanceKm * 0.621371;
-        $this->distanceKm = round($this->distanceKm, 1);
+        $this->distanceKm = round($this->distanceKm ?? 1, 1);
         $this->distanceMiles = round($this->distanceMiles, 1);
         $this->pace = $walk->pace;
         if ($walk->ascentMetres !== null) {
