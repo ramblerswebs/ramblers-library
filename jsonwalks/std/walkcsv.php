@@ -114,12 +114,20 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         } else {
             $array[] = "Circular";
         }
-
+        // Start location can be null, so blank the fields if this is the case.
         $location = $walk->startLocation;
-        $array[] = $location->postcode;
-        $array[] = $location->gridref;
-        $array[] = $location->description;
-        $array[] = $location->getTextTime();
+        if ($location != null)
+        {
+            $array[] = $location->postcode;
+            $array[] = $location->gridref;
+            $array[] = $location->description;
+            $array[] = $location->getTextTime();    
+        } else {
+            $array[] = "";
+            $array[] = "";
+            $array[] = "";
+            $array[] = "";
+        }
         if ($walk->meetLocation != null) {
             $location = $walk->meetLocation;
             $array[] = $location->postcode;
