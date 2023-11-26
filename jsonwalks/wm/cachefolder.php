@@ -28,7 +28,7 @@ class RJsonwalksWmCachefolder {
             $files = glob($this->cacheFolderPath . '/*'); // get all file names
             foreach ($files as $file) { // iterate files
                 if (is_file($file)) {
-                    if (time() - filemtime($file) > 24 * 7 * 3600) {
+                    if (time() - filemtime($file) > 24 * 3 * 3600) {
                         // file older than 7 days
                         unlink($file); // delete file}
                     }
@@ -43,7 +43,7 @@ class RJsonwalksWmCachefolder {
         return $tmpFile;
     }
 
-    private function createCacheFolder() {
+    function createCacheFolder() {
         // Check if the cache folder exists
         if (file_exists($this->cacheFolderPath) && is_dir($this->cacheFolderPath)) {
             // all OK

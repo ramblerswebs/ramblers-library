@@ -14,7 +14,7 @@
 class REventGroup {
 
     private $arrayofevents;
-    private $class = "event";
+    private $walkClass = "event";
     static $id = 0;
 
     function __construct() {
@@ -32,7 +32,7 @@ class REventGroup {
             $this->arrayofevents[] = $walk;
         }
 
-        RLeafletScript::registerWalks(array_values($arrayofwalks));
+    //    RLeafletScript::registerWalks(array_values($arrayofwalks));
     }
 
     // used by Download ICS
@@ -72,7 +72,7 @@ class REventGroup {
                     $out .= $event->EventDate()->format('l, jS');
                 }
                 $found = true;
-                $out .= $event->EventList($display, $text);
+                $out .= $event->EventList($display);
             }
         }
         if ($found) {

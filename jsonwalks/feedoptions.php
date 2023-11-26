@@ -61,12 +61,6 @@ class RJsonwalksFeedoptions {
         if (array_key_exists('days', $queryParts)) {
             $this->days = $queryParts['days'];
         }
-//        if (array_key_exists('incwalks', $queryParts)) {
-//            $groups = $groups . "&incwalks=" . $queryParts['incwalks'];
-//        }
-//        if (array_key_exists('incevents', $queryParts)) {
-//            $groups = $groups . "&incevents=" . $queryParts['incevents'];
-//        }
 
         return $groups;
     }

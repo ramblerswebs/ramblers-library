@@ -493,7 +493,7 @@ ra.walkseditor.walkeditor = function ( ) {
         this._tel1 = this.input.addText(itemDiv, 'tel1', "Contact Telephone 1:", contact, 'telephone1', 'Telephone number', ra.walkseditor.help.contactTel1);
         this._tel2 = this.input.addText(itemDiv, 'tel2', "Contact Telephone 2:", contact, 'telephone2', '', ra.walkseditor.help.contactTel2);
         this._option = this.input.addSelect(itemDiv, 'moptions', 'Is the Contact the walk leader?', options, contact, 'contactType', null, ra.walkseditor.help.contactType);
-        this._id = this.input.addNumber(itemDiv, 'id', "Contact ID:", contact, 'id', ra.walkseditor.help.contactID);
+     //   this._id = this.input.addNumber(itemDiv, 'id', "Contact ID:", contact, 'id', ra.walkseditor.help.contactID);
         var _this = this;
         itemDiv.addEventListener("predefinedContact", function (e) {
             var item = e.raData.item;

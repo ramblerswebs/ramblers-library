@@ -13,7 +13,7 @@
  */
 class RIcsOutput {
 
-    private $isc;
+    private $isc="";
 
     function __construct() {
         $this->addHeader();
@@ -32,6 +32,7 @@ class RIcsOutput {
             $text = str_replace("\\n", "<br/>", $text);
             $lines = $this->chunk_split_unicode($command . $before . $text . $after, 73);
         } else {
+            $text = str_replace("<br/>", "\\n", $text);
             $text = str_replace("&nbsp;", " ", $text);
             $text = str_replace("<p>", "", $text);
             $text = str_replace("</p>", "\\n", $text);
@@ -40,7 +41,7 @@ class RIcsOutput {
             $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
             $lines = $this->chunk_split_unicode($command . $text, 73);
         }
-        $this->isc.= $lines;
+        $this->isc .= $lines;
     }
 
     // Escapes a string of characters
@@ -61,7 +62,7 @@ class RIcsOutput {
 
     private function addHeader() {
         $this->isc = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nMETHOD:PUBLISH\r\n";
-        $this->isc.= "PRODID:ramblers-webs v1.1\r\n";
+        $this->isc .= "PRODID:ramblers-webs v1.2\r\n";
     }
 
     private function chunk_split_unicode($str, $l = 73, $e = "\r\n") {

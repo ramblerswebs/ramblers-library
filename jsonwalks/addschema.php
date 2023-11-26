@@ -19,18 +19,8 @@ class RJsonwalksAddschema {
         $items = $walks->allWalks();
         foreach ($items as $walk) {
             if (!$walk->isCancelled()) {
-                $date = $walk->walkDate->format('D, jS F');
-                $performer = new RJsonwalksStructuredperformer($walk->groupName . " - Ramblers");
-                $location = !is_null($walk->startLocation) ? new RJsonwalksStructuredlocation($walk->startLocation->description, $walk->startLocation->postcode) : null;
-                $schemawalk = new RJsonwalksStructuredevent($performer, $location);
-                $schemawalk->name = "Ramblers led walk on " . $date . ", " . $walk->title;
-                $schemawalk->description = "A " . $walk->nationalGrade . " " . $walk->distanceMiles . "mile / " . $walk->distanceKm . "km walk";
-                # Google don't like markup which doesn't appear on page so description must be as on page and image should  be excluded from next walks summary listing
-                $schemawalk->startdate = $walk->walkDate->format('Y-m-d');
-                $schemawalk->enddate = $schemawalk->startdate;
-                $schemawalk->image = "https://www.ramblers-webs.org.uk/images/ra-images/2022brand/Logo%2090px.png";
-                $schemawalk->url = $walk->detailsPageUrl;
-                $schemawalks[] = $schemawalk;
+               
+                $schemawalks[] = $walk->_getWalkSchema();
             }
         }
 

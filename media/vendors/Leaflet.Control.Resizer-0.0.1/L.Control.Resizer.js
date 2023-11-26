@@ -10,7 +10,7 @@
             direction: 'e',  // valid values e, s, se
             onlyOnHover: false,
             updateAlways: true,
-            pan:false,
+            pan:false
         },
 
         _END: {

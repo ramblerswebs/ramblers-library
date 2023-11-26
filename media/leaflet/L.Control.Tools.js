@@ -7,6 +7,7 @@ L.Control.Tools = L.Control.extend({
         var _this = this;
         this._map = map;
         this._container = document.createElement('div');
+         this._container.style.display = 'none';
         L.DomEvent.disableClickPropagation(this._container);
         this._button = L.DomUtil.create('div', 'ra-map-tools-icon leaflet-bar leaflet-control', this._container);
         this._button.title = 'Mapping tools';
@@ -15,18 +16,17 @@ L.Control.Tools = L.Control.extend({
         this._container.addEventListener("click", function (e) {
             // consume event so map does not get clicked
         });
-         this._container.addEventListener("mouseenter", function (e) {
+        this._container.addEventListener("mouseenter", function (e) {
+            _this._button.style.display = "none";
             _this._openTools();
         });
         this._container.addEventListener("mouseover", function (e) {
             _this._openTools();
         });
-        this._toolsDiv.addEventListener("mouseleave", function (e) {
-            _this._toolsDiv.style.display = 'none';
-        });
         this._container.addEventListener("mouseleave", function (e) {
             _this._toolsDiv.style.display = 'none';
         });
+
         this._container.addEventListener("click", function (e) {
             if (_this._toolsDiv.style.display === 'grid') {
                 _this._toolsDiv.style.display = 'none';
@@ -34,6 +34,16 @@ L.Control.Tools = L.Control.extend({
                 _this._openTools();
             }
         });
+        this._toolsDiv.addEventListener("mouseleave", function (e) {
+            _this._toolsDiv.style.display = 'none';
+            _this._button.style.display = "initial";
+        });
+        this._map.on('mouseout', function () {
+            this._container.style.display = 'none';
+        }, this);
+        this._map.on('mouseover', function () {
+            this._container.style.display = 'initial';
+        }, this);
         return this._container;
     },
     getToolsDiv: function () {

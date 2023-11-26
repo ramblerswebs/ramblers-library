@@ -275,7 +275,7 @@ div.ra_calsize250 ul.dates li{
 
 /* mini calendar */
 div.ra_calsize250 div.event-list-cal-hover {
-    top: -5px;
+    top: -20px;
     left: -300px;
     width: 300px;
     font-size: 100%;

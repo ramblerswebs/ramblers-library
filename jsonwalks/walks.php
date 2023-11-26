@@ -6,25 +6,13 @@ class RJsonwalksWalks {
     private $sortorder1;
     private $sortorder2;
     private $sortorder3;
-    private $newinterval = 7;
 
-//    public function __construct($json) {
-//        $this->arrayofwalks = array();
-//        if ($json != NULL) {
-//            foreach ($json as $value) {
-//                $walk = new RJsonwalksWalk($value);
-//                $this->arrayofwalks[] = $walk;
-//            }
-//            $this->setNewWalks($this->newinterval);
-//        }
-//    }
     public function __construct() {
-        $this->arrayofwalks = array();
+        $this->arrayofwalks = [];
     }
 
     public function addWalk($walk) {
         $this->arrayofwalks[] = $walk;
-        $walk->createExtraData();
     }
 
     public function hasMeetPlace() {
@@ -272,9 +260,10 @@ class RJsonwalksWalks {
     }
 
     public function appendWalkTitle($titles) {
-        foreach ($this->arrayofwalks as $key => $value) {
-            if (isset($titles[$value->groupCode])) {
-                $value->title = $value->title . $titles[$value->groupCode];
+        foreach ($this->arrayofwalks as $key => $walk) {
+            $groupCode = $walk->getIntValue("admin", "groupCode");
+            if (isset($titles[$groupCode])) {
+                $walk->title = $walk->title . $titles[$groupCode];
             }
         }
     }
@@ -299,8 +288,8 @@ class RJsonwalksWalks {
     }
 
     private function sortData1($a, $b) {
-        $val1 = $a->getValue($this->sortorder1);
-        $val2 = $b->getValue($this->sortorder1);
+        $val1 = $a->getSortValue($this->sortorder1);
+        $val2 = $b->getSortValue($this->sortorder1);
         if ($val1 == $val2) {
             return $this->sortData2($a, $b);
         }
@@ -308,8 +297,8 @@ class RJsonwalksWalks {
     }
 
     private function sortData2($a, $b) {
-        $val1 = $a->getValue($this->sortorder2);
-        $val2 = $b->getValue($this->sortorder2);
+        $val1 = $a->getSortValue($this->sortorder2);
+        $val2 = $b->getSortValue($this->sortorder2);
         if ($val1 == $val2) {
             return $this->sortData3($a, $b);
         }
@@ -317,8 +306,8 @@ class RJsonwalksWalks {
     }
 
     private function sortData3($a, $b) {
-        $val1 = $a->getValue($this->sortorder3);
-        $val2 = $b->getValue($this->sortorder3);
+        $val1 = $a->getSortValue($this->sortorder3);
+        $val2 = $b->getSortValue($this->sortorder3);
         if ($val1 == $val2) {
             return 0;
         }

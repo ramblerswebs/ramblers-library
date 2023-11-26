@@ -163,6 +163,15 @@ ra.map = (function () {
             }
             return icon._walkingarea;
         };
+        icon.event = function () {
+            if (typeof (icon._event) === "undefined") {
+                icon._event = L.icon({
+                    iconUrl: ra.baseDirectory() + "media/lib_ramblers/images/grades/event.png",
+                    iconSize: [40, 35]
+                });
+            }
+            return icon._event;
+        };
         icon.walkinggroup = function () {
             if (typeof (icon._walkinggroup) === "undefined") {
                 icon._walkinggroup = L.icon({
@@ -295,8 +304,8 @@ ra.map = (function () {
             for (j = 0; j < map.bounds.length; j++) {
                 var rect;
                 var bounds = map.bounds[j];
-                var pt1 = os.getPointInfo(bounds.eastingmin, bounds.northingmin);
-                var pt2 = os.getPointInfo(bounds.eastingmax, bounds.northingmax);
+                var pt1 = os._getPointInfo(bounds.eastingmin, bounds.northingmin);
+                var pt2 = os._getPointInfo(bounds.eastingmax, bounds.northingmax);
                 var area = [pt1.latlng, pt2.latlng];
                 boundstr += pt1.gr + " to " + pt2.gr + "<br/>";
             }
@@ -305,10 +314,10 @@ ra.map = (function () {
             for (j = 0; j < map.bounds.length; j++) {
                 var rect;
                 var bounds = map.bounds[j];
-                var pt1 = os.getPointInfo(bounds.eastingmin, bounds.northingmin);
-                var pt2 = os.getPointInfo(bounds.eastingmin, bounds.northingmax);
-                var pt3 = os.getPointInfo(bounds.eastingmax, bounds.northingmax);
-                var pt4 = os.getPointInfo(bounds.eastingmax, bounds.northingmin);
+                var pt1 = os._getPointInfo(bounds.eastingmin, bounds.northingmin);
+                var pt2 = os._getPointInfo(bounds.eastingmin, bounds.northingmax);
+                var pt3 = os._getPointInfo(bounds.eastingmax, bounds.northingmax);
+                var pt4 = os._getPointInfo(bounds.eastingmax, bounds.northingmin);
                 var area = [pt1.latlng, pt2.latlng, pt3.latlng, pt4.latlng];
                 if (map.scale === "50000") {
                     rect = L.polygon(area, {color: "#ff0000", weight: 1});
@@ -323,15 +332,44 @@ ra.map = (function () {
                 layer.addLayer(rect);
             }
         };
-        os.getPointInfo = function (east, north) {
+        os._getPointInfo = function (east, north) {
             var value = {};
             var os = new OsGridRef(east, north);
             var pt = OsGridRef.osGridToLatLon(os);
             value.latlng = L.latLng(pt.lat, pt.lon);
             value.gr = os.toString(6);
             return value;
-        }
-        ;
+        };
+        os.getOSMapsAtLoc = function (lat, lng, callback) {
+            var p = new LatLon(lat, lng);
+            var grid = OsGridRef.latLonToOsGrid(p);
+            var result = {error: false,
+                errorMsg: "",
+                maps: []};
+            if (grid.toString(6) !== "") {
+                var east = Math.round(grid.easting);
+                var north = Math.round(grid.northing);
+                var url = "https://osmaps.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north;
+                ra.ajax.getJSON(url, function (err, items) {
+                    if (err !== null) {
+                        result.error = true;
+                        result.errorMsg = "Error: Something went wrong: " + err;
+                    } else {
+                        if (items.length !== 0) {
+                            items.forEach(item => {
+                                result.maps.push(item);
+                            });
+                        } else {
+                            result.errorMsg = "No Ordnance Survey Maps found for this location";
+                        }
+                    }
+                    callback(result);
+                });
+            } else {
+                result.errorMsg = "Location outside OS Grid";
+                callback(result);
+            }
+        };
         return os;
     }
     ());
@@ -413,6 +451,9 @@ ra.loc = (function () {
         var page = -'';
         if (ra.data.location.found) {
             var myloc = ra.data.location;
+            if (ra.data.location.accuracy > 500) {
+                alert("Unable to accurately obtain your location.\nYou may need to tell Google your true location.");
+            }
             page = "https://maps.google.com?saddr=" + myloc.latitude.toString() + "," + myloc.longitude.toString() + "&daddr=" + $lat.toString() + "," + $long.toString();
         } else {
             alert("Sorry - Unable to find your location, we will ask Google to try");

@@ -19,7 +19,7 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
 
     public function __construct($filename = "tmp/walks-download") {
         parent::__construct();
-        $this->filename = $filename. (new DateTime())->format('YmdHis').".csv";
+        $this->filename = $filename . (new DateTime())->format('YmdHis') . ".csv";
     }
 
     public function DisplayWalks($walks) {
@@ -34,8 +34,6 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
             fputcsv($handle, $fields);
             foreach ($items as $walk) {
                 $fields = $this->displayWalkCSV($walk);
-                //   $fields = $this->removeInvalidChars($fields);
-                //   $fields = $this->convertToAscii($fields);
                 fputcsv($handle, $fields);
             }
             fclose($handle);
@@ -43,138 +41,63 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         }
     }
 
-    private function convertToAscii($values) {
-        if ($this->convertToASCII) {
-            $fields = [];
-            foreach ($values as $key => $value) {
-                //  $fields[$key] = mb_convert_encoding($value, "ASCII", "UTF-8");
-                $fields[$key] = iconv("UTF-8", "ASCII//IGNORE", $value);
-            }
-            return $fields;
-        }
-
-        return $values;
-    }
-
-    private function removeInvalidChars($values) {
-        $fields = [];
-        foreach ($values as $key => $value) {
-
-            $fields[$key] = $this->convert_ascii($value);
-            //      $fields[$key]=preg_replace('^\PC+$','',$value);
-        }
-        return $fields;
-    }
-
-    function convert_ascii($string) {
-        // Replace Single Curly Quotes
-        $search[] = chr(226) . chr(128) . chr(152);
-        $replace[] = "'";
-        $search[] = chr(226) . chr(128) . chr(153);
-        $replace[] = "'";
-        // Replace Smart Double Curly Quotes
-        $search[] = chr(226) . chr(128) . chr(156);
-        $replace[] = '"';
-        $search[] = chr(226) . chr(128) . chr(157);
-        $replace[] = '"';
-        // Replace En Dash
-        $search[] = chr(226) . chr(128) . chr(147);
-        $replace[] = '--';
-        // Replace Em Dash
-        $search[] = chr(226) . chr(128) . chr(148);
-        $replace[] = '---';
-        // Replace Bullet
-        $search[] = chr(226) . chr(128) . chr(162);
-        $replace[] = '*';
-        // Replace Middle Dot
-        $search[] = chr(194) . chr(183);
-        $replace[] = '*';
-        // Replace Ellipsis with three consecutive dots
-        $search[] = chr(226) . chr(128) . chr(166);
-        $replace[] = '...';
-        // Replace Ellipsis with three consecutive dots
-        $search[] = chr(c2a3);
-        $replace[] = '£';
-        // Apply Replacements
-        $string = str_replace($search, $replace, $string);
-        // Remove any non-ASCII Characters
-        $string = preg_replace("/[^\x01-\x7F]/", "", $string);
-        return $string;
-    }
-
     private function displayWalkCSV($walk) {
         $array = [];
-        $array[] = $walk->id;
-        $array[] = $walk->walkDate->format('d/m/Y');
+        $array[] = $walk->getIntValue("admin", "id");
+        $array[] = $walk->getIntValue("basics", "walkDate")->format('d/m/Y');
 
-        $array[] = $walk->title;
-        $array[] = $walk->groupName;
-        if ($walk->isLinear) {
-            $array[] = "Linear";
-        } else {
-            $array[] = "Circular";
-        }
+        $array[] = $walk->getIntValue("basics", "title");
+        $array[] = $walk->getIntValue("admin", "groupName");
+        $array[] = $walk->getIntValue("walks", "shape");
 
-        $location = $walk->startLocation;
-        $array[] = $location->postcode;
-        $array[] = $location->gridref;
-        $array[] = $location->description;
-        $array[] = $location->getTextTime();
-        if ($walk->meetLocation != null) {
-            $location = $walk->meetLocation;
-            $array[] = $location->postcode;
-            $array[] = $location->gridref;
-            $array[] = $location->description;
-            $array[] = $location->getTextTime();
-        } else {
-            $array[] = "";
-            $array[] = "";
-            $array[] = "";
-            $array[] = "";
-        }
+        $array[] = $walk->getWalkValue("{xstartPC}");
+        $array[] = $walk->getWalkValue("{startGR}");
+        $array[] = $walk->getWalkValue("{startPlace}");
+        $array[] = $walk->getIntValue("start", "textTime");
+
+        $array[] = $walk->getWalkValue("{meetPC}");
+        $array[] = $walk->getWalkValue("{meetGR}");
+        $array[] = $walk->getWalkValue("{meetPlace}");
+        $array[] = $walk->getIntValue("meeting", "textTime");
+
         $array[] = ""; // restriction
-        $array[] = $walk->nationalGrade;
-        $array[] = $walk->distanceMiles;
-        $array[] = $walk->distanceKm;
+        $array[] = $walk->getintValue("walks", "nationalGrade");
+        $array[] = $walk->getintValue("walks", "distanceMiles");
+        $array[] = $walk->getintValue("walks", "distanceKm");
+
         $array[] = ""; // walking time
-        if ($walk->finishLocation != null) {
-            $location = $walk->finishLocation;
-            $array[] = $location->getTextTime();
-            $array[] = $location->postcode;
-            $array[] = $location->gridref;
-            $array[] = $location->description;
-        } else {
-            $array[] = "";
-            $array[] = "";
-            $array[] = "";
-            $array[] = "";
-        }
+
+        $array[] = $walk->getintValue("finish", "textTime");
+        $array[] = $walk->getWalkValue("{finishPC}");
+        $array[] = $walk->getWalkValue("{finishGR}");
+        $array[] = $walk->getWalkValue("{finishPlace}");
+
         $array[] = ""; //forename
         $array[] = ""; //surname
-        $array[] = $walk->contactName;
-        $array[] = $walk->getEmail();
-        $array[] = $walk->telephone1;
-        $array[] = $walk->telephone2;
-        if ($walk->isLeader) {
-            $array[] = "Yes";
-        } else {
-            $array[] = "No";
-        }
-        $array[] = $walk->walkLeader;
+        $array[] = $walk->getIntValue("contacts", "contactName");
+
+        $array[] = ""; // email
+        $array[] = $walk->getIntValue("contacts", "telephone1");
+        $array[] = $walk->getIntValue("contacts", "telephone2");
+
+        $array[] = ""; // is leader
+
+        $array[] =""; // walkLeader;
         $array[] = ""; //strand
         $array[] = ""; //strand id
         $array[] = ""; //festival
         $array[] = ""; //festival id
+        $description= $walk->getIntValue("basics", "descriptionHtml");
         if ($this->removeHTML) {
-            $array[] = html_entity_decode(strip_tags($walk->description));
+            $array[] = html_entity_decode(strip_tags($description));
         } else {
-            $array[] = $walk->descriptionHtml;
+            $array[] = $description;
         }
-        $array[] = $walk->additionalNotes;
-        $array[] = $walk->pace;
-        $array[] = $walk->ascentFeet;
-        $array[] = $walk->ascentMetres;
-        $array[] = $walk->localGrade;
+        $array[] = $walk->getIntValue("basics", "additionalNotes");
+        $array[] = $walk->getIntValue("walks", "pace");
+        $array[] = $walk->getIntValue("walks", "ascent");
+        $array[] = $walk->getIntValue("walks", "localGrade");
+       
         $array[] = "";
         $array[] = "";
         $array[] = "";

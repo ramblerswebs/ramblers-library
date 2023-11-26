@@ -89,7 +89,7 @@ class RJsonwalksDe02Tic extends RJsonwalksDisplaybase {
         echo RHtml::addTableRow(array($col1, $col2));
 
         $col1 = "<b>Website:</b>";
-        $col2 = $this->groupwebsite . "<br />" . $walk->detailsPageUrl;
+        $col2 = $this->groupwebsite . "<br />" . $walk->nationalUrl;
         echo RHtml::addTableRow(array($col1, $col2));
 
         $col1 = "<b>Email:</b>";

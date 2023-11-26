@@ -3,60 +3,17 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-class RJsonwalksWalk extends REvent {
+class RJsonwalksWalk implements JsonSerializable {
 
-// administration items
-    public $source = SourceOfWalk::Unknown;  // where the walk was created
-    public $id;                     // database ID of walk on Walks Finder as string
-    Public $type = "walk";            // type is either a walk , an event, or a well being walk
-    public $status;                 // whether the walk is published, cancelled etc
-    public $groupCode;              // group code e.g. SR01
-    public $groupName;              // the group name e.g. Derby & South Derbyshire
-    public $dateUpdated;            // date of the walk as a datetime object
-    public $dateCreated;            // date of the walk as a datetime object
-    public $cancellationReason;     // text reason walk cancelled
-// basic walk details
-    public $walkDate;               // date of the walk as a datetime object
-    Public $dayofweek;              // day of the week as text
-    public $day;                    // the day number as text
-    public $month;                  // the month as text
-    public $title;                  // title of the walk
-    public $description = "";       // description of walk with html tags removed
-    public $descriptionHtml = "";   // description of walk with html tags
-    public $additionalNotes = "";   // the additional notes field as text
-    public $detailsPageUrl = "";    // url to access the ramblers.org.uk page for this walk
-// contact
-    public $isLeader = false;       // is the contact info for the leader of the walk
-    public $walkLeader = "";        // walk leader if isLeader is false
-    public $contactName = "";       // contact name
-    public $email = "";             // email address for contact
-    public $contactForm = "";       // Contact form from Ramblers CO
-    public $external_url = "";      // External URL provided
-    public $key = "";               // ENCRYPTED email address for contact 
-    public $telephone1 = "";        // first telephone number of contact
-    public $telephone2 = "";        // second telephone number of contact
-// meeting place
-    public $hasMeetPlace = false;   // true or false
-    public $meetLocation;           // a [[RJsonwalksLocation]] object if hasMeetPlace=true
-// starting place
-    public $startLocation;          // a [[RJsonwalksLocation]] object for the start
-// finish place
-    public $isLinear = false;       // true if walk has a finishing place otherwise false
-    public $finishLocation;         // a [[RJsonwalksLocation]] object if isLinear=true
-    // not always provided so check if null
-    public $finishTime;             // finishTime as dateTime or null
-// grades ,length
-    public $nationalGrade = "";     // national grade as full word
-    public $localGrade = "";        // local grade
-    public $distanceMiles;          // distance of walk as number in miles
-    public $distanceKm;             // distance of walk as number in kilometres
-    public $pace;                   // the pace of the walk or null
-    Public $ascentMetres;           // the ascent in metres or null
-    Public $ascentFeet;             // the ascent in feet or null
-    Public $flags = [];                  // flags to describe walk 
-    public $media = [];                  // array of image infomation
-// extra derived values
-    private $sortTime;
+    private $admin = null;
+    private $basics = null;
+    private $walks = null;
+    private $meeting = null;
+    private $start = null;
+    private $finish = null;
+    private $contacts = null;
+    private $flags = [];                  // flags to describe walk 
+    private $media = [];                  // array of image infomation
     private $icsDayEvents = false;
     private static $withMonth = ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"];
     private static $customValuesClass = null;
@@ -73,87 +30,43 @@ class RJsonwalksWalk extends REvent {
     const SORT_TIME = 7;
     const TIMEFORMAT = "Y-m-d\TH:i:s";
 
-    //
-
     public function __construct() {
-        
+        $this->walks = new RJsonwalksWalkItems();
+        $this->meeting = new RJsonwalksWalkItems();
+        $this->start = new RJsonwalksWalkItems();
+        $this->finish = new RJsonwalksWalkItems();
+        $this->contacts = new RJsonwalksWalkItems();
     }
 
-    public function setAdmin($admin) {
-        $this->source = $admin->source; // admin details
-        $this->id = strval($admin->id); // admin details
-        $this->status = $admin->status;
-        $this->groupCode = $admin->groupCode;
-        $this->groupName = $admin->groupName;
-        $this->dateUpdated = $admin->dateUpdated;
-        $this->dateCreated = $admin->dateCreated;
-        $this->cancellationReason = $admin->cancellationReason;
-        $this->detailsPageUrl = $admin->displayUrl;
-        $this->type = $admin->type;
+    public function addAdmin($admin) {
+        $this->admin = $admin;
     }
 
-    public function setBasics($basics) {
-
-        $this->walkDate = $basics->walkDate;
-        $this->title = RHtml::removeNonBasicTags($basics->title);
-        $this->description = RHtml::removeNonBasicTags($basics->descriptionHtml);
-        $this->description = RHtml::convert_mails($this->description);
-        $this->descriptionHtml = $basics->descriptionHtml;
-        $this->descriptionHtml = RHtml::convert_mails($this->descriptionHtml);
-        $this->additionalNotes = $basics->additionalNotes;
-        $this->external_url = $basics->external_url;
+    public function addBasics($basics) {
+        $this->basics = $basics;
     }
 
-    public function setWalk($walk) {
-        if ($walk->shape == ShapeOfWalk::Linear) {
-            $this->isLinear = true;
-        } else {
-            $this->isLinear = false;
-        }
-        $this->nationalGrade = $walk->nationalGrade;
-        $this->localGrade = $walk->localGrade;
-        $this->distanceKm = $walk->distanceKm;
-        $this->distanceMiles = $walk->distanceKm * 0.621371;
-        $this->distanceKm = round($this->distanceKm, 1);
-        $this->distanceMiles = round($this->distanceMiles, 1);
-        $this->pace = $walk->pace;
-        if ($walk->ascentMetres !== null) {
-            $this->ascentMetres = $walk->ascentMetres;
-            $this->ascentFeet = round($walk->ascentMetres * 3.28084);
-        }
+    public function addWalk($walk) {
+        $this->walks->addItem($walk);
     }
 
-    public function setMeeting($meet) {
-        $this->hasMeetPlace = true;
-        $this->meetLocation = new RJsonwalksLocation();
-        $this->meetLocation->setLocation('Meeting', $meet, $this->walkDate);
+    public function addMeeting($meet) {
+        $this->meeting->addItem($meet);
+        return;
     }
 
-    public function setStart($start) {
-        $this->startLocation = new RJsonwalksLocation();
-        $this->startLocation->setLocation('Start', $start, $this->walkDate);
+    public function addStart($start) {
+        $this->start->addItem($start);
+        return;
     }
 
-    public function setFinish($finish) {
-        $this->finishLocation = new RJsonwalksLocation();
-        $this->finishLocation->setLocation('End', $finish, $this->walkDate);
+    public function addFinish($finish) {
+        $this->finish->addItem($finish);
+        return;
     }
 
-    public function setContact($walk) {
-
-        $this->isLeader = $walk->isLeader;
-        $this->contactName = $walk->contactName;
-        if ($walk->email !== "") {
-            $this->email = 'yes';
-            $this->key = $this->encrypt($walk->email);
-        }
-        if ($walk->contactForm != "") {
-            $this->email = 'yes';
-            $this->contactForm = $walk->contactForm;
-        }
-        $this->telephone1 = $walk->telephone1;
-        $this->telephone2 = $walk->telephone2;
-        $this->walkLeader = $walk->walkLeader;
+    public function addContact($contact) {
+        $this->contacts->addItem($contact);
     }
 
     public function setMedia($media) {
@@ -164,210 +77,152 @@ class RJsonwalksWalk extends REvent {
         $this->flags = $flags->items;
     }
 
-    public function addYear() {
-        $walkyear = $this->walkDate->format('Y');
-        $newDate = new DateTime();
-        $newDate->add(new DateInterval('P300D'));
-        //  $walkDate = new Date($this-> walkDate);
-        if ($this->walkDate < $newDate) {
-            return '';
-        } else {
-            return ' ' . $walkyear;
-        }
-    }
-
-    private function encrypt($simple_string) {
-        // Store the cipher method
-        $ciphering = "AES-128-CTR";
-
-        // Use OpenSSl Encryption method
-        $iv_length = openssl_cipher_iv_length($ciphering);
-        $options = 0;
-
-        // Non-NULL Initialization Vector for encryption
-        $encryption_iv = '1234567891011121';
-
-        // Store the encryption key
-        $encryption_key = "GeeksforGeeks";
-
-        // Use openssl_encrypt() function to encrypt the data
-        $encryption = openssl_encrypt($simple_string, $ciphering,
-                $encryption_key, $options, $encryption_iv);
-        return $encryption;
-    }
-
-    public function getEmail($option = 0, $withtitle = false) {
-        // can this be removed?
-        if (strlen($this->email) > 0) {
-            return "Yes";
-        } else {
-            return "";
-        }
-    }
-
-    public function getValue($type) {
+    public function getSortValue($type) {
         switch ($type) {
             case self::SORT_CONTACT :
-                return $this->contactName;
+                return $this->contacts->getIntValue("contactName");
             case self::SORT_DATE:
-                return $this->walkDate;
+                return $this->basics->getIntValue("walkDate");
             case self::SORT_DISTANCE:
-                return $this->distanceMiles;
+                return $this->walks->getIntValue("distanceKm");
             case self::SORT_LOCALGRADE:
-                return $this->localGrade;
+                return $this->walks->getIntValue("localGrade");
             case self::SORT_NATIONALGRADE:
-                return $this->nationalGrade;
+                return $this->walks->getIntValue("nationalGrade");
             case self::SORT_TELEPHONE1:
-                return $this->telephone1;
+                return $this->contacts->getIntValue("telephone1");
             case self::SORT_TELEPHONE2:
-                return $this->telephone2;
+                return $this->contacts->getIntValue("telephone1");
             case self::SORT_TIME:
-                return $this->sortTime;
+                $sortTime = $this->getIntValue("meeting", "time");
+                if ($sortTime == "") {
+                    $sortTime = $this->getIntValue("start", "time");
+                }
+                return $sortTime;
             default:
                 return NULL;
         }
     }
 
-    public function checkCancelledStatus() {
-        $contains = $this->contains("cancelled", strtolower($this->title));
-        $isC = $this->isCancelled();
-        if ($isC && $contains) {
-            return;
-        }
-        if ($contains) {
-            $this->status = "Cancelled";
-        }
-        if ($isC) {
-            if (!$contains) {
-                $this->title = $this->title . "  CANCELLED";
-            }
-        }
-    }
-
     public function isCancelled() {
-        return strtolower($this->status) === "cancelled";
+        return $this->admin->isCancelled();
     }
 
-    public function setNewWalk($date) {
-        if (strtolower($this->status) == "new") {
-            $this->status = "Published";
-        }
-        if (strtolower($this->status) == "published") {
-            if ($this->dateUpdated > $date) {
-                $this->status = "New";
-            }
-        }
+    public function setNewWalk(DateTime $date) {
+        $this->admin->setNewWalk($date);
     }
 
-    public function createExtraData() {
-        $this->dayofweek = $this->walkDate->format('l');
-        $this->month = $this->walkDate->format('F');
-        $this->day = $this->walkDate->format('jS');
-        if ($this->meetLocation != NULL) {
-            $this->sortTime = $this->meetLocation->time;
-        }
-        if (is_null($this->sortTime)) {
-            if ($this->startLocation !== null) {
-                $this->sortTime = $this->startLocation->time;
-            }
-        }
+    public function _getWalkSchema() {
+        $description = $this->getIntValue("basics", "description");
+        $postcode = $this->getIntValue("start", "postcode");
+        $date = $this->getIntValue("basics", "walkDate")->format('D, jS F');
+        $performer = new RJsonwalksStructuredperformer($this->getIntValue("admin", "groupName") . " - Ramblers");
+        $location = !$this->start->isEmpty() ? new RJsonwalksStructuredlocation($description, $postcode) : null;
+        $schemawalk = new RJsonwalksStructuredevent($performer, $location);
+        $schemawalk->name = "Ramblers led walk on " . $date . ", " . $this->getIntValue("basics", "title");
+        $schemawalk->description = $this->getIntValue("walks", "schemaDistance");
+
+# Google don't like markup which doesn't appear on page so description must be as on page and image should  be excluded from next walks summary listing
+        $schemawalk->startdate = $this->getIntValue("basics", "walkDate")->format('Y-m-d');
+        $schemawalk->enddate = $schemawalk->startdate;
+        $schemawalk->image = "https://www.ramblers-webs.org.uk/images/ra-images/2022brand/Logo%2090px.png";
+        $schemawalk->url = $this->getIntValue("admin", "nationalUrl");
+        return $schemawalk;
     }
 
     public function EventDate() {
-        return $this->walkDate;
+        return $this->basics->getIntValue("walkDate");
     }
 
     public function EventText() {
-        $text = "";
-        if ($this->hasMeetPlace) {
-            $text .= $this->meetLocation->timeHHMMshort;
-        }
-        if ($this->startLocation != null) {
-            if ($this->startLocation->time != "") {
-                if ($text != "") {
-                    $text .= "/";
-                }
-                $text .= $this->startLocation->timeHHMMshort;
-            }
-        }
-        $text = $text . ", " . $this->title;
-        if ($this->distanceMiles > 0) {
-            $text .= ", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
-        }
+        $calendarFormat = ["{meetTime}", "{< ,>}",
+            "{startTime}",
+            "{,title}",
+            "{;distance}"];
+        $text = $this->getWalkValues($calendarFormat);
+
         return $text;
     }
 
-    public function EventLink($display, $text) {
-        return $this->_addWalkLink($this->id, $text);
-    }
-
-    public function EventLinks() {
+    public function EventList($display) {
+        $class = "";
+        $text = $this->EventText();
+        $link = $this->EventLink($display, $text);
         $out = "";
-        If ($this->hasMeetPlace) {
-            $out .= "Meet:" . $this->meetLocation->getOSMap("OS Map");
-            $out .= " " . $this->meetLocation->getDirectionsMap("Directions");
-        }
-        if ($this->startLocation != null) {
-            $out .= " Start:" . $this->startLocation->getOSMap("OS Map");
-            $out .= " " . $this->startLocation->getMap("Directions", "Area Map");
-        }
+        $out .= "<div class='event-list-cal-event-single-link " . $class . $this->EventStatus() . "'>" . PHP_EOL;
+        $out .= $link . PHP_EOL;
+        $out .= "<div class='events links'>";
+        $out .= $this->EventLinks();
+        $out .= "</div>";
+        $out .= "<hr/></div>" . PHP_EOL;
         return $out;
     }
 
+    public function EventLink($display, $text) {
+        return $this->_addWalkLink($this->getIntValue("admin", "id"), $text);
+    }
+
+    public function EventLinks() {
+        return "";
+    }
+
     public function EventStatus() {
-        if ($this->status == "published") {
-            $this->status = "Published";
-        }
-        return "walk" . $this->status;
+        $status = $this->getIntValue("admin", "status");
+        return "walk" . $status;
     }
 
     public function Event_ics($icsfile) {
-        if ($this->hasMeetPlace) {
-            $meetLocation = $this->meetLocation->getTextDescription();
+
+        $meetLocation = $this->getIntValue("meeting", "_icsDescription");
+        if ($meetLocation !== "") {
             $meetLocation .= "; \\n";
-        } else {
-            $meetLocation = "";
         }
-        $startLocation = ($this->startLocation != null) ? $this->startLocation->getTextDescription() : "";
+        $startLocation = $this->getIntValue("start", "_icsDescription");
         $before = $meetLocation . $startLocation . "\\nDescription: ";
-        $after = "\\nContact: " . $this->contactName . " (" . $this->telephone1 . " " . $this->telephone2 . "); \\n";
-        if ($this->localGrade <> "") {
-            $after .= "Grade: " . $this->localGrade . "/" . $this->nationalGrade . "; \\n ";
+        $after = "<br/>" . $this->getIntValue("contacts", "_icsrecord");
+        $after .= $this->getIntValue("walks", "_icsWalkGrade");
+        $after .= $this->getIntValue("admin", "nationalUrl");
+
+        $after .= "<br/>Note: Finish times are very approximate!";
+        $additionalNotes = $this->getIntValue("basics", "additionalNotes");
+        if ($additionalNotes !== '') {
+            $after .= "<br/>Notes: " . $additionalNotes;
+        }
+        $summary = $this->getIntValue("basics", "title");
+        $summary .= $this->getIntValue("walks", "icsWalkDistance");
+
+        if ($this->isCancelled()) {
+            ev . method("CANCEL");
+            $summary = " CANCELLED " . $summary;
+            $description = "CANCELLED - REASON: " . $this->cancellationReason . " (" . $this->getIntValue("basics", "description") . ")";
+            $altDescription = "CANCELLED - REASON: " . $this->cancellationReason . " (" . $this->getIntValue("basics", "descriptionHtml") . ")";
         } else {
-            $after .= "Grade: " . $this->nationalGrade . "; \\n ";
-        }
-        $after .= $this->detailsPageUrl;
-        $after .= "\\nNote: Finish times are very approximate!";
-        if ($this->additionalNotes != '') {
-            $after .= "\\nNotes: " . strip_tags($this->additionalNotes);
-        }
-        $summary = $this->title;
-        if ($this->distanceMiles > 0) {
-            $summary .= ", " . $this->distanceMiles . "mi/" . $this->distanceKm . "km";
+            $description = $before . $this->getIntValue("basics", "description") . $after;
+            $altDescription = $before . $this->getIntValue("basics", "descriptionHtml") . $after;
         }
         $now = new datetime();
         $icsfile->addRecord("BEGIN:VEVENT");
         $this->addIcsTimes($icsfile);
         $icsfile->addRecord("LOCATION:", $startLocation);
         $icsfile->addRecord("TRANSP:OPAQUE");
-        $icsfile->addSequence($this->dateUpdated);
-        $icsfile->addRecord("UID: walk" . $this->id . "-isc@ramblers-webs.org.uk");
-        $icsfile->addRecord("ORGANIZER;CN=" . $this->groupName . ":mailto:ignore@ramblers-webs.org.uk");
-        if ($this->isCancelled()) {
+        $icsfile->addSequence($this->getIntValue("admin", "dateUpdated"));
+        $icsfile->addRecord("UID: walk" . $this->getIntValue("admin", "id") . "-isc@ramblers-webs.org.uk");
+        $icsfile->addRecord("ORGANIZER;CN=" . $this->getIntValue("admin", "groupName") . ":mailto:ignore@ramblers-webs.org.uk");
+        if ($this->admin->isCancelled()) {
             $icsfile->addRecord("METHOD:CANCEL");
             $icsfile->addRecord("SUMMARY: CANCELLED ", RHtml::convertToText($summary));
             $icsfile->addRecord("DESCRIPTION: CANCELLED - REASON: ", RHtml::convertToText($this->cancellationReason) . " (" . $this->description . ")");
         } else {
             $icsfile->addRecord("SUMMARY:", RHtml::convertToText($summary));
-            $icsfile->addRecord("DESCRIPTION:", $before . $this->description . $after);
-            $icsfile->addRecord("X-ALT-DESC;FMTTYPE=text/html:", $before . $this->descriptionHtml . $after, true);
+            $icsfile->addRecord("DESCRIPTION:", $description);
+            $icsfile->addRecord("X-ALT-DESC;FMTTYPE=text/html:", $altDescription, true);
         }
-        $icsfile->addRecord("CATEGORIES:", "Walk," . $this->groupName);
+        $icsfile->addRecord("CATEGORIES:", "Walk," . $this->getIntValue("admin", "groupName"));
         $icsfile->addRecord("DTSTAMP;VALUE=DATE-TIME:", $this->dateTimetoUTC($now));
-        $icsfile->addRecord("CREATED;VALUE=DATE-TIME:", $this->dateTimetoUTC($this->dateCreated));
-        $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:", $this->dateTimetoUTC($this->dateUpdated));
+        $icsfile->addRecord("CREATED;VALUE=DATE-TIME:", $this->dateTimetoUTC($this->getIntValue("admin", "dateCreated")));
+        $icsfile->addRecord("LAST-MODIFIED;VALUE=DATE-TIME:", $this->dateTimetoUTC($this->getIntValue("admin", "dateUpdated")));
         $icsfile->addRecord("PRIORITY:1");
-        $icsfile->addRecord("URL;VALUE=URI:", $this->detailsPageUrl);
+        $icsfile->addRecord("URL;VALUE=URI:", $this->getIntValue("admin", "nationalUrl"));
         $icsfile->addRecord("CLASS:PUBLIC");
         $icsfile->addRecord("END:VEVENT");
         return;
@@ -391,13 +246,13 @@ class RJsonwalksWalk extends REvent {
                     $icsfile->addRecord("DTEND;VALUE=DATE-TIME:" . $time->format('Ymd\THis'));
                 }
             } else {
-                $icsfile->addRecord("DTSTART;VALUE=DATE:" . $this->walkDate->format('Ymd'));
+                $icsfile->addRecord("DTSTART;VALUE=DATE:" . $this->getIntValue("basics", "walkDate")->format('Ymd'));
             }
         }
     }
 
     private function getFirstTime() {
-        $starttime = RJsonwalksLocation::firstTime($this->meetLocation, $this->startLocation);
+        $starttime = $this->_firstTime($this->getIntValue("meeting", "time"), $this->getIntValue("start", "time"));
         if ($starttime == "") {
             $starttime = null;
         }
@@ -405,74 +260,39 @@ class RJsonwalksWalk extends REvent {
     }
 
     private function getFinishTime() {
-        if ($this->finishTime != null) {
-            return $this->finishTime;
+        $finishTime = $this->getIntValue("finish", "time");
+        if ($finishTime != null) {
+            return $finishTime;
         }
         // calculate end time
-        $lasttime = RJsonwalksLocation::lastTime($this->meetLocation, $this->startLocation);
-        $durationFullMins = ceil($this->distanceMiles / 2) * 60;
-        if ($this->startLocation->exact == false) {
-            $durationFullMins += 60;
+        $lasttime = $this->_lastTime($this->getIntValue("meeting", "time"), $this->getIntValue("start", "time"));
+        $durationFullMins = ceil($this->getIntValue("walks", "distanceMiles") / 2) * 60;
+        if ($this->getIntValue("start", "type") == "Rough") {
+            $durationFullMins += 60; // add time to allow for travelling
         }
         $intervalFormat = "PT" . $durationFullMins . "M";
         $interval = new DateInterval($intervalFormat);
         return $lasttime->add($interval);
     }
 
-    private function getGradeSpan($class) {
-        $tag = "";
-        $img = $this->getGradeImg();
-        switch ($this->nationalGrade) {
-            case "Easy Access":
-                $tag = "<span data-descr='Easy Access' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
-                break;
-            case "Easy":
-                $tag = "<span data-descr='Easy' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
-                break;
-            case "Leisurely":
-                $tag = "<span data-descr='Leisurely' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
-                break;
-            case "Moderate":
-                $tag = "<span data-descr='Moderate' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
-                break;
-            case "Strenuous":
-                $tag = "<span data-descr='Strenuous' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
-                break;
-            case "Technical":
-                $tag = "<span data-descr='Technical' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
-                break;
-            default:
-                break;
+    public function _firstTime($time1, $time2) {
+        if ($time1 === "") {
+            return $time2;
         }
-        return $tag;
+        if ($time2 === "") {
+            return $time1;
+        }
+        return $time1;
     }
 
-    private function getGradeImg() {
-        $base = JURI::base();
-        $folder = JURI::base(true);
-        $url = $folder . "/media/lib_ramblers/images/grades/";
-
-        switch ($this->nationalGrade) {
-            case "Easy Access":
-                $url = "<img src='" . $url . "ea.png' alt='Easy Access' height='30' width='30'>";
-                break;
-            case "Easy":
-                $url = "<img src='" . $url . "e.png' alt='Easy' height='30' width='30'>";
-                break;
-            case "Leisurely":
-                $url = "<img src='" . $url . "l.png' alt='Leisurely' height='30' width='30'>";
-                break;
-            case "Moderate":
-                $url = "<img src='" . $url . "m.png' alt='Moderate' height='30' width='30'>";
-                break;
-            case "Strenuous":
-                $url = "<img src='" . $url . "s.png' alt='Strenuous' height='30' width='30'>";
-                break;
-            case "Technical":
-                $url = "<img src='" . $url . "t.png' alt='Technical' height='30' width='30'>";
-                break;
+    public function _lastTime($time1, $time2) {
+        if ($time1 === "") {
+            return $time2;
         }
-        return $url;
+        if ($time2 === "") {
+            return $time1;
+        }
+        return $time2;
     }
 
     public function distanceFromLatLong($lat, $long) {
@@ -484,11 +304,6 @@ class RJsonwalksWalk extends REvent {
         }
         return $distance;
     }
-
-//   private function endsWith($haystack, $needle) {
-//        // search forward starting from end minus needle length characters
-//        return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== false);
-//    }
 
     public function getMedia($item) {
         $out = [];
@@ -518,7 +333,8 @@ class RJsonwalksWalk extends REvent {
     }
 
     public function getMonthGroup() {
-        return $this->month . $this->addYear();
+        //   return $this->month . $this->addYear();
+        return $this->getIntValue("basics", "monthgroup");
     }
 
     public static function setCustomValues($clss, $method) {
@@ -547,7 +363,7 @@ class RJsonwalksWalk extends REvent {
             return $out;
         }
         if ($link) {
-            return $this->addWalkLink($this->id, $out);
+            return $this->addWalkLink($this->getIntValue("admin", "id"), $out);
         } else {
             return $out;
         }
@@ -561,259 +377,72 @@ class RJsonwalksWalk extends REvent {
                 $out = $BR;
                 break;
             case "{group}":
-                $out = $this->groupName;
+                $out = $this->admin->getValue($option);
                 break;
             case "{dowShortdd}":
-                $out = "<b>" . $this->walkDate->format('D, jS ') . "</b>";
-
-                break;
             case "{dowShortddmm}":
-                $out = "<b>" . $this->walkDate->format('D, jS F') . $this->addYear() . "</b>";
-                break;
-            case "{dowShortddyyyy}": // published in error
             case "{dowShortddmmyyyy}":
-                $out = "<b>" . $this->walkDate->format('D, jS F Y') . "</b>";
-                break;
             case "{dowdd}":
-                $out = "<b>" . $this->walkDate->format('l, jS') . "</b>";
-                break;
             case "{dowddmm}":
-                $out = "<b>" . $this->walkDate->format('l, jS F') . $this->addYear() . "</b>";
-                break;
             case "{dowddmmyyyy}":
-                $out = "<b>" . $this->walkDate->format('l, jS F Y') . "</b>";
+            case "{title}":
+            case "{description}":
+            case "{additionalNotes}":
+                $out = $this->basics->getValue($option);
                 break;
             case "{meet}":
-                if ($this->hasMeetPlace) {
-                    $out = $this->meetLocation->timeHHMMshort;
-                    if ($this->meetLocation->description) {
-                        $out .= " at " . $this->meetLocation->description;
-                    }
-                }
-                break;
             case "{meetTime}":
-                if ($this->hasMeetPlace) {
-                    $out = $this->meetLocation->timeHHMMshort;
-                }
-                break;
             case "{meetPlace}":
-                if ($this->hasMeetPlace) {
-                    $out = $this->meetLocation->description;
-                }
-                break;
             case "{meetGR}":
-                if ($this->hasMeetPlace) {
-                    $out = $this->meetLocation->gridref;
-                }
-                break;
             case "{meetPC}":
-                if ($this->hasMeetPlace) {
-                    if ($this->meetLocation->postcode !== null) {
-                        $out = $this->meetLocation->postcode->text;
-                    }
-                }
-                break;
             case "{meetw3w}":
-                if ($this->hasMeetPlace) {
-                    $out = $this->meetLocation->w3w;
-                }
-                break;
-            case "{meetOLC}":
-                $out = "Deprecated";
-                break;
-            case "{meetMapCode}":
-                 $out = "Deprecated";
+            case "{meetOSMap}":
+            case "{meetDirections}":
+                $out = $this->meeting->getValue(str_replace("meet", "", $option));
                 break;
             case "{start}":
-                if ($this->startLocation->exact) {
-                    $out = $this->startLocation->timeHHMMshort;
-                    if ($this->startLocation->description) {
-                        $out .= " at " . $this->startLocation->description;
-                    }
-                }
-                break;
             case "{startTime}":
-                if ($this->startLocation->exact) {
-                    $out = $this->startLocation->timeHHMMshort;
-                }
-                break;
             case "{startPlace}":
-                if ($this->startLocation->exact) {
-                    if ($this->startLocation->description) {
-                        $out .= $this->startLocation->description;
-                    }
-                }
-                break;
             case "{startGR}":
-                if ($this->startLocation->exact) {
-                    $out = $this->startLocation->gridref;
-                }
-                break;
             case "{startPC}":
-                if ($this->startLocation->exact) {
-                    if ($this->startLocation->postcode !== null) {
-                        $out = $this->startLocation->postcode->text;
-                    }
-                }
-                break;
             case "{startw3w}":
-                if ($this->startLocation->exact) {
-                    $out = $this->startLocation->w3w;
-                }
+            case "{startOSMap}":
+            case "{startDirections}":
+                $out = $this->start->getValue(str_replace("start", "", $option));
                 break;
-            case "{startOLC}":
-                 $out = "Deprecated";
-                break;
-            case "{startMapCode}":
-                 $out = "Deprecated";
-                break;
+            case "{finishPlace}":
+            case "{finishGR}":
+            case "{finishPC}":
             case "{finishTime}":
-                if ($this->finishTime) {
-                    $out = $this->finishTime->format('g:ia');
-                }
-                break;
-            case "{title}":
-                $out = $this->title;
-                $out = "<b>" . $out . "</b>";
-                break;
-            case "{description}":
-                $out = $this->description;
+                $out = $this->finish->getValue(str_replace("finish", "", $option));
                 break;
             case "{difficulty}":
-                $out = $this->getWalkValue("{distance}");
-                $out .= $BR . "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
-                if ($this->localGrade !== "") {
-                    if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
-                        $out .= $BR . $this->localGrade;
-                    }
-                }
-                break;
             case "{difficulty+}":
-                $out = $this->getWalkValue("{distance}");
-                //  $out .= "<div>" . $this->getGradeSpan("middle") . "</div>";
-                $out .= $this->getGradeSpan("middle");
-                $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
-                if ($this->localGrade !== "") {
-                    if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
-                        $out .= $BR . $this->localGrade;
-                    }
-                }
-                break;
-            case "{distance}":
-                if ($this->distanceMiles > 0) {
-                    $out = $this->distanceMiles . "mi / " . $this->distanceKm . "km";
-                }
-                break;
-            case "{distanceMi}":
-                if ($this->distanceMiles > 0) {
-                    $out = $this->distanceMiles . "mi";
-                }
-                break;
-            case "{distanceKm}":
-                if ($this->distanceMiles > 0) {
-                    $out = $this->distanceKm . "km";
-                }
-                break;
-            case "{gradeimg}":
-                $out = $this->getGradeSpan('middle');
-                break;
-            case "{gradeimgRight}":
-                $out = $this->getGradeSpan('right');
-                break;
-            case "{grade}":
-                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
-                if ($this->localGrade !== "") {
-                    if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
-                        $out .= $BR . $this->localGrade;
-                    }
-                }
-                break;
-            case "{grade+}":
-                $out = $this->getGradeSpan("middle");
-                $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
-                if ($this->localGrade !== "") {
-                    if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
-                        $out .= $BR . $this->localGrade;
-                    }
-                }
-                break;
-            case "{nationalGrade}":
-                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
-                break;
-            case "{nationalGradeAbbr}":
-                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->gradeAbbr() . "</span>";
-                break;
-            case "{localGrade}":
-                $out = $this->localGrade;
-                break;
-            case "{additionalNotes}":
-                $out = $this->additionalNotes;
-                break;
             case "{type}":
-                if ($this->isLinear) {
-                    $out = "Linear";
-                } else {
-                    $out = "Circular";
-                }
+            case "{distance}":
+            case "{distanceMi}":
+            case "{distanceKm}":
+            case "{gradeimg}":
+            case "{gradeimgRight}":
+            case "{grade}":
+            case "{grade+}":
+            case "{nationalGrade}":
+            case "{nationalGradeAbbr}":
+            case "{localGrade}":
+            case "{shape}":
+                $out = $this->walks->getValue($option);
                 break;
+
             case "{contact}":
-                $titlePrefix = '';
-                $out = "";
-                if ($this->isLeader) {
-                    $titlePrefix = "Leader ";
-                } else {
-                    $titlePrefix = "Contact ";
-                }
-                if ($this->contactName !== "") {
-                    $out .= "<b>" . $this->contactName . "</b>";
-                }
-                if ($this->email !== "") {
-                    $out .= $BR . $this->getEmailLink($this);
-                }
-                if ($this->telephone1 !== "") {
-                    $out .= $BR . $this->telephone1;
-                }
-                if ($this->telephone2 !== "") {
-                    $out .= $BR . $this->telephone2;
-                }
-                if ($out !== '') {
-                    $out = $titlePrefix . $out;
-                }
-                break;
             case "{contactname}":
-                if ($this->contactName !== '') {
-                    if ($this->isLeader) {
-                        $out .= "Leader: ";
-                    } else {
-                        $out .= "Contact: ";
-                    }
-                }
-                $out = $this->contactName;
-                break;
             case "{contactperson}":
-                $out = $this->contactName;
-                break;
             case "{telephone}":
             case "{telephone1}":
-                if ($this->telephone1 !== "") {
-                    $out .= $this->telephone1;
-                }
-                break;
             case "{telephone2}":
-                if ($this->telephone2 !== "") {
-                    $out .= $this->telephone2;
-                }
-                break;
             case "{email}":
             case "{emailat}":
-                if ($this->email !== "") {
-                    $out = $this->getEmailLink($this);
-                }
-                break;
             case "{emaillink}":
-                if ($this->email !== "") {
-                    $out = $this->getEmailLink($this);
-                }
+                $out = $this->contacts->getValue($option);
                 break;
             case "{mediathumbr}":
                 $out = '';
@@ -827,34 +456,7 @@ class RJsonwalksWalk extends REvent {
                     $out = "<img class='mediathumbl' src='" . $this->media[0]->styles[1]->url . "' >";
                 }
                 break;
-            case "{meetOSMap}":
-                if ($this->hasMeetPlace) {
-                    $lat = $this->meetLocation->latitude;
-                    $long = $this->meetLocation->longitude;
-                    $out = "<span><a href=&quot;javascript:ra.link.streetmap(" . $lat . "," . $long . ")&quot; >[OS Map]</a></span>";
-                }
-                break;
-            case "{meetDirections}":
-                if ($this->hasMeetPlace) {
-                    $lat = $this->meetLocation->latitude;
-                    $long = $this->meetLocation->longitude;
-                    $out = "<span><a href=&quot;javascript:ra.loc.directions(" . $lat . "," . $long . ")&quot; >[Directions]</a></span>";
-                }
-                break;
-            case "{startOSMap}":
-                if ($this->hasMeetPlace) {
-                    $lat = $this->startLocation->latitude;
-                    $long = $this->startLocation->longitude;
-                    $out = "<span><a href=&quot;javascript:ra.link.streetmap(" . $lat . "," . $long . ")&quot; >[OS Map]</a></span>";
-                }
-                break;
-            case "{startDirections}":
-                if ($this->hasMeetPlace) {
-                    $lat = $this->startLocation->latitude;
-                    $long = $this->startLocation->longitude;
-                    $out = "<span><a href=&quot;javascript:ra.loc.directions(" . $lat . "," . $long . ")&quot; >[Directions]</a></span>";
-                }
-                break;
+
             default:
                 $found = false;
                 if (self::$customValuesClass !== null) {
@@ -871,28 +473,26 @@ class RJsonwalksWalk extends REvent {
         return $out;
     }
 
-    private function gradeAbbr() {
-        switch ($this->nationalGrade) {
-            case "Easy Access":
-                return "EA";
-            case "Easy":
-                return "E";
-            case "Leisurely":
-                return "L";
-            case "Moderate":
-                return "M";
-            case "Strenuous":
-                return "S";
-            case "Technical":
-                return "T";
-            default:
-                return "";
+    public function getIntValue($section, $option) {
+        switch ($section) {
+            case "admin":
+                return $this->admin->getIntValue($option);
+            case "basics":
+                return $this->basics->getIntValue($option);
+            case "walks":
+                return $this->walks->getIntValue($option);
+            case "meeting":
+                return $this->meeting->getIntValue($option);
+            case "start":
+                return $this->start->getIntValue($option);
+            case "finish":
+                return $this->finish->getIntValue($option);
+            case "contacts":
+                return $this->contacts->getIntValue($option);
         }
-    }
-
-    private function getEmailLink() {
-        $link = "javascript:ra.walk.emailContact(\"" . $this->id . "\")";
-        return "<span><a href='" . $link . "' >Email contact</a></span>";
+        $app = JFactory::getApplication();
+        $app->enqueueMessage("Internal error, invalid Walk/Event section: " . $section);
+        return null;
     }
 
     private function getPrefix($walkOption) {
@@ -966,11 +566,12 @@ class RJsonwalksWalk extends REvent {
     }
 
     public function addTooltip($text) {
-        if ($this->isCancelled()) {
+        if ($this->admin->isCancelled()) {
             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" . $text . "</span>";
         }
-        if (strtolower($this->status) === "new") {
-            return "<span data-descr='Walk updated " . $this->dateUpdated->format('D, jS M') . "' class=' walkNew'>" . $text . "</span>";
+        if ($this->admin->isNew()) {
+            $dateUpdated = $this->getIntValue("admin", "dateUpdated");
+            return "<span data-descr='Walk updated " . $dateUpdated->format('D, jS M') . "' class=' walkNew'>" . $text . "</span>";
         }
         return $text;
     }
@@ -979,16 +580,27 @@ class RJsonwalksWalk extends REvent {
         return strpos($haystack, $needle) !== false;
     }
 
+    public function EventDateYYYYMMDD() {
+        return $this->basics->getIntValue("walkDate")->format('Y-m-d');
+    }
+
+    public function jsonSerialize(): mixed {
+
+        return [
+            'admin' => $this->admin,
+            'basics' => $this->basics,
+            'walks' => $this->walks,
+            'meeting' => $this->meeting,
+            'start' => $this->start,
+            'finish' => $this->finish,
+            'contact' => $this->contacts,
+            'flags' => $this->flags,
+            'media' => $this->media
+        ];
+    }
+
     function __destruct() {
         
     }
-
-}
-
-abstract class ShapeOfWalk {
-
-    const Linear = 0;
-    const Circular = 1;
-    const FigureofEight = 2;
 
 }

@@ -201,10 +201,7 @@ ra.leafletmap = function (tag, options) {
         var pt = L.latLng(options.initialview.latitude, options.initialview.longitude);
         this.map.setView(pt, options.initialview.zoom);
     }
-    //this.map.addEventListener('fullscreenchange', function () {
-    // let modal know if map full screen;
-    //  ra.modals.fullscreen(self.map.isFullscreen(), self.map);
-    //});
+ 
     // top right controls
     this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
     if (options.topoMapDefault) {
