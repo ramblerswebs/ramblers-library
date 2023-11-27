@@ -1926,7 +1926,7 @@ ra.filter = function (eventTag, eventName) {
         var tags = [
             {name: 'button', parent: 'root', tag: 'div', textContent: 'Filter', attrs: {class: 'ra_openclose'}},
             {name: 'span', parent: 'button', tag: 'span', attrs: {class: 'ra-closed'}},
-            {name: 'options', parent: 'root', tag: 'div', attrs: {class: 'clear'}},
+            {name: 'options', parent: 'root', tag: 'div', attrs: {class: 'ra-clear'}},
             {parent: 'options', tag: 'div', attrs: {class: 'ra-filter-spacer'}},
             {name: 'filters', parent: 'options', tag: 'div', attrs: {class: 'ra-walksfilter'}}
         ];

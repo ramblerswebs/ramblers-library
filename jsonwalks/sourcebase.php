@@ -44,8 +44,8 @@ abstract class SourceOfWalk {
 abstract class TypeOfWalk {
 
     const Unknown = '?';
-    const GroupWalk = 'walk';
-    const GroupEvent = 'event';
-    const WellbeingWalk = 'wb-walk';
+    const GroupWalk = 'Walk';
+    const GroupEvent = 'Event';
+    const WellbeingWalk = 'Well being walk';
 
 }

@@ -44,7 +44,8 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
     public function getValue($option) {
         $out = "";
         switch ($option) {
-            case "{}":
+          
+           case "{group}":
                 $out = $this->groupName;
                 break;
         }

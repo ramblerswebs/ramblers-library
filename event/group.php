@@ -32,7 +32,7 @@ class REventGroup {
             $this->arrayofevents[] = $walk;
         }
 
-    //    RLeafletScript::registerWalks(array_values($arrayofwalks));
+        RLeafletScript::registerWalks(array_values($arrayofwalks));
     }
 
     // used by Download ICS

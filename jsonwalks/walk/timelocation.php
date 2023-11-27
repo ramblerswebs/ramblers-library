@@ -14,7 +14,7 @@
 class RJsonwalksWalkTimelocation implements JsonSerializable {
 
     private $type;
-    private $time;
+    private $time;  // null if no time
     private $timeHHMM;
     private $timeHHMMshort;
     private $description;
@@ -58,15 +58,20 @@ class RJsonwalksWalkTimelocation implements JsonSerializable {
         }
 
         $this->travel = $travel;
-        $this->time = $time;
-        if ($time !== null) {
+
+        if ($time !== null && $time !== "") {
+            $this->time = $time;
             $this->timeHHMM = $this->time->format('g:ia');
             $this->timeHHMMshort = str_replace(":00", "", $this->timeHHMM);
             if ($this->timeHHMMshort == "12am") {
-                $this->time = "";
+                $this->time = null;
                 $this->timeHHMM = "No time";
                 $this->timeHHMMshort = "No time";
             }
+        } else {
+            $this->time = null;
+            $this->timeHHMM = "No time";
+            $this->timeHHMMshort = "No time";
         }
 
         $this->description = $description;
@@ -140,7 +145,7 @@ class RJsonwalksWalkTimelocation implements JsonSerializable {
                 return $this->type;
             case "time":
                 return $this->time;
-           case "postcode":
+            case "postcode":
                 return $this->postcode;
             case "textTime":
                 if ($this->time != "") {

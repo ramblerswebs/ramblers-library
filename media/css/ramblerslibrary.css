@@ -208,7 +208,7 @@ abbr[title] {
     font-weight: bold;
 }
 .distnotfound {
-   font-style: italic;
+    font-style: italic;
 }
 
 table.fc-scrollgrid tbody {
@@ -355,7 +355,8 @@ div.js-modal.ramblers {
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
 }
-div.clear {
+div.clear,
+div.ra-clear{
     clear: both;
 }
 .ra-modal-header {

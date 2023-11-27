@@ -185,7 +185,11 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         if (property_exists($loc, 'postcode')) {
             $postcode = $loc->postcode->value;
         }
-        $osmaps = $loc->osmaps;
+        $osmaps=null;
+        if (property_exists($loc, 'postcode')) {
+            $osmaps = $loc->osmaps;
+        }
+
         $tl = new RJsonwalksWalkTimelocation($type, "", $time, $name,
                 $latitude, $longitude, $gridref, $w3w,
                 $postcode, 0, 0, $osmaps);

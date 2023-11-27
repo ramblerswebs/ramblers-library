@@ -136,9 +136,9 @@ class RJsonwalksWalkWalk implements JsonSerializable {
                 return $this->nationalGrade;
             case "shape":
                 return $this->shape;
-             case "pace":
+            case "pace":
                 return $this->pace;
-             case "ascent":
+            case "ascent":
                 return $this->ascent;
             case "schemaDistance":
                 if ($this->nationalGrade !== "None") {
@@ -157,7 +157,7 @@ class RJsonwalksWalkWalk implements JsonSerializable {
                 return "";
         }
         $app = JFactory::getApplication();
-        $app->enqueueMessage("Internal error, invalid Walk value: " . $option);
+        $app->enqueueMessage("RJsonwalksWalkWalk error, invalid Walk value: " . $option);
 
         return "";
     }
@@ -166,6 +166,9 @@ class RJsonwalksWalkWalk implements JsonSerializable {
         $tag = "";
         $img = $this->getGradeImg();
         switch ($this->nationalGrade) {
+            case "Event":
+                $tag = "<span data-descr='Event' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
+                break;
             case "Easy Access":
                 $tag = "<span data-descr='Easy Access' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
                 break;
@@ -185,7 +188,8 @@ class RJsonwalksWalkWalk implements JsonSerializable {
                 $tag = "<span data-descr='Technical' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
                 break;
             default:
-                break;
+                $app = JFactory::getApplication();
+                $app->enqueueMessage("RJsonwalksWalkWalk error: invalid garde", 'information');
         }
         return $tag;
     }
@@ -196,6 +200,9 @@ class RJsonwalksWalkWalk implements JsonSerializable {
         $url = $folder . "/media/lib_ramblers/images/grades/";
 
         switch ($this->nationalGrade) {
+            case "Event":
+                $url = "<img src='" . $url . "event.png' alt='Event' height='30' width='30'>";
+                break;
             case "Easy Access":
                 $url = "<img src='" . $url . "ea.png' alt='Easy Access' height='30' width='30'>";
                 break;
@@ -214,12 +221,17 @@ class RJsonwalksWalkWalk implements JsonSerializable {
             case "Technical":
                 $url = "<img src='" . $url . "t.png' alt='Technical' height='30' width='30'>";
                 break;
+            default:
+                $app = JFactory::getApplication();
+                $app->enqueueMessage("RJsonwalksWalkWalk error: invalid garde", 'information');
         }
         return $url;
     }
 
     private function gradeAbbr() {
         switch ($this->nationalGrade) {
+            case "Event":
+                return "Event";
             case "Easy Access":
                 return "EA";
             case "Easy":
@@ -233,6 +245,8 @@ class RJsonwalksWalkWalk implements JsonSerializable {
             case "Technical":
                 return "T";
             default:
+                $app = JFactory::getApplication();
+                $app->enqueueMessage("RJsonwalksWalkWalk error: invalid garde", 'information');
                 return "";
         }
     }

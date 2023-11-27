@@ -39,7 +39,7 @@ class RJsonwalksWmCachefolder {
 
     public function getCacheNameFromUrl($feedurl, $ext) {
         $url = strtolower(trim($feedurl));
-        $tmpFile = $this->cacheFolderPath . DS . "WM_" . md5($url) . "." . $ext;
+        $tmpFile = $this->cacheFolderPath . DIRECTORY_SEPARATOR . "WM_" . md5($url) . "." . $ext;
         return $tmpFile;
     }
 

@@ -339,7 +339,8 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         $out1 += "<div data-jplist-item >";
         if ($displayMonth) {
-            $out1 += "<h3>" + $walk.month + $walk.addYear() + "</h3>";
+      
+            $out1 += "<h3>" + $walk.getIntValue("basics", "displayMonth") + "</h3>";
         }
         $out1 += "<div  class='" + $customClass + " walk" + $walk.status + "' >";
         $image = '<span class="walkdetail" >';
@@ -378,7 +379,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         var $customClass = "";
         if ($displayMonth) {
             $out += "<tr data-jplist-item ><td>";
-            $out += "<h3>" + $walk.month + $walk.addYear() + "</h3>";
+            $out += "<h3>" +  $walk.getIntValue("basics", "displayMonth") + "</h3>";
             $out += "</td></tr>";
         }
         if (typeof displayTableRowClass === 'function') {

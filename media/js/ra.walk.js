@@ -20,43 +20,39 @@ ra.events = function () {
         return null;
     };
     this.forEachAll = function (fcn) {
-        for (let key in this.events) {
-            let event = this.events[key];
+        this.events.forEach(event => {
             fcn(event);
-        }
+        });
     };
     this.forEachFiltered = function (fcn) {
-        for (let key in this.events) {
-            let event = this.events[key];
+        this.events.forEach(event => {
             if (event._displayFiltered) {
                 fcn(event);
             }
-        }
+        });
     };
     this.setAllWalks = function () {
-        for (let key in this.events) {
-            let event = this.events[key];
+        this.events.forEach(event => {
             event._displayFiltered = true;
-        }
+        });
     };
     this.setDisplayFilter = function () {
-        for (let key in this.events) {
-            let event = this.events[key];
+        this.events.forEach(event => {
             event._displayFiltered = event.setDisplayFilter(this.filter);
-        }
+        });
     };
     this.getNoEventsToDisplay = function () {
         var no = 0;
-        for (let key in this.events) {
-            let event = this.events[key];
+        this.events.forEach(event => {
             if (event._displayFiltered) {
                 no += 1;
             }
-        }
+        });
         return no;
     };
     this.length = function () {
-        return Object.keys(this.events).length;
+        // return Object.keys(this.events).length;
+        return this.events.length;
     };
     this.setFilters = function (tag) {
         var filter = new ra.filter(document, "reDisplayWalks");
@@ -89,6 +85,7 @@ ra.events = function () {
             {title: 'In last week', limit: 7}
         ];
         filter.addGroup("idGroup", "Group");
+        filter.addGroup("idType", "Type");
         filter.addGroup("idDOW", "Day of the week", dowOrder);
         filter.setDisplaySingle("idDOW", true);
         filter.addGroup("idDistance", "Distance", distanceOrder);
@@ -100,8 +97,13 @@ ra.events = function () {
         filter.addGroup("idStatus", "Status");
         this.forEachAll(walk => {
             filter.insertGroupUnique("idDistance", walk.getIntValue("walks", "_filterDistance"));
+            filter.insertGroupUnique("idType", walk.admin.eventType);
             filter.insertGroupUnique("idDOW", ra.date.dow(walk.basics.walkDate));
-            filter.insertGroupUnique("idGrade", walk.getIntValue("walks", "_nationalGrade"));
+            var $grade = walk.getIntValue("walks", "_nationalGrade");
+            if ($grade !== "Event") {
+                filter.insertGroupUnique("idGrade", $grade);
+            }
+
             filter.insertGroupRange("idDate", walk.basics.walkDate);
             filter.insertGroupLimit("idUpdate", walk.admin.filterUpdate());
             filter.insertGroupUnique("idGroup", walk.admin.groupName);
@@ -431,7 +433,7 @@ ra.event = function () {
         if (event.ctrlKey && event.altKey) {
             this.walkDiagnostics(div);
         } else {
-            this.walkDetails(div);
+            this.walkDetailsDisplay(div);
             var tag = modal.headerDiv();
             if (tag !== null) {
                 this._addDiaryButton(tag);
@@ -453,6 +455,9 @@ ra.event = function () {
     };
     this.setDisplayFilter = function (filter) {
         if (!filter.shouldDisplayItem("idDate", this.basics.walkDate)) {
+            return false;
+        }
+        if (!filter.shouldDisplayItem("idType", this.admin.eventType)) {
             return false;
         }
         var dow = ra.date.dow(this.basics.walkDate);
@@ -704,7 +709,7 @@ ra.event = function () {
         return $text;
     };
 // display walks 
-    this.walkDetails = function (tag) {
+    this.walkDetailsDisplay = function (tag) {
 
         var content = document.createElement('div');
         content.setAttribute('class', 'walkstdfulldetails stdfulldetails walk' + this.admin.status);
@@ -743,7 +748,7 @@ ra.event = function () {
         this.start.forEach(loc => {
             var id = this.admin.id;
             var isCancelled = this.isCancelled();
-            var isEvent = this.eventType === "event";
+            var isEvent = this.eventType === "Event";
             var summary = this.getEventValues(this.mapSummary, false);
             var link = this.getEventValues(this.mapLinks, false);
             var grade = this.getEventValues(this.mapGrade, false);
@@ -1873,8 +1878,8 @@ ra.event.postcode = function () {
         }
         if (this.latitude === 0 && this.longitude === 0) {
             $distclass = "distnotfound";
-              $note = this.text;   
-              $note2 = "Postcode location not found";
+            $note = this.text;
+            $note2 = "Postcode location not found";
         }
         $pc = "<b>Postcode</b>: <abbr title='" + $note2 + "'>" + $note + "</abbr>";
         $out = ra.html.addDiv("postcode " + $distclass, $pc);
@@ -2018,7 +2023,7 @@ ra.walk = (function () {
         } else {
             var walk = my.walks.getEvent(id);
             if (walk !== null) {
-                walk.walkDetails(tag);
+                walk.walkDetailsDisplay(tag);
             } else {
                 alert("Walk not found - program error, please report issue to the webmaster");
             }

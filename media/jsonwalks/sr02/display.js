@@ -6,26 +6,26 @@ displayCustomValues = function ($option, $walk) {
     // custom field must start with x
     switch ($option) {
         case "{xdowddmm}":
-            $response.out = "<b>" + ra.date.dow($walk.walkDate) + "<br/>" + ra.date.ddmm($walk.walkDate) + ra.walk.addYear($walk) + "</b>";
+            $response.out = "<b>" + ra.date.dow($walk.basics.walkDate) + "<br/>" + ra.date.ddmm($walk.basics.walkDate) + $walk.basics.addYear() + "</b>";
             break;
         case "{xSymbol}":
             /* Picnic or Pub icon */
-            if ($walk.additionalNotes.includes("picnic")) {
+            if ($walk.basics.additionalNotes.includes("picnic")) {
                 $response.out = '<img src="' + ra.baseDirectory() + 'media/lib_ramblers/jsonwalks/sr02/Sandwich-icon.png" title="Picnic Required" width="24" height="24" align="left"/>';
                 break;
             }
-            if ($walk.additionalNotes.includes("pub")) {
+            if ($walk.basics.additionalNotes.includes("pub")) {
                 $response.out = '<img src="' + ra.baseDirectory() + 'media/lib_ramblers/jsonwalks/sr02/beer.png" title="Pub Lunch" width="24" height="24" align="left"/>';
             }
             break;
         case "{xNationalGrade}":
-            $response.out = $walk.nationalGrade.toUpperCase();
+            $response.out = $walk.getIntValue("walks","nationalGrade").toUpperCase();
             break;
         case "{xContact}":
-            $response.out = "<b>" + $walk.contactName + "</b>";
+            $response.out = "<b>" + $walk.getIntValue("contacts","contactName") + "</b>";
             break;
         case "{xGradeImg}":
-            $response.out = gradeImage($walk.nationalGrade);
+            $response.out = gradeImage($walk.getIntValue("walks","nationalGrade"));
             break;
         default:
             $response.found = false;
@@ -38,7 +38,10 @@ gradeImage = function (nationalGrade) {
 
     var $url = ra.baseDirectory() + "media/lib_ramblers/jsonwalks/sr02/images/grades/";
     switch (nationalGrade) {
-        case "Easy Access":
+        case "Event":
+            $url = "<img src='" + $url + "event.jpg' alt='Event' height='30' width='30'>";
+            break;
+       case "Easy Access":
             $url = "<img src='" + $url + "grade-ea30.jpg' alt='Easy Access' height='30' width='30'>";
             break;
         case "Easy":
