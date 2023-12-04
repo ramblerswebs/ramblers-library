@@ -23,7 +23,6 @@ ra.walkseditor.walks = function () {
     this.getWalksJson = function () {
         var walksdata = [];
         this._walks.forEach(function (_walk, index) {
-
             walksdata.push(_walk.data);
         });
         return JSON.stringify(walksdata, null, 5);
@@ -49,6 +48,23 @@ ra.walkseditor.walks = function () {
     this.clearWalks = function () {
         this._walks = [];
     };
+    this.forEachAll = function (fcn) {
+        this._walks.forEach(event => {
+            fcn(event);
+        });
+    };
+    this.forEachFiltered = function (fcn) {
+        this._walks.forEach(event => {
+            if (event.displayWalk) {
+                fcn(event);
+            }
+        });
+    };
+    this.setAllWalks = function () {
+        this._walks.forEach(event => {
+            event.displayWalk = true;
+        });
+    };
     this.sort = function () {
         this._sortWalks();
     };
@@ -71,6 +87,66 @@ ra.walkseditor.walks = function () {
             }
             return 0;
         });
+    };
+    this.setWalkDisplay = function () {
+        this._walks.forEach(walk => {
+            walk.setDisplayFilter(this.filter);
+        });
+    };
+    this.setFilters = function (tag) {
+        var filter = new ra.filter(document, "reDisplayWalks");
+        this.filter = filter;
+        var gradesOrder = ['Not defined',
+            'Event',
+            'Easy Access',
+            'Easy',
+            'Leisurely',
+            'Moderate',
+            'Strenuous',
+            'Technical'];
+        var dowOrder = ['Not defined',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday'];
+        var distanceOrder = ['Not set', 'Up to 3 miles (5 km)',
+            '3+ to 5 miles (5-8 km)',
+            '5+ to 8 miles (8-13 km)',
+            '8+ to 10 miles (13-16 km)',
+            '10+ to 13 miles (16-21 km)',
+            '13+ to 15 miles (21-24 km)',
+            '15+ miles (24 km)'];
+        var updateItems = [{title: 'All walks', limit: 0},
+            {title: 'In last 3 months', limit: 93},
+            {title: 'In last month', limit: 31},
+            {title: 'In last 2 weeks', limit: 14},
+            {title: 'In last week', limit: 7}
+        ];
+
+        filter.addGroup(ra.filterType.Unique, "idStatus", "Status");
+        filter.addGroup(ra.filterType.Unique, "idCategory", "Category");
+        filter.addGroup(ra.filterType.Unique, "idIssues", "Issues");
+        filter.addGroup(ra.filterType.Unique, "idNotes", "Notes");
+        filter.addGroup(ra.filterType.Unique, "idDOW", "Day of the week", dowOrder);
+        filter.addGroup(ra.filterType.DateRange, "idDate", "Dates");
+        filter.addGroup(ra.filterType.Unique, "idWhen", "No date/Past/Future");
+        filter.addGroup(ra.filterType.Unique, "idDistance", "Distance", distanceOrder);
+        filter.addGroup(ra.filterType.Unique, "idGrade", "Grade", gradesOrder);
+        filter.addGroup(ra.filterType.Unique, "idShape", "Shape");
+        filter.addGroup(ra.filterType.Unique, "idContacts", "Contact");
+    //    filter.addGroupLimit("idUpdate", "Updated", updateItems);
+        filter.setDisplaySingle("idIssues", true);
+        filter.setDisplaySingle("idDOW", true);
+        filter.setDisplaySingle("idDistance", true);
+        filter.setDisplaySingle("idGrade", true);
+
+        this._walks.forEach(walk => {
+            walk.initialiseFilter(filter);
+        });
+        filter.display(tag);
     };
 };
 
@@ -124,6 +200,101 @@ ra.walkseditor.walk = function () {
             this.createFromObject(data);
         }
     };
+
+    this.initialiseFilter = function (filter) {
+        var values = this.getFilterValues();
+        filter.initialiseFilter(values);
+    };
+    this.getFilterValues = function () {
+
+        var valueSet = new ra.filter.valueSet();
+
+        var walkDate = ra.getObjProperty(this.data, "basics.date", "");
+        if (walkDate !== "") {
+            valueSet.add(new ra.filter.value("idDOW", ra.date.dow(walkDate)));
+            valueSet.add(new ra.filter.value("idDate", ra.date.getDateTime(walkDate)));
+        } else {
+            valueSet.add(new ra.filter.value("idDOW", "Not defined"));
+        }
+
+        if (this.getNoWalkIssues() > 0) {
+            valueSet.add(new ra.filter.value("idIssues", "Has issues"));
+        } else {
+            valueSet.add(new ra.filter.value("idIssues", "No issues"));
+        }
+
+        valueSet.add(new ra.filter.value("idStatus", ra.getObjProperty(this.data, "admin.status", "")));
+
+        if (walkDate !== "") {
+            if (ra.date.getDateTime(walkDate) < new Date()) {
+                valueSet.add(new ra.filter.value("idWhen", "Past","ID12345Past"));
+            } else {
+                valueSet.add(new ra.filter.value("idWhen", "Future","ID12345Future"));
+            }
+        } else {
+            valueSet.add(new ra.filter.value("idWhen", "No date defined","ID12345Ndd"));
+        }
+
+        var updated = ra.getObjProperty(this.data, "admin.updated", "");
+        if (updated !== null && updated !== "") {
+       //     valueSet.add(new ra.filter.value("idUpdated", updated));
+        }
+
+        var walks = ra.getObjProperty(this.data, 'walks', []);
+        walks.forEach(item => {
+            valueSet.add(new ra.filter.value("idDistance", this.filterDistance(item)));
+            valueSet.add(new ra.filter.value("idGrade", ra.getObjProperty(item, 'natgrade', 'Not defined')));
+            valueSet.add(new ra.filter.value("idShape", ra.getObjProperty(item, 'shape', '')));
+        });
+
+        valueSet.add(new ra.filter.value("idContacts", ra.getObjProperty(this.data, "contact.displayName", "Not defined")));
+
+        if (this.hasEditorNotes() > 0) {
+            valueSet.add(new ra.filter.value("idNotes", "Has notes"));
+        } else {
+            valueSet.add(new ra.filter.value("idNotes", "No notes"));
+        }
+        return  valueSet;
+    };
+
+    this.setDisplayFilter = function (filter) {
+        var values = this.getFilterValues();
+        this.displayWalk = filter.shouldDisplayItem(values);
+    };
+    this.filterDistance = function (walk) {
+        var distanceOrder = ['Not set', 'Up to 3 miles (5 km)',
+            '3+ to 5 miles (5-8 km)',
+            '5+ to 8 miles (8-13 km)',
+            '8+ to 10 miles (13-16 km)',
+            '10+ to 13 miles (16-21 km)',
+            '13+ to 15 miles (21-24 km)',
+            '15+ miles (24 km)'];
+        var dist = ra.getObjProperty(walk, 'distance', -1);
+        var units = ra.getObjProperty(walk, 'units', '');
+        if (units === "Km" && dist !== -1) {
+            dist = dist * 0.621371;
+        }
+
+        switch (true) {
+            case (dist <= 0):
+                return distanceOrder[0];
+            case (dist <= 3):
+                return distanceOrder[1];
+            case (dist <= 5):
+                return distanceOrder[2];
+            case (dist <= 8):
+                return distanceOrder[3];
+            case (dist <= 10):
+                return distanceOrder[4];
+            case (dist <= 13):
+                return distanceOrder[5];
+            case (dist <= 15):
+                return distanceOrder[6];
+            default:
+                return distanceOrder[7];
+        }
+    };
+
     this.createFromObject = function (data) {
         if (typeof data.basics !== 'undefined') {
             this.data.basics = data.basics;
@@ -154,118 +325,7 @@ ra.walkseditor.walk = function () {
         }
     };
 
-    this.setDisplayWalk = function (filters) {
-        this.displayWalk = false;
 
-        var code = "RA_Group_" + this.getGroupCode();
-        if (!filters[code]) {
-            return;
-        }
-
-        var status = "RA_Status_" + this.getStatus();
-        if (!filters[status]) {
-            return;
-        }
-
-        var category = "RA_Category_" + this.getCategory();
-        if (!filters[category]) {
-            return;
-        }
-
-        var contact = "RA_Contact_" + this.getContact();
-        if (!filters[contact]) {
-            return;
-        }
-
-        var issues = this.getNoWalkIssues();
-        if (issues > 0) {
-            if (!filters.RA_Issues) {
-                return;
-            }
-        } else {
-            if (!filters.RA_NoIssues) {
-                return;
-            }
-        }
-
-        if (this.dateSet()) {
-            var walkDate = this.YYYYMMDD();
-            if (walkDate < filters.RA_DateStart) {
-                return;
-            }
-            if (walkDate > filters.RA_DateEnd) {
-                return;
-            }
-            var today = new Date().toISOString().slice(0, 10);
-            if (!filters.RA_DatePast) {
-                if (walkDate < today) {
-                    return;
-                }
-            }
-            if (!filters.RA_DateFuture) {
-                if (walkDate >= today) {
-                    return;
-                }
-            }
-            var dow = this.dow();
-            switch (dow) {
-                case "Monday":
-                    if (!filters.RA_DayOfWeek_0) {
-                        return;
-                    }
-
-                    break;
-                case "Tuesday":
-                    if (!filters.RA_DayOfWeek_1) {
-                        return;
-                    }
-                    break;
-                case "Wednesday":
-                    if (!filters.RA_DayOfWeek_2) {
-                        return;
-                    }
-                    break;
-                case "Thursday":
-                    if (!filters.RA_DayOfWeek_3) {
-                        return;
-                    }
-                    break;
-                case "Friday":
-                    if (!filters.RA_DayOfWeek_4) {
-                        return;
-                    }
-                    break;
-                case "Saturday":
-                    if (!filters.RA_DayOfWeek_5) {
-                        return;
-                    }
-                    break;
-                case "Sunday":
-                    if (!filters.RA_DayOfWeek_6) {
-                        return;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            if (!filters.RA_noDate) {
-                return;
-            }
-        }
-        var notes = this.hasEditorNotes();
-        if (notes > 0) {
-            if (!filters.RA_Notes) {
-                return;
-            }
-        } else {
-            if (!filters.RA_NoNotes) {
-                return;
-            }
-        }
-        this.displayWalk = true;
-        return;
-    };
     this.addDisplayClasses = function (cl) {
         cl.add(this.getStatusClass());
         if (this.dateStatus() === ra.walkseditor.DATETYPE.Past) {
@@ -793,7 +853,7 @@ ra.walkseditor.walk = function () {
         if (ra.date.isValidString(d)) {
             var value = ra.date.YYYYMMDD(d);
             var today = new Date();
-            today=ra.date.YYYYMMDD(today);
+            today = ra.date.YYYYMMDD(today);
             if (value < today) {
                 return ra.walkseditor.DATETYPE.Past;
             } else {

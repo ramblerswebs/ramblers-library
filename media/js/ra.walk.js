@@ -38,7 +38,7 @@ ra.events = function () {
     };
     this.setDisplayFilter = function () {
         this.events.forEach(event => {
-            event._displayFiltered = event.setDisplayFilter(this.filter);
+            event.setDisplayFilter(this.filter);
         });
     };
     this.getNoEventsToDisplay = function () {
@@ -57,7 +57,7 @@ ra.events = function () {
     this.setFilters = function (tag) {
         var filter = new ra.filter(document, "reDisplayWalks");
         this.filter = filter;
-        var gradesOrder = ['Event',
+        var gradesOrder = [
             'Easy Access',
             'Easy',
             'Leisurely',
@@ -71,7 +71,8 @@ ra.events = function () {
             'Friday',
             'Saturday',
             'Sunday'];
-        var distanceOrder = ['Up to 3 miles (5 km)',
+        var distanceOrder = ['See description',
+            'Up to 3 miles (5 km)',
             '3+ to 5 miles (5-8 km)',
             '5+ to 8 miles (8-13 km)',
             '8+ to 10 miles (13-16 km)',
@@ -84,31 +85,21 @@ ra.events = function () {
             {title: 'In last 2 weeks', limit: 14},
             {title: 'In last week', limit: 7}
         ];
-        filter.addGroup("idGroup", "Group");
-        filter.addGroup("idType", "Type");
-        filter.addGroup("idDOW", "Day of the week", dowOrder);
+        filter.addGroup(ra.filterType.Unique, "idGroup", "Group");
+        filter.addGroup(ra.filterType.Unique, "idType", "Type");
+        filter.addGroup(ra.filterType.Unique, "idDOW", "Day of the week", dowOrder);
         filter.setDisplaySingle("idDOW", true);
-        filter.addGroup("idDistance", "Distance", distanceOrder);
+        filter.addGroup(ra.filterType.Unique, "idDistance", "Distance", distanceOrder);
         filter.setDisplaySingle("idDistance", true);
-        filter.addGroup("idGrade", "Grade", gradesOrder);
+        filter.addGroup(ra.filterType.Unique, "idGrade", "Grade", gradesOrder);
         filter.setDisplaySingle("idGrade", true);
-        filter.addGroup("idDate", "Dates");
-        filter.addGroupLimit("idUpdate", "Updated", updateItems);
-        filter.addGroup("idStatus", "Status");
-        this.forEachAll(walk => {
-            filter.insertGroupUnique("idDistance", walk.getIntValue("walks", "_filterDistance"));
-            filter.insertGroupUnique("idType", walk.admin.eventType);
-            filter.insertGroupUnique("idDOW", ra.date.dow(walk.basics.walkDate));
-            var $grade = walk.getIntValue("walks", "_nationalGrade");
-            if ($grade !== "Event") {
-                filter.insertGroupUnique("idGrade", $grade);
-            }
-
-            filter.insertGroupRange("idDate", walk.basics.walkDate);
-            filter.insertGroupLimit("idUpdate", walk.admin.filterUpdate());
-            filter.insertGroupUnique("idGroup", walk.admin.groupName);
-            filter.insertGroupUnique("idStatus", walk.admin.status);
+        filter.addGroup(ra.filterType.DateRange, "idDate", "Dates");
+        filter.addGroup(ra.filterType.Limit, "idUpdate", "Updated", updateItems);
+        filter.addGroup(ra.filterType.Unique, "idStatus", "Status");
+        this.events.forEach(event => {
+            event.initialiseFilter(filter);
         });
+
         filter.display(tag);
     };
 };
@@ -453,36 +444,32 @@ ra.event = function () {
             file.download();
         });
     };
+    this.initialiseFilter = function (filter) {
+        var values = this.getFilterValues();
+        filter.initialiseFilter(values);
+    };
     this.setDisplayFilter = function (filter) {
-        if (!filter.shouldDisplayItem("idDate", this.basics.walkDate)) {
-            return false;
-        }
-        if (!filter.shouldDisplayItem("idType", this.admin.eventType)) {
-            return false;
-        }
+        var values = this.getFilterValues();
+        this._displayFiltered = filter.shouldDisplayItem(values);
+    };
+    this.getFilterValues = function () {
+        var valueSet = new ra.filter.valueSet();
+        valueSet.add(new ra.filter.value("idDate", this.basics.walkDate));
+        valueSet.add(new ra.filter.value("idType", this.admin.eventType));
         var dow = ra.date.dow(this.basics.walkDate);
-        if (!filter.shouldDisplayItem("idDOW", dow)) {
-            return false;
-        }
+        valueSet.add(new ra.filter.value("idDOW", dow));
         var grade = this.getIntValue("walks", "_nationalGrade");
-        if (!filter.shouldDisplayItem("idGrade", grade)) {
-            return false;
+        valueSet.add(new ra.filter.value("idGrade", grade));
+        var status=this.admin.status;
+        if (status==="New"){
+            status="Published";
         }
-        if (!filter.shouldDisplayItem("idStatus", this.admin.status)) {
-            return false;
-        }
+        valueSet.add(new ra.filter.value("idStatus", status));
         var dist = this.getIntValue("walks", "_filterDistance");
-        if (!filter.shouldDisplayItem("idDistance", dist)) {
-            return false;
-        }
-        if (!filter.shouldDisplayItem("idGroup", this.admin.groupName)) {
-            return false;
-        }
-        if (!filter.shouldDisplayItem("idUpdate", this.admin.filterUpdate())) {
-            return false;
-        }
-
-        return true;
+        valueSet.add(new ra.filter.value("idDistance", dist));
+        valueSet.add(new ra.filter.value("idGroup", this.admin.groupName));
+        valueSet.add(new ra.filter.value("idUpdate", this.admin.filterUpdate()));
+        return valueSet;
     };
     this.resetDisplay = function (tag) {
         var htmltag = document.getElementById(tag);
@@ -975,10 +962,7 @@ ra.event.walk = function () {
         this.distanceMiles = phpwalk.distanceMiles;
         this.nationalGrade = new ra.event.nationalGrade(phpwalk.nationalGrade);
         this.localGrade = phpwalk.localGrade;
-        this.shape = "Circular";
-        if (phpwalk.isLinear) {
-            this.shape = "Linear";
-        }
+        this.shape = phpwalk.shape;
         this.pace = phpwalk.pace;
         this.ascent = phpwalk.ascent;
         return this;
@@ -1088,7 +1072,8 @@ ra.event.walk = function () {
         return "";
     };
     this.filterDistance = function () {
-        var distanceOrder = ['Up to 3 miles (5 km)',
+        var distanceOrder = ['See description',
+            'Up to 3 miles (5 km)',
             '3+ to 5 miles (5-8 km)',
             '5+ to 8 miles (8-13 km)',
             '8+ to 10 miles (13-16 km)',
@@ -1097,20 +1082,22 @@ ra.event.walk = function () {
             '15+ miles (24 km)'];
         var dist = this.distanceMiles;
         switch (true) {
-            case (dist <= 3):
+            case (dist === 0):
                 return distanceOrder[0];
-            case (dist <= 5):
+            case (dist <= 3):
                 return distanceOrder[1];
-            case (dist <= 8):
+            case (dist <= 5):
                 return distanceOrder[2];
-            case (dist <= 10):
+            case (dist <= 8):
                 return distanceOrder[3];
-            case (dist <= 13):
+            case (dist <= 10):
                 return distanceOrder[4];
-            case (dist <= 15):
+            case (dist <= 13):
                 return distanceOrder[5];
-            default:
+            case (dist <= 15):
                 return distanceOrder[6];
+            default:
+                return distanceOrder[7];
         }
     };
     this.getHtmlSection = function () {

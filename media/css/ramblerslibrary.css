@@ -841,8 +841,8 @@ table.detailsView tr td{
 div.walksFilter > div.ra_openclose{
     width :120px;
     float:right;
+    height: 25px;
 }
-
 
 div.ra_openclose {
     background-color:#DDDDDD;
@@ -862,6 +862,15 @@ div.ra-filtergroup {
     break-inside: avoid-column;
     font-weight:600;
 }
+div.ra-filtergroup div input[type=date] {
+    font-size: 12px;
+    width: 110px;
+    display: inline;
+    margin-left: 10px !important;
+}
+div.ra-filtergroup div label {
+    display: inline;
+}
 div.ra-filteritemnil,
 div.ra-filteritem{
     border-radius: 10px 10px 10px 10px;
@@ -871,9 +880,11 @@ div.ra-filteritem{
     padding-top:1px;
     margin:5px;
     border:1px solid var(--midgrey);
+    background-color: white;
+    color:black;
     width: max-content;
     line-height: 1;
-    background-color: white;
+
 }
 div.ra-filteritem{
     cursor: pointer;
@@ -890,7 +901,9 @@ div.ra-filteritem.active{
     background-color: var(--sunset);
 }
 div.ra-displayall.active{
-    background-color: var(--mintcake);
+    background-color: white;
+    font-weight:bold;
+    color:var(--mintcake);
 }
 div.ra-displayall:hover {
     background-color: var(--lightgrey);
@@ -898,7 +911,8 @@ div.ra-displayall:hover {
 div.ra-displayall {
     cursor: pointer;
     margin-bottom:5px;
-    background-color: var(--pantone5565);
+    background-color: var(--mintcake);
+    color:white;
     border-radius: 10px 10px 10px 10px;
     padding-left:5px;
     padding-right:5px;

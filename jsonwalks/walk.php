@@ -135,35 +135,24 @@ class RJsonwalksWalk implements JsonSerializable {
     }
 
     public function EventText() {
-        $calendarFormat = ["{meetTime}", "{< ,>}",
-            "{startTime}",
-            "{,title}",
-            "{;distance}"];
+        $calendarFormat = ["{meetTime}", "{< meet, >startTime}", "{,title}", "{,distance}"];
         $text = $this->getWalkValues($calendarFormat);
-
         return $text;
     }
 
-    public function EventList($display) {
-        $class = "";
+    public function EventList($display, $class) {
+
         $text = $this->EventText();
-        $link = $this->EventLink($display, $text);
         $out = "";
-        $out .= "<div class='event-list-cal-event-single-link " . $class . $this->EventStatus() . "'>" . PHP_EOL;
-        $out .= $link . PHP_EOL;
-        $out .= "<div class='events links'>";
-        $out .= $this->EventLinks();
-        $out .= "</div>";
+        $out .= "<div class='event-list-cal-event-single-link " . $class . " " . $this->EventStatus() . "'>" . PHP_EOL;
+        $out .= $text . PHP_EOL;
+
         $out .= "<hr/></div>" . PHP_EOL;
         return $out;
     }
 
     public function EventLink($display, $text) {
         return $this->_addWalkLink($this->getIntValue("admin", "id"), $text);
-    }
-
-    public function EventLinks() {
-        return "";
     }
 
     public function EventStatus() {

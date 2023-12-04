@@ -493,7 +493,6 @@ ra.walkseditor.walkeditor = function ( ) {
         this._tel1 = this.input.addText(itemDiv, 'tel1', "Contact Telephone 1:", contact, 'telephone1', 'Telephone number', ra.walkseditor.help.contactTel1);
         this._tel2 = this.input.addText(itemDiv, 'tel2', "Contact Telephone 2:", contact, 'telephone2', '', ra.walkseditor.help.contactTel2);
         this._option = this.input.addSelect(itemDiv, 'moptions', 'Is the Contact the walk leader?', options, contact, 'contactType', null, ra.walkseditor.help.contactType);
-     //   this._id = this.input.addNumber(itemDiv, 'id', "Contact ID:", contact, 'id', ra.walkseditor.help.contactID);
         var _this = this;
         itemDiv.addEventListener("predefinedContact", function (e) {
             var item = e.raData.item;
@@ -548,32 +547,7 @@ ra.walkseditor.walkeditor = function ( ) {
         itemDiv.appendChild(comment);
         return;
     };
-//        if (tag === null) {
-//            throw new Error("raWalkType container is null");
-//        }
-//
-//        var suitablity = {child: 'Child friendly',
-//            dog: 'Dog friendly',
-//            nocar: 'No car needed',
-//            pushchair: 'Pushchair friendly',
-//            wheelchair: 'Wheelchair friendly'};
-//        var facilities = {parking: 'parking',
-//            toilet: 'toilet',
-//            refresh: 'refreshments',
-//            disabledToilets: 'disabled toilet'};
-//        var surroundings = {
-//            city: 'city, town', coast: 'coast',
-//            country: 'country park', farmland: 'farmland',
-//            hill: 'hill',
-//            lake: 'lake, pond',
-//            marst: 'marsh',
-//            moor: 'moor',
-//            mount: 'mountain',
-//            open: 'open country',
-//            ect: 'etc'
-//        };
-//
-
+//  
     this.addFacilities = function (tag) {
 
 
@@ -596,9 +570,6 @@ ra.walkseditor.walkeditor = function ( ) {
             wheelchair: 'Wheelchair accessible'
         };
         var itemDiv = this.input.itemsItemDivs(tag);
-        //   var comment = document.createElement('p');
-        //     comment.textContent = 'Change this secition to whatever options we agree upon';
-        //    itemDiv.appendChild(comment);
         this.input.addMultiChoice(itemDiv, 'facilities', 'Facilities', facilities, this.walk, 'facilities');
         this.input.addMultiChoice(itemDiv, 'transport', 'Transport', transport, this.walk, 'transport');
         this.input.addMultiChoice(itemDiv, 'accessibility', 'Accessibility', access, this.walk, 'accessibility');

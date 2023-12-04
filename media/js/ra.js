@@ -1829,50 +1829,87 @@ ra.help = function (tag, helpFunction) {
 
 
 };
+ra.filterType = {Unique: "Unique",
+    Limit: "Limit",
+    DateRange: "DateRange",
+    NumberRange: "NumberRamge"};
 ra.filter = function (eventTag, eventName) {
     this.eventTag = eventTag;
     this.eventName = eventName;
     this._groups = {};
     this.elements = null;
-    this.addGroup = function (id, title, valueOrder = null) {
+    this.addGroup = function (type, id, title, data = null) {
         var group = {id: id,
-            type: "Unknown",
+            type: type,
             title: title,
-            min: null,
-            max: null,
-            values: {},
-            valueOrder: valueOrder
+            values: {}
         };
-        this._groups[id] = group;
-    };
-
-    this.addGroupLimit = function (id, title, items) {
-        this.addGroup(id, title);
-        var group = this._groups[id];
-        group.type = "Limit";
-        group.limit = 0;
-        group.displaySingle = false;
-        items.forEach(item => {
-            group.values[item.title] = {no: 0,
-                limit: item.limit,
-                active: false};
-        });
-    };
-    this.setDisplaySingle = function (id, value) {
-        if (!this._groups.hasOwnProperty(id)) {
-            alert("Filter id error");
+        switch (group.type) {
+            case ra.filterType.NumberRange:
+            case ra.filterType.DateRange:
+                group.min = null;
+                group.max = null;
+                break;
+            case ra.filterType.Limit:
+                group.limit = 0;
+                group.displaySingle = false;
+                data.forEach(item => { // data is an array of the titles and limit for each 
+                    group.values[item.title] = {no: 0,
+                        limit: item.limit,
+                        active: false};
+                });
+                break;
+            case ra.filterType.Unique:
+                group.valueOrder = data; // data is the title order for the items
+                break;
         }
-        var group = this._groups[id];
-        group.displaySingle = value;
+        this._groups[id] = group;
+
+        return group;
     };
     this._getGroup = function (id) {
         if (!this._groups.hasOwnProperty(id)) {
-            alert("Filter id error");
+            console.error("Filter id error " + id);
+            return null;
         }
         return this._groups[id];
     };
-    this.insertGroupRange = function (id, value) {
-        var group = this._groups[id];
+
+
+    this.setDisplaySingle = function (id, yesno) {
+        var group = this._getGroup(id);
+        group.displaySingle = yesno;
+    };
+
+    this.initialiseFilter = function (valueSet) {
+        valueSet.forEach(item => {
+            var id = item.id;
+            var group = this._getGroup(id);
+            if (group === null) {
+                return;
+            }
+            var values = item.valueItems;
+            values.forEach(i => {
+                var id = i.id;
+                var value = i.value;
+                var tagId = i.tagId;
+                switch (group.type) {
+                    case "NumberRange":
+                    case "DateRange":
+                        this._insertGroupRange(id, value);
+                        break;
+                    case "Limit":
+                        this._insertGroupLimit(id, value);
+                        break;
+                    case "Unique":
+                        this._insertGroupUnique(id, value, tagId);
+                        break;
+                }
+            });
+        });
+    };
+    this._insertGroupRange = function (id, value) {
+        var group = this._getGroup(id);
         group.type = "NumberRange";
         var type = Object.prototype.toString.call(value);
         if (type === "[object Date]") {
@@ -1897,21 +1934,22 @@ ra.filter = function (eventTag, eventName) {
         }
 
     };
-    this.insertGroupUnique = function (id, value) {
-        var group = this._groups[id];
+    this._insertGroupUnique = function (id, value, tagId) {
+        var group = this._getGroup(id);
         group.type = "Unique";
         var values = group.values;
         if (!values.hasOwnProperty(value)) {
             values[value] = {};
             values[value].no = 0;
             values[value].name = "";
+            values[value].tagId = tagId;
         }
         values[value].no += 1;
         values[value].name = value;
         values[value].active = false;
     };
-    this.insertGroupLimit = function (id, value) {
-        var group = this._groups[id];
+    this._insertGroupLimit = function (id, value) {
+        var group = this._getGroup(id);
         var values = group.values;
         for (var propt in values) {
             var item = values[propt];
@@ -1971,6 +2009,8 @@ ra.filter = function (eventTag, eventName) {
                 case "Limit":
                     this._displayGroupLimit(div, group);
                     break;
+                default:
+                    alert("Invalid filter type");
             }
         }
         var nodes = filters.getElementsByClassName("ra-filteritemnil");
@@ -2034,6 +2074,9 @@ ra.filter = function (eventTag, eventName) {
         if (item.no > 0) {
             var div = document.createElement('div');
             div.setAttribute('class', 'ra-filteritem ');
+            if (item.tagId !== null) {
+                div.setAttribute('id', item.tagId);
+            }
             div.textContent = item.name + " [" + item.no + "]";
             tag.appendChild(div);
             var _this = this;
@@ -2127,23 +2170,40 @@ ra.filter = function (eventTag, eventName) {
 
 
     };
-    this.shouldDisplayItem = function (id, value) {
+    this.shouldDisplayItem = function (valueSet) {
+        var result = true;
+        valueSet.forEach(item => {
+            var id = item.id;
+            var values = item.valueItems;
+            var no = 0;
+            values.forEach(value => {
+                if (this._shouldDisplayItem(id, value)) {
+                    no += 1;
+                }
+            });
+            if (no === 0) {
+                result = false;
+            }
+        });
+        return result;
+    };
+    this._shouldDisplayItem = function (id, item) {
         if (!this._groups.hasOwnProperty(id)) {
             alert("Filter id error");
         }
         var group = this._groups[id];
         switch (group.type) {
             case "Unique":
-                return this._shouldDisplayUnique(group, value);
+                return this._shouldDisplayUnique(group, item.value);
                 break;
             case "DateRange":
-                return  this._shouldDisplayDateRange(group, value);
+                return  this._shouldDisplayDateRange(group, item.value);
                 break;
             case "NumberRange":
-                return  this._shouldDisplayNumberRange(group, value);
+                return  this._shouldDisplayNumberRange(group, item.value);
                 break;
             case "Limit":
-                return  this._shouldDisplayLimit(group, value);
+                return  this._shouldDisplayLimit(group, item.value);
                 break;
         }
         return true;
@@ -2195,6 +2255,30 @@ ra.filter = function (eventTag, eventName) {
         return false;
     };
 
+};
+ra.filter.valueSet = function () {
+    this._valueGroup = {};
+    this.add = function (value) {
+        if (value.hasOwnProperty("id")) {
+            var id = value.id;
+            if (!this._valueGroup.hasOwnProperty(id)) {
+                this._valueGroup[id] = {id: id,
+                    valueItems: []};
+            }
+            this._valueGroup[id].valueItems.push(value);
+        }
+        //   console.error("filter.valueSet error: no value .id property");
+    };
+    this.forEach = function (fcn) {
+        for (var propt in this._valueGroup) {
+            fcn(this._valueGroup[propt]);
+        }
+    };
+};
+ra.filter.value = function (id, value, tagId = null) {
+    this.id = id;
+    this.value = value;
+    this.tagId = tagId;
 };
 
 ra.jplist = function (group) {

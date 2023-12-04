@@ -10,11 +10,10 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
     this.programme = programme;
     this.mapOptions = mapOptions;
     this.allowWMExport = false;
-    // this._newUrl = null;
     this._loggedOn = loggedOn;
+    this.filter = null;
     this.settings = {
-        currentDisplay: "Table",
-        filter: {}
+        currentDisplay: "Table"
     };
 
     this.jplistGroup = ra.uniqueID();
@@ -73,23 +72,16 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
             self.ra_format("Calendar");
         });
 
-        this.setFilters();
+        this.programme.setFilters(this.elements.walksFilter);
         this.addPastWalksOption(this.elements.pastwalks);
         self.ra_format(self.settings.currentDisplay);
         document.addEventListener("reDisplayWalks", function () {
-            self.setWalkDisplay();
+            self.programme.setWalkDisplay();
             self.removeRecordDisplay();
             self.ra_format(self.settings.currentDisplay);
         });
     };
-    this.setWalkDisplay = function () {
-        var walks = this.programme.getWalks();
-        var i, clen;
-        for (i = 0, clen = walks.length; i < clen; ++i) {
-            var walk = walks[i];
-            walk.setDisplayWalk(this.settings.filter);
-        }
-    };
+
     this.displayDiagnostics = function () {
         var tag = document.createElement('div');
         var heading = document.createElement('h3');
@@ -473,56 +465,21 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         return 'unknown';
     };
     this.addPastWalksOption = function (tag) {
-        var el = document.querySelectorAll('[data-filter-id="RA_DatePast"]');
-        if (el !== null) {
-            var button = document.createElement('h3');
-            button.setAttribute('class', 'ra_openclose tiny');
-            button.textContent = "Past Walks";
-            tag.appendChild(button);
-            button.addEventListener("click", function (event) {
-                el[0].checked = !el[0].checked;
-                ra.html.triggerEvent(el[0], 'change');
-            });
+       
+        var el1 = document.getElementById('ID12345Ndd');
+        if (el1 !== null) {
+            ra.html.triggerEvent(el1, 'click');
         }
+        var el2 = document.getElementById('ID12345Future');
+        if (el2 !== null) {
+            setTimeout(() => {
+                ra.html.triggerEvent(el2, 'click');
+            }, 500);
+
+        }
+        // });
     };
-    this.setFilters = function () {
-        var walks = this.programme.getWalks();
-        if (walks.length === 0) {
-            return;
-        }
-        var filter = new ra.filter(this.settings.filter);
-        var result = this.getWalksStats(walks);
-        filter.setFilterGroup(result.group);
-        filter.setFilterGroup(result.status);
-        filter.setFilterGroup(result.category);
-        filter.setFilterGroup(result.issues);
-        filter.setFilterGroup(result.editorNotes);
-        filter.setFilterGroup(result.dates, true);
-        filter.setFilterGroup(result.timeSpan);
-        filter.setFilterGroup(result.dow);
-        filter.setFilterGroup(result.contact);
 
-        var tag = this.elements.walksFilter;
-        if (tag !== null) {
-            filter.addOpenClose(tag, "Filter");
-            var div = document.createElement('div');
-            div.setAttribute('class', 'filter-columns');
-            div.style.display = "none";
-            tag.appendChild(div);
-            filter.addFilter(div, 'Group', result.group);
-            filter.addFilter(div, 'Status', result.status);
-            filter.addFilter(div, 'Category', result.category, true);
-            filter.addFilter(div, 'Issues', result.issues);
-
-            filter.addFilter(div, 'Dates', result.dates, true, true);
-            filter.addFilter(div, 'No date/Past/Future', result.timeSpan);
-
-            filter.addFilter(div, 'Day of the Week', result.dow);
-            filter.addFilter(div, 'Contact', result.contact);
-            filter.addFilter(div, 'Editor notes', result.editorNotes);
-
-        }
-    };
     this.getWalksStats = function (walks) {
         var result = {
             group: {},

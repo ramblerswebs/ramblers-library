@@ -342,7 +342,7 @@ ra.display.walksTabs = function (mapOptions, data) {
       
             $out1 += "<h3>" + $walk.getIntValue("basics", "displayMonth") + "</h3>";
         }
-        $out1 += "<div  class='" + $customClass + " walk" + $walk.status + "' >";
+        $out1 += "<div  class='" + $customClass + " walk" + $walk.admin.status + "' >";
         $image = '<span class="walkdetail" >';
         $out += $walk.getEventValues(this.settings.gradesFormat);
         $text = $out1 + $image + $walk.addTooltip($out) + "\n</span></div>\n";
@@ -360,7 +360,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         if ($displayMonth) {
             $out += "<h3>" + $walk.getIntValue("basics", "displayMonth") + "</h3>";
         }
-        $out += "<div class='" + $customClass + " walk" + $walk.status + "' >";
+        $out += "<div class='" + $customClass + " walk" + $walk.admin.status + "' >";
         $out += $walk.addTooltip($walk.getEventValues($items));
         return  $out + "</div>\n";
     };
@@ -374,7 +374,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         return $out + "</tr>";
     };
     this.displayWalk_Table = function ($walk, $class, $displayMonth) {
-        //  var $out = "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >"
+        //  var $out = "<tr data-jplist-item class='" + $class + " walk" + $walk.admin.status + "' >"
         var $out = "";
         var $customClass = "";
         if ($displayMonth) {
@@ -384,9 +384,9 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         if (typeof displayTableRowClass === 'function') {
             $customClass = displayTableRowClass($walk);
-            $out += "<tr data-jplist-item class='" + $customClass + " walk" + $walk.status + "' >";
+            $out += "<tr data-jplist-item class='" + $customClass + " walk" + $walk.admin.status + "' >";
         } else {
-            $out += "<tr data-jplist-item class='" + $class + " walk" + $walk.status + "' >";
+            $out += "<tr data-jplist-item class='" + $class + " walk" + $walk.admin.status + "' >";
         }
         this.settings.tableFormat.forEach($col => {
             if (!$col.blank) {
@@ -455,7 +455,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             event.start = $walk.basics.walkDate;
             event.raContent = '<div><span class="ra wrap">' + $walk.getEventValues($items, false) + '</span></div>';
             event.textColor = '#111111';
-            if ($walk.status === 'Cancelled') {
+            if ($walk.admin.status === 'Cancelled') {
                 event.textColor = 'red';
                 event.backgroundColor = 'white';
             } else {
@@ -466,7 +466,8 @@ ra.display.walksTabs = function (mapOptions, data) {
             event.classNames = ['pointer'];
             event.display = 'block';
             //    event.eventContent = {html: '<div class="fc-event-main-frame"><span class="ra wrap">' + $walk.getEventValues( $items, false) + '</span></div>'};
-            event.eventContent = {html: '<div class="fc-event-main-frame"><span class="ra wrap">xgbdfhngdnhg</span></div>'};
+          //  event.eventContent = {html: '<div class="fc-event-main-frame"><span class="ra wrap">xgbdfhngdnhg</span></div>'};
+            event.eventContent = {html: ''};
             events.push(event);
         });
         var calendarTab = this.elements.rawalks;
