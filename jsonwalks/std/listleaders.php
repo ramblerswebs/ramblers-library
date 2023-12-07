@@ -11,24 +11,32 @@ defined("_JEXEC") or die("Restricted access");
 class RJsonwalksStdListleaders extends RJsonwalksDisplaybase {
 
     function DisplayWalks($walks) {
-        
+
         $walks->sort(RJsonwalksWalk::SORT_CONTACT, RJsonwalksWalk::SORT_TELEPHONE1, NULL);
         $items = $walks->allWalks();
         $last = "";
         echo "<h2>List of Walks Leaders</h2>" . PHP_EOL;
         echo "<ul>" . PHP_EOL;
         foreach ($items as $walk) {
-            $value = $walk->contactName . " - " . $walk->telephone1;
-            if (!$walk->telephone2 == NULL) {
-                $value.=" ," . $walk->telephone2;
+            $contactName = $walk->getIntValue("contacts", "contactName");
+            $telephone1 = $walk->getIntValue("contacts", "telephone1");
+            $telephone2 = $walk->getIntValue("contacts", "telephone2");
+            $value = "";
+            if ($contactName !== "") {
+                $value = $contactName . " - " . $telephone1;
+            }
+
+            if ($telephone2 !== "") {
+                $value .= " ," . $telephone2;
             }
             if ($value <> $last) {
-                echo "<li>" . $value . "</li>" . PHP_EOL;
+                if ($value !== "") {
+                    echo "<li>" . $value . "</li>" . PHP_EOL;
+                }
                 $last = $value;
             }
         }
         echo "</ul>" . PHP_EOL;
-       
     }
 
 }

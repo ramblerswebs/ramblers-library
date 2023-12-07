@@ -11,10 +11,27 @@
  *
  * @author chris
  */
-class RJsonwalksWalkFlag {
+class RJsonwalksWalkFlag implements JsonSerializable {
 
     public $section = "";       // name of the section in which the flag is contained
     public $code = "";
     public $name = "";
+
+    public function __construct($section, $code, $name) {
+        $this->section = $section;
+        $this->code = $code;
+        $this->name = $name;
+    }
+
+    public function isFlag($flag) {
+        return $flag === $this->name;
+    }
+
+    public function jsonSerialize(): mixed {
+        return ['section' => $this->section,
+            'code' => $this->code,
+            'name' => $this->name
+        ];
+    }
 
 }

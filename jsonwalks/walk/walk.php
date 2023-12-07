@@ -162,6 +162,20 @@ class RJsonwalksWalkWalk implements JsonSerializable {
         return "";
     }
 
+    public function notInGradeList($grades) {
+        foreach ($grades as $grade) {
+            if (strtolower($grade) == strtolower($this->nationalGrade)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function filterDistance($distanceMin, $distanceMax) {
+        // if outside of the range then remove the walk
+        return $this->distanceMiles < $distanceMin || $this->distanceMiles > $distanceMax;
+    }
+
     private function getGradeSpan($class) {
         $tag = "";
         $img = $this->getGradeImg();

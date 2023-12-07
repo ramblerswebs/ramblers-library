@@ -17,7 +17,7 @@ class RJsonwalksWalks {
 
     public function hasMeetPlace() {
         foreach ($this->arrayofwalks as $walk) {
-            if ($walk->hasMeetPlace) {
+            if ($walk->hasMeetPlace()) {
                 return true;
             }
         }
@@ -46,13 +46,13 @@ class RJsonwalksWalks {
         unset($this->arrayofwalks[$key]);
     }
 
-    public function filterDistanceFrom($easting, $northing, $distanceKm) {
-        foreach ($this->arrayofwalks as $key => $walk) {
-            if ($walk->distanceFrom($easting, $northing) > $distanceKm) {
-                unset($this->arrayofwalks[$key]);
-            }
-        }
-    }
+//    public function filterDistanceFrom($easting, $northing, $distanceKm) {
+//        foreach ($this->arrayofwalks as $key => $walk) {
+//            if ($walk->distanceFrom($easting, $northing) > $distanceKm) {
+//                unset($this->arrayofwalks[$key]);
+//            }
+//        }
+//    }
 
     public function filterDistanceFromLatLong($lat, $lon, $distanceKm) {
         foreach ($this->arrayofwalks as $key => $walk) {
@@ -64,64 +64,51 @@ class RJsonwalksWalks {
 
     public function filterGroups($groups) {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if ($this->notInGroup($walk, $groups)) {
+            if ($walk->notInGroup($groups)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
     }
 
-    private function notInGroup($walk, $groups) {
-        foreach ($groups as $value) {
-            if (strtolower($value) == strtolower($walk->groupCode)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public function filterStrands($containsText) {
-        foreach ($this->arrayofwalks as $key => $walk) {
-            if ($this->notInItems($walk->strands, $containsText)) {
-                unset($this->arrayofwalks[$key]);
-            }
-        }
-    }
-
-    public function filterFestivals($containsText) {
-        foreach ($this->arrayofwalks as $key => $walk) {
-            if ($this->notInItems($walk->festivals, $containsText)) {
-                unset($this->arrayofwalks[$key]);
-            }
-        }
-    }
-
-    public function allFestivals() {
-        foreach ($this->arrayofwalks as $key => $walk) {
-            if (count($walk->festivals) === 0) {
-                unset($this->arrayofwalks[$key]);
-            }
-        }
-    }
-
-    public function noFestivals() {
-        foreach ($this->arrayofwalks as $key => $walk) {
-            if (count($walk->festivals) > 0) {
-                unset($this->arrayofwalks[$key]);
-            }
-        }
-    }
-
-    private function notInItems($items, $text) {
-        if ($items == NULL) {
-            return true;
-        }
-        foreach ($items->getItems() as $item) {
-            if ($this->contains(strtolower($text), strtolower($item->getName()))) {
-                return false;
-            }
-        }
-        return true;
-    }
+//    public function filterStrands($containsText) {
+//        foreach ($this->arrayofwalks as $key => $walk) {
+//            if ($this->notInItems($walk->strands, $containsText)) {
+//                unset($this->arrayofwalks[$key]);
+//            }
+//        }
+//    }
+//    public function filterFestivals($containsText) {
+//        foreach ($this->arrayofwalks as $key => $walk) {
+//            if ($this->notInItems($walk->festivals, $containsText)) {
+//                unset($this->arrayofwalks[$key]);
+//            }
+//        }
+//    }
+//    public function allFestivals() {
+//        foreach ($this->arrayofwalks as $key => $walk) {
+//            if (count($walk->festivals) === 0) {
+//                unset($this->arrayofwalks[$key]);
+//            }
+//        }
+//    }
+//    public function noFestivals() {
+//        foreach ($this->arrayofwalks as $key => $walk) {
+//            if (count($walk->festivals) > 0) {
+//                unset($this->arrayofwalks[$key]);
+//            }
+//        }
+//    }
+//    private function notInItems($items, $text) {
+//        if ($items == NULL) {
+//            return true;
+//        }
+//        foreach ($items->getItems() as $item) {
+//            if ($this->contains(strtolower($text), strtolower($item->getName()))) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     private function contains($needle, $haystack) {
         return strpos($haystack, $needle) !== false;
@@ -129,7 +116,7 @@ class RJsonwalksWalks {
 
     public function filterStatus($status) {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if (strtoupper($walk->status) == strtoupper($status)) {
+            if ($walk->isStatus($status)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -140,8 +127,8 @@ class RJsonwalksWalks {
     }
 
     public function filterDayofweek($days) {
-        foreach ($this->arrayofwalks as $key => $value) {
-            if ($this->notInDayList($value, $days)) {
+        foreach ($this->arrayofwalks as $key => $walk) {
+            if ($walk->notInDayList($days)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -149,7 +136,7 @@ class RJsonwalksWalks {
 
     public function filterDateRange($fromdate, $todate) {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if ($walk->walkDate < $fromdate || $walk->walkDate > $todate) {
+            if ($walk->filterDateRange($fromdate, $todate)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -158,12 +145,12 @@ class RJsonwalksWalks {
     public function filterTitle($filter, $option = 'remove') {
         foreach ($this->arrayofwalks as $key => $walk) {
             if ($option === 'remove') {
-                if ($this->titleIs($walk, $filter)) {
+                if ($walk->titleIs($filter)) {
                     unset($this->arrayofwalks[$key]);
                 }
             }
             if ($option === 'keep') {
-                if (!$this->titleIs($walk, $filter)) {
+                if (!$walk->titleIs($filter)) {
                     unset($this->arrayofwalks[$key]);
                 }
             }
@@ -173,12 +160,12 @@ class RJsonwalksWalks {
     public function filterTitleContains($filter, $option = 'remove') {
         foreach ($this->arrayofwalks as $key => $walk) {
             if ($option === 'remove') {
-                if ($this->titleContains($walk, $filter)) {
+                if ($walk->titleContains($filter)) {
                     unset($this->arrayofwalks[$key]);
                 }
             }
             if ($option === 'keep') {
-                if (!$this->titleContains($walk, $filter)) {
+                if (!$walk->titleContains($filter)) {
                     unset($this->arrayofwalks[$key]);
                 }
             }
@@ -187,7 +174,7 @@ class RJsonwalksWalks {
 
     public function filterNationalGrade($grades) {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if ($this->notInGradeList($walk, $grades)) {
+            if ($walk->notInGradeList($grades)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -196,41 +183,31 @@ class RJsonwalksWalks {
     public function filterDistance($distanceMin, $distanceMax) {
         foreach ($this->arrayofwalks as $key => $walk) {
             // if outside of the range then remove the walk
-            if ($walk->distanceMiles < $distanceMin || $walk->distanceMiles > $distanceMax) {
+            if ($walk->filterDistance($distanceMin, $distanceMax)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
     }
 
-    private function notInGradeList($walk, $grades) {
-        foreach ($grades as $grade) {
-            if (strtolower($grade) == strtolower($walk->nationalGrade)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private function titleIs($walk, $filter) {
-        return strtolower($filter) === strtolower($walk->title);
-    }
-
-    private function titleContains($walk, $filter) {
-        return $this->contains(strtolower($filter), strtolower($walk->title));
-    }
-
-    private function notInDayList($walk, $days) {
-        foreach ($days as $value) {
-            if (strtolower($value) == strtolower($walk->dayofweek)) {
-                return false;
-            }
-        }
-        return true;
-    }
+//    private function titleIs($walk, $filter) {
+//        return strtolower($filter) === strtolower($walk->title);
+//    }
+//
+//    private function titleContains($walk, $filter) {
+//        return $this->contains(strtolower($filter), strtolower($walk->title));
+//    }
+//    private function notInDayList($walk, $days) {
+//        foreach ($days as $value) {
+//            if (strtolower($value) == strtolower($walk->dayofweek)) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     public function filterEvents() {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if ($walk->type === TypeOfWalk::GroupEvent) {
+            if ($walk->filterEvents()) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -238,7 +215,7 @@ class RJsonwalksWalks {
 
     public function filterWalks() {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if ($walk->type === TypeOfWalk::GroupWalk) {
+            if ($walk->filterWalks()) {
                 unset($this->arrayofwalks[$key]);
             }
         }

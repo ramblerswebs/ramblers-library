@@ -460,9 +460,9 @@ ra.event = function () {
         valueSet.add(new ra.filter.value("idDOW", dow));
         var grade = this.getIntValue("walks", "_nationalGrade");
         valueSet.add(new ra.filter.value("idGrade", grade));
-        var status=this.admin.status;
-        if (status==="New"){
-            status="Published";
+        var status = this.admin.status;
+        if (status === "New") {
+            status = "Published";
         }
         valueSet.add(new ra.filter.value("idStatus", status));
         var dist = this.getIntValue("walks", "_filterDistance");
@@ -1746,7 +1746,7 @@ ra.event.media = function () {
         }
         return out;
     };
-    this.getValue = function ($option) {
+    this.getIntValue = function ($option) {
         return "";
     };
     this.getHtmlSection = function () {
@@ -1905,11 +1905,11 @@ ra.walk = (function () {
     my._startup = true;
     my.walks = new ra.events();
     my.registerEvent = function (newEvent) {
-        my.walks.registerEvent(newEvent);
+                my.walks.registerEvent(newEvent);
     };
     // command to store all walks from PHP display options
     my.registerPHPWalks = function (mapOptions, data) {
-        // stores walks for php walks displays
+              // stores walks for php walks displays
         var phpwalks = null;
         phpwalks = data.walks;
         if (phpwalks !== null) {
@@ -1923,8 +1923,8 @@ ra.walk = (function () {
             data.walks = null;
             my.displayUrlWalkPopup();
         }
-        this.load = function () {
-
+                this.load = function () {
+            console.log('registerPHPWalks: load ' + new Date().toLocaleString());
         };
     };
     my.displayUrlWalkPopup = function () {

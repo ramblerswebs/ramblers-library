@@ -564,9 +564,13 @@ ra.walkseditor.walkeditor = function ( ) {
             coach: 'Coach trip'};
         var access = {
             dog: 'Dog friendly',
+            family: 'Family-Friendly',
             intro: 'Introductory walk',
             nostiles: 'No Stiles',
-            family: 'Family-Friendly',
+            muddy: "May be muddy",
+            uneven: "Uneven ground",
+            inclines: "Some inclines",
+            rest: "Rest stop available",
             wheelchair: 'Wheelchair accessible'
         };
         var itemDiv = this.input.itemsItemDivs(tag);

@@ -64,7 +64,7 @@ ra.uniqueID = function () {
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
 ra.bootstrapper = function (displayClass, mapOptions, _data) {
-    ra.loading.start();
+        ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
@@ -81,9 +81,9 @@ ra.bootstrapper = function (displayClass, mapOptions, _data) {
                     return;
                 }
             }
-            var display = new myclass(options, data);
-            display.load();
-        }
+                     var display = new myclass(options, data);
+                       display.load();
+                  }
     }
     ra.loading.stop();
 };
@@ -425,8 +425,7 @@ ra.settings = (function () {
                 } else {
                     to[key] = from[key];
                 }
-                //  console.log("\n" + key + ": " + to[key]);
-            }
+                          }
         });
     };
     settings.changed = function () {
@@ -1838,6 +1837,7 @@ ra.filter = function (eventTag, eventName) {
     this.eventName = eventName;
     this._groups = {};
     this.elements = null;
+    this.initialised = false;
     this.addGroup = function (type, id, title, data = null) {
         var group = {id: id,
             type: type,
@@ -1883,6 +1883,7 @@ ra.filter = function (eventTag, eventName) {
 
     this.initialiseFilter = function (valueSet) {
         valueSet.forEach(item => {
+            this.initialised = true;
             var id = item.id;
             var group = this._getGroup(id);
             if (group === null) {
@@ -1961,6 +1962,9 @@ ra.filter = function (eventTag, eventName) {
     };
 
     this.display = function (tag) {
+        if (!this.initialised) {
+            return;
+        }
         var tags = [
             {name: 'button', parent: 'root', tag: 'div', textContent: 'Filter', attrs: {class: 'ra_openclose'}},
             {name: 'span', parent: 'button', tag: 'span', attrs: {class: 'ra-closed'}},
@@ -2099,6 +2103,9 @@ ra.filter = function (eventTag, eventName) {
         tag.appendChild(div);
     };
     this._displayGroupDateRange = function (tag, group) {
+        if (group.min === null) {
+            return;
+        }
         var h = document.createElement('h3');
         h.textContent = group.title;
         tag.appendChild(h);

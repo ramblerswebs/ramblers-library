@@ -110,6 +110,27 @@ class RJsonwalksWalkBasics implements JsonSerializable {
         }
     }
 
+    public function notInDayList($days) {
+        foreach ($days as $value) {
+            if (strtolower($value) == strtolower($this->dayofweek)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function filterDateRange($fromdate, $todate) {
+        return ($this->walkDate < $fromdate || $this->walkDate > $todate);
+    }
+
+    public function titleIs($filter) {
+        return strtolower($filter) === strtolower($this->title);
+    }
+
+    public function titleContains($filter) {
+        return $this->contains(strtolower($filter), strtolower($this->title));
+    }
+
     private function contains($needle, $haystack) {
         return strpos($haystack, $needle) !== false;
     }

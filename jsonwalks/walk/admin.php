@@ -44,8 +44,7 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
     public function getValue($option) {
         $out = "";
         switch ($option) {
-          
-           case "{group}":
+            case "{group}":
                 $out = $this->groupName;
                 break;
         }
@@ -97,6 +96,27 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
 
     public function isNew() {
         return strtolower($this->status) === "new";
+    }
+
+    public function isStatus($value) {
+        return strtoupper($this->status) === strtoupper($value);
+    }
+
+    public function filterEvents() {
+        return $this->type === TypeOfWalk::GroupEvent;
+    }
+
+    public function filterWalks() {
+        return $this->type === TypeOfWalk::GroupWalk;
+    }
+
+    public function notInGroup($groups) {
+        foreach ($groups as $value) {
+            if (strtolower($value) == strtolower($this->groupCode)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function jsonSerialize(): mixed {

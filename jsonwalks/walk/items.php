@@ -22,6 +22,10 @@ class RJsonwalksWalkItems implements JsonSerializable {
         return "";
     }
 
+    public function getItems() {
+        return $this->items;
+    }
+
     public function isEmpty() {
         return count($this->items) === 0;
     }
@@ -33,11 +37,11 @@ class RJsonwalksWalkItems implements JsonSerializable {
         return "";
     }
 
-    public function forEach($fcn) {
-        foreach ($this->items as $item) {
-            $fcn($item);
-        }
-    }
+//    public function forEach($fcn) {
+//        foreach ($this->items as $item) {
+//            $fcn($item);
+//        }
+//    }
 
     public function jsonSerialize(): mixed {
         return $this->items;

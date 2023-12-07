@@ -113,7 +113,7 @@ class RLeafletScript {
         if ($options->calendar) {
             $path = "media/lib_ramblers/vendors/fullcalendar-6.1.9/";
             RLoad::addScript($path . "index.global.js");
-           // RLoad::addStyleSheet($path . "main.css");
+            // RLoad::addStyleSheet($path . "main.css");
         }
 
         RLoad::addScript("media/lib_ramblers/js/ra.js");
@@ -142,8 +142,8 @@ class RLeafletScript {
             
         };
         $data->walks = $walks;
-     //   $print = json_encode($walks, JSON_PRETTY_PRINT);
-     //   echo "<pre>" . $print . "</pre>";
+        //   $print = json_encode($walks, JSON_PRETTY_PRINT);
+        //   echo "<pre>" . $print . "</pre>";
         $script = new RLeafletScript();
         $options = new RLeafletMapoptions();
         $script->setCommand("ra.walk.registerPHPWalks");

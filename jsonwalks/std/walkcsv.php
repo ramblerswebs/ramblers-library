@@ -43,75 +43,63 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
 
     private function displayWalkCSV($walk) {
         $array = [];
-        $array[] = $walk->getIntValue("admin", "id");
         $array[] = $walk->getIntValue("basics", "walkDate")->format('d/m/Y');
-
         $array[] = $walk->getIntValue("basics", "title");
-        $array[] = $walk->getIntValue("admin", "groupName");
-        $array[] = $walk->getIntValue("walks", "shape");
-
-        $array[] = $walk->getWalkValue("{xstartPC}");
-        $array[] = $walk->getWalkValue("{startGR}");
-        $array[] = $walk->getWalkValue("{startPlace}");
-        $array[] = $walk->getIntValue("start", "textTime");
-
-        $array[] = $walk->getWalkValue("{meetPC}");
-        $array[] = $walk->getWalkValue("{meetGR}");
-        $array[] = $walk->getWalkValue("{meetPlace}");
-        $array[] = $walk->getIntValue("meeting", "textTime");
-
-        $array[] = ""; // restriction
-        $array[] = $walk->getintValue("walks", "nationalGrade");
-        $array[] = $walk->getintValue("walks", "distanceMiles");
-        $array[] = $walk->getintValue("walks", "distanceKm");
-
-        $array[] = ""; // walking time
-
-        $array[] = $walk->getintValue("finish", "textTime");
-        $array[] = $walk->getWalkValue("{finishPC}");
-        $array[] = $walk->getWalkValue("{finishGR}");
-        $array[] = $walk->getWalkValue("{finishPlace}");
-
-        $array[] = ""; //forename
-        $array[] = ""; //surname
-        $array[] = $walk->getIntValue("contacts", "contactName");
-
-        $array[] = ""; // email
-        $array[] = $walk->getIntValue("contacts", "telephone1");
-        $array[] = $walk->getIntValue("contacts", "telephone2");
-
-        $array[] = ""; // is leader
-
-        $array[] =""; // walkLeader;
-        $array[] = ""; //strand
-        $array[] = ""; //strand id
-        $array[] = ""; //festival
-        $array[] = ""; //festival id
-        $description= $walk->getIntValue("basics", "descriptionHtml");
+        $description = $walk->getIntValue("basics", "descriptionHtml");
         if ($this->removeHTML) {
             $array[] = html_entity_decode(strip_tags($description));
         } else {
             $array[] = $description;
         }
         $array[] = $walk->getIntValue("basics", "additionalNotes");
-        $array[] = $walk->getIntValue("walks", "pace");
+        $array[] = ""; // link
+        $array[] = $walk->getIntValue("contacts", "contactName");
+        $array[] = $walk->getIntValue("walks", "shape");
+        $array[] = $walk->getIntValue("start", "textTime");
+        $array[] = ""; // latitude/longitude
+        $array[] = $walk->getWalkValue("{startPC}");
+        $array[] = $walk->getWalkValue("{startGR}");
+        $array[] = $walk->getWalkValue("{startPlace}");
+
+        $array[] = $walk->getIntValue("meeting", "textTime");
+        $array[] = ""; // latitude/longitude
+        $array[] = $walk->getWalkValue("{meetPC}");
+        $array[] = $walk->getWalkValue("{meetGR}");
+        $array[] = $walk->getWalkValue("{meetPlace}");
+
+        $array[] = $walk->getintValue("finish", "textTime");
+        $array[] = ""; // latitude/longitude
+        $array[] = $walk->getWalkValue("{finishPC}");
+        $array[] = $walk->getWalkValue("{finishGR}");
+        $array[] = $walk->getWalkValue("{finishPlace}");
+
+        $array[] = $walk->getintValue("walks", "nationalGrade");
+        $array[] = $walk->getintValue("walks", "distanceMiles");
+        $array[] = "";
+
         $array[] = $walk->getIntValue("walks", "ascent");
-        $array[] = $walk->getIntValue("walks", "localGrade");
-       
         $array[] = "";
-        $array[] = "";
-        $array[] = "";
-        $array[] = "";
-        $array[] = "";
-        $array[] = "";
-        $array[] = "";
-        $array[] = "";
-        $array[] = "";
+        $flags = $this->flags();
+        $set = $walk->flagsExists($flags);
+        foreach ($set as $item) {
+            if ($item) {
+                $array[] = "True";
+            } else {
+                $array[] = "False";
+            }
+        }
+
+
+
         return $array;
     }
 
     private function csvHeader() {
-        return ["Walk ID", "date", "title", "organising_group", "circular_or_linear", "start_postcode", "start_gridref", "start_details", "start_time", "meeting_postcode", "meeting_gridref", "meeting_details", "meeting_time", "restriction", "grade", "distance_miles", "distance_km", "walking_time", "finishing_time", "finish_postcode", "finish_gridref", "finish_details", "contact_forename", "contact_surname", "contact_display_name", "contact_email", "contact_tel1", "contact_tel2", "contact_is_walk_leader", "walk_leader", "strand", "strand_id", "festival", "festival_id", "summary", "description", "pace", "ascent_feet", "ascent_metres", "grade_local", "route_id", "linked_walk_ids", "linked_event_ids", "invited_group_code", "attendance_members", "attendance_non_members", "attendance_children", "weather", "notes"];
+        return ["Date", "Title", "Description", "Additional details", "Website Link", "Walk leaders", "Linear or Circular", "Start time", "Starting location", "Starting postcode", "Starting gridref", "Starting location details", "Meeting time", "Meeting location", "Meeting postcode", "Meeting gridref", "Meeting location details", "Est finish time", "Finishing location", "Finishing postcode", "Finishing gridref", "Finishing location details", "Difficulty", "Distance km", "Distance miles", "Ascent metres", "Ascent feet", "Dog friendly", "Introductory walk", "No stiles", "Family-friendly", "Wheelchair accessible", "Accessible by public transport", "Car parking available", "Car sharing available", "Coach trip", "Refreshments available (Pub/cafe)", "Toilets available"];
+    }
+
+    private function flags() {
+        return ["Dog friendly", "Introductory walk", "No stiles", "Family-friendly", "Wheelchair accessible", "Accessible by public transport", "Car parking available", "Car sharing available", "Coach trip", "Refreshments available (Pub/cafe)", "Toilets available"];
     }
 
     private function createButton() {

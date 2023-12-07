@@ -24,8 +24,8 @@ class ROrganisation {
     public $colourOtherGroups = '#0000ff';
     Public $centreGroup = "";
     public $mapZoom = -1;
-    private $totals = null;
-    private $statAreas = [];
+//    private $totals = null;
+//    private $statAreas = [];
 
     function __construct() {
         $this->load();
@@ -50,17 +50,17 @@ class ROrganisation {
             case RFeedhelper::OK:
                 break;
             case RFeedhelper::READFAILED:
-                $app = JApplicationCms::getInstance('site');
+                   $app = JFactory::getApplication();
                 $app->enqueueMessage(JText::_('Unable to fetch organisation data, data may be out of date: ' . $rafeedurl), 'warning');
                 $contents = "[]";
                 break;
             case RFeedhelper::FEEDERROR;
-                $app = JApplicationCms::getInstance('site');
+                   $app = JFactory::getApplication();
                 $app->enqueueMessage(JText::_('Feed must use HTTP protocol: ' . $rafeedurl), 'error');
                 $contents = "[]";
                 break;
             case RFeedhelper::FEEDFOPEN:
-                $app = JApplicationCms::getInstance('site');
+                   $app = JFactory::getApplication();
                 $app->enqueueMessage(JText::_('Not able to read feed using fopen: ' . $rafeedurl), 'error');
                 $contents = "[]";
                 break;
@@ -88,15 +88,15 @@ class ROrganisation {
                         $error += $ok;
                     }
                     if ($error > 0) {
-                        $app = JApplicationCms::getInstance('site');
-                        $app->enqueueMessage(JText::_('Groups feed: Json file format not supported: ' . $rafeedurl), 'error');
+                         $app = JFactory::getApplication();
+                            $app->enqueueMessage(JText::_('Groups feed: Json file format not supported: ' . $rafeedurl), 'error');
                     } else {
                         $this->convert($json);
                     }
                     unset($json);
                     break;
                 } else {
-                    $app = JApplicationCms::getInstance('site');
+                      $app = JFactory::getApplication();
                     $app->enqueueMessage(JText::_('Groups feed: feed is not in Json format: ' . $rafeedurl), 'error');
                 }
         }
@@ -231,58 +231,58 @@ class ROrganisation {
         $map->display();
     }
 
-    private function distance($lata, $lona, $latb, $lonb) {
-        $r = 6371.009; // convert to KM
-        $lat1 = deg2rad($lata);
-        $lon1 = deg2rad($lona);
-        $lat2 = deg2rad($latb);
-        $lon2 = deg2rad($lonb);
-        $lonDelta = $lon2 - $lon1;
-        $a = pow(cos($lat2) * sin($lonDelta), 2) + pow(cos($lat1) * sin($lat2) - sin($lat1) * cos($lat2) * cos($lonDelta), 2);
-        $b = sin($lat1) * sin($lat2) + cos($lat1) * cos($lat2) * cos($lonDelta);
-        $angle = atan2(sqrt($a), $b);
-        return $angle * $r;
-    }
+//    private function distance($lata, $lona, $latb, $lonb) {
+//        $r = 6371.009; // convert to KM
+//        $lat1 = deg2rad($lata);
+//        $lon1 = deg2rad($lona);
+//        $lat2 = deg2rad($latb);
+//        $lon2 = deg2rad($lonb);
+//        $lonDelta = $lon2 - $lon1;
+//        $a = pow(cos($lat2) * sin($lonDelta), 2) + pow(cos($lat1) * sin($lat2) - sin($lat1) * cos($lat2) * cos($lonDelta), 2);
+//        $b = sin($lat1) * sin($lat2) + cos($lat1) * cos($lat2) * cos($lonDelta);
+//        $angle = atan2(sqrt($a), $b);
+//        return $angle * $r;
+//    }
 
-    private function getStats() {
+//    private function getStats() {
+//
+//        $this->initialiseAreas();
+//        foreach ($this->statAreas as $area) {
+//            $this->processArea($area);
+//        }
+//        $this->processTotals($this->statAreas);
+//        // $json = json_encode($this->areas, JSON_PRETTY_PRINT);
+//        $jsontotal = json_encode($this->totals, JSON_PRETTY_PRINT);
+//        echo "<h3>Results</h3>";
+//        echo "<pre>";
+//        //  echo $json;
+//        echo $jsontotal;
+//        echo "</pre>";
+//        echo 'End of results';
+//    }
 
-        $this->initialiseAreas();
-        foreach ($this->statAreas as $area) {
-            $this->processArea($area);
-        }
-        $this->processTotals($this->statAreas);
-        // $json = json_encode($this->areas, JSON_PRETTY_PRINT);
-        $jsontotal = json_encode($this->totals, JSON_PRETTY_PRINT);
-        echo "<h3>Results</h3>";
-        echo "<pre>";
-        //  echo $json;
-        echo $jsontotal;
-        echo "</pre>";
-        echo 'End of results';
-    }
+//    private function initialiseAreas() {
+//        $this->statAreas = [];
+//        foreach ($this->areas as $area) {
+//            $this->initialiseArea($area);
+//        }
+//        $this->totals = $this->createGroup("Totals", "Totals", false);
+//    }
 
-    private function initialiseAreas() {
-        $this->statAreas = [];
-        foreach ($this->areas as $area) {
-            $this->initialiseArea($area);
-        }
-        $this->totals = $this->createGroup("Totals", "Totals", false);
-    }
+//    private function initialiseArea($area) {
+//        $newArea = $this->createGroup($area->code, $area->name, true);
+//        $this->statAreas[$newArea->code] = $newArea;
+//        $this->initialiseGroups($newArea, $area->groups);
+//    }
 
-    private function initialiseArea($area) {
-        $newArea = $this->createGroup($area->code, $area->name, true);
-        $this->statAreas[$newArea->code] = $newArea;
-        $this->initialiseGroups($newArea, $area->groups);
-    }
-
-    private function initialiseGroups($newArea, $groups) {
-        $newGroup = $this->createGroup($newArea->code, $newArea->name, false);
-        $newArea->groups[$newArea->code] = $newGroup;
-        foreach ($groups as $group) {
-            $newGroup = $this->createGroup($group->code, $group->name, false);
-            $newArea->groups[$group->code] = $newGroup;
-        }
-    }
+//    private function initialiseGroups($newArea, $groups) {
+//        $newGroup = $this->createGroup($newArea->code, $newArea->name, false);
+//        $newArea->groups[$newArea->code] = $newGroup;
+//        foreach ($groups as $group) {
+//            $newGroup = $this->createGroup($group->code, $group->name, false);
+//            $newArea->groups[$group->code] = $newGroup;
+//        }
+//    }
 
     private function createGroup($code, $name, $groups) {
         $group = new class {
@@ -317,128 +317,128 @@ class ROrganisation {
         return $group;
     }
 
-    private function processArea($area) {
-        $url = "https://www.ramblers.org.uk/api/lbs/walks?groups=" . $area->code;
-        $CacheTime = 180; // 60 minutes
-        $cacheLocation = $this->CacheLocation();
-        $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
-        $result = $this->srfr->getFeed($url, "Area Walks");
-        $json = RErrors::checkJsonFeed($url, "Walks", $result, []);
-        If ($json !== null) {
-            $walks = new RJsonwalksWalks($json);
-            unset($json);
-            $this->processAreaWalks($area, $walks);
-        }
-    }
+//    private function processArea($area) {
+//        $url = "https://www.ramblers.org.uk/api/lbs/walks?groups=" . $area->code;
+//        $CacheTime = 180; // 60 minutes
+//        $cacheLocation = $this->CacheLocation();
+//        $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
+//        $result = $this->srfr->getFeed($url, "Area Walks");
+//        $json = RErrors::checkJsonFeed($url, "Walks", $result, []);
+//        If ($json !== null) {
+//            $walks = new RJsonwalksWalks($json);
+//            unset($json);
+//            $this->processAreaWalks($area, $walks);
+//        }
+//    }
 
-    private function processAreaWalks($area, $walks) {
+//    private function processAreaWalks($area, $walks) {
+//
+//        $totals = $this->totals;
+//        $items = $walks->allWalks();
+//        foreach ($items as $walk) {
+//            if (!array_key_exists($walk->groupCode, $area->groups)) {
+//                echo "<p>Group code not found " . $walk->groupCode . " - " . $walk->groupName;
+//                $group = $this->createGroup($walk->groupCode, $walk->groupName, false);
+//                $area->groups[$walk->groupCode] = $group;
+//            }
+//            $area->noWalks += 1;
+//            $area->groups[$walk->groupCode]->noWalks += 1;
+//            $totals->noWalks += 1;
+//
+//            $this->setValues($totals, $area, $walk, 'additionalNotes', 'additionalNotes', '!==', "");
+//            $this->setValues($totals, $area, $walk, 'pace', 'pace', '!==', "");
+//            $this->setValues($totals, $area, $walk, 'localGrade', 'localGrade', '!==', "");
+//            $this->setValues($totals, $area, $walk, 'ascentFeet', 'ascentFeet', '!==', null);
+//            $this->setValues($totals, $area, $walk, 'distanceZero', 'distanceMiles', '<=', 0);
+//            $this->setValues($totals, $area, $walk, 'hasMeetPlace', 'hasMeetPlace', '===', true);
+//            $this->setValues($totals, $area, $walk, 'isLinear', 'isLinear', '===', true);
+//            if ($walk->hasExactMeetPlace) {
+//                $this->setValues($totals, $area, $walk, 'hasOnlyMeetPlace', 'hasExactStartPlace', '===', false);
+//                if (!$walk->hasExactStartPlace) {
+//                    $a = 1;
+//                }
+//            }
+//            $this->setValues($totals, $area, $walk, 'hasExactMeetPlace', 'hasExactMeetPlace', '===', true);
+//            $this->setValues($totals, $area, $walk, 'hasExactStartPlace', 'hasExactStartPlace', '===', true);
+//            $this->setValues($totals, $area, $walk, 'hasNeither', 'hasNeither', '===', true);
+//            $this->setValues($totals, $area, $walk, 'hasFinishPlace', 'hasFinishPlace', '===', true);
+//            $this->setValues($totals, $area, $walk, 'suitability', 'suitability', '!==', null);
+//            $this->setValues($totals, $area, $walk, 'strands', 'strands', '!==', null);
+//            $this->setValues($totals, $area, $walk, 'festivals', 'festivals', '!==', null);
+//            $this->setValues($totals, $area, $walk, 'surroundings', 'surroundings', '!==', null);
+//            $this->setValues($totals, $area, $walk, 'theme', 'theme', '!==', null);
+//            $this->setValues($totals, $area, $walk, 'specialStatus', 'specialStatus', '!==', null);
+//            $this->setValues($totals, $area, $walk, 'facilities', 'facilities', '!==', null);
+//            //      $this->setValues($totals, $area, $walk, 'cancelInTitle', 'title', 'contains', 'cancel');
+//        }
+//    }
 
-        $totals = $this->totals;
-        $items = $walks->allWalks();
-        foreach ($items as $walk) {
-            if (!array_key_exists($walk->groupCode, $area->groups)) {
-                echo "<p>Group code not found " . $walk->groupCode . " - " . $walk->groupName;
-                $group = $this->createGroup($walk->groupCode, $walk->groupName, false);
-                $area->groups[$walk->groupCode] = $group;
-            }
-            $area->noWalks += 1;
-            $area->groups[$walk->groupCode]->noWalks += 1;
-            $totals->noWalks += 1;
+//    private function setValues($totals, $area, $walk, $statsproperty, $property, $test, $value) {
+//        $set = false;
+//        $testvalue = $walk->$property;
+//        switch ($test) {
+//            case '!==':
+//                if ($testvalue !== $value) {
+//                    $set = true;
+//                }
+//                break;
+//            case '>':
+//                if ($testvalue > $value) {
+//                    $set = true;
+//                }
+//                break;
+//            case '<=':
+//                if ($testvalue <= $value) {
+//                    $set = true;
+//                }
+//                break;
+//            case '===':
+//                if ($testvalue === $value) {
+//                    $set = true;
+//                }
+//                break;
+//            case 'contains':
+//                if (strpos($testvalue, $value) !== false) {
+//                    $set = true;
+//                }
+//                break;
+//        }
+//        if ($set) {
+//            $area->$statsproperty += 1;
+//            $area->groups[$walk->groupCode]->$statsproperty += 1;
+//            $totals->$statsproperty += 1;
+//        }
+//    }
 
-            $this->setValues($totals, $area, $walk, 'additionalNotes', 'additionalNotes', '!==', "");
-            $this->setValues($totals, $area, $walk, 'pace', 'pace', '!==', "");
-            $this->setValues($totals, $area, $walk, 'localGrade', 'localGrade', '!==', "");
-            $this->setValues($totals, $area, $walk, 'ascentFeet', 'ascentFeet', '!==', null);
-            $this->setValues($totals, $area, $walk, 'distanceZero', 'distanceMiles', '<=', 0);
-            $this->setValues($totals, $area, $walk, 'hasMeetPlace', 'hasMeetPlace', '===', true);
-            $this->setValues($totals, $area, $walk, 'isLinear', 'isLinear', '===', true);
-            if ($walk->hasExactMeetPlace) {
-                $this->setValues($totals, $area, $walk, 'hasOnlyMeetPlace', 'hasExactStartPlace', '===', false);
-                if (!$walk->hasExactStartPlace) {
-                    $a = 1;
-                }
-            }
-            $this->setValues($totals, $area, $walk, 'hasExactMeetPlace', 'hasExactMeetPlace', '===', true);
-            $this->setValues($totals, $area, $walk, 'hasExactStartPlace', 'hasExactStartPlace', '===', true);
-            $this->setValues($totals, $area, $walk, 'hasNeither', 'hasNeither', '===', true);
-            $this->setValues($totals, $area, $walk, 'hasFinishPlace', 'hasFinishPlace', '===', true);
-            $this->setValues($totals, $area, $walk, 'suitability', 'suitability', '!==', null);
-            $this->setValues($totals, $area, $walk, 'strands', 'strands', '!==', null);
-            $this->setValues($totals, $area, $walk, 'festivals', 'festivals', '!==', null);
-            $this->setValues($totals, $area, $walk, 'surroundings', 'surroundings', '!==', null);
-            $this->setValues($totals, $area, $walk, 'theme', 'theme', '!==', null);
-            $this->setValues($totals, $area, $walk, 'specialStatus', 'specialStatus', '!==', null);
-            $this->setValues($totals, $area, $walk, 'facilities', 'facilities', '!==', null);
-            //      $this->setValues($totals, $area, $walk, 'cancelInTitle', 'title', 'contains', 'cancel');
-        }
-    }
+//    private function processTotals($areas) {
+//        $totalNoGroups = 0;
+//        $totalNoAreas = 0;
+//        $totalGWEMGroups = 0;
+//        foreach ($areas as $area) {
+//            $areaNoGroups = 0;
+//            $areaGWEMGroups = 0;
+//            $totalNoAreas += 1;
+//            foreach ($area->groups as $group) {
+//                $areaNoGroups += 1;
+//                $totalNoGroups += 1;
+//                if ($group->noWalks > 0) {
+//                    $areaGWEMGroups += 1;
+//                    $totalGWEMGroups += 1;
+//                }
+//            }
+//            $area->NoGroupsUsingGWEM = $areaGWEMGroups;
+//            $area->NoGroups = $areaNoGroups;
+//        }
+//        $this->totals->NoGroupsUsingGWEM = $totalGWEMGroups;
+//        $this->totals->NoGroups = $totalNoGroups;
+//        $this->totals->NoAreas = $totalNoAreas;
+//    }
 
-    private function setValues($totals, $area, $walk, $statsproperty, $property, $test, $value) {
-        $set = false;
-        $testvalue = $walk->$property;
-        switch ($test) {
-            case '!==':
-                if ($testvalue !== $value) {
-                    $set = true;
-                }
-                break;
-            case '>':
-                if ($testvalue > $value) {
-                    $set = true;
-                }
-                break;
-            case '<=':
-                if ($testvalue <= $value) {
-                    $set = true;
-                }
-                break;
-            case '===':
-                if ($testvalue === $value) {
-                    $set = true;
-                }
-                break;
-            case 'contains':
-                if (strpos($testvalue, $value) !== false) {
-                    $set = true;
-                }
-                break;
-        }
-        if ($set) {
-            $area->$statsproperty += 1;
-            $area->groups[$walk->groupCode]->$statsproperty += 1;
-            $totals->$statsproperty += 1;
-        }
-    }
-
-    private function processTotals($areas) {
-        $totalNoGroups = 0;
-        $totalNoAreas = 0;
-        $totalGWEMGroups = 0;
-        foreach ($areas as $area) {
-            $areaNoGroups = 0;
-            $areaGWEMGroups = 0;
-            $totalNoAreas += 1;
-            foreach ($area->groups as $group) {
-                $areaNoGroups += 1;
-                $totalNoGroups += 1;
-                if ($group->noWalks > 0) {
-                    $areaGWEMGroups += 1;
-                    $totalGWEMGroups += 1;
-                }
-            }
-            $area->NoGroupsUsingGWEM = $areaGWEMGroups;
-            $area->NoGroups = $areaNoGroups;
-        }
-        $this->totals->NoGroupsUsingGWEM = $totalGWEMGroups;
-        $this->totals->NoGroups = $totalNoGroups;
-        $this->totals->NoAreas = $totalNoAreas;
-    }
-
-    public function displayStats() {
-
-        echo "<h4>Ramblers Areas and Groups - Walks statistics</h4>";
-        $this->getStats();
-    }
+//    public function displayStats() {
+//
+//        echo "<h4>Ramblers Areas and Groups - Walks statistics</h4>";
+//        $this->getStats();
+//    }
 
     private function checkJsonProperties($item) {
         $properties = array("scope", "groupCode", "name", "url", "description", "latitude",

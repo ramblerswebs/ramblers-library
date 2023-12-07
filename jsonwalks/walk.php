@@ -12,7 +12,7 @@ class RJsonwalksWalk implements JsonSerializable {
     private $start = null;
     private $finish = null;
     private $contacts = null;
-    private $flags = [];                  // flags to describe walk 
+    private $flags = null;                  // flags to describe walk 
     private $media = [];                  // array of image infomation
     private $icsDayEvents = false;
     private static $withMonth = ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"];
@@ -36,6 +36,7 @@ class RJsonwalksWalk implements JsonSerializable {
         $this->start = new RJsonwalksWalkItems();
         $this->finish = new RJsonwalksWalkItems();
         $this->contacts = new RJsonwalksWalkItems();
+        $this->flags = new RJsonwalksWalkFlags();
     }
 
     public function addAdmin($admin) {
@@ -74,7 +75,7 @@ class RJsonwalksWalk implements JsonSerializable {
     }
 
     public function setFlags($flags) {
-        $this->flags = $flags->items;
+        $this->flags = $flags;
     }
 
     public function getSortValue($type) {
@@ -92,7 +93,7 @@ class RJsonwalksWalk implements JsonSerializable {
             case self::SORT_TELEPHONE1:
                 return $this->contacts->getIntValue("telephone1");
             case self::SORT_TELEPHONE2:
-                return $this->contacts->getIntValue("telephone1");
+                return $this->contacts->getIntValue("telephone2");
             case self::SORT_TIME:
                 $sortTime = $this->getIntValue("meeting", "time");
                 if ($sortTime == "") {
@@ -104,12 +105,59 @@ class RJsonwalksWalk implements JsonSerializable {
         }
     }
 
+    public function hasMeetPlace() {
+        return !$this->meeting->isEmpty();
+    }
+
     public function isCancelled() {
         return $this->admin->isCancelled();
     }
 
     public function setNewWalk(DateTime $date) {
         $this->admin->setNewWalk($date);
+    }
+
+    public function notInGroup($groups) {
+        return $this->admin->notInGroup($groups);
+    }
+
+    public function notInDayList($days) {
+        return $this->basics->notInDayList($days);
+    }
+
+    public function isStatus($status) {
+        return $this->admin->isStatus($status);
+    }
+
+    public function titleIs($filter) {
+        return $this->basics->titleIs($filter);
+    }
+
+    public function titleContains($filter) {
+        return $this->basics->titleContains($filter);
+    }
+
+    public function notInGradeList($grades) {
+        $result = true;
+        $walks = $this->walks->getItems();
+        foreach ($walks as $walk) {
+            $notIn = $walk->notInGradeList($grades);
+            if (!$notIn) {
+                $result = false;
+            }
+        }
+        return $result;
+    }
+    public function flagsExists($flags){
+        $result=[];
+        foreach ($flags as $item) {
+             $result[]=  $this->flags->flagExists($item);
+        }
+       return $result;
+    }
+
+    public function filterDateRange($fromdate, $todate) {
+        return $this->basics->filterDateRange($fromdate, $todate);
     }
 
     public function _getWalkSchema() {
@@ -284,14 +332,36 @@ class RJsonwalksWalk implements JsonSerializable {
         return $time2;
     }
 
+    public function filterDistance($distanceMin, $distanceMax) {
+        $walks = $this->walks->getItems();
+        $outside = false;
+        foreach ($walks as $walk) {
+            $out = $walk->filterDistance($distanceMin, $distanceMax);
+            if ($out) {
+                $outside = true;
+            }
+        }
+        return $outside;
+    }
+
     public function distanceFromLatLong($lat, $long) {
-        $distance = 1000; // Default to far away.
-        if (property_exists($this, "startLocation")) {
-            if ($this->startLocation != null) {
-                $distance = $this->startLocation->distanceFromLatLong($lat, $long);
+        $distance = 100000000; // Default of far away.
+        $starts = $this->start->getItems();
+        foreach ($starts as $start) {
+            $dist = $start->distanceFromLatLong($lat, $long);
+            if ($dist < $distance) {
+                $distance = $dist;
             }
         }
         return $distance;
+    }
+
+    public function filterEvents() {
+        return $this->admin->filterEvents();
+    }
+
+    public function filterWalks() {
+        return $this->admin->filterWalks();
     }
 
     public function getMedia($item) {
@@ -419,6 +489,7 @@ class RJsonwalksWalk implements JsonSerializable {
             case "{nationalGradeAbbr}":
             case "{localGrade}":
             case "{shape}":
+            case "{type}":
                 $out = $this->walks->getValue($option);
                 break;
 
