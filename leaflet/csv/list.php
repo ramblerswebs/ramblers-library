@@ -26,7 +26,7 @@ class RLeafletCsvList extends RLeafletMap {
     public function display() {
         $ok = $this->readCSV();
         If (!$ok) {
-            $app = JApplicationCms::getInstance('site');
+            $app = JFactory::getApplication();
             $app->enqueueMessage(JText::_("Unable to open/process the file: " . $this->filename), 'error');
             return;
         }

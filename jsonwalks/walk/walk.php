@@ -35,7 +35,6 @@ class RJsonwalksWalkWalk implements JsonSerializable {
         } else {
             $app = JFactory::getApplication();
             $app->enqueueMessage("Processing walks - invalid walk difficulty " . $nationalGrade, 'Error');
-
             $this->nationalGrade = "Event";
         }
 

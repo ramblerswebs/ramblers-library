@@ -636,7 +636,7 @@ ra.event = function () {
     this.addMapSection = function (tag) {
         var mapdiv = document.createElement('div');
         mapdiv.setAttribute('class', 'walkitem map');
-        mapdiv.setAttribute('id', this.admin.id);
+        // mapdiv.setAttribute('id', this.admin.id);
         tag.appendChild(mapdiv);
         var lmap = new ra.leafletmap(mapdiv, ra.defaultMapOptions);
         map = lmap.map;
@@ -665,7 +665,8 @@ ra.event = function () {
         content.setAttribute('class', 'walkitem walkdates');
         var $html = "";
         if (this.nationalUrl !== '') {
-            $html += "<div class='updated'><a href='" + this.admin.nationalUrl + "' target='_blank' >View walk on National Web Site</a></div>";
+            $html += "<div><img src=\"" + ra.baseDirectory() + "media/lib_ramblers/images/ralogo.png\" alt=\"Ramblers\" width=\"17\" height=\"17\"> ";
+            $html += "<a href='" + this.admin.nationalUrl + "' target='_blank' >View walk on Ramblers national web site</a></div>";
         }
         var url = new URL(window.location.href);
         var params = new URLSearchParams(url.search);
@@ -674,12 +675,12 @@ ra.event = function () {
         var link = new URL(`${url.origin}${url.pathname}?${params}`);
         var text = escape(link.href);
         $html += "<div>";
-        $html += "<img src=\"" + ra.baseDirectory() + "media/lib_ramblers/leaflet/images/share.png\" alt=\"Share\" width=\"25\" height=\"25\"> ";
+        $html += "<img src=\"" + ra.baseDirectory() + "media/lib_ramblers/leaflet/images/share.png\" alt=\"Share\" width=\"17\" height=\"17\"> ";
         $html += "<a href=\"javascript:ra.clipboard.set(\'" + text + "')\" >Copy url of this popup to clipboard</a>";
         $html += "</div>";
-        $html += "<div class='updated walk" + this.admin.status + "'>Last update: " + ra.date.dowShortddmmyyyy(this.admin.dateUpdated) + "</div>";
+        $html += "<div>Last update: " + ra.date.dowShortddmmyyyy(this.admin.dateUpdated) + "</div>";
         $html += "</div>";
-        $html += "<div class='updated'>Walk ID " + this.admin.id + "</div>";
+        $html += "<div>Walk ID " + this.admin.id + "</div>";
         content.innerHTML = $html;
         tag.appendChild(content);
     };
@@ -1297,7 +1298,7 @@ ra.event.timelocation = function () {
         if (this.isCancelled) {
             cancelled = "CANCELLED: ";
         }
-        div.classList.add("notexact");
+        //  div.classList.add("notexact");
         div.innerHTML = "<b>" + cancelled + display.title + "</b>: " + this.description;
         if (this.timeHHMMshort !== "") {
             var time = document.createElement('div');
@@ -1905,11 +1906,11 @@ ra.walk = (function () {
     my._startup = true;
     my.walks = new ra.events();
     my.registerEvent = function (newEvent) {
-                my.walks.registerEvent(newEvent);
+        my.walks.registerEvent(newEvent);
     };
     // command to store all walks from PHP display options
     my.registerPHPWalks = function (mapOptions, data) {
-              // stores walks for php walks displays
+        // stores walks for php walks displays
         var phpwalks = null;
         phpwalks = data.walks;
         if (phpwalks !== null) {
@@ -1923,8 +1924,7 @@ ra.walk = (function () {
             data.walks = null;
             my.displayUrlWalkPopup();
         }
-                this.load = function () {
-            console.log('registerPHPWalks: load ' + new Date().toLocaleString());
+        this.load = function () {
         };
     };
     my.displayUrlWalkPopup = function () {

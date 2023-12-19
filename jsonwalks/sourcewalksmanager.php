@@ -99,6 +99,7 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
             default:
                 $app = JFactory::getApplication();
                 $app->enqueueMessage("Processing walks - invalid item_type: " . $item->item_type, 'Error');
+                $type = TypeOfWalk::GroupEvent;
         }
         $admin = new RJsonwalksWalkAdmin($source, $type, $id, $groupCode, $groupName,
                 $status, $cancellationReason, $nationalUrl, $dateUpdated, $dateCreated);

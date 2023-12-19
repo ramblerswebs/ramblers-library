@@ -14,11 +14,11 @@ Basics - the general information about a 'walk', title, date etc.
 Meeting, Start and Finish - these are all collections of Timelocation objects, RJsonwalksWalkTimelocation, the collection is handled 
   as an Items class. RJsonwalksWalkItems. This allows each section to have none, one or more of these items. 
   Typically a meeting has zero or one item but WE can have more.
-  Start has one item.
+  Start usually has one item.
 Walks - this section has one or more walk objects, RJsonwalksWalkWalk, again handled by the item class. 
      Typically there is one walk for a WM walk, one or more for a WE walk.
      For a WM Event there is no walk but a dummy walk is created this national grade of 'Event'
 Contacts - this is a collection of contacts handled by the items class.
 Media - 
-Flags - Handles any Transport, Facilies flags
+Flags - Handles any Transport, Facilities flags
 

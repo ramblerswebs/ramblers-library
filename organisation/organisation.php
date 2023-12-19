@@ -69,7 +69,7 @@ class ROrganisation {
         }
         switch ($contents) {
             case NULL:
-                $app = JApplicationCms::getInstance('site');
+                $app = JFactory::getApplication();
                 $app->enqueueMessage(JText::_('Groups feed: Unable to read feed: ' . $rafeedurl), 'error');
                 break;
             case "":

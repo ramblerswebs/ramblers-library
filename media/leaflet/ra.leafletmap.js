@@ -223,7 +223,6 @@ ra.leafletmap = function (tag, options) {
         this.controls.rightclick.mapControl(this.controls.layers);
     }
 
-
     this.osZoomLevel = function () {
         this.controls.zoomlevelOSMsg.setText("");
         if (this.baseTiles === 'Ordnance Survey') {

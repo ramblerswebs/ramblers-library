@@ -10,7 +10,7 @@ class RWalkseditorProgramme extends RLeafletMap {
             $this->groups = $values;
         } else {
             $text = "Groups not defined as an array";
-            $app = JApplicationCms::getInstance('site');
+            $app = JFactory::getApplication();
             $app->enqueueMessage($text, 'error');
         }
     }
@@ -20,7 +20,7 @@ class RWalkseditorProgramme extends RLeafletMap {
             $this->localGrades = $values;
         } else {
             $text = "Local Grades not defined as an array";
-            $app = JApplicationCms::getInstance('site');
+            $app = JFactory::getApplication();
             $app->enqueueMessage($text, 'error');
         }
     }
@@ -28,7 +28,7 @@ class RWalkseditorProgramme extends RLeafletMap {
     public function display() {
         if ($this->groups == null) {
             $text = "No groups defined";
-            $app = JApplicationCms::getInstance('site');
+            $app = JFactory::getApplication();
             $app->enqueueMessage($text, 'error');
             return;
         }

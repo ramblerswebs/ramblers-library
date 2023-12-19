@@ -181,5 +181,5 @@ class RLeafletScript {
 //                    $err.= ' - Unknown error';
 //                    break;
 //            }
-//            $app = JApplicationCms::getInstance('site');
+//           $app = JFactory::getApplication();
 //            $app->enqueueMessage(JText::_($err), 'error');

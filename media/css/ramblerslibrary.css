@@ -96,7 +96,7 @@ div.walkstdfulldetails div.walkitem {
     page-break-inside: avoid;           /* Theoretically FF 20+ */
     break-inside: avoid-column;         /* IE 11 */
     display:table;                      /* Actually FF 20+ */
-    width:97%;
+    width:calc(100% - 18px);
     border: 2px solid #cccccc  ;
     background-color: #eeeeee;
     line-height: 1.5em;
@@ -140,6 +140,8 @@ div.walkitem.flags ul li{
 div.walkstdfulldetails div.walkitem.map {
     padding: 0px;
     border: 0px solid #cccccc  ;
+    width:calc(100% - 4px);
+    margin:2px;
 }
 div.walkstdfulldetails div.festivals > ul,
 div.walkstdfulldetails div.strands > ul,

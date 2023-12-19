@@ -18,7 +18,7 @@ class RGpxStatistics {
         $this->getMetaFromGPX = $getMetaFromGPX;
         if (!file_exists($folder)) {
             $text = "Folder does not exist: " . $folder . ". Unable to list contents";
-            $app = JApplicationCms::getInstance('site');
+            $app = JFactory::getApplication();
             $app->enqueueMessage($text, "error");
             echo "<b>Not able to list contents of folder: " . $folder . "<b>";
             return;
