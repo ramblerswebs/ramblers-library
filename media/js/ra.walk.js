@@ -162,7 +162,7 @@ ra.event = function () {
     };
     this.walkDiagnostics = function (tag) {
         var options = ["{lf}", "<b>ADMIN</b>", "{group}", "{eventType}", "<b>BASICS</b>", "{title}", "{description}", "{additionalNotes}",
-            "{dowShortdd}", "{dowShortddmm}", "{dowShortddyyyy}",
+            "{dowShortdd}", "{dowShortddmm}", 
             "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}",
             "<b>MEETING</b>", "{meet}", "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}",
             "{meetw3w}", "{meetOSMap}", "{meetDirections}",
@@ -187,7 +187,7 @@ ra.event = function () {
         var tags = [
             {name: 'table', parent: 'root', tag: 'table', attrs: {class: 'ra-diagnostics'}},
             {name: 'tr', parent: 'table', tag: 'tr'},
-            {parent: 'tr', tag: 'th', attrs: {style: 'min-width: 120px;'}, textContent: 'Name'},
+            {parent: 'tr', tag: 'th', attrs: {style: 'min-width: 130px;'}, textContent: 'Name'},
             {parent: 'tr', tag: 'th', textContent: 'Value'},
             {parent: 'tr', tag: 'th', textContent: 'HTML'},
             {parent: 'root', tag: 'h4', textContent: 'Walk Object:'},
