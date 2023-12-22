@@ -58,7 +58,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
                 if ($displayMonth) {
                     if ($displayMonth) {
                         $out = "<tr><td>";
-                        $out .= "<h3>" . $walk->month . $walk->addYear() . "</h3>";
+                        $out .= "<h3>" . $thismonth . "</h3>";
                         $out .= "</td></tr>";
                         echo $out;
                     }
