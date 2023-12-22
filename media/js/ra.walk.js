@@ -162,7 +162,7 @@ ra.event = function () {
     };
     this.walkDiagnostics = function (tag) {
         var options = ["{lf}", "<b>ADMIN</b>", "{group}", "{eventType}", "<b>BASICS</b>", "{title}", "{description}", "{additionalNotes}",
-            "{dowShortdd}", "{dowShortddmm}", 
+            "{dowShortdd}", "{dowShortddmm}",
             "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}",
             "<b>MEETING</b>", "{meet}", "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}",
             "{meetw3w}", "{meetOSMap}", "{meetDirections}",
@@ -927,6 +927,8 @@ ra.event.basics = function () {
     };
     this.getIntValue = function ($option) {
         switch ($option) {
+            case "dayofweek":
+                return ra.date.dow(this.walkDate);
             case "displayMonth":
                 return ra.date.month(this.walkDate) + this.addYear();
             case "_finishTime":
@@ -1047,6 +1049,9 @@ ra.event.walk = function () {
     this.getIntValue = function ($option) {
 
         switch ($option) {
+            case "shape":
+                return this.shape;
+                break;
             case "_filterDistance":
                 return  this.filterDistance();
             case "_nationalGradeCSS":
@@ -1644,6 +1649,8 @@ ra.event.contact = function (id) {
     };
     this.getIntValue = function ($option) {
         switch ($option) {
+            case "contactName":
+                return this.contactName;
             case "_icsrecord":
                 var out = "";
                 if (this.contactName !== "") {

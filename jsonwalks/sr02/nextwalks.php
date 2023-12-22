@@ -28,23 +28,23 @@ class RJsonwalksSr02Nextwalks extends RJsonwalksStdNextwalks {
         $response->out = "";
         switch ($option) {
             case "{xTitle}":
-                $response->out = $walk->title;
+                  $response->out = $walk->getIntValue("basics", "title");
                 break;
             case "{xSymbol}":
                 /* Picnic or Pub icon */
-                if (stristr($walk->additionalNotes, "picnic")) {
+                if (stristr($walk->getIntValue("basics", "additionalNotes"), "picnic")) {
                     $response->out = '<img src="media/lib_ramblers/jsonwalks/sr02/Sandwich-icon.png" title="Picnic Required" width="24" height="24" align="left"/>';
                     break;
                 }
-                if (stristr($walk->additionalNotes, "pub")) {
+                if (stristr($walk->getIntValue("basics", "additionalNotes"), "pub")) {
                     $response->out = '<img src="media/lib_ramblers/jsonwalks/sr02/beer.png" title="Pub Lunch" width="24" height="24" align="left"/>';
                 }
                 break;
             case "{xNationalGrade}":
-                $response->out = strtoupper($walk->nationalGrade);
+                $response->out =  $walk->getIntValue("walks", "nationalGrade");
                 break;
             case "{xContact}":
-                $response->out = "<b>" . $walk->contactName . "</b>";
+              $response->out = "<b>" .  $walk->getIntValue("contacts", "contactName") . "</b>";
                 break;
             default:
                 $response->found = false;

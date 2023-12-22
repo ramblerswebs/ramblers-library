@@ -72,11 +72,11 @@ displayListRowClass = function ($walk) {
 
 displayTableRowClass = function ($walk) {
     var $class = "leisurely";
-    var $day = $walk.dayofweek;
-    if ($walk.isLinear && ($day === "Wednesday")) {
+    var $day = $walk.getIntValue("basics", "dayofweek");
+    if (($walk.getIntValue("walks", "shape")==="Linear") && ($day === "Wednesday")) {
         $class = "sr02linear";
     } else {
-        switch ($walk.nationalGrade) {
+        switch ($walk.getIntValue("walks", "_nationalGrade")) {
             case "Easy" :
                 $class = "sr02easy";
                 break;
