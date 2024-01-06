@@ -7,7 +7,7 @@ L.Control.Tools = L.Control.extend({
         var _this = this;
         this._map = map;
         this._container = document.createElement('div');
-         this._container.style.display = 'none';
+        this._container.style.display = 'none';
         L.DomEvent.disableClickPropagation(this._container);
         this._button = L.DomUtil.create('div', 'ra-map-tools-icon leaflet-bar leaflet-control', this._container);
         this._button.title = 'Mapping tools';
@@ -15,6 +15,10 @@ L.Control.Tools = L.Control.extend({
         this._toolsDiv.style.display = 'none';
         this._container.addEventListener("click", function (e) {
             // consume event so map does not get clicked
+        });
+        this._map.addEventListener("mouseover", function (e) {
+            _this._button.style.display = "initial";
+
         });
         this._container.addEventListener("mouseenter", function (e) {
             _this._button.style.display = "none";

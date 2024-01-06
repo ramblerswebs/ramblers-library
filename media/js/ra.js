@@ -64,7 +64,7 @@ ra.uniqueID = function () {
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
 ra.bootstrapper = function (displayClass, mapOptions, _data) {
-        ra.loading.start();
+    ra.loading.start();
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
@@ -81,9 +81,9 @@ ra.bootstrapper = function (displayClass, mapOptions, _data) {
                     return;
                 }
             }
-                     var display = new myclass(options, data);
-                       display.load();
-                  }
+            var display = new myclass(options, data);
+            display.load();
+        }
     }
     ra.loading.stop();
 };
@@ -425,7 +425,7 @@ ra.settings = (function () {
                 } else {
                     to[key] = from[key];
                 }
-                          }
+            }
         });
     };
     settings.changed = function () {
@@ -1966,31 +1966,13 @@ ra.filter = function (eventTag, eventName) {
             return;
         }
         var tags = [
-            {name: 'button', parent: 'root', tag: 'div', textContent: 'Filter', attrs: {class: 'ra_openclose'}},
-            {name: 'span', parent: 'button', tag: 'span', attrs: {class: 'ra-closed'}},
-            {name: 'options', parent: 'root', tag: 'div', attrs: {class: 'ra-clear'}},
-            {parent: 'options', tag: 'div', attrs: {class: 'ra-filter-spacer'}},
-            {name: 'filters', parent: 'options', tag: 'div', attrs: {class: 'ra-walksfilter'}}
+            {name: 'details', parent: 'root', tag: 'details', attrs: {class: "ra-walksfilter"}},
+            {name: 'summary', parent: 'details', tag: 'summary', textContent: 'Filter'},
+            {name: 'filters', parent: 'details', tag: 'div', attrs: {class: 'ra-walksfilter'}}
         ];
 
         this.elements = ra.html.generateTags(tag, tags);
-        var options = this.elements.options;
         var filters = this.elements.filters;
-        var button = this.elements.button;
-        var span = this.elements.span;
-        button.onclick = function (event) {
-            if (options.style.display !== "none") {
-                options.style.display = "none";
-                span.classList.add('ra-closed');
-                span.classList.remove('ra-open');
-
-            } else {
-                options.style.display = "";
-                span.classList.add('ra-open');
-                span.classList.remove('ra-closed');
-            }
-        };
-        options.style.display = "none";
 
         for (var propt in this._groups) {
             var div = document.createElement('div');
@@ -2026,7 +2008,6 @@ ra.filter = function (eventTag, eventName) {
             displayall.onclick = function (event) {
                 var opt;
                 var list = displayall.classList;
-
                 if (list.contains('active')) {
                     list.remove('active');
                     opt = "none";
@@ -2039,8 +2020,6 @@ ra.filter = function (eventTag, eventName) {
                 }
             };
         }
-
-
     };
     this._displayGroupNumberRange = function (tag, group) {
         // display title

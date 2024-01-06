@@ -243,6 +243,7 @@ span.placelocation{
     border-radius: 5px;
     font-weight: bold;
     color:white;
+    width: max-content;/* to fix bug in walk popup map */
 }
 
 .group-icon.a {

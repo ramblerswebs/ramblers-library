@@ -31,20 +31,20 @@ div.ra_calendar div.box{
     top:0px;
     left:0px;
     width:100%;
-    background-color: #787878 ;  
-    border-radius: 5px 5px 0px 0px;    
+    background-color: #787878 ;
+    border-radius: 5px 5px 0px 0px;
 }
 div.ra_calendar div.header{
     vertical-align:middle;
     position:absolute;
     left:11px;
-    top:0px;   
+    top:0px;
     text-align:center;
 }
 
-div.ra_calendar div.header a.prev,div.ra_calendar div.header a.next{ 
+div.ra_calendar div.header a.prev,div.ra_calendar div.header a.next{
     position:absolute;
-    top:0px;   
+    top:0px;
     display:block;
     cursor:pointer;
     text-decoration:none;
@@ -84,7 +84,7 @@ div.ra_calendar ul.label{
 div.ra_calendar ul.label li,div.ra_calendar ul.label li a{
     margin:0px;
     padding:0px;
-    margin-right:5px;  
+    margin-right:5px;
     float:left;
     list-style-type:none;
     text-shadow: none;
@@ -114,7 +114,7 @@ div.ra_calendar ul.dates li{
     background-color: #DDD;
     border-radius: 5px;
     color:#999999;
-    text-align:center; 
+    text-align:center;
 }
 
 div.ra_calendar ul.dates li.today{
@@ -161,6 +161,7 @@ div.ra_calendar li:hover div.event-list-cal-hover {
 div.ra_calendar .event-list-cal-event {
     color: #000;
     font-weight: bold;
+    cursor:pointer;
 }
 /******************************* 200 *********************************/
 /*******************************Calendar Top Navigation***********************/
@@ -174,13 +175,13 @@ div.ra_calsize200 div.box{
 }
 
 div.ra_calsize200 div.header{
-    line-height:20px;  
+    line-height:20px;
     width:170px;
-    height:20px;   
+    height:20px;
 
 }
 
-div.ra_calsize200 div.header a.prev,div.ra_calsize200 div.header a.next{ 
+div.ra_calsize200 div.header a.prev,div.ra_calsize200 div.header a.next{
     height: 9px;
 }
 
@@ -235,13 +236,13 @@ div.ra_calsize250 div.box{
 }
 
 div.ra_calsize250 div.header{
-    line-height:20px;  
+    line-height:20px;
     width:220px;
-    height:20px;   
+    height:20px;
 
 }
 
-div.ra_calsize250 div.header a.prev,div.ra_calsize250 div.header a.next{ 
+div.ra_calsize250 div.header a.prev,div.ra_calsize250 div.header a.next{
     height: 9px;
 }
 
@@ -292,16 +293,16 @@ div.ra_calsize400{
 }
 
 div.ra_calsize400 div.box{
-    height:40px;    
+    height:40px;
 }
 
 div.ra_calsize400 div.header{
-    line-height:40px;  
+    line-height:40px;
     width:372px;
-    height:40px;   
+    height:40px;
 }
 
-div.ra_calsize400 div.header a.prev,div.ra_calsize400 div.header a.next{ 
+div.ra_calsize400 div.header a.prev,div.ra_calsize400 div.header a.next{
     height: 17px;
 }
 
@@ -351,13 +352,13 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     }
 
     div.ra_calsize0 div.header{
-        line-height:20px;  
+        line-height:20px;
         width:220px;
-        height:20px;   
+        height:20px;
 
     }
 
-    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{ 
+    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{
         height: 9px;
     }
 
@@ -392,7 +393,7 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     /* mini calendar */
     div.ra_calsize0 div.event-list-cal-hover {
         top: -5px;
-        left: -300px;
+        left: -250px;
         width: 300px;
         font-size: 100%;
     }
@@ -416,13 +417,13 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     }
 
     div.ra_calsize0 div.header{
-        line-height:20px;  
+        line-height:20px;
         width:170px;
-        height:20px;   
+        height:20px;
 
     }
 
-    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{ 
+    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{
         height: 9px;
     }
 
@@ -481,13 +482,13 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     }
 
     div.ra_calsize0 div.header{
-        line-height:20px;  
+        line-height:20px;
         width:120px;
-        height:20px;   
+        height:20px;
 
     }
 
-    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{ 
+    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{
         height: 9px;
     }
 
@@ -539,16 +540,16 @@ div.ra_calsize400 .event-list-cal-event-single-link {
         width: 400px;
     }
     div.ra_calsize0 div.box{
-        height:40px;    
+        height:40px;
     }
 
     div.ra_calsize0 div.header{
-        line-height:40px;  
+        line-height:40px;
         width:372px;
-        height:40px;   
+        height:40px;
     }
 
-    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{ 
+    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{
         height: 17px;
     }
 
@@ -596,12 +597,12 @@ div.ra_calsize400 .event-list-cal-event-single-link {
     }
 
     div.ra_calsize0 div.header{
-        line-height:20px;  
+        line-height:20px;
         width:220px;
-        height:20px;   
+        height:20px;
     }
 
-    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{ 
+    div.ra_calsize0 div.header a.prev,div.ra_calsize0 div.header a.next{
         height: 9px;
     }
 

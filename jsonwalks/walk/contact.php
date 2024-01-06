@@ -7,6 +7,7 @@
  */
 class RJsonwalksWalkContact implements JsonSerializable {
 
+    private $id=0;
     private $isLeader = false;       // is the contact info for the leader of the walk
     private $contactName = "";       // contact name
     private $email = "";             // email address for contact

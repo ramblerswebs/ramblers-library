@@ -602,7 +602,7 @@ class RJsonwalksWalk implements JsonSerializable {
 
     private function _addWalkLink($id, $text, $class = "") {
         if ($text !== '') {
-            return "<span class='pointer " . $class . "' onclick=\"" . self::DISPLAYWALKFUNCTION . "(event,'" . $id . "')\">" . $text . "</span>";
+            return "<a class='pointer " . $class . "' onclick=\"" . self::DISPLAYWALKFUNCTION . "(event,'" . $id . "')\">" . $text . "</a>";
         }
         return $text;
     }
@@ -659,8 +659,5 @@ class RJsonwalksWalk implements JsonSerializable {
         ];
     }
 
-    function __destruct() {
-        
-    }
 
 }

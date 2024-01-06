@@ -634,13 +634,22 @@ ra.event = function () {
         tag.appendChild(content);
     };
     this.addMapSection = function (tag) {
+        var osMapLayer;
         var mapdiv = document.createElement('div');
         mapdiv.setAttribute('class', 'walkitem map');
-        // mapdiv.setAttribute('id', this.admin.id);
         tag.appendChild(mapdiv);
         var lmap = new ra.leafletmap(mapdiv, ra.defaultMapOptions);
         map = lmap.map;
         maplayer = L.featureGroup().addTo(map);
+        osMapLayer = L.featureGroup().addTo(map);
+        tag.addEventListener("display-os-map", function (e) {
+            var items = e.items;
+            osMapLayer.clearLayers();
+            items.forEach(item => {
+                ra.map.os.display(item, osMapLayer);
+            });
+            map.fitBounds(osMapLayer.getBounds());
+        });
         this.meeting.forEach(loc => {
             loc._addLocationMarker(maplayer, map);
         });
@@ -707,7 +716,7 @@ ra.event = function () {
         this.addBasicSection(content);
         this.meeting.addSection(content, "meeting");
         this.start.addSection(content, "start");
-        this.finish.addSection(content, "start");
+        this.finish.addSection(content, "finish");
         this.walks.addHtmlSection(content, "difficulty");
         this.contacts.addHtmlSection(content, "contact");
         if (!this.isCancelled()) {
@@ -812,7 +821,7 @@ ra.event.items = function () {
         this.items.forEach(item => {
             var content = document.createElement('div');
             content.setAttribute('class', 'walkitem ' + sectionclass);
-            item.getSection(content);
+            item.getSection(tag, content);
             tag.appendChild(content);
         });
     };
@@ -1268,7 +1277,7 @@ ra.event.timelocation = function () {
         }
         return $textdescription;
     };
-    this.getSection = function (tag) {
+    this.getSection = function (contentTag, tag) {
         var display = {title: "Unknown",
             notes: "",
             timeTitle: "<b>Time</b>: "};
@@ -1332,7 +1341,7 @@ ra.event.timelocation = function () {
             a.setAttribute("href", $loc);
             a.textContent = "[Google Directions]";
             if (this.type !== "rough") {
-                this._addLocationExtras(tag);
+                this._addLocationExtras(contentTag, tag);
             }
         }
         if (display.notes !== "") {
@@ -1342,7 +1351,7 @@ ra.event.timelocation = function () {
             notes.classList.add("location", "notes");
         }
     };
-    this._addLocationExtras = function (tag) {
+    this._addLocationExtras = function (contentTag, tag) {
         var button = document.createElement('a');
         button.classList.add("mappopup");
         button.classList.add("pointer");
@@ -1351,6 +1360,8 @@ ra.event.timelocation = function () {
         button.textContent = "[Extra Info+]";
         var extras = document.createElement('div');
         extras.style.display = "none";
+        extras.classList.add("mappopup");
+        extras.classList.add("extra");
         tag.appendChild(extras);
         this._displayExtras(extras);
         button.addEventListener("click", e => {
@@ -1365,15 +1376,24 @@ ra.event.timelocation = function () {
                         } else {
                             this.osmaps = result.maps;
                         }
+                        this._displayOsMaps(contentTag, this.osmaps);
                         this._displayExtras(extras);
                     });
+                } else {
+                    this._displayOsMaps(contentTag, this.osmaps);
                 }
             } else {
                 element.textContent = "[Extra Info+]";
                 extras.style.display = "none";
+                this._displayOsMaps(contentTag, []);
             }
         });
     };
+    this._displayOsMaps = function (tag, items) {
+        let event = new Event("display-os-map", {bubbles: false});
+        event.items = items;
+        tag.dispatchEvent(event);
+    }
     this._displayExtras = function (tag) {
         tag.innerHTML = ""; // cleat current display
         var ll = document.createElement('div');
@@ -1401,7 +1421,7 @@ ra.event.timelocation = function () {
                 out += "<li>" + item.type + " " + item.number + ": " + item.title + " (1:" + item.scale + ")</li>";
             });
             out += "</ul>";
-            info.innerHTML = out;
+            info.innerHTML = out+"<div class='location notes'>Note: all OS map information is unofficial, please check before using this information.</div>";
         }
     };
     this._addLocationMarker = function (layer, map) {
@@ -1759,7 +1779,7 @@ ra.event.media = function () {
     };
     this.getHtmlSection = function () {
         var caption = "<div>" + this.alt + "</div>";
-        var $html = "<div class='walk-image' onclick='ra.html.displayInModal(this)'><img class='walkmedia' src='" + this.url + "'  >" + caption + "</div>";
+        var $html = "<div class='walk-image' onclick='ra.html.displayInModal(this)'><div class='mediapopup'><img class='walkmedia' src='" + this.url + "'  >" + caption + "</div></div>";
         return $html;
     };
 };

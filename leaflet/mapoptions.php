@@ -13,6 +13,7 @@ class RLeafletMapoptions {
     public $base = "";
     public $mapHeight = "500px";
     public $mapWidth = "100%";
+    public $bing = false;
     public $bingkey = null;
     public $ORSkey = null;
     public $helpPage = "";
@@ -24,11 +25,11 @@ class RLeafletMapoptions {
     public $calendar = false;
     public $topoMapDefault = false;
     public $initialview = null;
-      public $copyright = true;
-  // always on
+    public $copyright = true;
+    // always on
     public $fullscreen = true;
     public $settings = true;
-    public $mylocation = true; 
+    public $mylocation = true;
     public $print = true;
     //// ************** these options have three values
     // null never display option
@@ -36,6 +37,7 @@ class RLeafletMapoptions {
     // false only display option on full screen
     public $mouseposition = false;
     public $rightclick = false;
+
     // ************** END these options have three values
 
     public function __construct() {

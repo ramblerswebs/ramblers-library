@@ -53,7 +53,7 @@ class RLeafletScript {
         RLoad::addScript("media/lib_ramblers/js/ra.js", array("type" => "text/javascript"));
         // Leaflet
         $document->addStyleSheet("media/lib_ramblers/vendors/leaflet/leaflet.css", array("type" => "text/css"));
-        $document->addScript("media/lib_ramblers/vendors/leaflet/leaflet.js", array("type" => "text/javascript"));
+        RLoad::addScript("media/lib_ramblers/vendors/leaflet/leaflet.js", array("type" => "text/javascript"));
         RLoad::addScript("media/lib_ramblers/leaflet/ra.leafletmap.js");
         RLoad::addStyleSheet("media/lib_ramblers/leaflet/ramblersleaflet.css");
 
@@ -63,15 +63,15 @@ class RLeafletScript {
 
         if ($options->displayElevation !== null) {
             // elevation
-            $document->addScript("https://d3js.org/d3.v3.min.js", array("type" => "text/javascript"));
+            RLoad::addScript("https://d3js.org/d3.v3.min.js", array("type" => "text/javascript"));
             $path = "media/lib_ramblers/vendors/Leaflet.Elevation-0.0.4-ra/";
-            $document->addScript($path . "leaflet.elevation-0.0.4.src.js", array("type" => "text/javascript"));
+            RLoad::addScript($path . "leaflet.elevation-0.0.4.src.js", array("type" => "text/javascript"));
             $document->addStyleSheet($path . "elevation.css", array("type" => "text/css"));
-            $document->addScript("media/lib_ramblers/vendors/leaflet-gpx-1.3.1/gpx.js", array("type" => "text/javascript"));
+            RLoad::addScript("media/lib_ramblers/vendors/leaflet-gpx-1.3.1/gpx.js", array("type" => "text/javascript"));
         }
         if (RLicense::isGoogleKeyMapSet()) {
             // Google
-            //$document->addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), array("type"=>"text/javascript"), true, true);
+            //RLoad::addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), array("type"=>"text/javascript"), true, true);
             RLoad::addScript("media/lib_ramblers/vendors/Leaflet.GridLayer.GoogleMutant/Leaflet.GoogleMutant.js");
             RLoad::addScript("media/lib_ramblers/vendors/es6-promise-vv4.2.3/dist/es6-promise.auto.js");
             //    $document->map->replaceString("// [set addGoogle]", "ramblersMap.options.google=true;");
@@ -107,8 +107,8 @@ class RLeafletScript {
 
         $path = "media/lib_ramblers/vendors/leaflet.browser.print-1/dist/";
         RLoad::addScript($path . "leaflet.browser.print.js");
-        //     $document->addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
-        //     $document->addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
+        //     RLoad::addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
+        //     RLoad::addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
 
         if ($options->calendar) {
             $path = "media/lib_ramblers/vendors/fullcalendar-6.1.9/";
@@ -121,7 +121,7 @@ class RLeafletScript {
         RLoad::addScript("media/lib_ramblers/js/ra.walk.js");
         // my location start
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.MyLocation.js");
-        $document->addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js");
+        RLoad::addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js");
         $document->addStyleSheet("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css");
         // my location finish
 

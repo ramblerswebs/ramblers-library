@@ -96,7 +96,7 @@ div.walkstdfulldetails div.walkitem {
     page-break-inside: avoid;           /* Theoretically FF 20+ */
     break-inside: avoid-column;         /* IE 11 */
     display:table;                      /* Actually FF 20+ */
-    width:calc(100% - 18px);
+    width:97%;
     border: 2px solid #cccccc  ;
     background-color: #eeeeee;
     line-height: 1.5em;
@@ -137,10 +137,9 @@ div.walkitem.flags ul li{
     padding: 0;
     margin: 0 0 0px 25px;
 }
-div.walkstdfulldetails div.walkitem.map {
+div.walkstdfulldetails> div.walkitem.map {
     padding: 0px;
     border: 0px solid #cccccc  ;
-    width:calc(100% - 4px);
     margin:2px;
 }
 div.walkstdfulldetails div.festivals > ul,
@@ -187,6 +186,11 @@ ul.mappopup.osmaps li{
     font-size:  85%;
     margin-top: 0px;
 }
+div.mappopup.extra {
+    background-color: var(--lightgrey);
+    border-radius: 10px;
+    padding:3px;
+}
 div.place div.notexact{
     font-size:  80%;
 }
@@ -196,6 +200,19 @@ div.place div.notexact{
 }
 .events.links {
     font-size: .8em;
+}
+div.mediapopup {
+    display: grid;
+    height: 100%;
+
+}
+img.walkmedia{
+    max-width: 90%;
+    max-height: 90vh;
+    margin: auto;
+}
+div.mediapopup div{
+    margin: auto;
 }
 
 
@@ -647,25 +664,21 @@ img.ra-grade.pointer {
 }
 
 
+span.ra-open,
 span.ra-closed {
     padding-top:7px;
     float: right;
     width:35px;
     height:26px;
-    background-image:url("../images/close.png");
     background-size: 35px 26px;
     background-repeat: no-repeat;
     clear:both;
 }
+span.ra-closed {
+    background-image:url("../images/close.png");
+}
 span.ra-open {
-    padding-top:7px;
-    float: right;
-    width:35px;
-    height:26px;
     background-image:url("../images/open.png");
-    background-size:  35px 26px;
-    background-repeat: no-repeat;
-    overflow:auto;
 }
 span.ra-rightopen {
     float: right;
@@ -821,14 +834,7 @@ div.walk-image{
     cursor: pointer;
 }
 
-img.walkmedia[data-size="2"]{
-    max-height: 250px;
-    max-width: 400px;
-}
-img.walkmedia[data-size="3"]{
-    max-height: 400px;
-    max-width: 600px;
-}
+
 
 span.link{
     cursor:pointer;
@@ -840,13 +846,13 @@ span.link{
 table.detailsView tr td{
     vertical-align: top;
 }
-div.walksFilter > div.ra_openclose{
+XXXdiv.walksFilter > div.ra_openclose{
     width :120px;
     float:right;
-    height: 25px;
+    height: 40px;
 }
 
-div.ra_openclose {
+XXXdiv.ra_openclose {
     background-color:#DDDDDD;
     border-radius: 10px;
     font-size:115%;
@@ -855,10 +861,30 @@ div.ra_openclose {
     height:40px;
     clear:both;
 }
-div.ra_openclose:hover {
+XXdiv.ra_openclose:hover {
     background-color:#CCCCCC;
 }
+details.ra-walksfilter summary{
+    background-color:#DDDDDD;
+    border-radius: 10px;
+    font-size:115%;
+    cursor: pointer;
+    padding:8px;
+    height:25px;
+    float: right;
+}
+details.ra-walksfilter summary::before {
+    vertical-align:middle;
+    content: url(close.png);
+}
 
+details.ra-walksfilter[open] summary::before {
+    vertical-align:middle;
+    content: url(open.png);
+}
+details.ra-walksfilter[open] summary{
+    margin-bottom:10px;
+}
 div.ra-filtergroup {
     padding-left:10px;
     break-inside: avoid-column;
@@ -918,6 +944,7 @@ div.ra-displayall {
     border-radius: 10px 10px 10px 10px;
     padding-left:5px;
     padding-right:5px;
+    margin-top:10px;
     float:right;
     clear:both;
 }

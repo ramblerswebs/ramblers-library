@@ -519,7 +519,9 @@ function cluster(map) {
     body.appendChild(this.progressBar);
 
     this._map = map;
-    this.markersCG = L.markerClusterGroup({chunkedLoading: true, chunkProgress: this.updateClusterProgressBar, disableClusteringAtZoom: 12, maxClusterRadius: 50});
+    this.markersCG = L.markerClusterGroup({chunkedLoading: true,
+        chunkProgress: this.updateClusterProgressBar,
+        maxClusterRadius: 50});
     this.markerList = [];
     this.progressBar.style.display = "none";
     this.markersCG.addLayers(this.markerList);

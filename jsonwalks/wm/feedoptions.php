@@ -8,7 +8,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-class RJsonwalksWmUrloptions {
+class RJsonwalksWmFeedoptions {
 
     public $date_start = null;
     public $date_end = null;
@@ -63,6 +63,45 @@ class RJsonwalksWmUrloptions {
             $url = $url . '&limit=' . $this->limit;
         }
         return $url;
+    }
+
+    public function getCacheFileName($extension) {
+        $url = "";
+        if ($this->groupCode !== null) {
+            $url = 'cache_' . strtoupper($this->groupCode);
+            $url = str_replace(',', '_', $url);
+        } else {
+            if ($this->latitude !== null) {
+                $url = $url . 'latitude' . $this->latitude;
+            }
+            if ($this->longitude !== null) {
+                $url = $url . 'longitude' . $this->longitude;
+            }
+            if ($this->distance !== null) {
+                $url = $url . 'distance' . $this->distance;
+            }
+        }
+
+        if ($this->include_walks) {
+            $url = $url . "_group-walk";
+        }
+        if ($this->include_events) {
+            $url = $url . "_group-event";
+        }
+        if ($this->include_wellbeing_walks) {
+            $url = $url . "_wellbeing-walk";
+        }
+
+        if ($this->date_start !== null) {
+            $url = $url . '_date' . $this->date_start;
+        }
+
+        if ($this->limit !== null) {
+            $url = $url . '_limit' . $this->limit;
+        }
+        $url = str_replace(',', '_', $url);
+        $url = str_replace('.', '_', $url);
+        return $url . "." . $extension;
     }
 
 }

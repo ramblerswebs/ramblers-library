@@ -33,8 +33,6 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
     private $customTabOrder = null;
 
     public function DisplayWalks($walks) {
-        //  $tabOrder = ['Grades', 'Table', 'List', 'Map'];
-        //   $this->setTabOrder($tabOrder);
 
         $this->id = uniqid(rand());
         if ($this->printOn) {
@@ -70,13 +68,13 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
             echo "<h4>Number of cancelled walks: " . $number . "</h4>";
             echo '</div><p></p>';
         }
-        //     $cancelledOutput = "";
+//     $cancelledOutput = "";
         if ($number > 3) {
             echo "<div class='cancelledWalks' style='margin-bottom:10px;'>";
-            //           echo "Sorry: We have had to cancel " . $number . " walks, full list at the bottom of the page.";
+//           echo "Sorry: We have had to cancel " . $number . " walks, full list at the bottom of the page.";
             echo "Sorry: We have had to cancel " . $number . " walks.";
             echo "</div>";
-            //      $cancelledOutput = $display->getWalksOutput($walks);
+//      $cancelledOutput = $display->getWalksOutput($walks);
         } else {
             $display->DisplayWalks($walks);  // display cancelled walks information
         }
@@ -84,7 +82,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
             
         };
         $data->walks = array_values($items);
-        //  $data->walks = [];
+//  $data->walks = [];
         $data->displayClass = $this->displayClass;
         $data->jplistName = $this->jplistName;
         $data->noPagination = $this->noPagination;
@@ -98,9 +96,8 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
         $this->map->setDataObject($data);
         $this->map->display();
-        RLoad::addScript("media/lib_ramblers/jsonwalks/std/display.js", "text/javascript");
-        $document = JFactory::getDocument();
-        $document->addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/jsonwalks/std/display.js");
+        RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js");
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
     }

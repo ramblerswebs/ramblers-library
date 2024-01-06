@@ -26,6 +26,7 @@ class RJsonwalksWalkTimelocation implements JsonSerializable {
     private $postcodeLatitude = 0;
     private $postcodeLongitude = 0;
     private $travel = "";
+    private $osmaps =null;
 
     const LOCATION_MEETING = "Meeting";
     const LOCATION_START = "Start";
