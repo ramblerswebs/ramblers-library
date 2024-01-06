@@ -63,7 +63,7 @@ class RLeafletScript {
 
         if ($options->displayElevation !== null) {
             // elevation
-            RLoad::addScript("https://d3js.org/d3.v3.min.js", array("type" => "text/javascript"));
+            $document->addScript("https://d3js.org/d3.v3.min.js", array("type" => "text/javascript"));
             $path = "media/lib_ramblers/vendors/Leaflet.Elevation-0.0.4-ra/";
             RLoad::addScript($path . "leaflet.elevation-0.0.4.src.js", array("type" => "text/javascript"));
             $document->addStyleSheet($path . "elevation.css", array("type" => "text/css"));
@@ -121,7 +121,7 @@ class RLeafletScript {
         RLoad::addScript("media/lib_ramblers/js/ra.walk.js");
         // my location start
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.MyLocation.js");
-        RLoad::addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js");
+        $document->addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js");
         $document->addStyleSheet("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css");
         // my location finish
 
