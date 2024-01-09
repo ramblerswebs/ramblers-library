@@ -17,7 +17,7 @@ class REventDownload extends RJsonwalksDisplaybase {
     private $posttext = "";
 
     public function __construct() {
-        
+ 
     }
 
     public function setLinkText($value) {

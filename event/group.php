@@ -14,7 +14,7 @@
 class REventGroup {
 
     private $arrayofevents;
-    private $class = "event";
+    private $walkClass = "event";
     static $id = 0;
 
     function __construct() {
@@ -60,6 +60,7 @@ class REventGroup {
     public function addEvent($display, $text, $currentDate) {
         $found = false;
         $out = "";
+        $class = "even";
         foreach ($this->arrayofevents as $event) {
             if ($event->EventDateYYYYMMDD() === $currentDate) {
                 // echo "found";
@@ -72,7 +73,12 @@ class REventGroup {
                     $out .= $event->EventDate()->format('l, jS');
                 }
                 $found = true;
-                $out .= $event->EventList($display, $text);
+                $out .= $event->EventList($display, $class);
+                if ($class === "odd") {
+                    $class = "even";
+                } else {
+                    $class = "odd";
+                }
             }
         }
         if ($found) {

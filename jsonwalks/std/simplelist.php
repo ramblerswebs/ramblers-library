@@ -79,7 +79,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
             $odd = !$odd;
         }
         echo "</div>" . PHP_EOL;
-        
+
         RLeafletScript::registerWalks(array_values($items));
 
         $schema = new RJsonwalksAddschema();
@@ -101,16 +101,17 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
 
     private function displayWalk($walk, $oddeven) {
         $out = "";
-        if ($walk->status == "published") $walk->status = "Published";
+        $status=$walk->getIntValue("admin","status");
+        $id=$walk->getIntValue("admin","id");
         if ($this->inLineDisplay) {
             $DisplayWalkFunction = "ra.walk.toggleDisplay";
             $text = $walk->addTooltip($walk->getWalkValues($this->listFormat, false));
-            $out .= "<div class='" . $this->walkClass . $walk->status . " " . $oddeven . " toggler pointer'"
-                    . " onclick=\"" . $DisplayWalkFunction . "(event," . $walk->id . ")\">" . PHP_EOL;
+            $out .= "<div class='" . $this->walkClass . $status . " " . $oddeven . " toggler pointer'"
+                    . " onclick=\"" . $DisplayWalkFunction . "(event,'" . $id . "')\">" . PHP_EOL;
             $out .= "<span class='item'>" . $text . "</span></div>" . PHP_EOL;
         } else {
             $text = $walk->addTooltip($walk->getWalkValues($this->listFormat));
-            $out .= "<div class='" . $this->walkClass . $walk->status . " " . $oddeven . "' >" . PHP_EOL;
+            $out .= "<div class='" . $this->walkClass . $status . " " . $oddeven . "' >" . PHP_EOL;
             $out .= "<span class='item'>" . $text . "</span></div>" . PHP_EOL;
         }
         echo $out;

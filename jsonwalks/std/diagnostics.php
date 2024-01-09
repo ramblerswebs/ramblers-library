@@ -4,17 +4,19 @@ defined("_JEXEC") or die("Restricted access");
 
 class RJsonwalksStdDiagnostics extends RJsonwalksDisplaybase {
 
-    private $options = ["{lf}", "{group}", "{dowShortdd}", "{dowShortddmm}", "{dowShortddyyyy}",
-        "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}", "{meet}",
-        "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}", "{meetOLC}", "{meetMapCode}",
-        "{start}", "{startTime}", "{startPlace}", "{startGR}", "{startPC}", "{startOLC}",
-        "{startMapCode}", "{finishTime}", "{title}", "{description}", "{difficulty}", "{difficulty+}",
-        "{distance}", "{distanceMi}", "{distanceKm}", "{gradeimg}", "{gradeimgRight}",
+    private $options = ["{lf}", "<b>ADMIN</b>", "{group}",
+        "<b>BASICS</b>", "{dowShortdd}", "{dowShortddmm}", "{dowShortddyyyy}",
+        "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}",
+        "{title}", "{description}", "{additionalNotes}",
+        "<b>MEETING</b>", "{meet}", "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}", "{meetw3w}", "{meetOSMap}", "{meetDirections}",
+        "<b>START</b>", "{start}", "{startTime}", "{startPlace}", "{startGR}", "{startPC}", "{startw3w}",
+        "{startOSMap}", "{startDirections}",
+        "<b>FINISH</b>", "{finishTime}",
+        "<b>WALK</b>", "{difficulty}", "{difficulty+}", "{type}","{shape}", "{distance}", "{distanceMi}", "{distanceKm}", "{gradeimg}", "{gradeimgRight}",
         "{grade}", "{grade+}", "{nationalGrade}", "{nationalGradeAbbr}", "{localGrade}",
-        "{additionalNotes}", "{type}", "{contact}", "{contactname}", "{contactperson}", "{telephone}",
-        "{telephone1}", "{telephone2}", "{email}", "{emailat}", "{emaillink}", "{mediathumbr}",
-        "{mediathumbl}",
-        "{meetOSMap}", "{meetDirections}", "{startOSMap}", "{startDirections}"];
+        "<b>CONTACTS</b>",  "{contact}", "{contactname}", "{contactperson}", "{telephone}",
+        "{telephone1}", "{telephone2}", "{email}", "{emailat}", "{emaillink}",
+        "<b>MEDIA</b>",  "{mediathumbr}","{mediathumbl}"];
 
     public function DisplayWalks($walks) {
 

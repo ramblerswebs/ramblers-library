@@ -58,7 +58,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
                 if ($displayMonth) {
                     if ($displayMonth) {
                         $out = "<tr><td>";
-                        $out .= "<h3>" . $walk->month . $walk->addYear() . "</h3>";
+                        $out .= "<h3>" . $thismonth . "</h3>";
                         $out .= "</td></tr>";
                         echo $out;
                     }
@@ -72,8 +72,8 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         }
         echo "</table>" . PHP_EOL;
         RLeafletScript::registerWalks(array_values($items));
-        $schema = new RJsonwalksAddschema();
-        $schema->display($walks);
+        //       $schema = new RJsonwalksAddschema();
+        //      $schema->display($walks);
     }
 
     public function setMonthlyReminder($clss, $method) {
@@ -113,7 +113,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         if ($this->rowClassClass !== null) {
             $nClass = call_user_func(array($this->rowClassClass, $this->rowClassMethod), $walk);
         }
-        $out = "<tr class='" . $nClass . " walk" . $walk->status . "' >";
+        $out = "<tr class='" . $nClass . " walk" . $walk->getIntValue("admin", "status") . "' >";
 
         foreach ($cols as $col) {
             if (array_key_exists('class', $col)) {

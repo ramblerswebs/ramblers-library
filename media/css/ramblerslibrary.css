@@ -11,6 +11,7 @@
     --lightgrey: #C0C0C0;
     --midgrey: #808080;
     --cancelled:#C60C30;
+    --gradeEVENT:#A0A0A0;
     --gradeEA:#808080;
     --gradeE:#A0A0A0;
     --gradeL:#9BC8AB;
@@ -87,34 +88,6 @@ span.walkerror {
 div.walkstdfulldetails div.description p{
     margin: 0px;
 }
-div.walkstdfulldetails span.walktitle{
-    color: #303030;
-    font-size: 26px;
-}
-div.walkstdfulldetails div.group
-{
-    font-size: 115%;
-    margin: 2px;
-    border-radius: 10px 10px 10px 10px;
-    padding: 7px;
-    display: table;
-    width:97%;
-    border: 0px;
-    background-color: #FFFFFF;
-    color: #000000;
-}
-div.walkstdfulldetails div.group.grade-t {
-    color: var(--cloudy) !important;
-}
-div.walkstdfulldetails div.walkitem.walkdates {
-    font-size: 90%;
-    font-style: italic;
-}
-div.location.notes {
-    font-size: 90%;
-    font-style: italic;
-}
-
 div.walkstdfulldetails div.walkitem {
     margin: 2px;
     border-radius: 10px 10px 10px 10px;
@@ -129,8 +102,45 @@ div.walkstdfulldetails div.walkitem {
     line-height: 1.5em;
     font-size: 115%;
 }
-div.walkstdfulldetails div.walkitem.map {
-    padding: 5px;
+div.walkstdfulldetails  div.group {
+    font-size: 115%;
+    margin: 2px;
+    border-radius: 10px 10px 10px 10px;
+    padding: 7px;
+    display: table;
+    width:97%;
+    border: 0px;
+    background-color: #FFFFFF;
+    color: #000000;
+}
+div.walkstdfulldetails div.group.grade-t {
+    color: var(--cloudy) !important;
+}
+div.walkstdfulldetails  span.walktitle{
+    color: #303030;
+    font-size: 26px;
+}
+div.walkstdfulldetails  div.walkitem.walkdates {
+    font-size: 90%;
+    font-style: italic;
+}
+
+div.location.notes {
+    font-size: 14px;
+    line-height: 100%;
+    font-style: italic;
+}
+
+
+div.walkitem.flags ul,
+div.walkitem.flags ul li{
+    padding: 0;
+    margin: 0 0 0px 25px;
+}
+div.walkstdfulldetails> div.walkitem.map {
+    padding: 0px;
+    border: 0px solid #cccccc  ;
+    margin:2px;
 }
 div.walkstdfulldetails div.festivals > ul,
 div.walkstdfulldetails div.strands > ul,
@@ -141,15 +151,17 @@ div.walkstdfulldetails div.specialStatus > ul,
 div.walkstdfulldetails div.facilities > ul {
     margin-bottom: 0px;
 }
-div.walkstdfulldetails.walkCancelled.stdfulldetails div.reason{
+div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem.reason{
     text-decoration: none !important;
+    font-weight: bold;
     color:var(--cancelled);
 }
-/*div.walkstdfulldetails.walkCancelled.stdfulldetails {
-        color:var(--pantone0186);
-}*/
+div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem.group{
+    color:#000000;
+}
+
 div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
-    text-decoration: line-through;
+    color: var(--midgrey);
 }
 
 /* Popups */
@@ -163,20 +175,44 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
     content: url(../images/google20.jpg);
 }
 .mappopup {
-    color:var(--sunset);
-    cursor: pointer;
-    padding-right:15px;
+    font-weight: normal;
 }
-span.mappopup:hover{
-    content:' ';
-    text-decoration: underline;
-    background: url(../images/new-win.png) no-repeat right ;
+ul.mappopup.osmaps{
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
+ul.mappopup.osmaps li{
+    font-weight: normal;
+    font-size:  85%;
+    margin-top: 0px;
+}
+div.mappopup.extra {
+    background-color: var(--lightgrey);
+    border-radius: 10px;
+    padding:3px;
+}
+div.place div.notexact{
+    font-size:  80%;
+}
+
 .place .mappopup {
     font-size:  90%
 }
 .events.links {
     font-size: .8em;
+}
+div.mediapopup {
+    display: grid;
+    height: 100%;
+
+}
+img.walkmedia{
+    max-width: 90%;
+    max-height: 90vh;
+    margin: auto;
+}
+div.mediapopup div{
+    margin: auto;
 }
 
 
@@ -189,6 +225,9 @@ abbr[title] {
 .distfar {
     color:   #8a1727;
     font-weight: bold;
+}
+.distnotfound {
+    font-style: italic;
 }
 
 table.fc-scrollgrid tbody {
@@ -224,6 +263,9 @@ div.groupA,div.groupG,div.groupS {
     }
 }
 
+#grade-Event {
+    background-color: var(--gradeEVENT);
+}
 #grade-ea {
     background-color: var(--gradeEA);
 }
@@ -243,6 +285,9 @@ div.groupA,div.groupG,div.groupS {
     background-color: var(--gradeT);
 }
 
+.grade-event{
+    background-color: var(--gradeEVENT) !important;
+}
 .grade-ea {
     background-color: var(--gradeEA) !important;
 }
@@ -314,35 +359,6 @@ input.slider::-moz-range-thumb {
     cursor: pointer;
 }
 
-div.ra_filter  div input,
-div.ra_filter  div label{
-    display:inline;
-}
-div.ra_filter  div input[type=date]{
-    font-size: 12px;
-    width:110px;
-    margin-left:10px !important;
-}
-div.ra_filter  ul li input{
-    float:right;
-
-}
-div.ra_filter ul li  {
-    list-style-type: none;
-}
-h3.ra_openclose {
-    background-color:#DDDDDD;
-    border-radius: 5px;
-    font-size:115%;
-    cursor: pointer;
-    padding-left:10px;
-    margin-top:0px;
-    height:40px;
-    overflow:hidden;
-}
-h3.ra_openclose:hover {
-    background-color:#CCCCCC;
-}
 
 /* The Modal (background) */
 div.js-modal.ramblers {
@@ -358,6 +374,10 @@ div.js-modal.ramblers {
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.5); /* Black w/ opacity */
 }
+div.clear,
+div.ra-clear{
+    clear: both;
+}
 .ra-modal-header {
     content: "";
     display: table;
@@ -367,7 +387,7 @@ div.js-modal.ramblers {
 /* Modal Content */
 .ra-modal-content {
     margin: auto;
-    width: 85%;
+    width: 90%;
     max-height:85%;
     background-color:#ffffff;
     border-radius: 25px;
@@ -379,7 +399,6 @@ div.js-modal.ramblers {
     word-break: break-all;
     /* Non standard for webkit */
     word-break: break-word;
-
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
     -ms-hyphens: auto;
@@ -400,6 +419,42 @@ div.js-modal.ramblers {
 .modal-outline img{
     border-radius: 10px;
 }
+table.ra-diagnostics {
+    border-collapse: collapse;
+}
+table.ra-diagnostics th{
+    border: 1px solid;
+}
+table.ra-diagnostics tr,
+table.ra-diagnostics td{
+    vertical-align: top;
+    border: 1px solid;
+    border-color: grey;
+}
+pre.ra-diagnostics {
+    white-space: pre-wrap;
+    outline: 1px solid #ccc;
+    padding: 5px;
+    margin: 5px;
+    margin-top:0px;
+    .string {
+        color: green;
+    }
+    .number {
+        color: darkorange;
+    }
+    .boolean {
+        color: blue;
+    }
+    .null {
+        color: magenta;
+    }
+    .key {
+        color: red;
+    }
+}
+
+
 
 /* The Close Button */
 .link-button.modal-close,
@@ -608,31 +663,22 @@ img.ra-grade.pointer {
     width:25%;
 }
 
-#ra_filter_dates span input[type="date"] {
-    margin-left:30px !important;
-}
 
+span.ra-open,
 span.ra-closed {
-    margin-top:7px;
     padding-top:7px;
     float: right;
     width:35px;
     height:26px;
-    background-image:url("../images/close.png");
     background-size: 35px 26px;
     background-repeat: no-repeat;
     clear:both;
 }
+span.ra-closed {
+    background-image:url("../images/close.png");
+}
 span.ra-open {
-    margin-top:7px;
-    padding-top:7px;
-    float: right;
-    width:35px;
-    height:26px;
     background-image:url("../images/open.png");
-    background-size:  35px 26px;
-    background-repeat: no-repeat;
-    overflow:auto;
 }
 span.ra-rightopen {
     float: right;
@@ -759,6 +805,9 @@ span[data-descr="Easy"]:hover::after {
 span[data-descr="Easy Access"]:hover::after {
     background-color: var(--gradeEA);
 }
+span[data-descr="Event"]:hover::after {
+    background-color: var(--gradeEVENT);
+}
 
 img.mediathumbl{
     float:left;
@@ -785,14 +834,7 @@ div.walk-image{
     cursor: pointer;
 }
 
-img.walkmedia[data-size="2"]{
-    max-height: 250px;
-    max-width: 400px;
-}
-img.walkmedia[data-size="3"]{
-    max-height: 400px;
-    max-width: 600px;
-}
+
 
 span.link{
     cursor:pointer;
@@ -800,49 +842,149 @@ span.link{
     font-weight: bold;
     margin-left:5px;
 }
-/*  Displat.php/js walks filter                    */
-
-div.walksFilter > h3.ra_openclose,
-div.walksFilter > h3.ra_openclose{
+/*  Display.php/js walks filter                    */
+table.detailsView tr td{
+    vertical-align: top;
+}
+XXXdiv.walksFilter > div.ra_openclose{
     width :120px;
     float:right;
+    height: 40px;
 }
-div.walksFilter  div.ra-filteritem,
-div.walksFilter div.ra-filteritem{
+
+XXXdiv.ra_openclose {
+    background-color:#DDDDDD;
+    border-radius: 10px;
+    font-size:115%;
+    cursor: pointer;
+    padding:10px;
+    height:40px;
+    clear:both;
+}
+XXdiv.ra_openclose:hover {
+    background-color:#CCCCCC;
+}
+details.ra-walksfilter summary{
+    background-color:#DDDDDD;
+    border-radius: 10px;
+    font-size:115%;
+    cursor: pointer;
+    padding:8px;
+    height:25px;
+    float: right;
+}
+details.ra-walksfilter summary::before {
+    vertical-align:middle;
+    content: url(close.png);
+}
+
+details.ra-walksfilter[open] summary::before {
+    vertical-align:middle;
+    content: url(open.png);
+}
+details.ra-walksfilter[open] summary{
+    margin-bottom:10px;
+}
+div.ra-filtergroup {
     padding-left:10px;
-    width:90%;
-    -webkit-column-break-inside: avoid; /* Chrome, Safari */
-    page-break-inside: avoid;           /* Theoretically FF 20+ */
-    break-inside: avoid-column;         /* IE 11 */
-    display:table;                      /* Actually FF 20+ */
+    break-inside: avoid-column;
+    font-weight:600;
 }
-div.filter-columns  {
-    column-count: 3;
-    clear:right;
+div.ra-filtergroup div input[type=date] {
+    font-size: 12px;
+    width: 110px;
+    display: inline;
+    margin-left: 10px !important;
+}
+div.ra-filtergroup div label {
+    display: inline;
+}
+div.ra-filteritemnil,
+div.ra-filteritem{
+    border-radius: 10px 10px 10px 10px;
+    padding-left:5px;
+    padding-right:5px;
+    padding-bottom:1px;
+    padding-top:1px;
+    margin:5px;
+    border:1px solid var(--midgrey);
+    background-color: white;
+    color:black;
+    width: max-content;
+    line-height: 1;
+
+}
+div.ra-filteritem{
+    cursor: pointer;
+}
+div.ra-filteritemnil{
+    line-height: 85%;
+    font-size: 85%;
+    color: gray;
+}
+div.ra-filteritem:hover{
+    background-color: var(--lightgrey);
+}
+div.ra-filteritem.active{
+    background-color: var(--sunset);
+}
+div.ra-displayall.active{
+    background-color: white;
+    font-weight:bold;
+    color:var(--mintcake);
+}
+div.ra-displayall:hover {
+    background-color: var(--lightgrey);
+}
+div.ra-displayall {
+    cursor: pointer;
     margin-bottom:5px;
+    background-color: var(--mintcake);
+    color:white;
+    border-radius: 10px 10px 10px 10px;
+    padding-left:5px;
+    padding-right:5px;
+    margin-top:10px;
+    float:right;
+    clear:both;
+}
+div.ra-filter-spacer{
+    height: 10px;
+}
+div.ra-walksfilter{
+    clear:both;
     background-color: #DDDDDD;
     border-radius: 10px 10px 10px 10px;
+    column-count: 3;
     column-gap: 5px;
     column-rule-style: solid;
-    column-rule-color: var(--pantone1815);
     column-rule-color: #AAAAAA;
+    padding: 10px;
+    margin-bottom: 10px;
 }
-div.filter-columns h3{
+
+div.ra-filtergroup h3{
     font-size:110%;
+    font-weight: bold;
     line-height: 110%;
     margin-top:5px;
     margin-bottom: 5px;
 }
-div.ra_filter input{
-    width:auto;
+@media only screen and (max-width: 1200px) {
+    div.ra-walksfilter {
+        column-count: 2;
+        clear:right;
+    }
+}
+@media only screen and (max-width: 820px) {
+    div.ra-walksfilter {
+        column-count: 1;
+        clear:right;
+    }
 }
 @media only screen and (max-width: 780px) {
     .ra.nonmobile  {
         display:none !important;
-    }
-    div.filter-columns {
-        column-count: 2;
-        clear:right;
     }
 }
 

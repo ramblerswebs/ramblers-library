@@ -14,6 +14,7 @@ L.Control.Mouse = L.Control.extend({
         displayLatLongFormat: true
     },
     onAdd: function (map) {
+        var self = this;
         this._map = map;
         this._container = L.DomUtil.create('div', 'leaflet-control-mouseposition');
         L.DomEvent.disableClickPropagation(this._container);
@@ -25,6 +26,12 @@ L.Control.Mouse = L.Control.extend({
             this._container.style.display = 'none';
         }
         this._readSettings();
+        map.on('mouseover', function () {
+            self._container.style.display = 'inherit';
+        });
+        map.on('mouseout', function () {
+            self._container.style.display = 'none';
+        });
         return this._container;
     },
     changeDisplay: function (display) {
@@ -43,7 +50,7 @@ L.Control.Mouse = L.Control.extend({
         this._userOptions.displayMouseGridSquare = this.SAVEdisplayMouseGridSquares;
     },
     _update: function (e) {
-        this._getMouseMoveAction(this._map, e.latlng);
+        this._getMouseMoveAction(e.latlng);
     },
     _osGridToLatLongSquare: function (gridref, size) {
 //  if (!(gridref instanceof OsGridRef))
@@ -67,9 +74,9 @@ L.Control.Mouse = L.Control.extend({
             [ll4.lat, ll4.lon]];
         return bounds;
     },
-    _getMouseMoveAction: function (map, latlng) {
+    _getMouseMoveAction: function (latlng) {
         var gr, gridref;
-        var zoom = map.getZoom();
+        var zoom = this._map.getZoom();
         this.OSGridSquareLayer.clearLayers();
         // console.log(zoom);
         var p = new LatLon(latlng.lat, latlng.lng);
@@ -293,7 +300,7 @@ L.Control.OSInfo = L.Control.extend({
         comment.innerHTML = 'Please note that our information showing the area covered be OS maps is unofficial and may be incorrect.<br/>Please check before buying a map.';
         comment.innerHTML += '<br/>If you notice any errors then do contact us via the help option.';
         container.appendChild(comment);
-        ra.modals.createModal(container, false,true,this._map);
+        ra.modals.createModal(container, false, true, this._map);
     },
     displayOSGrid: function () {
         this.OSGrid.layer.clearLayers();
@@ -574,7 +581,9 @@ L.Control.Rightclick = L.Control.extend({
         this.selectOptions.title = "Select which information is displayed";
         this.selectOptions.innerHTML = options.join('');
         holder.appendChild(this.selectOptions);
-
+        L.DomEvent.addListener(this.selectOptions, 'click', function () {
+            holder.style.display = "none";
+        }, this);
     },
 
     Enabled: function (status) {
@@ -770,7 +779,6 @@ L.Control.Rightclick = L.Control.extend({
         if (gr !== "") {
             point.getPopup().setContent("<b>Searching for Ordnance Survey maps ...</b>");
             point.openPopup();
-            // get postcodes around this point       
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
             var url = "https://osmaps.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north;
@@ -942,8 +950,7 @@ L.Control.Rightclick = L.Control.extend({
         var queryTemplate = '[out:json];(way(around:200,52.71017,-1.3480224););out body;';
         //   node({{bbox}})(if:count_tags() > 0);
         //  var query = this.getQuery(queryTemplate, null, null);
-        var lat = this._latlng.lat;
-        var lng = this._latlng.lng;
+
         var kwargs = {bbox: this.getBox()};
         var query = L.Util.template(queryTemplate, kwargs);
         //console.log("Query: " + query);

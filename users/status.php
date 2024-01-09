@@ -85,13 +85,13 @@ class RUsersStatus {
 
     function displayMembershipNumberStatus() {
         if ($this->loggedon()) {
-            $app = JApplicationCms::getInstance('site');
+            $app = JFactory::getApplication();
             $app->enqueueMessage(JText::_('RUsersStatus->displayMembershipNumberStatus is deprecated - please notify web master'), 'error');
 
             if ($this->membershipnoValidFormat == false) {
                 $text = 'The format of your Membership number is not correct. It should be of the form <b><i>DE-02-0123456</b></i>';
                 $text .= " - value given in Profile: " . strtoupper($this->cbInfo->cb_membershipno);
-                $app = JApplicationCms::getInstance('site');
+                $app = JFactory::getApplication();
                 $app->enqueueMessage($text, 'Warning');
             }
         }
@@ -129,7 +129,7 @@ class RUsersStatus {
         if (isset($ClearCache)) {
             $srfr->clearCache($cacheLocation); // clear cache
         }
-        $contents = $srfr->getFeed($rafeedurl,"Delete this");
+        $contents = $srfr->getFeed($rafeedurl, "Delete this");
         $this->membership = NULL;
 
         switch ($contents) {

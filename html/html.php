@@ -16,7 +16,8 @@ class RHtml {
         $text = str_replace("\r", " ", $html);
         $text = str_replace("\n", " ", $text);
         $text = str_replace("&nbsp;", " ", $text);
-        $text = RHtml::strip_tags_with_whitespace($text, '<b><strong>');
+     //   $text = RHtml::strip_tags_with_whitespace($text, '<b><strong>');
+        $text = RHtml::strip_tags_with_whitespace($text);
         $text = htmlspecialchars_decode($text, ENT_QUOTES);
         $text = trim($text);
         return $text;

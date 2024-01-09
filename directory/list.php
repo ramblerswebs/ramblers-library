@@ -17,12 +17,7 @@ class RDirectoryList {
         $this->names = array();
         if (!file_exists($folder)) {
             $text = "Folder does not exist: " . $folder . ". Unable to list contents";
-         //   $app = JApplicationCms::getInstance('site');
-         //   $app->enqueueMessage($text);
-            // Get a handle to the Joomla! application object
             $application = JFactory::getApplication();
-
-            // Add a message to the message queue
             $application->enqueueMessage(JText::_($text), 'error');
             echo "<b>Not able to list contents of folder<b>";
             return;

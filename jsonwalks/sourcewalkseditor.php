@@ -18,17 +18,21 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
     private $site;
     private $feedPath = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
 
-    const TIMEFORMAT = "Y-m-d";
+    const TIMEFORMAT = "Y-m-d\TH:i:s";
 
-    public function __construct($groupCode, $groupName, $site) {
-        parent::__construct(SourceOfWalk::WEditor, $groupCode);
+    public function __construct($type = SourceOfWalk::WEditor) {
+        parent::__construct(SourceOfWalk::WEditor);
+    }
+
+    public function _initialise($groupCode = null, $groupName = null, $site = null) {
         $this->groupCode = $groupCode;
         $this->groupName = $groupName;
         $this->site = $site;
-        $this->rafeedurl = $site . $this->feedPath;
     }
 
     public function getWalks($walks) {
+
+        $this->rafeedurl = $this->site . $this->feedPath;
         $CacheTime = 5; // minutes
         $time = getdate();
         if ($time["hours"] < 7) {
@@ -91,108 +95,140 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
 
     private function convertToInternalFormat($walk, $item, $id) {
 
-        $admin = new RJsonwalksWalkAdmin();
-        // admin details
-        $admin->source = SourceOfWalk::WEditor;
-        $admin->id = $id;
-        $admin->status = $item->admin->status;
-        $admin->groupCode = $this->groupCode;
-        $admin->groupName = $this->groupName;
-        $admin->dateUpdated = new DateTime();
-        $admin->dateCreated = new DateTime();
-        $admin->cancellationReason = $item->admin->cancelledReason;
-        $admin->displayUrl = '';
-        $walk->setAdmin($admin);
+        // admin
 
-        $basics = new RJsonwalksWalkBasics();
-        $basics->walkDate = new DateTime($item->basics->date);
-        $basics->title = $item->basics->title;
-        $basics->descriptionHtml = $item->basics->description;
-        $basics->additionalNotes = $item->basics->notes;
-        $walk->setBasics($basics);
-        $walk->checkCancelledStatus();
+        $source = SourceOfWalk::WEditor;
+        $groupCode = $this->groupCode;
+        $groupName = $this->groupName;
+        $type = TypeOfWalk::GroupWalk;
+        $status = $item->admin->status;
+        if ($status === "Draft") {
+            $status = "Published"; // fix
+        }
+        $cancellationReason = $item->admin->cancelledReason;
+        $dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, substr($item->admin->updated, 0, 19));
+        $dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, substr($item->admin->created, 0, 19));
+        $nationalUrl = "";
+
+        $admin = new RJsonwalksWalkAdmin($source, $type, $id, $groupCode, $groupName,
+                $status, $cancellationReason, $nationalUrl, $dateUpdated, $dateCreated);
+        $walk->addAdmin($admin);
+
+        // Basics
+
+        $walkDate = new DateTime($item->basics->date);
+        $finishDate = null;
+        $title = $item->basics->title;
+        $descriptionHtml = $item->basics->description;
+        $additionalNotes = $item->basics->notes;
+        $external_url = "";
+        //    $walk->checkCancelledStatus();
+        $basics = new RJsonwalksWalkBasics($admin, $walkDate, $finishDate, $title, $descriptionHtml,
+                $additionalNotes, $external_url);
+        $walk->addBasics($basics);
+
         // meeting
-        if ($item->meeting->type !== 'none') {
-            $meet = $item->meeting->locations[0];
-            $time = $meet->time . ":00";
-            $loc = new RJsonwalksWalkLocation();
-            $loc->name = $meet->name;
-            $loc->gridref = $meet->gridref8;
-            $loc->latitude = $meet->latitude;
-            $loc->longitude = $meet->longitude;
-            if (property_exists($meet, 'postcode')) {
-                $loc->postcode = $meet->postcode->value;
-                $loc->postcodeLatitude = $meet->postcode->latitude;
-                $loc->postcodeLongitude = $meet->postcode->longitude;
+
+        $meetings = $item->meeting->locations;
+        foreach ($meetings as $loc) {
+            $str = $item->basics->date . "T" . $loc->time . ":00";
+            $time = DateTime::createFromFormat(self::TIMEFORMAT, $str);
+            $name = $loc->name;
+            $gridref = $loc->gridref8;
+            $latitude = $loc->latitude;
+            $longitude = $loc->longitude;
+            $w3w = $loc->w3w;
+            $postcode = "";
+            if (property_exists($loc, 'postcode')) {
+                $postcode = $loc->postcode->value;
             }
-            $meeting = new RJsonwalksWalkMeeting($time, $item->meeting->type, $loc);
-            $walk->setMeeting($meeting);
+            $osmaps = $loc->osmaps;
+            $meet = new RJsonwalksWalkTimelocation("Meeting", "", $time, $name,
+                    $latitude, $longitude, $gridref, $w3w,
+                    $postcode, 0, 0, $osmaps);
+            $walk->addMeeting($meet);
         }
 
         // start
-        $location = null;
-        $publish = null;
-        $time = null;
-        $start = $item->start;
-        $location = $start->location;
-        if (property_exists($start->location, 'time')) {
-            $time = $location->time . ":00";
-        }
 
-        switch ($start->type) {
+        $loc = $item->start->location;
+
+        switch ($item->start->type) {
             case 'start':
-                $publish = true;
+                $type = "Start";
                 break;
             case 'area':
-                $publish = false;
+                $type = "Rough";
                 break;
+            default:
+                $app = JFactory::getApplication();
+                $app->enqueueMessage('Walks Editor incorrect start type', 'error');
+                $type = "Rough";
         }
-        $loc = new RJsonwalksWalkLocation();
-        $loc->name = $location->name;
-        $loc->gridref = $location->gridref8;
-        $loc->latitude = $location->latitude;
-        $loc->longitude = $location->longitude;
-        if (property_exists($location, 'postcode')) {
-            $loc->postcode = $location->postcode->value;
-            $loc->postcodeLatitude = $location->postcode->latitude;
-            $loc->postcodeLongitude = $location->postcode->longitude;
+        // $time = $loc->time . ":00";
+
+        if (property_exists($loc, 'time')) {
+            $str = $item->basics->date . "T" . $loc->time . ":00";
+            $time = DateTime::createFromFormat(self::TIMEFORMAT, $str);
+        } else {
+            $time = null;
         }
-        $startitem = new RJsonwalksWalkStart($time, $publish, $loc);
-        $walk->setStart($startitem);
+        $name = $loc->name;
+        $gridref = $loc->gridref8;
+        $latitude = $loc->latitude;
+        $longitude = $loc->longitude;
+        $w3w = "";
+        if (property_exists($loc, 'w3w')) {
+            $w3w = $loc->w3w;
+        }
+        $postcode = "";
+        if (property_exists($loc, 'postcode')) {
+            $postcode = $loc->postcode->value;
+        }
+        $osmaps=null;
+        if (property_exists($loc, 'postcode')) {
+            $osmaps = $loc->osmaps;
+        }
+
+        $tl = new RJsonwalksWalkTimelocation($type, "", $time, $name,
+                $latitude, $longitude, $gridref, $w3w,
+                $postcode, 0, 0, $osmaps);
+        $walk->addStart($tl);
 
         // walk
-        $singleWalk = new RJsonwalksWalkWalk();
-        $walkitem = $item->walks[0];
-        if ($walkitem->type === 'linear') {
-            $singleWalk->shape = ShapeOfWalk::Linear;
-        } else {
-            $singleWalk->shape = ShapeOfWalk::Circular;
-        }
-        $singleWalk->nationalGrade = $walkitem->natgrade;
-        $singleWalk->localGrade = $walkitem->gradeLocal;
-        if ($walkitem->units === 'miles') {
-            $singleWalk->distanceKm = $walkitem->distance/ 0.621371;
-        } else {
-            $singleWalk->distanceKm = $walkitem->distance;
+
+        $walks = $item->walks;
+        foreach ($walks as $w) {
+            $shape = $w->type;
+            $nationalGrade = $w->natgrade;
+            $localGrade = $w->gradeLocal;
+            if ($w->units === 'miles') {
+                $distanceKm = $w->distance / 0.621371;
+            } else {
+                $distanceKm = $w->distance;
+            }
+            $pace = '';
+            $ascent = '';
+            if ($w->ascentMetres !== 0) {
+                $ascent = strval($w->ascent_metres) . " m";
+            }
+            $singleWalk = new RJsonwalksWalkWalk($shape, $nationalGrade, $localGrade, $distanceKm, $pace, $ascent);
+            $walk->addWalk($singleWalk);
         }
 
-        $singleWalk->pace = '';
-        $singleWalk->ascentMetres = null;
-        $walk->setWalk($singleWalk);
         // contact
 
-        $itemContact = $item->contact;
-        $contact = new RJsonwalksWalkContact();
-        $contact->isLeader = $itemContact->contactType == "isLeader";
-        $contact->contactName = $itemContact->displayName;
-        if (strlen($itemContact->email) > 0) {
-            $contact->email = $itemContact->email;
-        }
-        $contact->telephone1 = $itemContact->telephone1;
-        $contact->telephone2 = $itemContact->telephone2;
+        $c = $item->contact;
+        $isLeader = $c->contactType === "isLeader";
+        $contactName = $c->displayName;
+        $email = $c->email;
+        $contactForm = "";
+        $telephone1 = $c->telephone1;
+        $telephone2 = $c->telephone2;
+        $contact = new RJsonwalksWalkContact($id, $isLeader, $contactName, $email, $telephone1, $telephone2, $contactForm);
+        $walk->addContact($contact);
 
-        $walk->setContact($contact);
-
+        //  Flags
         $flags = new RJsonwalksWalkFlags();
         if (property_exists($item, 'facilities')) {
             $flags->addWalksEditorFlags("Facilities", $item->facilities);
@@ -206,10 +242,6 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $walk->setFlags($flags);
 
         //     $walk->media = $walk->getMedia($item);
-    }
-
-    private function contains($needle, $haystack) {
-        return strpos($haystack, $needle) !== false;
     }
 
 }

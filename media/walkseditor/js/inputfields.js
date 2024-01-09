@@ -176,7 +176,6 @@ ra.walkseditor.inputFields = function () {
         _label.setAttribute('class', 'we-label gwem');
         _label.textContent = label;
         var inputTag = document.createElement('textarea');
-        inputTag.setAttribute('class', ' gwem');
         inputTag.setAttribute('class', 'gwem');
         inputTag.setAttribute('rows', rows);
         inputTag.setAttribute('placeholder', placeholder);

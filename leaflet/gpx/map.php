@@ -41,14 +41,14 @@ class RLeafletGpxMap extends RLeafletMap {
         if (file_exists($gpx)) {
             $path_parts = pathinfo($gpx);
             if (strtolower($path_parts['extension']) != "gpx") {
-                $app = JApplicationCms::getInstance('site');
+                $app = JFactory::getApplication();
                 $app->enqueueMessage(JText::_('GPX: Route file is not a gpx file: ' . $file), 'error');
                 echo "<p><b>Unable to display gpx file</b></p>";
             } else {
                 $this->data->gpxfile = $gpx;
             }
         } else {
-            $app = JApplicationCms::getInstance('site');
+            $app = JFactory::getApplication();
             $app->enqueueMessage(JText::_('GPX: Route file not found: ' . $file), 'error');
             echo "<p><b>Unable to display gpx file</b></p>";
         }

@@ -5,441 +5,236 @@ if (typeof (ra) === "undefined") {
 if (typeof (ra.data) === "undefined") {
     ra.data = {};
 }
-ra.walk = (function () {
-    var my = {};
-    my.DisplayWalkFunction = "ra.walk.displayWalkID";
-    my.mapFormat = ["{dowddmm}", "{;title}", "{,distance}"];
-    my.mapLinks = ["{startOSMap}", "{startDirections}"];
-    my._startup = true;
-    my.walks = {};
-    my.testcsv = function () {
-        var allText = [];
-        var allTextLines = [];
-        //var Lines = [];
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "places.csv", true);
-        xhttp.onload = function () {
-            allText = xhttp.responseText;
-            allTextLines = allText.split(/\r\n|\n/);
-            var arrayLength = allTextLines.length;
-            for (var i = 1; i < arrayLength; i++) {
-                var line = allTextLines[i];
-                var items = line.split(',');
-                var gr = items[3];
-                var lat = items[7];
-                var lng = items[6];
 
-                var latlng = LatLon(lat, lng, LatLon.datum.WGS84);
-                var gr2 = OsGridRef.latLonToOsGrid(latlng);
-                var gridref2 = gr2.toString(6);
-
-                if (gridref2 !== gr) {
-                    console.log("GR from lat.long not equal to supplied value: " + gr + "/" + gridref2 + ' : ' + line + '\n');
-                }
-            }
-
-        };
-        xhttp.send();
-
+ra.events = function () {
+    this.events = [];
+    this.filter = null;
+    this.registerEvent = function (event) {
+        this.events.push(event);
     };
-    my.registerWalks = function (walks) {
-        // my.testcsv();
-        var i, no, walk;
-        for (i = 0, no = walks.length; i < no; ++i) {
-            walk = walks[i];
-            my.walks[walk.id] = walks[i];
-            var error = my._locationDiagnostics(walks[i]);
-            if (error !== '') {
-                console.log(error);
-            }
-        }
-        if (my._startup) {
-            my._startup = false;
-            setTimeout(function () {
-                // check url parameters and display walk in popup
-                my._displayWalkPopup();
-            }, 1500);
-        }
-
-    };
-    my.registerPHPWalks = function (mapOptions, data) {
-        // stores walks for php walks displays
-        var _allwalks = null;
-        _allwalks = ra.walk.convertPHPWalks(data.walks);
-        if (_allwalks !== null) {
-            my.registerWalks(_allwalks);
-        }
-        this.load = function () {
-
-        };
-    };
-    my._displayWalkPopup = function () {
-        var search = window.location.search;
-        const urlParams = new URLSearchParams(search);
-        if (urlParams.has('walkid')) {
-            var walkid = urlParams.getAll('walkid')[0];
-            my.displayWalkID(new Event("dummy"), walkid);
-        }
-    };
-    my.getWalk = function (id) {
-        if (my.walks.hasOwnProperty(id)) {
-            return my.walks[id];
+    this.getEvent = function (id) {
+        var item = this.events.find(o => o.admin.id === id);
+        if (typeof item !== 'undefined') {
+            return item;
         }
         return null;
     };
-    my.displayWalkID = function (event, id) {
-        my._getWalkObject(event, id, my._displayModalWalk);
-    };
-    my.toggleDisplay = function (event, id) {
-        var tag = event.currentTarget;
-        if (tag.className.includes('doing')) {
-            return;
-        }
-        if (tag.className.includes('active')) {
-            tag.classList.remove("active");
-            tag.nextElementSibling.remove();
-        } else {
-            tag.classList.add("active");
-            tag.classList.add("doing");
-            var info = {tag: tag,
-                ctrlKey: event.ctrlKey,
-                altKey: event.altKey
-            };
-            my._getWalkObject(info, id, my._displayDivWalk);
-        }
-    };
-    my._displayDivWalk = function (event, walk) {
-        var tag = event.tag;
-        var div = document.createElement("div");
-        ra.html.insertAfter(tag, div);
-        var html;
-        if (event.ctrlKey && event.altKey) {
-            html = my.walkDiagnostics(walk);
-        } else {
-            html = my.walkDetails(walk);
-        }
-        div.innerHTML = html;
-        my._addMaptoWalk(walk);
-        tag.classList.remove("doing");
-    };
-    my._displayModalWalk = function (event, walk) {
-        var html;
-        if (event.ctrlKey && event.altKey) {
-            html = my.walkDiagnostics(walk);
-        } else {
-            html = my.walkDetails(walk);
-        }
-        var modal = ra.modals.createModal(html);
-        my._addMaptoWalk(walk);
-        var tag = modal.headerDiv();
-        if (tag !== null) {
-            my._addDiaryButton(tag, walk);
-        }
-    };
-    my._addDiaryButton = function (tag, walk) {
-        var diary = document.createElement('button');
-        diary.setAttribute('class', 'link-button tiny cloudy');
-        diary.title = 'Download an .ICS file, import to Diary';
-        diary.textContent = 'Add to Calendar';
-        tag.parentNode.insertBefore(diary, tag);
-        diary.addEventListener('click', function () {
-            walk.display = true;
-            var $walks = [walk];
-            ra.walk.icsfile.create($walks);
+    this.forEachAll = function (fcn) {
+        this.events.forEach(event => {
+            fcn(event);
         });
     };
-    my._getWalkObject = function (event, id, callback) {
-        var walk = my.getWalk(id);
-        if (walk !== null) {
-            callback(event, walk);
-            return;
-        }
-        alert('SORRY unable to display specified walk, we will attempt to view walk on National Site');
-        $url = "https://www.ramblers.org.uk/go-walking/find-a-walk-or-route/walk-detail.aspx?walkID=" + id;
-        window.open($url);
-    };
-    my._addMaptoWalk = function (walk) {
-        if (my.isCancelled(walk)) {
-            return;
-        }
-        var tag = document.getElementById("div" + walk.id);
-        var lmap = new ra.leafletmap(tag, ra.defaultMapOptions);
-        var map = lmap.map;
-        var layer = L.featureGroup().addTo(map);
-        if (walk.finishLocation) {
-            my._addLocation(layer, walk.finishLocation, map);
-        }
-        if (walk.startLocation) {
-            my._addLocation(layer, walk.startLocation, map);
-        }
-        if (walk.meetLocation) {
-            my._addLocation(layer, walk.meetLocation, map);
-        }
-        var bounds = layer.getBounds();
-        map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
-//        fix contact link does not work if popup is underneath it and it is in coloumn two
-//        var elems = document.getElementsByClassName("walkcontact");
-//        elems[0].addEventListener('mouseover', function () {
-//            map.closePopup();
-//        });
-    };
-    my._addLocation = function (layer, location, map) {
-        var icon = ra.map.icon.markerRoute();
-        var popup = "", title = '';
-        var popupoffset = [0, -30];
-        if (location.exact) {
-            if (location.postcode !== null) {
-                if (location.postcodeDistance < 10000) {
-                    var pcpop = "<b>" + location.postcode + "</b>";
-                    pcpop += "<br/>" + location.type + " location is " + location.postcodeDistance + " metres to the " + location.postcodeDirection;
-                    var pcIcon = ra.map.icon.postcode();
-                    var marker = L.marker([location.postcodeLatitude, location.postcodeLongitude], {icon: pcIcon, riseOnHover: true}).addTo(layer);
-                    marker.bindPopup(pcpop).closePopup();
-                }
+    this.forEachFiltered = function (fcn) {
+        this.events.forEach(event => {
+            if (event._displayFiltered) {
+                fcn(event);
             }
-        }
-        if (location.exact) {
-            switch (location.type) {
-                case "Meeting":
-                    popup = "<b>Meeting place</b><br/>" + location.timeHHMMshort + " " + location.description;
-                    popup += "<br/>" + location.gridref;
-                    icon = ra.map.icon.markerRoute();
-                    title = 'Meeting place';
-                    popupoffset = [0, -30];
-                    break;
-                case "Start":
-                    popup = "<b>Walk start</b><br/>" + location.timeHHMMshort + " " + location.description;
-                    popup += "<br/>" + location.gridref;
-                    icon = ra.map.icon.markerStart();
-                    title = 'Start of walk';
-                    popupoffset = [0, -10];
-                    break;
-                case "Finishing":
-                case "End":
-                    popup = "<b>Walk Finish</b><br/>" + location.description;
-                    icon = ra.map.icon.markerFinish();
-                    title = 'End of walk';
-                    popupoffset = [0, -10];
-                    break;
-            }
-        } else {
-            switch (location.type) {
-                case "Meeting":
-                case "Finishing":
-                case "End":
-                    return;
-                    break;
-                case "Start":
-                    var popup = "<b>General area for walk only</b><br/>" + location.description;
-                    popup += "<br/>Contact group if you wish to join the walk at the start";
-                    icon = ra.map.icon.markerArea();
-                    title = 'General area of walk';
-                    popupoffset = [0, -10];
-                    break;
-            }
-        }
-        var marker = L.marker([location.latitude, location.longitude], {icon: icon, title: title, riseOnHover: true}).addTo(layer);
-        marker.bindPopup(popup, {offset: popupoffset, autoClose: false}).closePopup();
-        //  marker.closePopup();
-        var openPopups = true;
-        // keepInView so popup in not under contact links as link does not work/available
-        map.on("mouseover", function (event) {
-            if (openPopups) {
-                marker.openPopup();
-            }
-            openPopups = false;
-        });
-        map.on("mouseout", function (event) {
-            marker.closePopup();
-            openPopups = true;
         });
     };
-    my.displayWalkURL = function (url) {
-        window.open(url);
+    this.setAllWalks = function () {
+        this.events.forEach(event => {
+            event._displayFiltered = true;
+        });
     };
-// display walks 
-    my.walkDetails = function ($walk) {
-        var PHP_EOL = "\n";
-        var $html = "";
-        var $link, $out, $text;
-        $html += "<div class='walkstdfulldetails stdfulldetails walk" + $walk.status + "' >" + PHP_EOL;
-        $html += "<div class='walkitem group " + my.gradeCSS($walk.nationalGrade) + "'><b>Group</b>: " + $walk.groupName + "</div>" + PHP_EOL;
-        if (my.isCancelled($walk)) {
-            $html += "<div class='walkitem reason'>WALK CANCELLED: " + $walk.cancellationReason + "</div>" + PHP_EOL;
-        }
-        $html += "<div class='walkitem basics'>" + PHP_EOL;
-        $html += "<div class='description'><b><span class='walktitle'>" + $walk.title + "</span><br/>" + my.getWalkValue($walk, '{dowddmm}') + PHP_EOL;
-        $html += "</b></div>" + PHP_EOL;
-        if ($walk.description !== "") {
-            $html += "<div class='description'> " + $walk.descriptionHtml + "</div>" + PHP_EOL;
-        }
-        if ($walk.additionalNotes !== "") {
-            $html += "<div class='additionalnotes'><b>Additional Notes</b>: " + $walk.additionalNotes + "</div>" + PHP_EOL;
-        }
-        if ($walk.external_url !== null && $walk.external_url !== "")
-        {
-            $html += "<div><b>Website:</b>&nbsp;<a href='" + $walk.external_url + "' target='_blank'>" + $walk.external_url + "</a><br/></div>" + PHP_EOL;
-        }
-        if ($walk.isLinear) {
-            $html += "<b>Linear Walk</b>";
-        } else {
-            $html += "<b>Circular walk</b>";
-        }
-        if ($walk.hasMeetPlace) {
-            $out = "<div><b>Meeting time " + $walk.meetLocation.timeHHMMshort + "</b></div>";
-            $html += $out + PHP_EOL;
-        }
-        if ($walk.startLocation !== null)
-        {
-            if ($walk.startLocation.exact) {
-                $out = "<div><b>Start time " + $walk.startLocation.timeHHMMshort + "</b></div>";
-                $html += $out + PHP_EOL;
-            }
-        }
-        if ($walk.finishTime !== null) {
-            $out = "<div>(Estimated finish time " + ra.time.HHMMshort($walk.finishTime) + ")</div>";
-            $html += $out + PHP_EOL;
-        }
-        $html += "</div>";
-        if ($walk.hasMeetPlace) {
-            $html += "<div class='walkitem meetplace'>";
-            $out = _addLocationInfo("Meeting", $walk.meetLocation);
-            $html += $out;
-            $html += "</div>" + PHP_EOL;
-        }
-        if ($walk.startLocation !== null)
-        {
-            if ($walk.startLocation.exact) {
-                $html += "<div class='walkitem startplace'>";
-            } else {
-                $html += "<div class='walkitem nostartplace'><b>No start place - Rough location only</b>: ";
-            }
-            $html += _addLocationInfo("Start", $walk.startLocation);
-            $html += "</div>" + PHP_EOL;
-        }
-        if ($walk.isLinear) {
-            $html += "<div class='walkitem finishplace'>";
-            if ($walk.finishLocation !== null) {
-                $html += _addLocationInfo("Finish", $walk.finishLocation);
-            } else {
-                $html += "<span class='walkerror' >Linear walk but no finish location supplied</span>";
-            }
-            $html += "</div>" + PHP_EOL;
-        }
-        $html += "<div class='walkitem difficulty'><b>Walk</b>: ";
-        if ($walk.distanceMiles > 0) {
-            $html += ra.html.addDiv("distance", "<b>Distance</b>: " + $walk.distanceMiles + "mi / " + $walk.distanceKm + "km");
-        }
-        $html += ra.html.addDiv("nationalgrade", "<b>National Grade</b>: " + $walk.nationalGrade + "  " + ra.walk.grade.disp($walk.nationalGrade, 'popup'));
-        if ($walk.localGrade !== "") {
-            $link = $walk.localGrade;
-            $html += ra.html.addDiv("localgrade", "<b>Local Grade</b>: " + $link);
-        }
-        if ($walk.pace !== "") {
-            $html += ra.html.addDiv("pace", "<b>Pace</b>: " + $walk.pace);
-        }
-        if ($walk.ascentFeet !== null) {
-            $html += ra.html.addDiv("ascent", "<b>Ascent</b>: " + $walk.ascentMetres + " m/" + $walk.ascentFeet + " ft");
-        }
-        $html += "</div>" + PHP_EOL;
-        $html += "<div class='walkitem walk'>";
-        if ($walk.isLeader === false) {
-            $html += "<b>Contact Details: </b>";
-        } else {
-            $html += "<b>Contact Leader: </b>";
-        }
-        // Only display the name if we have one.
-        if (($walk.contactName == "") && ($walk.email == "") && ($walk.telephone1 + $walk.telephone2 == ""))
-        {
-            $html += ra.html.addDiv("contactname", "<b>No contact details available</b>");
-        }
-        else
-        {
-            $name = $walk.contactName !== "" ? "<b>Name</b>: " + $walk.contactName : "";
-            $html += ra.html.addDiv("contactname", $name);
-            if ($walk.email !== "") {
-                $html += my.getEmailLink($walk);
-            }
-            if ($walk.telephone1 + $walk.telephone2 !== "") {
-                $text = "<b>Telephone</b>: ";
-                if ($walk.telephone1 !== "") {
-                    $text += $walk.telephone1;
-                    if ($walk.telephone2 !== "") {
-                        $text += ", ";
-                    }
-                }
-                if ($walk.telephone2 !== "") {
-                    $text += $walk.telephone2;
-                }
-                $html += ra.html.addDiv("telephone", $text);
-            }
-            if ($walk.isLeader === false) {
-                if ($walk.walkLeader !== "") {
-                    $html += "<div class='walkleader'><b>Walk Leader</b>: " + $walk.walkLeader + "</div>" + PHP_EOL;
-                }
-            }
-        }
-        $html += "</div>" + PHP_EOL;
-        var mapdiv = "div" + $walk.id;
-        $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;
-        $html += my.addFlagInfo($walk.flags);
-
-        if ($walk.media.length > 0) {
-            if ($walk.media.length > 0) {
-                $html += "<div class='walkitem walkmedia' >";
-                var index, len;
-                for (index = 0, len = $walk.media.length; index < len; ++index) {
-                    var item = $walk.media[index];
-                    var caption = "<div>";
-                    if (item.caption !== "") {
-                        caption += item.caption;
-                    }
-                    if (item.copyright !== "") {
-                        caption += "<br/><i>&copy; " + item.copyright + "</i>";
-                    }
-                    caption += "</div>";
-                    $html += "<div class='walk-image' onclick='ra.html.displayInModal(this)'><img class='walkmedia' src='" + item.url + "'  >" + caption + "</div>";
-                }
-                $html += "</div>" + PHP_EOL;
-            }
-        }
-
-
-        $html += "<div class='walkitem walkdates'>" + PHP_EOL;
-        if ($walk.detailsPageUrl !== '') {
-            $html += "<div class='updated'><a href='" + $walk.detailsPageUrl + "' target='_blank' >View walk on National Web Site</a></div>" + PHP_EOL;
-        }
-        $html += "<div class='updated'>Walk ID " + $walk.id + "</div>" + PHP_EOL;
-        //var link = window.location.href + "&walkid=" + $walk.id;
-        var url = new URL(window.location.href);
-        var params = new URLSearchParams(url.search);
-        params.delete("walkid");
-        params.append("walkid", $walk.id);
-        var link = new URL(`${url.origin}${url.pathname}?${params}`);
-        var text = escape(link.href);
-        $html += "<div>" + PHP_EOL;
-        $html += "<img src=\"" + ra.baseDirectory() + "media/lib_ramblers/leaflet/images/share.png\" alt=\"Share\" width=\"25\" height=\"25\"> " + PHP_EOL;
-        $html += "<a href=\"javascript:ra.clipboard.set(\'" + text + "')\" >Copy url of this popup to clipboard</a>" + PHP_EOL;
-        $html += "</div>" + PHP_EOL;
-        $html += "<div class='updated walk" + $walk.status + "'>Last update: " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "</div>" + PHP_EOL;
-        $html += "</div>" + PHP_EOL;
-
-
-
-        $html += "</div>" + PHP_EOL;
-        //    var mapdiv = "div" + $walk.id;
-        //    $html += "<div class='walkitem map' id='" + mapdiv + "'></div>" + PHP_EOL;
-        return $html;
+    this.setDisplayFilter = function () {
+        this.events.forEach(event => {
+            event.setDisplayFilter(this.filter);
+        });
     };
-    my.getWalkValues = function ($walk, $items, link = true) {
-        var index, len, out, lastItem, thisItem;
+    this.getNoEventsToDisplay = function () {
+        var no = 0;
+        this.events.forEach(event => {
+            if (event._displayFiltered) {
+                no += 1;
+            }
+        });
+        return no;
+    };
+    this.length = function () {
+        // return Object.keys(this.events).length;
+        return this.events.length;
+    };
+    this.setFilters = function (tag) {
+        var filter = new ra.filter(document, "reDisplayWalks");
+        this.filter = filter;
+        var gradesOrder = [
+            'Easy Access',
+            'Easy',
+            'Leisurely',
+            'Moderate',
+            'Strenuous',
+            'Technical'];
+        var dowOrder = ['Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday'];
+        var distanceOrder = ['See description',
+            'Up to 3 miles (5 km)',
+            '3+ to 5 miles (5-8 km)',
+            '5+ to 8 miles (8-13 km)',
+            '8+ to 10 miles (13-16 km)',
+            '10+ to 13 miles (16-21 km)',
+            '13+ to 15 miles (21-24 km)',
+            '15+ miles (24 km)'];
+        var updateItems = [{title: 'All walks', limit: 0},
+            {title: 'In last 3 months', limit: 93},
+            {title: 'In last month', limit: 31},
+            {title: 'In last 2 weeks', limit: 14},
+            {title: 'In last week', limit: 7}
+        ];
+        filter.addGroup(ra.filterType.Unique, "idGroup", "Group");
+        filter.addGroup(ra.filterType.Unique, "idType", "Type");
+        filter.addGroup(ra.filterType.Unique, "idDOW", "Day of the week", dowOrder);
+        filter.setDisplaySingle("idDOW", true);
+        filter.addGroup(ra.filterType.Unique, "idDistance", "Distance", distanceOrder);
+        filter.setDisplaySingle("idDistance", true);
+        filter.addGroup(ra.filterType.Unique, "idGrade", "Grade", gradesOrder);
+        filter.setDisplaySingle("idGrade", true);
+        filter.addGroup(ra.filterType.DateRange, "idDate", "Dates");
+        filter.addGroup(ra.filterType.Limit, "idUpdate", "Updated", updateItems);
+        filter.addGroup(ra.filterType.Unique, "idStatus", "Status");
+        this.events.forEach(event => {
+            event.initialiseFilter(filter);
+        });
+
+        filter.display(tag);
+    };
+};
+ra.event = function () {
+    this.admin = new ra.event.admin();
+    this.basics = new ra.event.basics();
+    this.walks = new ra.event.items();
+    this.meeting = new ra.event.items();
+    this.start = new ra.event.items();
+    this.finish = new ra.event.items();
+    this.contacts = new ra.event.items();
+    this.media = new ra.event.items();
+    this.flags = new ra.event.flags();
+    this.mapSummary = ["{dowddmm}", "{;title}", "{,distance}"];
+    this.mapLinks = ["{startOSMap}", "{startDirections}"];
+    this.mapGrade = ["{mapGrade}"];
+    this.mapTitle = ["{dowShortddmm}", "{distance}"];
+    this.map = null;
+    let maplayer = null;
+    this.isCancelled = function () {
+        return this.admin.isCancelled();
+    };
+    this.convertPHPWalk = function (phpwalk) {
+        // admin
+        this.admin.convertPHPAdmin(phpwalk);
+        // basics
+        this.basics.convertPHPBasics(phpwalk);
+        // walks
+        phpwalk.walks.forEach(item => {
+            var walk = new ra.event.walk();
+            this.walks.addItem(walk.convertPHPWalk(item));
+        });
+        // meeting
+        phpwalk.meeting.forEach(item => {
+            var meet = new ra.event.timelocation();
+            this.meeting.addItem(meet.convertPHPLocation(item, this.isCancelled()));
+        });
+        // start
+        phpwalk.start.forEach(item => {
+            var start = new ra.event.timelocation();
+            this.start.addItem(start.convertPHPLocation(item, this.isCancelled()));
+        });
+        // finish
+        phpwalk.finish.forEach(item => {
+            var fin = new ra.event.timelocation();
+            this.finish.addItem(fin.convertPHPLocation(item, this.isCancelled()));
+        });
+        // contact
+        phpwalk.contact.forEach(item => {
+            var contact = new ra.event.contact();
+            this.contacts.addItem(contact.convertPHPContact(item));
+        });
+        // media
+        phpwalk.media.forEach(item => {
+            var newmedia = new ra.event.media();
+            this.media.addItem(newmedia.convertPHPMedia(item));
+        });
+        // flags
+        this.flags.addFlags(phpwalk.flags);
+    };
+    this.walkDiagnostics = function (tag) {
+        var options = ["{lf}", "<b>ADMIN</b>", "{group}", "{eventType}", "<b>BASICS</b>", "{title}", "{description}", "{additionalNotes}",
+            "{dowShortdd}", "{dowShortddmm}",
+            "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}",
+            "<b>MEETING</b>", "{meet}", "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}",
+            "{meetw3w}", "{meetOSMap}", "{meetDirections}",
+            "<b>START</b>", "{start}", "{startTime}", "{startPlace}", "{startGR}", "{startPC}", "{startw3w}", "{startOSMap}", "{startDirections}",
+            "<b>FINISH</b>", "{finishTime}",
+            "<b>WALK</b>", "{difficulty}", "{difficulty+}", "{type}", "{shape}",
+            "{distance}", "{distanceMi}", "{distanceKm}", "{gradeimg}", "{gradeimgRight}",
+            "{grade}", "{grade+}", "{nationalGrade}", "{nationalGradeAbbr}", "{localGrade}",
+            "<b>CONTACT</b>", "{contact}", "{contactname}", "{contactperson}", "{telephone}",
+            "{telephone1}", "{telephone2}", "{email}", "{emailat}", "{emaillink}",
+            "<b>MEDIA</b>", "{mediathumbr}",
+            "{mediathumbl}"];
+        var intValues = {admin: [],
+            basics: ["displayMonth",
+                "_finishTime"],
+            walks: ["_filterDistance", "_nationalGradeCSS", "_nationalGrade",
+                "_icsWalkDuration", "_icsWalkGrade", "_icsWalkDistance"],
+            meeting: ["_latitude", "_longitude", "_icsDescription", "_icsTime"],
+            start: ["_latitude", "_longitude", "_icsDescription", "_icsTime", "_type"],
+            finish: ["_latitude", "_longitude", "_icsDescription", "_icsTime"],
+            contacts: ["_icsrecord"]};
+        var tags = [
+            {name: 'table', parent: 'root', tag: 'table', attrs: {class: 'ra-diagnostics'}},
+            {name: 'tr', parent: 'table', tag: 'tr'},
+            {parent: 'tr', tag: 'th', attrs: {style: 'min-width: 130px;'}, textContent: 'Name'},
+            {parent: 'tr', tag: 'th', textContent: 'Value'},
+            {parent: 'tr', tag: 'th', textContent: 'HTML'},
+            {parent: 'root', tag: 'h4', textContent: 'Walk Object:'},
+            {name: 'pre', parent: 'root', tag: 'pre', attrs: {class: 'ra-diagnostics'}},
+            {parent: 'root', tag: 'h4', textContent: 'Internal Values:'},
+            {name: 'itable', parent: 'root', tag: 'table', attrs: {class: 'ra-diagnostics'}},
+            {name: 'itr', parent: 'itable', tag: 'tr'},
+            {parent: 'itr', tag: 'th', attrs: {style: 'min-width: 120px;'}, textContent: 'Name'},
+            {parent: 'itr', tag: 'th', textContent: 'Value'},
+            {parent: 'itr', tag: 'th', textContent: 'HTML'}
+        ];
+        var $value;
+        var elements = ra.html.generateTags(tag, tags);
+        options.forEach(option => {
+            $value = this.getEventValue(option);
+            if ($value === undefined) {
+                $value = "undefined";
+            }
+            var cols = [option, $value, $value.replace(/</g, "&lt;").replace(/>/g, "&gt;")];
+            ra.html.addTableRow(elements.table, cols);
+        });
+        var cols = ["<b>INTERNAL VALUES</b>", "<b>INTERNAL VALUES</b>", "INTERNAL VALUES"];
+        ra.html.addTableRow(elements.itable, cols);
+        for (let key in intValues) {
+            var section = intValues[key];
+            section.forEach(option => {
+                $value = this.getIntValue(key, option);
+                if ($value === null) {
+                    $value = "undefined";
+                }
+                $value = $value.toString();
+                var cols = [key + " / " + option, $value, $value.replace(/</g, "&lt;").replace(/>/g, "&gt;")];
+                ra.html.addTableRow(elements.itable, cols);
+            });
+        }
+
+        var t = JSON.stringify(this, null, 4);
+        elements.pre.innerHTML = ra.syntaxHighlight(t);
+    };
+    this.getEventValues = function (items, link = true) {
+        var out, lastItem, thisItem;
         var options;
         out = "";
         lastItem = '';
-        for (index = 0, len = $items.length; index < len; ++index) {
-
-            options = getPrefix($items[index]);
-            thisItem = my.getWalkValue($walk, options.walkValue);
+        items.forEach(item => {
+            options = this.getPrefix(item);
+            thisItem = this.getEventValue(options.walkValue);
             if (lastItem !== '' && thisItem !== '') {
                 out += options.previousPrefix;
             }
@@ -448,513 +243,18 @@ ra.walk = (function () {
             }
             out += thisItem;
             lastItem = thisItem;
-        }
+        });
         if (out === '') {
             return out;
         }
         if (link) {
-            return my.addWalkLink($walk.id, out);
+            return this.addWalkLink(out);
         } else {
             return  out;
     }
 
     };
-    my.addFlagInfo = function (items) {
-        var $html = "";
-        var lastSection = '';
-        if (items.length > 0) {
-            $html += "<div class='walkitem'>";
-
-            var index, len;
-            for (index = 0, len = items.length; index < len; ++index) {
-                var item = items[index];
-                var section = item.section;
-                if (lastSection !== section) {
-                    if (lastSection !== '') {
-                        $html += "</ul>";
-                    }
-                    $html += "<b>" + section + "</b>";
-                    lastSection = section;
-                    $html += "<ul>";
-
-                }
-                $html += "<li class='item'>" + item.name + "</li>";
-            }
-            $html += "</ul></div>";
-        }
-        return $html;
-    };
-//    my.addItemInfo = function ($class, $title, $value) {
-//        var $html = "";
-//        var $any = false;
-//        var $text;
-//        if ($value !== null) {
-//            $html += "<div class='walkitem " + $class + "'><b>" + $title + "</b>";
-//            $html += "<ul>";
-//            var $items = $value.items;
-//            var index, len;
-//            for (index = 0, len = $items.length; index < len; ++index) {
-//                $text = $items[index].text;
-//                if ($text !== "") {
-//                    $html += "<li class='item'>" + $text + "</li>";
-//                    $any = true;
-//                }
-//            }
-//            $html += "</ul></div>";
-//        }
-//        if (!$any) {
-//            $html = "";
-//        }
-//        return $html;
-//    };
-    my.getEmailLink = function ($walk) {
-        var $link;
-        //   $link = "javascript:ra.walk.emailContact(\"" + $walk.id + "\")";
-        //  return "<span><a href='" + $link + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
-        var $gwemlink;
-        if ($walk.email === "") {
-            return "";
-        }
-        if ($walk.contactForm !== "") {
-            $link = "<span><b>Contact link: </b><a target='_blank' href='" + $walk.contactForm + "' title='Click to send an email to leader/contact or group'>Email contact</a></span>";
-        } else {
-            $gwemlink = "javascript:ra.walk.emailContact(\"" + $walk.id + "\")";
-            $link = "<span><a href='" + $gwemlink + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
-        }
-        return $link;
-    };
-    my.emailContact = function ($id) {
-
-        var url = 'https://sendemail.ramblers-webs.org.uk';
-        //var url = 'https://sendemail02.ramblers-webs.org.uk';
-        //var url = 'http://localhost/contactForm';
-
-        var $walk = my.getWalk($id);
-        var data = {};
-        data.key = $walk.key;
-        data.group = $walk.groupName;
-        data.title = $walk.title;
-        data.date = ra.date.dowShortddmmyyyy($walk.walkDate);
-        var frameDiv = '<div id="raContactDiv"></div>';
-        var modal = ra.modals.createModal(frameDiv);
-        //    ra.modal.display(frameDiv);
-        var div = document.getElementById("raContactDiv");
-        var frame = document.createElement('iframe');
-        frame.setAttribute('class', 'ra contactForm');
-        frame.setAttribute('src', url);
-        frame.setAttribute('title', 'Contact group about group walk');
-        div.appendChild(frame);
-        // Create IE + others compatible event handler
-        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-        var eventer = window[eventMethod];
-        var messageEvent = eventMethod === "attachEvent" ? "onmessage" : "message";
-        // Listen to message from child window
-        eventer(messageEvent, function (e) {
-            var height = parseInt(e.data);
-            if (height > 0) {
-                frame.style.height = height + "px";
-            }
-            //console.log('parent received message!:  ', e.data);
-        }, false);
-        frame.onload = function () {
-            //console.log(" frame.onload ");
-            var sentThis = JSON.stringify(data);
-            frame.contentWindow.postMessage(sentThis, url);
-        };
-    };
-    my.walkDiagnostics = function ($walk) {
-        var options = ["{lf}", "{group}", "{dowShortdd}", "{dowShortddmm}", "{dowShortddyyyy}",
-            "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}", "{meet}",
-            "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}", "{meetOLC}", "{meetMapCode}",
-            "{start}", "{startTime}", "{startPlace}", "{startGR}", "{startPC}", "{startOLC}",
-            "{startMapCode}", "{finishTime}", "{title}", "{description}", "{difficulty}", "{difficulty+}",
-            "{distance}", "{distanceMi}", "{distanceKm}", "{gradeimg}", "{gradeimgRight}",
-            "{grade}", "{grade+}", "{nationalGrade}", "{nationalGradeAbbr}", "{localGrade}",
-            "{additionalNotes}", "{type}", "{contact}", "{contactname}", "{contactperson}", "{telephone}",
-            "{telephone1}", "{telephone2}", "{email}", "{emailat}", "{emaillink}", "{mediathumbr}",
-            "{mediathumbl}",
-            "{meetOSMap}", "{meetDirections}", "{startOSMap}", "{startDirections}"];
-        var index, len, option, $value;
-        var $html;
-        $html = "<table><tr><th style='min-width: 30px;'>No</th><th  style='min-width: 120px;'>Name</th><th>Value</th><th>HTML</th></tr>";
-        for (index = 0, len = options.length; index < len; ++index) {
-            option = options[index];
-            $html += "<tr>";
-            $value = my.getWalkValue($walk, option);
-            $html += "<td>" + index + "</td><td>" + option + "</td><td>" + $value + "</td><td>" + $value.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            +"</td>";
-            $html += "</tr>";
-        }
-        $html += "</table>";
-        $html += "<pre>" + JSON.stringify($walk, undefined, 4) + "</pre>";
-        return  my._locationDiagnostics($walk) + $html;
-    };
-    my._locationDiagnostics = function ($walk) {
-        var out = "";
-        if ($walk.hasMeetPlace) {
-            out += my._locationAccuray('Meet', $walk.meetLocation);
-        }
-        if ($walk.startLocation !== null)
-        {
-            if ($walk.startLocation.exact) {
-                out += my._locationAccuray('Start', $walk.startLocation);
-            }    
-        }
-        return out;
-    };
-    my._locationAccuray = function (type, location) {
-        if (location.gridref != "")
-        {
-            var out = "";
-            var gridref1 = OsGridRef.parse(location.gridref).toString(6);
-            var latlng = LatLon(location.latitude, location.longitude, LatLon.datum.WGS84);
-            var gr = OsGridRef.latLonToOsGrid(latlng);
-            var gridref2 = gr.toString(6);
-            var gridref3 = gr.toString(8);
-            if (gridref2 !== location.gridref) {
-                out = "<p>Error in " + type + "GR from lat.long not equal to supplied value: " + gridref1 + "/" + gridref2 + '/' + gridref3 + '</p>\n';
-            }
-        }
-        else
-        {
-            out = "";
-        }
-        return out;
-    };
-    my.getWalkValue = function ($walk, $option) {
-        var BR = '<br/>';
-        var out = "";
-        switch ($option) {
-            case "{lf}":
-                out = BR;
-                break;
-            case "{group}":
-                out = $walk.groupName;
-                break;
-            case "{dowShortdd}":
-                out = "<b>" + ra.date.dowShortdd($walk.walkDate) + "</b>";
-                break;
-            case "{dowShortddmm}":
-                out = "<b>" + ra.date.dowShortddmm($walk.walkDate) + my.addYear($walk) + "</b>";
-                break;
-            case "{dowShortddyyyy}": // published in error
-            case "{dowShortddmmyyyy}":
-                out = "<b>" + ra.date.dowShortddmmyyyy($walk.walkDate) + "</b>";
-                break;
-            case "{dowdd}":
-                out = "<b>" + ra.date.dowdd($walk.walkDate) + "</b>";
-                break;
-            case "{dowddmm}":
-                out = "<b>" + ra.date.dowddmm($walk.walkDate) + my.addYear($walk) + "</b>";
-                break;
-            case "{dowddmmyyyy}":
-                out = "<b>" + ra.date.dowddmmyyyy($walk.walkDate) + "</b>";
-                break;
-            case "{meet}":
-                if ($walk.hasMeetPlace) {
-                    out = $walk.meetLocation.timeHHMMshort;
-                    if ($walk.meetLocation.description) {
-                        out += " at " + $walk.meetLocation.description;
-                    }
-                }
-                break;
-            case "{meetTime}":
-                if ($walk.hasMeetPlace) {
-                    out = $walk.meetLocation.timeHHMMshort;
-                }
-                break;
-            case "{meetPlace}":
-                if ($walk.hasMeetPlace) {
-                    out = $walk.meetLocation.description;
-                }
-                break;
-            case "{meetGR}":
-                if ($walk.hasMeetPlace) {
-                    out = $walk.meetLocation.gridref;
-                }
-                break;
-            case "{meetPC}":
-                if ($walk.hasMeetPlace) {
-                    if ($walk.meetLocation.postcode !== null) {
-                        out = $walk.meetLocation.postcode;
-                    }
-                }
-                break;
-            case "{meetOLC}":
-                break;
-            case "{meetMapCode}":
-                break;
-            case "{start}":
-                if ($walk.startLocation !== null)
-                {
-                    if ($walk.startLocation.exact) {
-                        out = $walk.startLocation.timeHHMMshort;
-                        if ($walk.startLocation.description) {
-                            out += " at " + $walk.startLocation.description;
-                        }
-                    }
-                }
-                break;
-            case "{startTime}":
-                if ($walk.startLocation !== null)
-                {
-                    if ($walk.startLocation.exact) {
-                        out = $walk.startLocation.timeHHMMshort;
-                    }
-                }
-                break;
-            case "{startPlace}":
-                if ($walk.startLocation !== null)
-                {
-                    if ($walk.startLocation.exact) {
-                        if ($walk.startLocation.description) {
-                            out += $walk.startLocation.description;
-                        }
-                    }
-                }
-                break;
-            case "{startGR}":
-                if ($walk.startLocation !== null)
-                {
-                    if ($walk.startLocation.exact) {
-                        out = $walk.startLocation.gridref;
-                    }
-                }
-                break;
-            case "{startPC}":
-                if ($walk.startLocation !== null)
-                {
-                    if ($walk.startLocation.exact) {
-                        if ($walk.startLocation.postcode !== null) {
-                            out = $walk.startLocation.postcode;
-                        }
-                    }
-                }
-                break;
-            case "{startOLC}":
-                break;
-            case "{finishTime}":
-                if ($walk.finishTime !== null) {
-                    out = ra.time.HHMMshort($walk.finishTime);
-                }
-                break;
-            case "{startMapCode}":
-                break;
-            case "{title}":
-                // out = ra.html.addslashes($walk.title);
-                out = $walk.title;
-                out = "<b>" + out + "</b>";
-                break;
-            case "{description}":
-                out = $walk.description;
-                break;
-            case "{distance}":
-                if ($walk.distanceMiles > 0) {
-                    out = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
-                }
-                break;
-            case "{distanceMi}":
-                if ($walk.distanceMiles > 0) {
-                    out = $walk.distanceMiles + "mi";
-                }
-                break;
-            case "{distanceKm}":
-                if ($walk.distanceMiles > 0) {
-                    out = $walk.distanceKm + "km";
-                }
-                break;
-            case "{difficulty}":
-                out = my.getWalkValue($walk, "{distance}");
-                out += "<br/><span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
-                if ($walk.localGrade !== "") {
-                    if ($walk.localGrade.localeCompare($walk.nationalGrade) != 0)
-                    {
-                        out += BR + $walk.localGrade;
-                    }
-                }
-                break;
-            case "{difficulty+}":
-                out = my.getWalkValue($walk, "{distance}");
-                out += BR + ra.walk.grade.disp($walk.nationalGrade, "middle") + BR;
-                out += "<span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
-                if ($walk.localGrade !== "") {
-                    if ($walk.localGrade.localeCompare($walk.nationalGrade) != 0)
-                    {
-                        out += BR + $walk.localGrade;
-                    }
-                }
-                break;
-            case "{gradeimg}":
-                out = ra.walk.grade.disp($walk.nationalGrade, 'details');
-                break;
-            case "{gradeimgRight}":
-                out = ra.walk.grade.disp($walk.nationalGrade, 'right');
-                break;
-            case "{gradeimgMiddle}":
-                out = ra.walk.grade.disp($walk.nationalGrade, 'middle');
-                break;
-            case "{grade}":
-                out = "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
-                if ($walk.localGrade !== "") {
-                    if ($walk.localGrade.localeCompare($walk.nationalGrade) != 0)
-                    {
-                        out += BR + $walk.localGrade;
-                    }
-                }
-                break;
-            case "{grade+}":
-                out = "";
-                out += ra.walk.grade.disp($walk.nationalGrade, "middle");
-                out += "<span class='pointer " + $walk.nationalGrade.replace("/ /g", "") + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $walk.nationalGrade + "</span>";
-                if ($walk.localGrade !== "") {
-                    if ($walk.localGrade.localeCompare($walk.nationalGrade) != 0)
-                    {
-                        out += BR + $walk.localGrade;
-                    }
-                }
-                break;
-            case "{nationalGrade}":
-                out = "<span class='pointer' onclick='ra.walk.dGH()'>" + $walk.nationalGrade + "</span>";
-                break;
-            case "{nationalGradeAbbr}":
-                out = "<span class='pointer' onclick='ra.walk.dGH()'>" + ra.walk.grade.abbr($walk.nationalGrade) + "</span>";
-                break;
-            case "{localGrade}":
-                out = $walk.localGrade;
-                break;
-            case "{additionalNotes}":
-                out = $walk.additionalNotes;
-                break;
-            case "{type}":
-                if ($walk.isLinear) {
-                    out = "Linear";
-                } else {
-                    out = "Circular";
-                }
-                break;
-            case "{contact}":
-                var $titlePrefix = '';
-                out = "";
-                if ($walk.isLeader) {
-                    $titlePrefix = "Leader ";
-                } else {
-                    $titlePrefix = "Contact ";
-                }
-                if ($walk.contactName !== "") {
-                    out += " <b>" + $walk.contactName + "</b>";
-                }
-                if ($walk.email !== "") {
-                    out += BR + my.getEmailLink($walk);
-                }
-                if ($walk.telephone1 !== "") {
-                    out += BR + $walk.telephone1;
-                }
-                if ($walk.telephone2 !== "") {
-                    out += BR + $walk.telephone2;
-                }
-                if (out !== '') {
-                    out = $titlePrefix + out;
-                }
-                break;
-            case "{contactname}":
-                if ($walk.contactName !== '') {
-                    if ($walk.isLeader) {
-                        out = "Leader ";
-                    } else {
-                        out = "Contact ";
-                    }
-                    out += "<b>" + $walk.contactName + "</b>";
-                }
-                break;
-            case "{contactperson}":
-                out = $walk.contactName;
-                break;
-            case "{telephone}":
-            case "{telephone1}":
-                if ($walk.telephone1 !== "") {
-                    out += $walk.telephone1;
-                }
-                break;
-            case "{telephone2}":
-                if ($walk.telephone2 !== "") {
-                    out += $walk.telephone2;
-                }
-                break;
-            case "{email}":
-            case "{emailat}":
-                var $contact = "";
-                if ($walk.email !== "") {
-                    $contact += my.getEmailLink($walk);
-                }
-                out = $contact;
-                break;
-            case "{emaillink}":
-                if ($walk.email !== "") {
-                    out = my.getEmailLink($walk);
-                }
-                break;
-            case "{mediathumbr}":
-                out = '';
-                if ($walk.media.length > 0) {
-                    out = "<img class='mediathumbr' src='" + $walk.media[0].url + "' >";
-                }
-                break;
-            case "{mediathumbl}":
-                out = '';
-                if ($walk.media.length > 0) {
-                    out = "<img class='mediathumbl' src='" + $walk.media[0].url + "' >";
-                }
-                break;
-            case "{meetOSMap}":
-                if ($walk.hasMeetPlace) {
-                    var $lat = $walk.meetLocation.latitude;
-                    var $long = $walk.meetLocation.longitude;
-                    //      out = "<span><a href='javascript:ra.link.streetmap(" + $lat + "," + $long + ")' >[OS Map]</a></span>";
-                    out = ra.link.getOSMap($lat, $long, "OS Map");
-                }
-                break;
-            case "{meetDirections}":
-                if ($walk.hasMeetPlace) {
-                    var $lat = $walk.meetLocation.latitude;
-                    var $long = $walk.meetLocation.longitude;
-                    out = ra.loc.directionsSpan($lat, $long);
-                }
-                break;
-            case "{startOSMap}":
-                if ($walk.startLocation.exact) {
-                    var $lat = $walk.startLocation.latitude;
-                    var $long = $walk.startLocation.longitude;
-                    //      out = "<span><a href='javascript:ra.link.streetmap(" + $lat + "," + $long + ")' >[OS Map]</a></span>";
-                    out = ra.link.getOSMap($lat, $long, "OS Map");
-                }
-                break;
-            case "{startDirections}":
-                if ($walk.startLocation.exact) {
-                    var $lat = $walk.startLocation.latitude;
-                    var $long = $walk.startLocation.longitude;
-                    out = ra.loc.directionsSpan($lat, $long);
-                }
-                break;
-            default:
-                var $found = false;
-                var $response = "";
-                if (typeof displayCustomValues === 'function') {
-                    if ($option.startsWith("{x")) {
-                        $response = displayCustomValues($option, $walk);
-                        $found = $response.found;
-                    }
-                }
-                if ($found) {
-                    out += $response.out;
-                } else {
-                    $option = $option.replace("{", "");
-                    out = $option.replace("}", "");
-                }
-        }
-
-        return out;
-    };
-    getPrefix = function (walkOption) {
+    this.getPrefix = function (walkOption) {
         var options = {};
         options.previousPrefix = '';
         options.prefix = "";
@@ -996,13 +296,470 @@ ra.walk = (function () {
         } while ($loop);
         return options;
     };
-    my._addWalkLink = function (id, $text, $class = "") {
-        if ($text !== '') {
-            return  "<span class='pointer " + $class + "' onclick=\"" + my.DisplayWalkFunction + "(event,'" + id + "')\" title='Click to display walk details'>" + $text + "</span>";
+    this.getEventValue = function ($option) {
+        var BR = '<br/>';
+        var out = "";
+        switch ($option) {
+            case "{lf}":
+                out = BR;
+                break;
+            case "{group}":
+            case "{eventType}":
+                out = this.admin.getValue($option);
+                break;
+            case "{dowShortdd}":
+            case "{dowShortddmm}":
+            case "{dowShortddyyyy}": // published in error
+            case "{dowShortddmmyyyy}":
+            case "{dowdd}":
+            case "{dowddmm}":
+            case "{dowddmmyyyy}":
+            case "{title}":
+            case "{description}":
+            case "{additionalNotes}":
+                out = this.basics.getValue($option);
+                break;
+            case "{meet}":
+            case "{meetTime}":
+            case "{meetPlace}":
+            case "{meetGR}":
+            case "{meetPC}":
+            case "{meetOLC}":
+            case "{meetMapCode}":
+            case "{meetw3w}":
+            case "{meetOSMap}":
+            case "{meetDirections}":
+                out = this.meeting.getValue($option.replace('meet', ''));
+                break;
+            case "{start}":
+            case "{startTime}":
+            case "{startPlace}":
+            case "{startGR}":
+            case "{startPC}":
+            case "{startOLC}":
+            case "{startMapCode}":
+            case "{startw3w}":
+            case "{startOSMap}":
+            case "{startDirections}":
+                out = this.start.getValue($option.replace('start', ''));
+                break;
+            case "{finishTime}":
+                out = this.finish.getValue($option.replace('finish', ''));
+                break;
+            case "{distance}":
+            case "{distanceMi}":
+            case "{distanceKm}":
+            case "{difficulty}":
+            case "{difficulty+}":
+            case "{gradeimg}":
+            case "{gradeimgRight}":
+            case "{gradeimgMiddle}":
+            case "{grade}":
+            case "{grade+}":
+            case "{nationalGrade}":
+            case "{nationalGradeAbbr}":
+            case "{localGrade}":
+            case "{type}":
+            case "{shape}":
+            case "{mapGrade}":
+                out = this.walks.getValue($option);
+                break;
+            case "{contact}":
+            case "{contactname}":
+            case "{contactperson}":
+            case "{telephone}":
+            case "{telephone1}":
+            case "{telephone2}":
+            case "{email}":
+            case "{emailat}":
+            case "{emaillink}":
+                out = this.contacts.getValue($option);
+                break;
+            case "{mediathumbr}":
+            case "{mediathumbl}":
+                out = this.media.getValue($option.replace('media', ''));
+                break;
+            default:
+                var $found = false;
+                var $response = "";
+                if (typeof displayCustomValues === 'function') {
+                    if ($option.startsWith("{x")) {
+                        $response = displayCustomValues($option, this);
+                        $found = $response.found;
+                    }
+                }
+                if ($found) {
+                    out += $response.out;
+                } else {
+                    $option = $option.replace("{", "");
+                    out = $option.replace("}", "");
+                }
+        }
+
+        return out;
+    };
+    this.getIntValue = function ($section, $option) {
+
+        switch ($section) {
+            case "admin":
+                return this.admin.getIntValue($option);
+            case "basics":
+                return this.basics.getIntValue($option);
+            case "walks":
+                return this.walks.getIntValue($option);
+            case "meeting":
+                return this.meeting.getIntValue($option);
+            case "start":
+                return this.start.getIntValue($option);
+            case "finish":
+                return this.finish.getIntValue($option);
+            case "contacts":
+                return this.contacts.getIntValue($option);
+        }
+    };
+    this.displayInModal = function (event) {
+        var div = document.createElement("div");
+        div.style.display = "inline-block";
+        var modal = ra.modals.createModal(div);
+        if (event.ctrlKey && event.altKey) {
+            this.walkDiagnostics(div);
+        } else {
+            this.walkDetailsDisplay(div);
+            var tag = modal.headerDiv();
+            if (tag !== null) {
+                this._addDiaryButton(tag);
+            }
+        }
+    };
+    this._addDiaryButton = function (tag) {
+        var diary = document.createElement('button');
+        diary.setAttribute('class', 'link-button tiny cloudy');
+        diary.title = 'Download an .ICS file, import to Diary';
+        diary.textContent = 'Add to Calendar';
+        tag.parentNode.insertBefore(diary, tag);
+        var _this = this;
+        diary.addEventListener('click', function () {
+            var file = new ra.ics.file();
+            _this.addWalktoIcs(file);
+            file.download();
+        });
+    };
+    this.initialiseFilter = function (filter) {
+        var values = this.getFilterValues();
+        filter.initialiseFilter(values);
+    };
+    this.setDisplayFilter = function (filter) {
+        var values = this.getFilterValues();
+        this._displayFiltered = filter.shouldDisplayItem(values);
+    };
+    this.getFilterValues = function () {
+        var valueSet = new ra.filter.valueSet();
+        valueSet.add(new ra.filter.value("idDate", this.basics.walkDate));
+        valueSet.add(new ra.filter.value("idType", this.admin.eventType));
+        var dow = ra.date.dow(this.basics.walkDate);
+        valueSet.add(new ra.filter.value("idDOW", dow));
+        var grade = this.getIntValue("walks", "_nationalGrade");
+        valueSet.add(new ra.filter.value("idGrade", grade));
+        var status = this.admin.status;
+        if (status === "New") {
+            status = "Published";
+        }
+        valueSet.add(new ra.filter.value("idStatus", status));
+        var dist = this.getIntValue("walks", "_filterDistance");
+        valueSet.add(new ra.filter.value("idDistance", dist));
+        valueSet.add(new ra.filter.value("idGroup", this.admin.groupName));
+        valueSet.add(new ra.filter.value("idUpdate", this.admin.filterUpdate()));
+        return valueSet;
+    };
+    this.resetDisplay = function (tag) {
+        var htmltag = document.getElementById(tag);
+        if (htmltag) {
+            alert("resetDisplay found tag!");
+            htmltag.parentElement.style.display = "list-item";
+        }
+    };
+    this.addWalktoIcs = function (events) {
+        var ev = new ra.ics.event();
+        var $meetLocation, $startLocation, $before, $after, $summary, $description, $altDescription;
+        $meetLocation = this.getIntValue("meeting", "_icsDescription");
+        if ($meetLocation !== "") {
+            $meetLocation += "; <br/>";
+        }
+        $startLocation = this.getIntValue("start", "_icsDescription");
+        $before = $meetLocation + $startLocation + "<br/>Description: ";
+        $after = "<br/>" + this.getIntValue("contacts", "_icsrecord");
+        $after += this.getIntValue("walks", "_icsWalkGrade");
+        if (this.admin.nationalUrl !== "") {
+            $after += this.admin.nationalUrl;
+        }
+
+        $after += "<br/>Note: Finish times are very approximate!";
+        if (this.basics.additionalNotes !== '') {
+            $after += "<br/>Notes: " + this.basics.additionalNotes;
+        }
+        $summary = this.basics.title;
+        $summary += this.getIntValue("walks", "_icsWalkDistance");
+        if (this.isCancelled()) {
+            ev.method("CANCEL");
+            $summary = " CANCELLED " + $summary;
+            $description = "CANCELLED - REASON: " + this.admin.cancellationReason + " (" + this.basics.description + ")";
+        } else {
+            $description = $before + this.basics.description + $after;
+            $altDescription = $before + this.basics.descriptionHtml + $after;
+        }
+
+        var $time = this._ics_getFirstTime();
+        //  var d = ra.date.getDateTime(this.basics.walkDate);
+        if ($time !== null) {
+            ev.startDate($time);
+            $time = this._ics_getFinishTime();
+            if ($time !== null) {
+                ev.endDate(new Date($time));
+            }
+        } else {
+            ev.startDate(ra.date.getDateTime(this.basics.walkDate));
+        }
+        ev.createdDate(ra.date.getDateTime(this.admin.dateCreated));
+        ev.modifiedDate(ra.date.getDateTime(this.admin.dateUpdated));
+        ev.uid('walk' + this.admin.id + '-isc@ramblers-webs.org.uk');
+        ev.organiser(this.admin.groupName + ":mailto:ignore@ramblers-webs.org.uk");
+        ev.summary($summary);
+        ev.description($description);
+        ev.altDescription($altDescription);
+        ev.location($startLocation);
+        ev.url(this.admin.nationalUrl);
+        ev.categories("Walk," + this.admin.groupName);
+        ev.class('PUBLIC');
+        events.addEvent(ev);
+    };
+    this._ics_getFirstTime = function () {
+        var time = null;
+        this.meeting.forEach(loc => {
+            if (time === null) {
+                if (loc.time !== null) {
+                    time = loc.time;
+                    return time;
+                }
+            }
+        });
+        this.start.forEach(loc => {
+            if (time === null) {
+                if (loc.time !== null) {
+                    time = loc.time;
+                }
+            }
+        });
+        return time;
+    };
+    this._ics_getLastTime = function () {
+        var time = null;
+        this.start.forEach(loc => {
+            if (time === null) {
+                if (loc.time !== null) {
+                    time = loc.time;
+                }
+            }
+        });
+        this.meeting.forEach(loc => {
+            if (time === null) {
+                if (loc.time !== null) {
+                    time = loc.time;
+                }
+            }
+        });
+        return time;
+    };
+    this._ics_getFinishTime = function () {
+        var time = this.getIntValue("finish", "_icsTime");
+        if (time !== "") {
+            return time;
+        }
+        // calculate end time
+        var $durationFullMins = 0;
+        var $lasttime = this._ics_getLastTime();
+        if ($lasttime !== "") {
+            $durationFullMins = this.getIntValue("walks", "_icsWalkDuration");
+            if ($durationFullMins === "") {
+                $durationFullMins = 0;
+            }
+            if (this.getIntValue("start", "_type") === "Rough") {
+                $durationFullMins += 60;
+            }
+            $lasttime = ra.time.addMinutes($lasttime, $durationFullMins);
+        }
+        return $lasttime;
+    };
+    this.addTitleSection = function (tag) {
+        var nationalGradeCSS = this.getIntValue("walks", "_nationalGradeCSS");
+        var content = document.createElement('div');
+        content.setAttribute('class', 'walkitem group ' + nationalGradeCSS);
+        var $html = "<b>Group</b>: " + this.admin.groupName;
+        if (this.isCancelled()) {
+            $html += "<div class='walkitem reason'>WALK CANCELLED: " + this.admin.cancellationReason + "</div>";
+        }
+
+        content.innerHTML = $html;
+        tag.appendChild(content);
+    };
+    this.addBasicSection = function (tag) {
+        var content = document.createElement('div');
+        content.setAttribute('class', 'walkitem basics');
+        var $html = "";
+        $html += "<div class='description'><b><span class='walktitle'>" + this.basics.title + "</span><br/>" + this.getEventValue('{dowddmm}');
+        $html += "</b></div>";
+        if (this.basics.description !== "") {
+            $html += "<div class='description'> " + this.basics.descriptionHtml + "</div>";
+        }
+        if (this.basics.additionalNotes !== "") {
+            $html += "<div class='additionalnotes'><b>Additional Notes</b>: " + this.basics.additionalNotes + "</div>";
+        }
+        var shape = this.walks.getValue("{shape}");
+        if (shape !== "") {
+            $html += "<b>" + shape + " Walk</b>";
+        }
+
+        var time = this.meeting.getValue("{Time}");
+        if (time !== "") {
+            $html += "<div><b>Meeting time " + time + "</b></div>";
+        }
+        time = this.start.getValue("{Time}");
+        if (time !== "") {
+            $html += "<div><b>Start time " + time + "</b></div>";
+        }
+        time = this.getIntValue("basics", "_finishTime");
+        if (time !== "") {
+            $html += "<div><b>Estimated finish time " + time + "</b></div>";
+        }
+        content.innerHTML = $html;
+        tag.appendChild(content);
+    };
+    this.addMapSection = function (tag) {
+        var osMapLayer;
+        var mapdiv = document.createElement('div');
+        mapdiv.setAttribute('class', 'walkitem map');
+        tag.appendChild(mapdiv);
+        var lmap = new ra.leafletmap(mapdiv, ra.defaultMapOptions);
+        map = lmap.map;
+        maplayer = L.featureGroup().addTo(map);
+        osMapLayer = L.featureGroup().addTo(map);
+        tag.addEventListener("display-os-map", function (e) {
+            var items = e.items;
+            osMapLayer.clearLayers();
+            items.forEach(item => {
+                ra.map.os.display(item, osMapLayer);
+            });
+            map.fitBounds(osMapLayer.getBounds());
+        });
+        this.meeting.forEach(loc => {
+            loc._addLocationMarker(maplayer, map);
+        });
+        this.start.forEach(loc => {
+            loc._addLocationMarker(maplayer, map);
+        });
+        this.finish.forEach(loc => {
+            loc._addLocationMarker(maplayer, map);
+        });
+        var bounds = maplayer.getBounds();
+        map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
+        return;
+//        fix contact link does not work if popup is underneath it and it is in coloumn two
+//        var elems = document.getElementsByClassName("walkcontact");
+//        elems[0].addEventListener('mouseover', function () {
+//            map.closePopup();
+//        });
+
+    };
+    this.addFooterSection = function (tag) {
+        var content = document.createElement('div');
+        content.setAttribute('class', 'walkitem walkdates');
+        var $html = "";
+        if (this.nationalUrl !== '') {
+            $html += "<div><img src=\"" + ra.baseDirectory() + "media/lib_ramblers/images/ralogo.png\" alt=\"Ramblers\" width=\"17\" height=\"17\"> ";
+            $html += "<a href='" + this.admin.nationalUrl + "' target='_blank' >View walk on Ramblers national web site</a></div>";
+        }
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        params.delete("walkid");
+        params.append("walkid", this.admin.id);
+        var link = new URL(`${url.origin}${url.pathname}?${params}`);
+        var text = escape(link.href);
+        $html += "<div>";
+        $html += "<img src=\"" + ra.baseDirectory() + "media/lib_ramblers/leaflet/images/share.png\" alt=\"Share\" width=\"17\" height=\"17\"> ";
+        $html += "<a href=\"javascript:ra.clipboard.set(\'" + text + "')\" >Copy url of this popup to clipboard</a>";
+        $html += "</div>";
+        $html += "<div>Last update: " + ra.date.dowShortddmmyyyy(this.admin.dateUpdated) + "</div>";
+        $html += "</div>";
+        $html += "<div>Walk ID " + this.admin.id + "</div>";
+        content.innerHTML = $html;
+        tag.appendChild(content);
+    };
+    this.addTooltip = function ($text) {
+        if ($text === '') {
+            return $text;
+        }
+        if (this.isCancelled()) {
+            return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
+        }
+        if (this.admin.status.toLowerCase() === "new") {
+            return "<span data-descr='Walk updated " + ra.date.dowShortddmmyyyy(this.admin.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";
         }
         return $text;
     };
-    my.addWalkLink = function (id, $text, $class = "") {
+// display walks 
+    this.walkDetailsDisplay = function (tag) {
+
+        var content = document.createElement('div');
+        content.setAttribute('class', 'walkstdfulldetails stdfulldetails walk' + this.admin.status);
+        ra.html.insertAfter(tag, content);
+        // tag.appendChild(content);
+        this.addTitleSection(content);
+        this.addBasicSection(content);
+        this.meeting.addSection(content, "meeting");
+        this.start.addSection(content, "start");
+        this.finish.addSection(content, "finish");
+        this.walks.addHtmlSection(content, "difficulty");
+        this.contacts.addHtmlSection(content, "contact");
+        if (!this.isCancelled()) {
+            this.addMapSection(content);
+            this.media.addHtmlSection(content, "media");
+            this.flags.addFlagsSection(content);
+            this.updatePostcodeInfo();
+        }
+        this.addFooterSection(content);
+        return;
+    };
+    this.updatePostcodeInfo = function () {
+        this.meeting.forEach(loc => {
+            loc._addPostcodeMarker(maplayer);
+        });
+        this.start.forEach(loc => {
+            loc._addPostcodeMarker(maplayer);
+        });
+        this.finish.forEach(loc => {
+            loc._addPostcodeMarker(maplayer);
+        });
+    };
+    this.addWalkMarker = function (cluster, walkClass) {
+        var $long, $lat, $icon, $class;
+        var $popup;
+        this.start.forEach(loc => {
+            var id = this.admin.id;
+            var isCancelled = this.isCancelled();
+            var isEvent = this.eventType === "Event";
+            var summary = this.getEventValues(this.mapSummary, false);
+            var link = this.getEventValues(this.mapLinks, false);
+            var grade = this.getEventValues(this.mapGrade, false);
+            var title = this.getEventValues(this.mapTitle, false);
+            loc.addWalkMarker(cluster, walkClass, id, isEvent, isCancelled, summary, link, grade, title);
+        });
+    };
+    this._addWalkLink = function ($text, $class = "") {
+        if ($text !== '') {
+            return  "<span class='pointer " + $class + "' onclick=\"" + ra.walk.DisplayWalkFunction + "(event,'" + this.admin.id + "')\" title='Click to display walk details'>" + $text + "</span>";
+        }
+        return $text;
+    };
+    this.addWalkLink = function ($text, $class = "") {
         // split into text before and after span
         var st, en;
         var start = '';
@@ -1012,535 +769,1281 @@ ra.walk = (function () {
             if (st > 0) {
                 //var a = $text;
                 // var _start = $text.substring(0, st);
-                start = my._addWalkLink(id, $text.substring(0, st), $class);
+                start = this._addWalkLink($text.substring(0, st), $class);
             }
             var middle = $text.substring(st, en);
             //  var _end = $text.substr(en);
-            var end = my.addWalkLink(id, $text.substr(en), $class);
+            var end = this.addWalkLink($text.substr(en), $class);
             return start + middle + end;
         } else {
-            return   my._addWalkLink(id, $text, $class);
+            return   this._addWalkLink($text, $class);
     }
 
     };
-    my.addTooltip = function ($walk, $text) {
-        if ($text === '') {
-            return $text;
+};
+// end of ra.event
+
+
+ra.event.items = function () {
+    this.items = [];
+    this.addItem = function (newItem) {
+        if (newItem !== null) {
+            this.items.push(newItem);
         }
-        if ($walk.status.toLowerCase() === "cancelled") {
-            return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
-        }
-        if ($walk.status.toLowerCase() === "new") {
-            return "<span data-descr='Walk updated " + ra.date.dowShortddmmyyyy($walk.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";
-        }
-        return $text;
     };
-    my.addYear = function ($walk) {
+    this.getValue = function ($option) {
+        if (this.items.length > 0) {
+            return  this.items[0].getValue($option);
+        }
+        return "";
+    };
+    this.getIntValue = function ($option) {
+        if (this.items.length > 0) {
+            return  this.items[0].getIntValue($option);
+        }
+        return "";
+    };
+    this.addHtmlSection = function (tag, sectionclass) {
+
+        var html = "";
+        this.items.forEach(item => {
+            html += item.getHtmlSection();
+        });
+        if (html !== "") {
+            var content = document.createElement('div');
+            content.setAttribute('class', 'walkitem ' + sectionclass);
+            content.innerHTML = html;
+            tag.appendChild(content);
+        }
+
+    };
+    this.addSection = function (tag, sectionclass) {
+        this.items.forEach(item => {
+            var content = document.createElement('div');
+            content.setAttribute('class', 'walkitem ' + sectionclass);
+            item.getSection(tag, content);
+            tag.appendChild(content);
+        });
+    };
+    this.forEach = function (fcn) {
+        this.items.forEach(item => {
+            fcn(item);
+        });
+    };
+};
+ra.event.admin = function () {
+    this.source = null;
+    this.id = null;
+    this.status = null;
+    this.eventType = null;
+    this.groupCode = '';
+    this.groupName = '';
+    this.dateUpdated = null;
+    this.dateCreated = null;
+    this.cancellationReason = null;
+    this.nationalUrl = "";
+    this.convertPHPAdmin = function (phpwalk) {
+        var admin = phpwalk.admin;
+        this.source = admin.source;
+        this.id = admin.id;
+        this.eventType = admin.type;
+        this.groupCode = admin.groupCode;
+        this.groupName = admin.groupName;
+        this.status = admin.status;
+        this.cancellationReason = admin.cancellationReason;
+        this.dateUpdated = ra.date.getDateTime(admin.dateUpdated.date);
+        this.dateCreated = ra.date.getDateTime(admin.dateCreated.date);
+        this.nationalUrl = admin.nationalUrl;
+    };
+    this.isCancelled = function () {
+        return this.status.toLowerCase() === "cancelled";
+    };
+    this.filterUpdate = function () {
+        return ra.date.periodInDays(new Date(), this.dateUpdated);
+    };
+    this.getValue = function ($option) {
+        var BR = '<br/>';
+        var out = "";
+        switch ($option) {
+            case "{group}":
+                out = this.groupName;
+                break;
+            case "{eventType}":
+                out = this.eventType;
+                break;
+        }
+        return out;
+    };
+    this.getIntValue = function ($option) {
+        console.log("Invalid internal request: " + $option);
+        return "";
+    };
+};
+ra.event.basics = function () {
+    this.walkDate = null;
+    this.finishDate = null;
+    this.title = null;
+    this.description = '';
+    this.descriptionHtml = '';
+    this.additionalNotes = null;
+    this.convertPHPBasics = function (phpwalk) {
+        var basics = phpwalk.basics;
+        this.title = basics.title;
+        this.description = ra.convert_mails(basics.description);
+        this.descriptionHtml = ra.convert_mails(basics.descriptionHtml);
+        this.additionalNotes = ra.convert_mails(basics.additionalNotes);
+        this.walkDate = ra.date.getDateTime(basics.walkDate.date);
+        if (basics.finishDate !== null) {
+            this.finishDate = ra.date.getDateTime(basics.finishDate.date);
+        }
+    };
+    this.getValue = function ($option) {
+        var BR = '<br/>';
+        var out = "";
+        switch ($option) {
+            case "{dowShortdd}":
+                out = "<b>" + ra.date.dowShortdd(this.walkDate) + "</b>";
+                break;
+            case "{dowShortddmm}":
+                out = "<b>" + ra.date.dowShortddmm(this.walkDate) + this.addYear() + "</b>";
+                break;
+            case "{dowShortddyyyy}": // published in error
+            case "{dowShortddmmyyyy}":
+                out = "<b>" + ra.date.dowShortddmmyyyy(this.walkDate) + "</b>";
+                break;
+            case "{dowdd}":
+                out = "<b>" + ra.date.dowdd(this.walkDate) + "</b>";
+                break;
+            case "{dowddmm}":
+                out = "<b>" + ra.date.dowddmm(this.walkDate) + this.addYear() + "</b>";
+                break;
+            case "{dowddmmyyyy}":
+                out = "<b>" + ra.date.dowddmmyyyy(this.walkDate) + "</b>";
+                break;
+            case "{title}":
+                out = "<b>" + this.title + "</b>";
+                break;
+            case "{description}":
+                out = this.descriptionHtml;
+                break;
+            case "{additionalNotes}":
+                out = this.additionalNotes;
+                break;
+            default:
+        }
+
+        return out;
+    };
+    this.getIntValue = function ($option) {
+        switch ($option) {
+            case "dayofweek":
+                return ra.date.dow(this.walkDate);
+            case "displayMonth":
+                return ra.date.month(this.walkDate) + this.addYear();
+            case "_finishTime":
+                if (this.finishDate === null) {
+                    return "";
+                }
+                return ra.time.HHMMshort(this.finishDate);
+        }
+        console.log("Invalid internal request: " + $option);
+        return "";
+    };
+    this.addYear = function () {
         var d = new Date();
         var newDate = new Date(d.getTime() + 300 * 24 * 60 * 60000);
-        var walkDate = ra.date.getDateTime($walk.walkDate);
+        var walkDate = ra.date.getDateTime(this.walkDate);
         if (walkDate.getTime() < newDate.getTime()) {
             return '';
         } else {
             return ' ' + ra.date.YYYY(walkDate);
         }
     };
-    _addLocationInfo = function ($title, $location) {
-        var $out, $gr;
-        if ($location.exact) {
-            $out = "<div class='place'><b>" + $title + " Place</b>: " + $location.description + " ";
-            $out += my._addDirectionsMap($location, "Google directions");
-            $out += "</div>";
-            if ($location.time !== "") {
-                $out += ra.html.addDiv("time", "<b>Time</b>: " + $location.timeHHMMshort);
-            }
-            $gr = "<b>Grid Ref</b>: " + $location.gridref + " ";
-            $gr += ra.link.getOSMap($location.latitude, $location.longitude, "OS Map");
-            $out += ra.html.addDiv("gridref", $gr);
-            $out += ra.html.addDiv("latlong", "<b>Latitude</b>: " + $location.latitude.toFixed(5) + " , <b>Longitude</b>: " + $location.longitude.toFixed(5));
-            var tagname = "ra-loc=" + $location.type;
-            var tag = document.getElementById(tagname);
-            if (tag !== null) {
-                tag.remove();
-            }
-            $out += '<span id="' + tagname + '"></span>';
-            // getWhat3Words($location.latitude, $location.longitude, tagname,true);
-            setTimeout(function () {
-                ra.w3w.get($location.latitude, $location.longitude, tagname, false);
-            }, 500);
-            if ($location.postcode !== null) {
-                $out += _displayPostcode($location);
-            }
-            if ($location.type === "Meeting") {
-                $out += ra.html.addDiv("location notes", "Walkers will travel together from the meeting place to the start of the walk, this may be by car, coach or public transport. Meeting times are often when the group will set off, rather than when you should arrive at the meeting place.");
-            }
-            if ($location.type === "Start") {
-                $out += ra.html.addDiv("location notes", "Start times are often when the group will start walking rather than when to get there.");
-            }
+};
+ra.event.walk = function () {
 
-        } else {
-            if ($location.type === "Start") {
-                $out = "<div class='place'>";
-                $out += "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: ";
-                $out += ra.map.getMapLink($location.latitude, $location.longitude, "Map of area");
-                $out += "<br/>Contact group if you wish to meet at the start";
-                if ($location.timeHHMMshort !== '') {
-                    $out += "<div class='starttime'>Start time: " + $location.timeHHMMshort + "</div>";
+    this.distanceKm = 0;
+    this.distanceMiles = 0;
+    this.nationalGrade = null;
+    this.localGrade = '';
+    this.shape = '';
+    this.pace = '';
+    this.ascent = '';
+    this.convertPHPWalk = function (phpwalk) {
+        this.distanceKm = phpwalk.distanceKm;
+        this.distanceMiles = phpwalk.distanceMiles;
+        this.nationalGrade = new ra.event.nationalGrade(phpwalk.nationalGrade);
+        this.localGrade = phpwalk.localGrade;
+        this.shape = phpwalk.shape;
+        this.pace = phpwalk.pace;
+        this.ascent = phpwalk.ascent;
+        return this;
+    };
+    this.getValue = function ($option) {
+        var BR = '<br/>';
+        var out = "";
+        switch ($option) {
+            case "{distance}":
+                if (this.distanceMiles > 0) {
+                    out = this.distanceMiles + "mi / " + this.distanceKm + "km";
                 }
-                //  if ($this.displayStartDescription) {
-                $out += "<div class='startdescription'>" + $location.description + "</div>";
-                //  }
+                break;
+            case "{distanceMi}":
+                if (this.distanceMiles > 0) {
+                    out = this.distanceMiles + "mi";
+                }
+                break;
+            case "{distanceKm}":
+                if (this.distanceMiles > 0) {
+                    out = this.distanceKm + "km";
+                }
+                break;
+            case "{difficulty}":
+                out = this.getValue("{distance}");
+                out += "<br/><span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                if (this.localGrade !== "") {
+                    out += BR + this.localGrade;
+                }
+                break;
+            case "{difficulty+}":
+                out = this.getValue("{distance}");
+                out += BR + this.nationalGrade.disp("middle") + BR;
+                out += "<span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                if (this.localGrade !== "") {
+                    out += BR + this.localGrade;
+                }
+                break;
+            case "{gradeimg}":
+                out = this.nationalGrade.disp('details');
+                break;
+            case "{gradeimgRight}":
+                out = this.nationalGrade.disp('right');
+                break;
+            case "{gradeimgMiddle}":
+                out = this.nationalGrade.disp('middle');
+                break;
+            case "{grade}":
+                out = "<span class='pointer " + this.nationalGrade.key() + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                if (this.localGrade !== "") {
+                    out += BR + this.localGrade;
+                }
+                break;
+            case "{grade+}":
+                out = "";
+                out += this.nationalGrade.disp("middle");
+                out += "<span class='pointer " + this.nationalGrade.key() + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                if (this.localGrade !== "") {
+                    out += BR + this.localGrade;
+                }
+                break;
+            case "{nationalGrade}":
+                out = "<span class='pointer' onclick='ra.walk.dGH()'>" + this.nationalGrade.toText() + "</span>";
+                break;
+            case "{nationalGradeAbbr}":
+                out = "<span class='pointer' onclick='ra.walk.dGH()'>" + this.nationalGrade.abbr() + "</span>";
+                break;
+            case "{localGrade}":
+                out = this.localGrade;
+                break;
+            case "{type}": // deprecated
+            case "{shape}":
+                out = this.shape;
+                break;
+            case "{mapGrade}":
+                out = this.nationalGrade.image() + "<br/>" + this.nationalGrade.toText();
+                break;
+        }
+        return out;
+    };
+    this.getIntValue = function ($option) {
 
-                $out += "</div>";
-            }
+        switch ($option) {
+            case "shape":
+                return this.shape;
+                break;
+            case "_filterDistance":
+                return  this.filterDistance();
+            case "_nationalGradeCSS":
+                return  this.nationalGrade.gradeCSS();
+            case "_nationalGrade":
+                return this.nationalGrade.toText();
+            case "_icsWalkDuration":
+                var dist = this.distanceMiles;
+                return Math.ceil(dist / 2) * 60;
+            case "_icsWalkGrade":
+                if (this.localGrade !== "") {
+                    return "Grade: " + this.localGrade + "/" + this.nationalGrade.toText() + "; <br/> ";
+                } else {
+                    return "Grade: " + this.nationalGrade.toText() + "; <br/> ";
+                }
+            case "_icsWalkDistance":
+                if (this.distanceMiles > 0) {
+                    return  ", " + this.distanceMiles + "mi/" + this.distanceKm + "km";
+                }
+                return "";
+                break;
+        }
+        console.log("Invalid internal request: " + $option);
+        return "";
+    };
+    this.filterDistance = function () {
+        var distanceOrder = ['See description',
+            'Up to 3 miles (5 km)',
+            '3+ to 5 miles (5-8 km)',
+            '5+ to 8 miles (8-13 km)',
+            '8+ to 10 miles (13-16 km)',
+            '10+ to 13 miles (16-21 km)',
+            '13+ to 15 miles (21-24 km)',
+            '15+ miles (24 km)'];
+        var dist = this.distanceMiles;
+        switch (true) {
+            case (dist === 0):
+                return distanceOrder[0];
+            case (dist <= 3):
+                return distanceOrder[1];
+            case (dist <= 5):
+                return distanceOrder[2];
+            case (dist <= 8):
+                return distanceOrder[3];
+            case (dist <= 10):
+                return distanceOrder[4];
+            case (dist <= 13):
+                return distanceOrder[5];
+            case (dist <= 15):
+                return distanceOrder[6];
+            default:
+                return distanceOrder[7];
+        }
+    };
+    this.getHtmlSection = function () {
+        if (this.nationalGrade.toText() === "Event") {
+            return ""; // ignore dummy walk
         }
 
-        return $out;
-    };
-    _displayPostcode = function ($location) {
-        var $pc, $note2, $note, $distclass, $out;
-        var $this = $location;
-        var $dist = $this.postcodeDistance;
-        //var $direction = $this.postcodeDirection;
-        if ($dist <= 100) {
-            $note = $this.postcode;
-            $note2 = "Postcode is within 100m of location";
-            $distclass = " distclose";
-        } else {
-            $note = "Location is " + $location.postcodeDistance.toFixed() + " metres to the " + $location.postcodeDirection + " of " + $this.postcode;
-            $note2 = "Check postcode suitablility on map";
-            if ($dist < 500) {
-                $distclass = " distnear";
-            } else {
-                $distclass = " distfar";
-            }
-            if ($dist > 10000) {
-                $note = $this.postcode;
-                $note2 = 'Postcode distance from location not known';
-            }
+        var $html = "<b>Walk</b>: ";
+        if (this.distanceMiles > 0) {
+            $html += ra.html.addDiv("distance", "<b>Distance</b>: " + this.distanceMiles + "mi / " + this.distanceKm + "km");
         }
-        $pc = "<b>Postcode</b>: <abbr title='" + $note2 + "'>" + $note + "</abbr>";
-        $out = ra.html.addDiv("postcode " + $distclass, $pc);
-        return $out;
-    };
-    my._addDirectionsMap = function ($location, $text) {
-        var $this = $location;
-        var $loc, $out;
-        if ($this.exact) {
-            $loc = "[lat],[long]";
-            $loc = $loc.replace("[lat]", $this.latitude);
-            $loc = $loc.replace("[long]", $this.longitude);
-            $out = "<span class='mappopup' onClick=\"javascript:ra.loc.directions(" + $loc + ")\" >[" + $text + "]</span>";
-            return $out;
-        } else {
-            return "";
+        $html += ra.html.addDiv("nationalgrade", "<b>National Grade</b>: " + this.nationalGrade.toText() + "  " + this.nationalGrade.disp('popup'));
+        if (this.localGrade !== "") {
+            $link = this.localGrade;
+            $html += ra.html.addDiv("localgrade", "<b>Local Grade</b>: " + $link);
+        }
+        if (this.pace !== "") {
+            $html += ra.html.addDiv("pace", "<b>Pace</b>: " + this.pace);
+        }
+        if (this.ascent !== "") {
+            $html += ra.html.addDiv("ascent", "<b>Ascent</b>: " + this.ascent);
         }
 
+        return $html;
     };
-    my.isCancelled = function (walk) {
-        return walk.status.toLowerCase() === "cancelled";
-    };
-    my.convertPHPWalks = function ($walks) {
-        if ($walks === null) {
-            return null;
-        }
-        var index, len, $walk;
-        for (index = 0, len = $walks.length; index < len; ++index) {
-            $walk = $walks[index];
-            try {
-                $walk.description = ra.convert_mails($walk.description);
-                $walk.descriptionHtml = ra.convert_mails($walk.descriptionHtml);
-                $walk.dateUpdated = $walk.dateUpdated.date;
-                $walk.dateCreated = $walk.dateCreated.date;
-                $walk.walkDate = $walk.walkDate.date;
-                // delete $walk.day;
-                // delete $walk.dayofweek;
-                if ($walk.hasMeetPlace) {
-                    my.convertPHPLocation($walk.meetLocation);
-                }
-                if ($walk.startLocation !== null)
-                {
-                    my.convertPHPLocation($walk.startLocation);
-                }
-                else{
-                    console.warn("Error: Start Location not provided for walk " + $walk.id + " (" + $walk.groupCode + " - " + $walk.walkDate.substring(0,10) + " - " + $walk.title + ")");
-                }
-                if ($walk.finishTime !== null) {
-                    $walk.finishTime = $walk.finishTime.date;
-                }
-            }    
-            catch(err) {
-                // Log that the walk failed to be converted.
-                console.warn("(ra.walks.convertPHPWalks) Walk id (" + "[" + $walk.groupCode + "]" + $walk.id + " on " + $walk.walkDate.substring(0,10) + " - " + $walk.title + ") Failed to be converted due to error - " + err);
-            }
-        }
-        return $walks;
-    };
-    my.convertPHPLocation = function (location) {
-        if (location.time.hasOwnProperty('date')) {
-            location.time = ra.date.getDateTime(location.time.date);
+};
+ra.event.timelocation = function () {
+    this.type = "";
+    this.description = '';
+    this.time = '';
+    this.timeHHMM = '';
+    this.timeHHMMshort = '';
+    this.gridref = '';
+    this.latitude = 0;
+    this.longitude = 0;
+    this.postcode = null;
+    this.osmaps = null;
+    this.pctagid = "";
+    this.isCancelled = false;
+    this.convertPHPLocation = function (location, isCancelled) {
+        this.type = location.type;
+        if (location.time !== null) {
+            this.time = ra.date.getDateTime(location.time.date);
+            this.timeHHMM = location.timeHHMM;
+            this.timeHHMMshort = location.timeHHMMshort;
         } else {
             location.time = null;
         }
-
-    };
-    my.addWalkMarker = function (cluster, $walk, walkClass) {
-        var $long, $lat, $icon, $class;
-        var $popup;
-        //  var $this = this.settings;
-        if ($walk.startLocation !== null)
-        {
-            $long = $walk.startLocation.longitude;
-            $lat = $walk.startLocation.latitude;
-            if ($walk.startLocation.exact) {
-                $icon = ra.map.icon.markerStart();
-            } else {
-                $icon = ra.map.icon.markerArea();
-            }
-            if (ra.walk.isCancelled($walk)) {
-                $icon = ra.map.icon.markerCancelled();
-            }
-            $popup = document.createElement('div');
-            var summary = document.createElement('div');
-            summary.setAttribute('class', 'pointer');
-            summary.innerHTML = ra.walk.getWalkValues($walk, my.mapFormat, false);
-            var id = $walk.id;
-            summary.addEventListener("click", function (e) {
-                cluster.turnOffFullscreen();
-                ra.walk.displayWalkID(e, id);
-            });
-            var link = document.createElement('div');
-            link.innerHTML = ra.walk.getWalkValues($walk, my.mapLinks, false);
-            var grade = document.createElement('div');
-            grade.setAttribute('class', 'pointer');
-            grade.style.float = "right";
-            grade.innerHTML = my.grade.image($walk.nationalGrade) + "<br/>" + $walk.nationalGrade;
-            grade.addEventListener("click", function (e) {
-                cluster.turnOffFullscreen();
-                ra.walk.dGH();
-            });
-            $popup.appendChild(grade);
-            $popup.appendChild(summary);
-            $popup.appendChild(link);
-            var dist = '';
-            if ($walk.distanceMiles > 0) {
-                dist = $walk.distanceMiles + "mi / " + $walk.distanceKm + "km";
-            }
-            var title = ra.date.dowShortddmm($walk.walkDate) + ra.walk.addYear($walk) + ", " + dist;
-            $class = walkClass + $walk.status;
-            cluster.addMarker($popup, $lat, $long, {icon: $icon, title: title, riseOnHover: true});
+        this.description = location.description;
+        this.gridref = location.gridref;
+        this.latitude = location.latitude;
+        this.longitude = location.longitude;
+        this.w3w = location.w3w;
+        if (location.postcode !== null) {
+            this.postcode = new ra.event.postcode;
+            var pc = {text: location.postcode,
+                longitude: 0,
+                latitude: 0,
+                direction: ""};
+            this.postcode.convertPHPPostcode(pc);
         }
-        return;
+        this.osmaps = location.osmaps;
+        this.isCancelled = isCancelled;
+        this.pctagid = "pc_" + Math.random().toString(36).slice(-10); // should be unique
+        return this;
     };
-    my.gradeCSS = function (nationalGrade) {
-        var $class = "";
-        switch (nationalGrade) {
-            case "Easy Access":
-                $class = "grade-ea";
+    this.getValue = function ($option) {
+        var out = "";
+        switch ($option) {
+            case "{}":
+                out = this.timeHHMMshort;
+                if (this.description) {
+                    out += " at " + this.description;
+                }
                 break;
-            case "Easy":
-                $class = "grade-e";
+            case "{Time}":
+                out = this.timeHHMMshort;
                 break;
-            case "Leisurely":
-                $class = "grade-l";
+            case "{Place}":
+                out = this.description;
                 break;
-            case "Moderate":
-                $class = "grade-m";
+            case "{GR}":
+                out = this.gridref;
                 break;
-            case "Strenuous":
-                $class = "grade-s";
+            case "{PC}":
+                if (this.postcode !== null) {
+                    out = this.postcode.text;
+                }
                 break;
-            case "Technical":
-                $class = "grade-t";
+            case "{OLC}":
+                break;
+            case "{MapCode}":
+                break;
+            case "{w3w}":
+                out = this.w3w;
+                break;
+            case "{OSMap}":
+                var $lat = this.latitude;
+                var $long = this.longitude;
+                out = ra.link.getOSMap($lat, $long, "OS Map");
+                break;
+            case "{Directions}":
+                var $lat = this.latitude;
+                var $long = this.longitude;
+                out = ra.loc.directionsSpan($lat, $long);
                 break;
             default:
-                break;
+                out = "";
         }
-        return $class;
+        return out;
     };
-    my.dGH = function () {
-        var $url;
-        $url = ra.baseDirectory() + "media/lib_ramblers/pages/grades.html";
-        var marker;
-        ra.ajax.postUrl($url, "", marker, _displayGradesModal);
+    this.getIntValue = function ($option) {
+        switch ($option) {
+            case "_latitude":
+                return this.latitude;
+            case "_longitude":
+                return this.longitude;
+            case "_icsDescription":
+                return this.getICSTextDescription();
+            case "_icsTime":
+                return this.time;
+            case "_type":
+                return this.type;
+        }
+        console.log("Invalid internal request: " + $option);
+        return "";
     };
-    _displayGradesModal = function (marker, $html) {
-        $html = $html.replace(/basedirectory/g, ra.baseDirectory());
-        ra.modals.createModal($html);
-    };
-    my.icsfile = (function () {
-        var icsfile = {};
-        icsfile.create = function ($walks) {
-
-            var index, len, $walk;
-            var events = new ra.ics.events();
-
-            for (index = 0, len = $walks.length; index < len; ++index) {
-                $walk = $walks[index];
-                if ($walk.display) {
-                    ra.walk.icsfile._addWalktoIcs($walk, events);
-                }
-            }
-            events.download();
-        };
-        icsfile._addWalktoIcs = function (walk, events) {
-            var ev = new ra.ics.event();
-            var $meetLocation, $startLocation, $before, $after, $summary, $description, $altDescription;
-            if (walk.hasMeetPlace) {
-                var meet = new ra.gwemLocation(walk.meetLocation);
-                $meetLocation = meet.getTextDescription();
-                $meetLocation += "; <br/>";
-            } else {
-                $meetLocation = "";
-            }
-            if (typeof walk.startlocation !== 'undefined')
-            {
-                var start = new ra.gwemLocation(walk.startLocation);
-                $startLocation = start.getTextDescription();    
-            } else {
-                $startLocation = "";
-            }
-            $before = $meetLocation + $startLocation + "<br/>Description: ";
-            $after = "<br/>Contact: " + walk.contactName + " (" + walk.telephone1 + " " + walk.telephone2 + "); <br/>";
-            if (walk.localGrade !== "") {
-                if (walk.localGrade.localeCompare(walk.nationalGrade) != 0)
-                {
-                    $after += "Grade: " + walk.localGrade + "/" + walk.nationalGrade + "; <br/> ";
-                } else {
-                    $after += "Grade: " + walk.nationalGrade + "; <br/> ";
-                }
-            } else {
-                $after += "Grade: " + walk.nationalGrade + "; <br/> ";
-            }
-            $after += walk.detailsPageUrl;
-            $after += "<br/>Note: Finish times are very approximate!";
-            if (walk.additionalNotes !== '') {
-                $after += "<br/>Notes: " + walk.additionalNotes;
-            }
-            $summary = walk.title;
-            if (walk.distanceMiles > 0) {
-                $summary += ", " + walk.distanceMiles + "mi/" + walk.distanceKm + "km";
-            }
-            if (walk.status.toLowerCase() === 'cancelled') {
-                ev.method("CANCEL");
-                $summary = " CANCELLED " + $summary;
-                $description = "CANCELLED - REASON: " + walk.cancellationReason + " (" + walk.description + ")";
-            } else {
-
-                $description = $before + walk.description + $after;
-                $altDescription = $before + walk.descriptionHtml + $after;
-            }
-
-            var $time = icsfile._getFirstTime(walk);
-            var d = ra.date.getDateTime(walk.walkDate);
-            if ($time !== null) {
-                $time.setDate(d.getDate());
-                $time.setMonth(d.getMonth());
-                $time.setFullYear(d.getFullYear());
-                ev.startDate($time);
-                $time = icsfile._getFinishTime(walk);
-                if ($time !== null) {
-                    ev.endDate(new Date($time));
-                }
-            } else {
-                ev.startDate(ra.date.getDateTime(walk.walkDate));
-            }
-
-            ev.createdDate(ra.date.getDateTime(walk.dateCreated));
-            ev.modifiedDate(ra.date.getDateTime(walk.dateUpdated));
-            ev.uid('walk' + walk.id + '-isc@ramblers-webs.org.uk');
-            ev.organiser(walk.groupName + ":mailto:ignore@ramblers-webs.org.uk");
-            ev.summary($summary);
-            ev.description($description);
-            ev.altDescription($altDescription);
-            ev.location($startLocation);
-            ev.url(walk.detailsPageUrl);
-            ev.categories("Walk," + walk.groupName);
-            ev.class('PUBLIC');
-
-            events.addEvent(ev);
-        };
-        icsfile._getFirstTime = function (walk) {
-            var time = null;
-            if (walk.hasMeetPlace) {
-                time = walk.meetLocation.time;
-            }
-            if (time !== null) {
-                return time;
-            }
-            time = walk.startLocation.time;
-            return time;
-        };
-        icsfile._getLastTime = function (walk) {
-            var time = null;
-            if (walk.hasMeetPlace) {
-                time = walk.meetLocation.time;
-            }
-            if (walk.startLocation.exact === true) {
-                time = walk.startLocation.time;
-            } else {
-
-            }
-            return time;
-        };
-
-        icsfile._getFinishTime = function (walk) {
-            if (walk.finishTime !== null) {
-                return walk.finishTime;
-            }
-            // calculate end time
-            var $lasttime = icsfile._getLastTime(walk);
-            if ($lasttime !== null) {
-                var $durationFullMins = Math.ceil(walk.distanceMiles / 2) * 60;
-                if (walk.startLocation.exact === false) {
-                    $durationFullMins += 60;
-                }
-                $lasttime = ra.time.addMinutes($lasttime, $durationFullMins);
-            }
-            return $lasttime;
-        };
-        return icsfile;
-    }
-    ());
-    my.grade = (function () {
-        var grade = {};
-        // get abbreviation from National Grade
-        grade.abbr = function (nationalGrade) {
-            switch (nationalGrade) {
-                case "Easy Access":
-                    return "EA";
-                case "Easy":
-                    return "E";
-                case "Leisurely":
-                    return "L";
-                case "Moderate":
-                    return "M";
-                case "Strenuous":
-                    return "S";
-                case "Technical":
-                    return "T";
-                default:
-                    return "";
-            }
-        };
-        grade.colour = function (nationalGrade) {
-            switch (nationalGrade) {
-                case "Easy Access":
-                    return "#ADADAD";
-                case "Easy":
-                    return "#9BC8AB";
-                case "Leisurely":
-                    return "#F6B09D";
-                case "Moderate":
-                    return "#F08050";
-                case "Strenuous":
-                    return "#F9B104";
-                case "Technical":
-                    return "#404141";
-                default:
-                    return "";
-            }
-        };
-        grade.image = function (nationalGrade) {
-            var $url = ra.baseDirectory() + "media/lib_ramblers/images/grades/";
-            switch (nationalGrade) {
-                case "Easy Access":
-                    $url = "<img src='" + $url + "ea.png' alt='Easy Access' height='30' width='30'>";
-                    break;
-                case "Easy":
-                    $url = "<img src='" + $url + "e.png' alt='Easy' height='30' width='30'>";
-                    break;
-                case "Leisurely":
-                    $url = "<img src='" + $url + "l.png' alt='Leisurely' height='30' width='30'>";
-                    break;
-                case "Moderate":
-                    $url = "<img src='" + $url + "m.png' alt='Moderate' height='30' width='30'>";
-                    break;
-                case "Strenuous":
-                    $url = "<img src='" + $url + "s.png' alt='Strenuous' height='30' width='30'>";
-                    break;
-                case "Technical":
-                    $url = "<img src='" + $url + "t.png' alt='Technical' height='30' width='30'>";
-                    break;
-            }
-            return $url;
-        };
-        grade.disp = function (nationalGrade, $class) {
-            var $tag = "";
-            var $img = grade.image(nationalGrade);
-            var dataDescr = "";
-            switch (nationalGrade) {
-                case "Easy Access":
-                    dataDescr = 'Easy Access';
-                    break;
-                case "Easy":
-                    dataDescr = 'Easy';
-                    break;
-                case "Leisurely":
-                    dataDescr = 'Leisurely';
-                    break;
-                case "Moderate":
-                    dataDescr = 'Moderate';
-                    break;
-                case "Strenuous":
-                    dataDescr = 'Strenuous';
-                    break;
-                case "Technical":
-                    dataDescr = 'Technical';
-                    break;
-                default:
-                    break;
-            }
-            $tag = "<span data-descr='" + dataDescr + "' class='grade " + $class + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $img + "</span>";
-
-            return $tag;
-        };
-        return grade;
-    }
-    ());
-    return my;
-}
-());
-
-ra.gwemLocation = function (location) {
-    this.loc = location;
-    this.description = function () {
-        return this.loc.description;
-    };
-    this.getTextDescription = function () {
+    this.getICSTextDescription = function () {
         var $textdescription = "";
-        switch (this.loc.type) {
+        switch (this.type) {
             case "Meeting":
                 $textdescription = "Meet: ";
                 break;
             case "Start":
-                if (this.loc.exact) {
-                    $textdescription = "Start: ";
-                } else {
-                    $textdescription = "Walking area: ";
-                }
+                $textdescription = "Start: ";
                 break;
-            case "End":
+            case "Rough":
+                $textdescription = "Walking area: ";
+                break;
+            case "Location":
+                $textdescription = "Location: ";
+                break;
+            case "Finish":
                 $textdescription = "Finish: ";
                 break;
+            default:
+                alert("Error 0003");
         }
-        if (this.loc.exact) {
-            if (this.loc.timeHHMMshort !== "") {
-                $textdescription += this.loc.timeHHMMshort + " @ ";
+        if (this.type !== "Rough") {
+            if (this.timeHHMMshort !== "") {
+                $textdescription += this.timeHHMMshort + " @ ";
             }
         }
-        // CHANGE REQUIRED , remove postcode and reduce GR to two figures if not exact
-        // CHANGE REQUIRED , remove postcode and reduce GR to two figures if not exact
-        // CHANGE REQUIRED , remove postcode and reduce GR to two figures if not exact
-        var $place = this.loc.gridref;
-        if (this.loc.postcode !== null) {
-            $place += ", " + this.loc.postcode;
+        var $place = this.gridref;
+        if (this.postcode !== null) {
+            $place += ", " + this.postcode.text;
         }
-        if (this.loc.description !== '') {
-            $textdescription += this.loc.description + ' (' + $place + ')';
+        if (this.description !== '') {
+            $textdescription += this.description + ' (' + $place + ')';
         } else {
             $textdescription += $place;
         }
         return $textdescription;
     };
+    this.getSection = function (contentTag, tag) {
+        var display = {title: "Unknown",
+            notes: "",
+            timeTitle: "<b>Time</b>: "};
+        switch (this.type) {
+            case "Meeting":
+                display.title = "Meeting place";
+                display.notes = "Walkers will travel together from the meeting place to the start of the walk, this may be by car, coach or public transport. Meeting times are often when the group will set off, rather than when you should arrive at the meeting place.";
+                break;
+            case "Start":
+                display.title = "Start place";
+                display.notes = "Start times are often when the group will start walking rather than when to get there.";
+                break;
+            case "Rough":
+                display.title = "<b>No start place - Rough location only</b>";
+                display.notes = "Location shown is an indication of where the walk will be and <b>NOT</b> the start place: Contact group if you wish to meet at the start";
+                break;
+            case "Location":
+                display.title = "Location";
+                break;
+            case "Finish":
+                display.title = "Finish";
+                display.timeTitle = "<b>Estimated Time</b>: ";
+                break;
+            default:
+                alert("Error 0004");
+        }
+
+        var cancelled = "";
+        var div = document.createElement('div');
+        div.classList.add("place");
+        tag.appendChild(div);
+        if (this.isCancelled) {
+            cancelled = "CANCELLED: ";
+        }
+        //  div.classList.add("notexact");
+        div.innerHTML = "<b>" + cancelled + display.title + "</b>: " + this.description;
+        if (this.timeHHMMshort !== "") {
+            var time = document.createElement('div');
+            time.innerHTML = display.timeTitle + this.timeHHMMshort;
+            tag.appendChild(time);
+        }
+        var gr = document.createElement('div');
+        tag.appendChild(gr);
+        gr.innerHTML = "<b>Grid Ref</b>: " + this.gridref;
+        if (!this.isCancelled) {
+            this._displayPostcode(tag);
+            var w3w = document.createElement('div');
+            tag.appendChild(w3w);
+            w3w.innerHTML = ra.w3w.toText(this.w3w, "");
+            var span1 = document.createElement('span');
+            span1.title = "Click to see new window showing location using Streetmap.co.uk";
+            tag.appendChild(span1);
+            span1.innerHTML = ra.link.getOSMap(this.latitude, this.longitude, "Streetmap/OS Map");
+            var a = document.createElement('a');
+            tag.appendChild(a);
+            a.classList.add("mappopup");
+            var $loc = "javascript:ra.loc.directions([lat],[long])";
+            $loc = $loc.replace("[lat]", this.latitude);
+            $loc = $loc.replace("[long]", this.longitude);
+            a.title = "You may need to adjust your 'Location' if you are not using a mobile device";
+            a.setAttribute("href", $loc);
+            a.textContent = "[Google Directions]";
+            if (this.type !== "rough") {
+                this._addLocationExtras(contentTag, tag);
+            }
+        }
+        if (display.notes !== "") {
+            var notes = document.createElement('div');
+            tag.appendChild(notes);
+            notes.innerHTML = display.notes;
+            notes.classList.add("location", "notes");
+        }
+    };
+    this._addLocationExtras = function (contentTag, tag) {
+        var button = document.createElement('a');
+        button.classList.add("mappopup");
+        button.classList.add("pointer");
+        button.title = "Click to see additional location information";
+        tag.appendChild(button);
+        button.textContent = "[Extra Info+]";
+        var extras = document.createElement('div');
+        extras.style.display = "none";
+        extras.classList.add("mappopup");
+        extras.classList.add("extra");
+        tag.appendChild(extras);
+        this._displayExtras(extras);
+        button.addEventListener("click", e => {
+            var element = e.target;
+            if (element.textContent === "[Extra Info+]") {
+                element.textContent = "[Extra Info-]";
+                extras.style.display = "";
+                if (this.osmaps === null) {
+                    ra.map.os.getOSMapsAtLoc(this.latitude, this.longitude, result => {
+                        if (result.error) {
+                            this.osmaps = [];
+                        } else {
+                            this.osmaps = result.maps;
+                        }
+                        this._displayOsMaps(contentTag, this.osmaps);
+                        this._displayExtras(extras);
+                    });
+                } else {
+                    this._displayOsMaps(contentTag, this.osmaps);
+                }
+            } else {
+                element.textContent = "[Extra Info+]";
+                extras.style.display = "none";
+                this._displayOsMaps(contentTag, []);
+            }
+        });
+    };
+    this._displayOsMaps = function (tag, items) {
+        let event = new Event("display-os-map", {bubbles: false});
+        event.items = items;
+        tag.dispatchEvent(event);
+    }
+    this._displayExtras = function (tag) {
+        tag.innerHTML = ""; // cleat current display
+        var ll = document.createElement('div');
+        tag.appendChild(ll);
+        ll.innerHTML = "<b>Latitude</b>: " + this.latitude.toFixed(5) + " , <b>Longitude</b>: " + this.longitude.toFixed(5);
+        ll.classList.add("latlong");
+
+        var section = document.createElement('div');
+        tag.appendChild(section);
+        var head = document.createElement('div');
+        head.style.fontWeight = 700;
+        head.textContent = "OS paper maps";
+        tag.appendChild(head);
+        var info = document.createElement('h4');
+        tag.appendChild(info);
+        if (this.osmaps === null) {
+            info.innerHTML = "Retrieving map information ...";
+            return;
+        }
+        if (this.osmaps.length === 0) {
+            info.innerHTML = "No map information available";
+        } else {
+            var out = "<ul class='mappopup osmaps' >";
+            this.osmaps.forEach(item => {
+                out += "<li>" + item.type + " " + item.number + ": " + item.title + " (1:" + item.scale + ")</li>";
+            });
+            out += "</ul>";
+            info.innerHTML = out + "<div class='location notes'>Note: all OS map information is unofficial, please check before using this information.</div>";
+        }
+    };
+    this._addLocationMarker = function (layer, map) {
+        var icon = ra.map.icon.markerRoute();
+        var popup, title;
+        var popupoffset = [0, -30];
+        switch (this.type) {
+            case "Meeting":
+                popup = "<b>Meeting place</b><br/>" + this.timeHHMMshort + " " + this.description;
+                popup += "<br/>" + this.gridref;
+                icon = ra.map.icon.markerRoute();
+                title = 'Meeting place';
+                popupoffset = [0, -30];
+                break;
+            case "Start":
+                popup = "<b>Walk start</b><br/>" + this.timeHHMMshort + " " + this.description;
+                popup += "<br/>" + this.gridref;
+                icon = ra.map.icon.markerStart();
+                title = 'Start of walk';
+                popupoffset = [0, -10];
+                break;
+            case "Rough":
+                popup = "<b>General area for walk only</b>";
+                popup += "<br/><b>Contact group</b> if you wish to join the walk at the start";
+                icon = ra.map.icon.markerArea();
+                title = 'General area of walk';
+                popupoffset = [0, -10];
+                break;
+            case "Location":
+                popup = "<b>Location</b><br/>" + this.timeHHMMshort + " " + this.description;
+                popup += "<br/>" + this.gridref;
+                icon = ra.map.icon.markerRoute();
+                title = 'Location of event';
+                popupoffset = [0, -10];
+                break;
+            case "Finish":
+                popup = "<b>Walk Finish</b><br/>" + this.description;
+                icon = ra.map.icon.markerFinish();
+                title = 'End of walk';
+                popupoffset = [0, -10];
+                break;
+            default:
+                alert("Error 0001");
+        }
+
+
+        var marker = L.marker([this.latitude, this.longitude], {icon: icon, title: title, riseOnHover: true}).addTo(layer);
+        marker.bindPopup(popup, {offset: popupoffset, autoClose: false}).closePopup();
+        var openPopups = true;
+        map.on("mouseover", function (event) {
+            if (openPopups) {
+                marker.openPopup();
+            }
+            openPopups = false;
+        });
+        map.on("mouseout", function (event) {
+            marker.closePopup();
+            openPopups = true;
+        });
+    };
+    this._addPostcodeMarker = function (layer) {
+
+        if (this.postcode === null) {
+            return;
+        }
+        if (this.postcode.text === "") {
+            return;
+        }
+        var _this = this;
+        setTimeout(function () {
+            var tag = ra.html.getTag(_this.pctagid);
+            if (tag !== null) {
+                tag.addEventListener("postcode-data-retrieved", function (e) {
+                    var pc = _this.postcode;
+                    if (e.raData.error !== null) {
+                        pc.latitude = 0;
+                        pc.longitude = 0;
+                        return;
+                    }
+                    var latlng = e.raData.latlng;
+                    if (latlng === null) {
+                        pc.latitude = 0;
+                        pc.longitude = 0;
+                    } else {
+                        pc.latitude = latlng.lat;
+                        pc.longitude = latlng.lon;
+                    }
+                    pc.distance = ra.geom.distance(pc.latitude, pc.longitude, _this.latitude, _this.longitude) * 1000;
+                    pc.direction = ra.geom.direction(pc.latitude, pc.longitude, _this.latitude, _this.longitude);
+                    tag.innerHTML = pc.toText();
+                    if (_this.postcode.distance < 10000) {
+                        var pcpop = "<b>" + _this.postcode.text + "</b>";
+                        pcpop += "<br/>" + _this.type + " location is " + _this.postcode.distance.toFixed() + " metres to the " + _this.postcode.direction.name;
+                        var pcIcon = ra.map.icon.postcode();
+                        var marker = L.marker([_this.postcode.latitude, _this.postcode.longitude], {icon: pcIcon, riseOnHover: true}).addTo(layer);
+                        marker.bindPopup(pcpop).closePopup();
+                    }
+
+                });
+                _this.postcode.getPostcode(tag);
+            }
+        }, 200);
+    };
+    this._displayPostcode = function (tag) {
+        if (this.postcode !== null) {
+            if (this.postcode.text !== "") {
+                var pc = document.createElement('span');
+                tag.appendChild(pc);
+                pc.innerHTML = this.postcode.toText();
+                pc.setAttribute('id', this.pctagid);
+            }
+
+        }
+    };
+    this.addWalkMarker = function (cluster, walkClass, id, isEvent, isCancelled, summary, link, grade, title) {
+        var $long, $lat, $icon, $class;
+        var $popup;
+        $long = this.longitude;
+        $lat = this.latitude;
+        if (this.type !== "Rough") {
+            $icon = ra.map.icon.markerStart();
+        } else {
+            $icon = ra.map.icon.markerArea();
+        }
+        if (isCancelled) {
+            $icon = ra.map.icon.markerCancelled();
+        }
+        if (isEvent) {
+            $icon = ra.map.icon.event();
+        }
+        $popup = document.createElement('div');
+        var summaryDiv = document.createElement('div');
+        summaryDiv.setAttribute('class', 'pointer');
+        summaryDiv.innerHTML = summary;
+        summaryDiv.addEventListener("click", function (e) {
+            cluster.turnOffFullscreen();
+            ra.walk.displayWalkID(e, id);
+        });
+        var linkDiv = document.createElement('div');
+        linkDiv.innerHTML = link;
+        var gradeDiv = document.createElement('div');
+        gradeDiv.setAttribute('class', 'pointer');
+        gradeDiv.style.float = "right";
+        gradeDiv.innerHTML = grade;
+        gradeDiv.addEventListener("click", function (e) {
+            cluster.turnOffFullscreen();
+            ra.walk.dGH();
+        });
+        $popup.appendChild(gradeDiv);
+        $popup.appendChild(summaryDiv);
+        $popup.appendChild(linkDiv);
+        var $class = walkClass + "Published";
+        if (this.isCancelled) {
+            $class = walkClass + "Cancelled";
+        }
+        cluster.addMarker($popup, $lat, $long, {icon: $icon, title: title, riseOnHover: true});
+        return;
+    };
 };
+ra.event.contact = function (id) {
+    this.id = id;
+    this.isLeader = false;
+    this.contactName = '';
+    this.email = 'yes';
+    this.key = null;
+    this.contactForm = null;
+    this.telephone1 = '';
+    this.telephone2 = '';
+    this.convertPHPContact = function (phpcontact) {
+        this.isLeader = phpcontact.isLeader;
+        this.contactName = phpcontact.contactName;
+        this.email = phpcontact.email;
+        this.contactForm = phpcontact.contactForm;
+        this.key = phpcontact.key;
+        this.telephone1 = phpcontact.telephone1;
+        this.telephone2 = phpcontact.telephone2;
+        return this;
+    };
+    this.getValue = function ($option) {
+        var BR = '<br/>';
+        var out = "";
+        switch ($option) {
+            case "{contact}":
+                var $titlePrefix = '';
+                out = "";
+                if (this.isLeader) {
+                    $titlePrefix = "Leader ";
+                } else {
+                    $titlePrefix = "Contact ";
+                }
+                if (this.contactName !== "") {
+                    out = $titlePrefix + " <b>" + this.contactName + "</b>" + BR;
+                }
+                if (this.email !== "") {
+                    out += this.getValue("{emaillink}") + BR;
+                }
+                if (this.telephone1 !== "") {
+                    out += this.telephone1 + BR;
+                }
+                if (this.telephone2 !== "") {
+                    out += this.telephone2 + BR;
+                }
+                break;
+            case "{contactname}":
+                if (this.contactName !== '') {
+                    if (this.isLeader) {
+                        out = "Leader ";
+                    } else {
+                        out = "Contact ";
+                    }
+                    out += "<b>" + this.contactName + "</b>";
+                }
+                break;
+            case "{contactperson}":
+                out = this.contactName;
+                break;
+            case "{telephone}":
+            case "{telephone1}":
+                out = this.telephone1;
+                break;
+            case "{telephone2}":
+                out = this.telephone2;
+                break;
+            case "{email}":
+            case "{emailat}":
+                var $contact = "";
+                if (this.email !== "") {
+                    $contact += this.getValue("{emaillink}");
+                }
+                out = $contact;
+                break;
+            case "{emaillink}":
+                if (this.email !== "") {
+                    if (this.contactForm !== "") {
+                        out = "<span><b>Contact link: </b><a target='_blank' href='" + this.contactForm + "' title='Click to send an email to leader/contact or group'>Email walk contact</a></span>";
+                    } else {
+                        var $gwemlink = "javascript:ra.walk.emailContact(\"" + this.id + "\")";
+                        out = "<span><a href='" + $gwemlink + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
+                    }
+
+                }
+                break;
+        }
+        return out;
+    };
+    this.getIntValue = function ($option) {
+        switch ($option) {
+            case "contactName":
+                return this.contactName;
+            case "_icsrecord":
+                var out = "";
+                if (this.contactName !== "") {
+                    out = "Contact: " + this.contactName;
+                }
+                if (this.telephone1 !== "") {
+                    out += ", " + this.telephone1;
+                }
+                if (this.telephone2 !== "") {
+                    out += ", " + this.telephone2;
+                }
+                return out + "<br/>";
+                break;
+        }
+        console.log("Invalid internal request: " + $option);
+        return "";
+    };
+    this.getHtmlSection = function () {
+        var $name;
+        var $html = "";
+        if (this.isLeader === false) {
+            $html += "<b>Contact Details: </b>";
+        } else {
+            $html += "<b>Contact Leader: </b>";
+        }
+        $name = this.contactName !== "" ? "<b>Name</b>: " + this.contactName : "";
+        $html += ra.html.addDiv("contactname", $name);
+        var anyContact = false;
+        if (this.telephone1 !== "") {
+            anyContact = true;
+            var $text = "<b>Telephone</b>: " + this.telephone1;
+            if (this.telephone2 !== "") {
+                $text += ", " + this.telephone2;
+            }
+            $html += ra.html.addDiv("telephone", $text);
+        }
+
+        if (this.email !== "") {
+            anyContact = true;
+            $html += this.getValue("{emaillink}");
+        }
+        if (!anyContact) {
+            $html += ra.html.addDiv("contactname", "<b>No contact details available</b>");
+        }
+
+        return $html;
+    };
+};
+ra.event.flags = function () {
+    this._flags = [];
+    this.addFlags = function (flags) {
+        flags.forEach(flag => {
+            var newflag = {section: flag.section,
+                name: flag.name};
+            this._flags.push(newflag);
+        });
+    };
+    this.addFlagsSection = function (tag) {
+        if (this._flags.length === 0) {
+            return;
+        }
+        var lastSection = '';
+        var content = document.createElement('div');
+        content.setAttribute('class', 'walkitem flags');
+        var $html = "";
+        this._flags.forEach(flag => {
+            if (lastSection !== flag.section) {
+                if (lastSection !== '') {
+                    $html += "</ul>";
+                }
+                $html += "<b>" + flag.section + "</b>";
+                lastSection = flag.section;
+                $html += "<ul>";
+            }
+            $html += "<li class='item'>" + flag.name + "</li>";
+        });
+        if ($html !== "") {
+            $html += "</ul>";
+        }
+        content.innerHTML = $html;
+        tag.appendChild(content);
+    };
+};
+ra.event.media = function () {
+    this.alt = "";
+    this.thumb = "";
+    this.medium = "";
+    this.convertPHPMedia = function (phpmedia) {
+        this.alt = phpmedia.alt;
+        this.thumb = phpmedia.thumb;
+        this.medium = phpmedia.medium;
+        return this;
+    };
+    this.getValue = function ($option) {
+        var out = "";
+        switch ($option) {
+            case "{thumbr}":
+                out = "<img class='mediathumbr' src='" + this.thumb + "' alt='" + this.alt + "'>";
+                break;
+            case "{thumbl}":
+                out = "<img class='mediathumbl' src='" + this.thumb + "' alt='" + this.alt + "'>";
+                break;
+        }
+        return out;
+    };
+    this.getIntValue = function ($option) {
+        return "";
+    };
+    this.getHtmlSection = function () {
+        var $html = "<div class='walk-image' onclick='ra.html.displayInModal(this)'><div class='mediapopup'><img class='walkmedia' src='" + this.medium + "' alt='" + this.alt + "' >" + "</div></div>";
+        return $html;
+    };
+};
+ra.event.nationalGrade = function (grade) {
+    this.gradekey = "Event";
+    this.grade = grade;
+    var valid = ["Event", "Easy Access", "Easy", "Leisurely", "Moderate", "Strenuous", "Technical"];
+    if (valid.includes(grade)) {
+        this.gradekey = grade.replace(" ", "_");
+    } else {
+        alert("Error: invalid walks grade found");
+    }
+    this.toText = function () {
+        return this.grade;
+    };
+    this.key = function () {
+        return this.gradekey;
+    };
+    this.gradeCSS = function () {
+        var results = {
+            Event: "grade-event",
+            Easy_Access: "grade-ea",
+            Easy: "grade-e",
+            Leisurely: "grade-l",
+            Moderate: "grade-m",
+            Strenuous: "grade-s",
+            Technical: "grade-t"
+        };
+        return results[this.gradekey];
+    };
+    this.abbr = function () {
+        // get abbreviation from National Grade
+        var results = {
+            Event: "Event",
+            Easy_Access: "EA",
+            Easy: "E",
+            Leisurely: "L",
+            Moderate: "M",
+            Strenuous: "S",
+            Technical: "T"
+        };
+        return results[this.gradekey];
+    };
+    // get associated colour for grade
+    this.colour = function () {
+        var results = {
+            Event: "#A0A0A0",
+            Easy_Access: "#ADADAD",
+            Easy: "#9BC8AB",
+            Leisurely: "#F6B09D",
+            Moderate: "#F08050",
+            Strenuous: "#F9B104",
+            Technical: "#404141"
+        };
+        return results[this.gradekey];
+    };
+    this.image = function () {
+        var images = {
+            Event: "event.png",
+            Easy_Access: "ea.png",
+            Easy: "e.png",
+            Leisurely: "l.png",
+            Moderate: "m.png",
+            Strenuous: "s.png",
+            Technical: "t.png"
+        };
+        var image = images[this.gradekey];
+        var $url = ra.baseDirectory() + "media/lib_ramblers/images/grades/";
+        $url = "<img src='" + $url + image + "' alt='" + this.grade + "' height='30' width='30'>";
+        return $url;
+    };
+    this.disp = function ($class) {
+        var $tag = "";
+        var $img = this.image();
+        var dataDescr = this.gradekey.replace("_", " ");
+        $tag = "<span data-descr='" + dataDescr + "' class='grade " + $class + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $img + "</span>";
+        return $tag;
+    };
+};
+ra.event.postcode = function () {
+    this.text = "";
+    this.latitude = 0;
+    this.longitude = 0;
+    this.direction = "North";
+    this.distance = 9999999;
+    this.convertPHPPostcode = function (phpPostcode) {
+        this.text = phpPostcode.text;
+        this.latitude = phpPostcode.latitude;
+        this.longitude = phpPostcode.longitude;
+        this.direction = phpPostcode.direction;
+        return this;
+    };
+    this.toText = function () {
+        var $pc, $note2, $note, $distclass, $out;
+        $distclass = "distfar";
+        if (this.distance <= 100) {
+            $note = this.text;
+            $note2 = "Postcode is within 100m of location";
+            $distclass = "distclose";
+        } else {
+            if (this.distance > 10000) {
+                $note = this.text;
+                $note2 = 'Postcode distance from location not known';
+            } else {
+                $note = "Location is " + this.distance.toFixed() + " metres to the " + this.direction.name + " of " + this.text;
+                $note2 = "Check postcode suitablility on map";
+                if (this.dstance < 500) {
+                    $distclass = "distnear";
+                }
+            }
+        }
+        if (this.latitude === 0 && this.longitude === 0) {
+            $distclass = "distnotfound";
+            $note = this.text;
+            $note2 = "Postcode location not found";
+        }
+        $pc = "<b>Postcode</b>: <abbr title='" + $note2 + "'>" + $note + "</abbr>";
+        $out = ra.html.addDiv("postcode " + $distclass, $pc);
+        return $out;
+    };
+    this.getPostcode = function (tag) {
+        var postcodeurl = "https://postcodes.theramblers.org.uk/?postcode=";
+        var url = postcodeurl + this.text;
+        ra.ajax.getJSON(url, function (err, items) {
+            let event = new Event("postcode-data-retrieved", {bubbles: false});
+            event.raData = {};
+            event.raData.error = err;
+            event.raData.latlng = null;
+            if (items.length === 1) {
+                var item = items[0];
+                var pt = new OsGridRef(item.Easting, item.Northing);
+                var latlng = OsGridRef.osGridToLatLon(pt);
+                event.raData.latlng = latlng;
+            }
+            tag.dispatchEvent(event);
+        });
+    };
+};
+// *****************************************************************************
+// *****************************************************************************
+// *****************************************************************************
+// *****************************************************************************
+// *****************************************************************************
+// *****************************************************************************
+
+
+// static functions used as links from HTML
+ra.walk = (function () {
+    var my = {};
+    my.DisplayWalkFunction = "ra.walk.displayWalkID";
+    my._startup = true;
+    my.walks = new ra.events();
+    my.registerEvent = function (newEvent) {
+        my.walks.registerEvent(newEvent);
+    };
+    // command to store all walks from PHP display options
+    my.registerPHPWalks = function (mapOptions, data) {
+        // stores walks for php walks displays
+        var phpwalks = null;
+        phpwalks = data.walks;
+        if (phpwalks !== null) {
+            //my.registerWalks(phpwalks);
+            data.walks.forEach(phpwalk => {
+                var newEvent = new ra.event();
+                newEvent.convertPHPWalk(phpwalk);
+                // this._allwalks.push(newEvent);
+                my.walks.registerEvent(newEvent);
+            });
+            data.walks = null;
+            my.displayUrlWalkPopup();
+        }
+        this.load = function () {
+        };
+    };
+    my.displayUrlWalkPopup = function () {
+        if (my._startup) {
+            my._startup = false;
+            setTimeout(function () {
+                var search = window.location.search;
+                const urlParams = new URLSearchParams(search);
+                if (urlParams.has('walkid')) {
+                    var walkid = urlParams.getAll('walkid')[0];
+                    my.displayWalkID(new Event("dummy"), walkid);
+                }
+            }, 1500);
+        }
+    };
+    // accessed by HTML links to display walk
+    my.displayWalkID = function (event, id) {
+        var walk = my.walks.getEvent(id);
+        if (walk !== null) {
+            walk.displayInModal(event);
+        } else {
+            alert('SORRY unable to display specified walk/event.');
+        }
+    };
+    // static option to display grades popup
+    // used in html links from PHP and js
+    my.dGH = function () {
+        var $url;
+        $url = ra.baseDirectory() + "media/lib_ramblers/pages/grades.html";
+        var marker;
+        ra.ajax.postUrl($url, "", marker, my._displayGradesModal);
+    };
+    // display popup showing grading system
+    my._displayGradesModal = function (marker, $html) {
+        $html = $html.replace(/basedirectory/g, ra.baseDirectory());
+        ra.modals.createModal($html);
+    };
+    // link to send email to walk's contact
+    my.emailContact = function ($id) {
+
+        var url = 'https://sendemail.ramblers-webs.org.uk';
+        //var url = 'https://sendemail02.ramblers-webs.org.uk';
+        //var url = 'http://localhost/contactForm';
+
+        var $walk = my.walks.getEvent($id);
+        var data = {};
+        data.key = $walk.key;
+        data.group = $walk.admin.groupName;
+        data.title = $walk.basics.title;
+        data.date = ra.date.dowShortddmmyyyy($walk.basics.walkDate);
+        var frameDiv = '<div id="raContactDiv"></div>';
+        ra.modals.createModal(frameDiv);
+        var div = document.getElementById("raContactDiv");
+        var frame = document.createElement('iframe');
+        frame.setAttribute('class', 'ra contactForm');
+        frame.setAttribute('src', url);
+        frame.setAttribute('title', 'Contact group about group walk');
+        div.appendChild(frame);
+        // Create IE + others compatible event handler
+        var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent = eventMethod === "attachEvent" ? "onmessage" : "message";
+        // Listen to message from child window
+        eventer(messageEvent, function (e) {
+            var height = parseInt(e.data);
+            if (height > 0) {
+                frame.style.height = height + "px";
+            }
+            //console.log('parent received message!:  ', e.data);
+        }, false);
+        frame.onload = function () {
+            //console.log(" frame.onload ");
+            var sentThis = JSON.stringify(data);
+            frame.contentWindow.postMessage(sentThis, url);
+        };
+    };
+    // toggle display of walk in Fulldetails display
+    my.toggleDisplay = function (e, id) {
+        var tag = e.currentTarget;
+        tag.classList.toggle("active");
+        if (!tag.className.includes('active')) {
+            tag.nextElementSibling.remove();
+        } else {
+            var walk = my.walks.getEvent(id);
+            if (walk !== null) {
+                walk.walkDetailsDisplay(tag);
+            } else {
+                alert("Walk not found - program error, please report issue to the webmaster");
+            }
+        }
+    };
+    return my;
+}
+());

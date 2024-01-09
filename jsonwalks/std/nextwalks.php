@@ -12,7 +12,7 @@ class RJsonwalksStdNextwalks extends RJsonwalksStdSimplelist {
 
     public $walkClass = "nextwalk";
     public $feedClass = "walksfeed"; // not used?
-    private $listFormat = ["{gradeimg}","{dowddmm}",
+    private $listFormat = ["{gradeimg}", "{dowddmm}",
         "{,title}", "{,distance}"];
     private $nowalks = 5;
     private $titles = array();
@@ -27,11 +27,12 @@ class RJsonwalksStdNextwalks extends RJsonwalksStdSimplelist {
         $this->nowalks = $no;
     }
 
-    public function appendWalkTitle($group, $title)
-    {
+    public function appendWalkTitle($group, $title) {
         // Remove the old entry if it already exists
         $group = strtoupper($group);
-        if (isset($this->titles[$group])) unset($this->titles[$group]);
+        if (isset($this->titles[$group])) {
+            unset($this->titles[$group]);
+        }
         $this->titles[$group] = $title;
     }
 

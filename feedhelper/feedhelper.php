@@ -25,7 +25,7 @@ class RFeedhelper {
 
     public function __construct($cacheLocation, $cacheTime) {
         $this->cacheTime = $cacheTime * 60; // convert to seconds
-        $this->cacheFolderPath = JPATH_SITE . DS . $cacheLocation;
+        $this->cacheFolderPath = JPATH_SITE . DIRECTORY_SEPARATOR . $cacheLocation;
         if (isset($cacheLocation)) {
             $this->createCacheFolder();
         } else {

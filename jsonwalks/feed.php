@@ -56,10 +56,10 @@ class RJsonwalksFeed {
         }
     }
 
-    private function startsWith($string, $startString) {
-        $len = strlen($startString);
-        return (substr($string, 0, $len) === $startString);
-    }
+//    private function startsWith($string, $startString) {
+//        $len = strlen($startString);
+//        return (substr($string, 0, $len) === $startString);
+//    }
 
     public function setNewWalks($days) {
         $this->walks->setNewWalks($days);
@@ -67,7 +67,7 @@ class RJsonwalksFeed {
 
     public function setDisplayLimit($no) {
         $app = JFactory::getApplication();
-        $app->enqueueMessage('setDisplayLimit is no longer supported - please use RJsonwalksStdDisplay', 'error');
+        $app->enqueueMessage('WEBMASTER: $feed->setDisplayLimit is no longer supported', 'error');
     }
 
     public function filterCancelled() {
@@ -84,7 +84,7 @@ class RJsonwalksFeed {
 
     public function filterDistanceFrom($easting, $northing, $distanceKm) {
         $app = JFactory::getApplication();
-        $app->enqueueMessage('filterDistanceFrom no longer supported', 'error');
+        $app->enqueueMessage('WEBMASTER: \$feed->filterDistanceFrom no longer supported', 'error');
         //   $this->walks->filterDistanceFrom($easting, $northing, $distanceKm);
     }
 
@@ -97,7 +97,16 @@ class RJsonwalksFeed {
     }
 
     public function filterStrands($filter) {
-        $this->walks->filterStrands($filter);
+        $app = JFactory::getApplication();
+        $app->enqueueMessage("WEBMASTER: \$feed->filterStrands() is no longer supported", 'error');
+    }
+
+    public function filterEvents() {
+        $this->walks->filterEvents();
+    }
+
+    public function filterWalks() {
+        $this->walks->filterWalks();
     }
 
     public function filterTitle($filter, $option = 'remove') {
@@ -126,11 +135,13 @@ class RJsonwalksFeed {
 
     public function filterDateRange($datefrom, $dateto) {
         if (!is_a($datefrom, 'DateTime')) {
-            echo "filterDateRange: first parameter is NOT Datetime";
+            $app = JFactory::getApplication();
+            $app->enqueueMessage("feed->filterDateRange: first parameter is NOT Datetime", 'error');
             return;
         }
         if (!is_a($dateto, 'DateTime')) {
-            echo "filterDateRange: second parameter is NOT Datetime";
+            $app = JFactory::getApplication();
+            $app->enqueueMessage("feed->filterDateRange: second parameter is NOT Datetime", 'error');
             return;
         }
         $dateto->setTime(0, 0, 0);
@@ -147,7 +158,6 @@ class RJsonwalksFeed {
     }
 
     public function noWalks($no) {
-        // deprecated
         $this->limitNumberWalks($no);
     }
 
@@ -241,6 +251,49 @@ class RJsonwalksFeed {
         if ($filter->filterstrand !== '') {
             $this->filterStrands($filter->filterstrand);
         }
+    }
+
+    // function used to test filters on local PC
+    public function testFilters() {
+        $a = "BREAK HERE";
+        // uncomment the filter you wish to test
+        //    $this->setNewWalks(10); // Sets the number of days that a walk is considered to be 'new' after it has been published or updated
+        //   $this->noWalks(5); // remove any walks above this number, the oldest walks are removed
+
+        $groups = ["de01", "de02"];       // removes any walks for groups not in the list
+        //    $this->filterGroups($groups);  // removes any walks for groups not in the list
+
+        $dow = ["Saturday", "Sunday"];   // removes any walks held on days not in the list
+        //    $this->filterDayofweek($dow); // removes any walks held on days not in the list
+        //    $this->filterCancelled(); // removes walks that have been cancelled  
+        //    $this->filterTitle('filter', 'remove'); // remove or keep walks whose title is equal to filter, option='remove' or 'keep'.
+        //    $this->filterTitleContains('filter', 'keep'); // remove or keep walks whose title contains filter, option='remove' or 'keep'.
+
+        $grades = ['Leisurely', 'Technical'];   // set up an array contain one or more national walk grades from the list Easy Access, Easy, Leisurely, Moderate, Strenuous ,Technical
+        //    $this->filterNationalGrade($grades); // remove walks whose grades are not in the list.
+        //    filter by length of walk
+        //    $this->filterWalksDistance(5.5,17);
+// filter feed by dates
+        $datefrom = new DateTime('2023-05-01'); // set start date
+        $dateto = new DateTime('2024-02-11');  // set end date
+        //    $this->filterDateRange($datefrom, $dateto);  // remove walks outside date range
+// or filter feed from date and date interval
+        $datefrom = new DateTime(); // set date to today
+        $dateto = new DateTime(); // set date to today
+        $dateto->add(new DateInterval('P1M')); // add one month, 'P3M' is 3 months, 'P30D' is 30 days
+        //    $this->filterDateRange($datefrom, $dateto);
+// filter by distance from a location
+        $lat = 5.3;
+        $lon = 1.2;
+        $distanceKm = 10000;
+        //   $this->filterDistanceFromLatLong($lat, $lon, $distanceKm);
+// filter/remove events
+        //   $this->filterEvents();
+// filter/remove walks
+        //    $this->filterWalks();
+// NO LONGER SUPPORTED
+        //   $this->filterStrands("strand"); // NO LONGER SUPPORTED
+        //   $this->setDisplayLimit(60);    // NO LONGER SUPPORTED
     }
 
 }
