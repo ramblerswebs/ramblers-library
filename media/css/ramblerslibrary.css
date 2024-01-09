@@ -872,6 +872,7 @@ details.ra-walksfilter summary{
     padding:8px;
     height:25px;
     float: right;
+    list-style-type: none;
 }
 details.ra-walksfilter summary::before {
     vertical-align:middle;
