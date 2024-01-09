@@ -70,8 +70,8 @@ class RJsonwalksWalk implements JsonSerializable {
         $this->contacts->addItem($contact);
     }
 
-    public function setMedia($media) {
-        $this->media = $media;
+    public function addMedia($media) {
+        array_push($this->media, $media);
     }
 
     public function setFlags($flags) {
@@ -148,12 +148,13 @@ class RJsonwalksWalk implements JsonSerializable {
         }
         return $result;
     }
-    public function flagsExists($flags){
-        $result=[];
+
+    public function flagsExists($flags) {
+        $result = [];
         foreach ($flags as $item) {
-             $result[]=  $this->flags->flagExists($item);
+            $result[] = $this->flags->flagExists($item);
         }
-       return $result;
+        return $result;
     }
 
     public function filterDateRange($fromdate, $todate) {
@@ -507,13 +508,13 @@ class RJsonwalksWalk implements JsonSerializable {
             case "{mediathumbr}":
                 $out = '';
                 if (count($this->media) > 0) {
-                    $out = "<img class='mediathumbr' src='" . $this->media[0]->styles[1]->url . "' >";
+                    $out = "<img class='mediathumbr' src='" . $this->media[0]->thumb . "' alt='" . $this->media[0]->alt . "'>";
                 }
                 break;
             case "{mediathumbl}":
                 $out = '';
                 if (count($this->media) > 0) {
-                    $out = "<img class='mediathumbl' src='" . $this->media[0]->styles[1]->url . "' >";
+                    $out = "<img class='mediathumbl' src='" . $this->media[0]->thumb . "' alt='" . $this->media[0]->alt . "'>";
                 }
                 break;
 
@@ -658,6 +659,5 @@ class RJsonwalksWalk implements JsonSerializable {
             'media' => $this->media
         ];
     }
-
 
 }

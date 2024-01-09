@@ -1421,7 +1421,7 @@ ra.event.timelocation = function () {
                 out += "<li>" + item.type + " " + item.number + ": " + item.title + " (1:" + item.scale + ")</li>";
             });
             out += "</ul>";
-            info.innerHTML = out+"<div class='location notes'>Note: all OS map information is unofficial, please check before using this information.</div>";
+            info.innerHTML = out + "<div class='location notes'>Note: all OS map information is unofficial, please check before using this information.</div>";
         }
     };
     this._addLocationMarker = function (layer, map) {
@@ -1756,20 +1756,22 @@ ra.event.flags = function () {
 };
 ra.event.media = function () {
     this.alt = "";
-    this.url = "";
+    this.thumb = "";
+    this.medium = "";
     this.convertPHPMedia = function (phpmedia) {
         this.alt = phpmedia.alt;
-        this.url = phpmedia.styles[2].url;
+        this.thumb = phpmedia.thumb;
+        this.medium = phpmedia.medium;
         return this;
     };
     this.getValue = function ($option) {
         var out = "";
         switch ($option) {
             case "{thumbr}":
-                out = "<img class='mediathumbr' src='" + this.url + "' >";
+                out = "<img class='mediathumbr' src='" + this.thumb + "' alt='" + this.alt + "'>";
                 break;
             case "{thumbl}":
-                out = "<img class='mediathumbl' src='" + this.url + "' >";
+                out = "<img class='mediathumbl' src='" + this.thumb + "' alt='" + this.alt + "'>";
                 break;
         }
         return out;
@@ -1778,8 +1780,7 @@ ra.event.media = function () {
         return "";
     };
     this.getHtmlSection = function () {
-        var caption = "<div>" + this.alt + "</div>";
-        var $html = "<div class='walk-image' onclick='ra.html.displayInModal(this)'><div class='mediapopup'><img class='walkmedia' src='" + this.url + "'  >" + caption + "</div></div>";
+        var $html = "<div class='walk-image' onclick='ra.html.displayInModal(this)'><div class='mediapopup'><img class='walkmedia' src='" + this.medium + "' alt='" + this.alt + "' >" + "</div></div>";
         return $html;
     };
 };

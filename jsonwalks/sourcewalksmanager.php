@@ -265,8 +265,20 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
         }
 
         // Add Media
-        if ($item->media) {
-            $walk->setMedia($item->media);
+        if ($item->media !== null) {
+            foreach ($item->media as $item) {
+                $alt = $item->alt;
+                foreach ($item->styles as $img) {
+                    if ($img->style === "thumbnail") {
+                        $thumb = $img->url;
+                    }
+                    if ($img->style === "medium") {
+                        $medium = $img->url;
+                    }
+                }
+                $newmedia = new RJsonwalksWalkMediaitem($alt, $thumb, $medium);
+                $walk->addMedia($newmedia);
+            }
         }
     }
 

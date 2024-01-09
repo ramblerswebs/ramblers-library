@@ -26,7 +26,7 @@ class RJsonwalksWalkTimelocation implements JsonSerializable {
     private $postcodeLatitude = 0;
     private $postcodeLongitude = 0;
     private $travel = "";
-    private $osmaps =null;
+    private $osmaps = null;
 
     const LOCATION_MEETING = "Meeting";
     const LOCATION_START = "Start";
@@ -146,6 +146,8 @@ class RJsonwalksWalkTimelocation implements JsonSerializable {
                 return $this->type;
             case "time":
                 return $this->time;
+            case "lat/long":
+                return  $this->latitude . ',' . $this->longitude ;
             case "postcode":
                 return $this->postcode;
             case "textTime":

@@ -13,7 +13,7 @@
 // no direct access
 defined("_JEXEC") or die("Restricted access");
 
-class RJsonwalksStdWalksprinted extends RJsonwalksDisplaybase {
+class RJsonwalksNsWalksprinted extends RJsonwalksDisplaybase {
 
     private $current_month;
     private $filename;
@@ -60,11 +60,11 @@ class RJsonwalksStdWalksprinted extends RJsonwalksDisplaybase {
                     $lastValue = $thismonth;
                     $line = "<h2>" . $thismonth . "</h2>" . PHP_EOL;
                     fwrite($this->handle, $line);
-                    echo $line;
+                 //   echo $line;
                 }
                 $line = "<p>" . $this->displayWalk($walk) . "</p>";
                 fwrite($this->handle, $line);
-                echo $line;
+              //  echo $line;
             }
 
 

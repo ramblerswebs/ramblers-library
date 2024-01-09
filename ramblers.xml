@@ -2,13 +2,13 @@
 <extension type="library"  version="3.0" client="site" method="upgrade">
     <name>RamblersLibrary</name> 
     <libraryname>ramblers</libraryname>
-    <author>Keith Grimes, Ramblers Webs</author>
-    <creationDate>28 September 2023</creationDate>
-    <copyright>Copyright (C) 2016/2023</copyright>
+    <author>Chris Vaughan, Ramblers Webs</author>
+    <creationDate>10 January 2024</creationDate>
+    <copyright>Copyright (C) 2016/2024</copyright>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>https://github.com/ramblerswebs/ramblers-library/</authorUrl>
-    <version>4.5.18</version>
+    <version>4.6.0</version>
     <description>Ramblers Library to provide diplay walks, GPX routes etc</description>
     
     <files>

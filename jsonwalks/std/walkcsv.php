@@ -56,21 +56,21 @@ class RJsonwalksStdWalkcsv extends RJsonwalksDisplaybase {
         $array[] = $walk->getIntValue("contacts", "contactName");
         $array[] = $walk->getIntValue("walks", "shape");
         $array[] = $walk->getIntValue("start", "textTime");
+        $array[] = $walk->getIntValue("start", "lat/long");
         $array[] = ""; // latitude/longitude
-        $array[] = $walk->getWalkValue("{startPC}");
-        $array[] = $walk->getWalkValue("{startGR}");
+        $array[] = "";
         $array[] = $walk->getWalkValue("{startPlace}");
 
         $array[] = $walk->getIntValue("meeting", "textTime");
+        $array[] = $walk->getIntValue("meeting", "lat/long");
         $array[] = ""; // latitude/longitude
-        $array[] = $walk->getWalkValue("{meetPC}");
-        $array[] = $walk->getWalkValue("{meetGR}");
+        $array[] = "";
         $array[] = $walk->getWalkValue("{meetPlace}");
 
         $array[] = $walk->getintValue("finish", "textTime");
+        $array[] = $walk->getIntValue("finish", "lat/long");
         $array[] = ""; // latitude/longitude
-        $array[] = $walk->getWalkValue("{finishPC}");
-        $array[] = $walk->getWalkValue("{finishGR}");
+        $array[] = "";
         $array[] = $walk->getWalkValue("{finishPlace}");
 
         $array[] = $walk->getintValue("walks", "nationalGrade");
