@@ -161,7 +161,7 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem.group{
 }
 
 div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
-    color: var(--midgrey);
+    color: #bobobo;
 }
 
 /* Popups */
@@ -911,7 +911,7 @@ div.ra-filteritem{
     border:1px solid var(--midgrey);
     background-color: white;
     color:black;
-    width: max-content;
+    width: fit-content;
     line-height: 1;
 
 }
