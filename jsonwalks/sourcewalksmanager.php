@@ -224,7 +224,7 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
                 break;
             case TypeOfWalk::GroupEvent:
                 // add dummy walk
-                $shape = "circular";
+                $shape = "Event";
                 $nationalGrade = 'Event';
                 $localGrade = "";
                 $distanceKm = 0;

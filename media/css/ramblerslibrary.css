@@ -56,7 +56,7 @@ span.walksummary img{
     padding: 10px;
     border-width: 2px;
     border-style: solid;
-    border-color: #69897E
+    border-color: var(--cancelled);
 }
 .cancelledWalks h3 {
     color:var(--cancelled);

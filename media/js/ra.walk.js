@@ -882,6 +882,7 @@ ra.event.admin = function () {
 ra.event.basics = function () {
     this.walkDate = null;
     this.finishDate = null;
+    this.multiDate = false;
     this.title = null;
     this.description = '';
     this.descriptionHtml = '';
@@ -894,6 +895,7 @@ ra.event.basics = function () {
         this.additionalNotes = ra.convert_mails(basics.additionalNotes);
         this.walkDate = ra.date.getDateTime(basics.walkDate.date);
         if (basics.finishDate !== null) {
+            this.multiDate = basics.multiDate;
             this.finishDate = ra.date.getDateTime(basics.finishDate.date);
         }
     };
@@ -944,7 +946,11 @@ ra.event.basics = function () {
                 if (this.finishDate === null) {
                     return "";
                 }
-                return ra.time.HHMMshort(this.finishDate);
+                if (this.multiDate) {
+                    return ra.time.HHMMshort(this.finishDate) + " " + ra.date.dowdd(this.finishDate);
+                } else {
+                    return ra.time.HHMMshort(this.finishDate);
+                }
         }
         console.log("Invalid internal request: " + $option);
         return "";

@@ -10,6 +10,7 @@ class RJsonwalksWalkBasics implements JsonSerializable {
     private $admin;
     private $walkDate;               // date of the walk as a datetime object
     private $finishDate;             // End/Finish date time
+    private $multiDate = false;      // is item a multi date event true/false
     private $dayofweek;              // day of the week as text
     private $day;                    // the day number as text
     private $month;                  // the month as text  
@@ -24,6 +25,7 @@ class RJsonwalksWalkBasics implements JsonSerializable {
         $this->admin = $admin;
         $this->walkDate = $walkDate;
         $this->finishDate = $finishDate;
+        $this->multiDate = $this->walkDate->format('Y-m-d') !== $this->finishDate->format('Y-m-d');
         $this->title = RHtml::removeNonBasicTags($title);
         $desc = str_replace(array("\r\n", "\n", "\r"), '', $descriptionHtml);  // CRLF not needed in Html and srews up ICS output
         $this->descriptionHtml = trim(RHtml::convert_mails($desc)); // change email addresses so do not have a link
@@ -151,6 +153,7 @@ class RJsonwalksWalkBasics implements JsonSerializable {
         return [
             'walkDate' => $this->walkDate,
             'finishDate' => $this->finishDate,
+            'multiDate' => $this->multiDate,
             'title' => $this->title,
             'description' => $this->description,
             'descriptionHtml' => $this->descriptionHtml,

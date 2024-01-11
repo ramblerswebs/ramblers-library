@@ -23,7 +23,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         displayStartTime: true,
         displayStartDescription: true,
         displayDetailsPrompt: true,
-        tabOrder: ["Grades", "Table", "List", "Calendar", "Map", "Contacts"],
+        tabOrder: ["Grades", "Table", "List", "Calendar", "Map"],
         tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{title}","{mediathumbr}" ]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
         listFormat: ["{dowdd}", "{,meet}", "{,start}", "{,title}", "{,distance}", "{,contactname}", "{,telephone}"],
         gradesFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
