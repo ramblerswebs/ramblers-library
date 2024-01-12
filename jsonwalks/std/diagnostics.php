@@ -5,7 +5,7 @@ defined("_JEXEC") or die("Restricted access");
 class RJsonwalksStdDiagnostics extends RJsonwalksDisplaybase {
 
     private $options = ["{lf}", "<b>ADMIN</b>", "{group}",
-        "<b>BASICS</b>", "{dowShortdd}", "{dowShortddmm}", "{dowShortddyyyy}",
+        "<b>BASICS</b>", "{dowShortdd}", "{dowShortddmm}",
         "{dowShortddmmyyyy}", "{dowdd}", "{dowddmm}", "{dowddmmyyyy}",
         "{title}", "{description}", "{additionalNotes}",
         "<b>MEETING</b>", "{meet}", "{meetTime}", "{meetPlace}", "{meetGR}", "{meetPC}", "{meetw3w}", "{meetOSMap}", "{meetDirections}",

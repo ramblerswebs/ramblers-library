@@ -113,10 +113,10 @@ ra.event = function () {
     this.contacts = new ra.event.items();
     this.media = new ra.event.items();
     this.flags = new ra.event.flags();
-    this.mapSummary = ["{dowddmm}", "{;title}", "{,distance}"];
-    this.mapLinks = ["{startOSMap}", "{startDirections}"];
-    this.mapGrade = ["{mapGrade}"];
-    this.mapTitle = ["{dowShortddmm}", "{distance}"];
+    var mapSummary = ["{dowddmm}", "{;title}", "{,distance}"];
+    var mapLinks = ["{startOSMap}", "{startDirections}"];
+    var mapGrade = ["{mapGrade}"];
+    var mapTitle = ["{dowShortddmm}", "{distance}"];
     this.map = null;
     let maplayer = null;
     this.isCancelled = function () {
@@ -176,8 +176,7 @@ ra.event = function () {
             "<b>MEDIA</b>", "{mediathumbr}",
             "{mediathumbl}"];
         var intValues = {admin: [],
-            basics: ["displayMonth",
-                "_finishTime"],
+            basics: ["dayofweek", "displayMonth"],
             walks: ["_filterDistance", "_nationalGradeCSS", "_nationalGrade",
                 "_icsWalkDuration", "_icsWalkGrade", "_icsWalkDistance"],
             meeting: ["_latitude", "_longitude", "_icsDescription", "_icsTime"],
@@ -317,6 +316,7 @@ ra.event = function () {
             case "{title}":
             case "{description}":
             case "{additionalNotes}":
+            case "{finishTime}":
                 out = this.basics.getValue($option);
                 break;
             case "{meet}":
@@ -342,9 +342,6 @@ ra.event = function () {
             case "{startOSMap}":
             case "{startDirections}":
                 out = this.start.getValue($option.replace('start', ''));
-                break;
-            case "{finishTime}":
-                out = this.finish.getValue($option.replace('finish', ''));
                 break;
             case "{distance}":
             case "{distanceMi}":
@@ -456,8 +453,13 @@ ra.event = function () {
         var valueSet = new ra.filter.valueSet();
         valueSet.add(new ra.filter.value("idDate", this.basics.walkDate));
         valueSet.add(new ra.filter.value("idType", this.admin.eventType));
-        var dow = ra.date.dow(this.basics.walkDate);
-        valueSet.add(new ra.filter.value("idDOW", dow));
+        //  var dow = ra.date.dow(this.basics.walkDate);
+        //  valueSet.add(new ra.filter.value("idDOW", dow));
+
+        var dsow = this.getIntValue("basics", "filterDaysofweek");
+        dsow.forEach(dow => {
+            valueSet.add(new ra.filter.value("idDOW", dow));
+        });
         var grade = this.getIntValue("walks", "_nationalGrade");
         valueSet.add(new ra.filter.value("idGrade", grade));
         var status = this.admin.status;
@@ -626,7 +628,7 @@ ra.event = function () {
         if (time !== "") {
             $html += "<div><b>Start time " + time + "</b></div>";
         }
-        time = this.getIntValue("basics", "_finishTime");
+        time = this.basics.getValue("{finishTime}");
         if (time !== "") {
             $html += "<div><b>Estimated finish time " + time + "</b></div>";
         }
@@ -746,10 +748,10 @@ ra.event = function () {
             var id = this.admin.id;
             var isCancelled = this.isCancelled();
             var isEvent = this.eventType === "Event";
-            var summary = this.getEventValues(this.mapSummary, false);
-            var link = this.getEventValues(this.mapLinks, false);
-            var grade = this.getEventValues(this.mapGrade, false);
-            var title = this.getEventValues(this.mapTitle, false);
+            var summary = this.getEventValues(mapSummary, false);
+            var link = this.getEventValues(mapLinks, false);
+            var grade = this.getEventValues(mapGrade, false);
+            var title = this.getEventValues(mapTitle, false);
             loc.addWalkMarker(cluster, walkClass, id, isEvent, isCancelled, summary, link, grade, title);
         });
     };
@@ -903,25 +905,6 @@ ra.event.basics = function () {
         var BR = '<br/>';
         var out = "";
         switch ($option) {
-            case "{dowShortdd}":
-                out = "<b>" + ra.date.dowShortdd(this.walkDate) + "</b>";
-                break;
-            case "{dowShortddmm}":
-                out = "<b>" + ra.date.dowShortddmm(this.walkDate) + this.addYear() + "</b>";
-                break;
-            case "{dowShortddyyyy}": // published in error
-            case "{dowShortddmmyyyy}":
-                out = "<b>" + ra.date.dowShortddmmyyyy(this.walkDate) + "</b>";
-                break;
-            case "{dowdd}":
-                out = "<b>" + ra.date.dowdd(this.walkDate) + "</b>";
-                break;
-            case "{dowddmm}":
-                out = "<b>" + ra.date.dowddmm(this.walkDate) + this.addYear() + "</b>";
-                break;
-            case "{dowddmmyyyy}":
-                out = "<b>" + ra.date.dowddmmyyyy(this.walkDate) + "</b>";
-                break;
             case "{title}":
                 out = "<b>" + this.title + "</b>";
                 break;
@@ -931,10 +914,53 @@ ra.event.basics = function () {
             case "{additionalNotes}":
                 out = this.additionalNotes;
                 break;
+            case "{finishTime}":
+                if (this.finishDate !== null) {
+                    out = ra.time.HHMMshort(this.finishDate);
+                    if (this.multiDate) {
+                        out = out + " " + ra.date.dowdd(this.finishDate);
+                    }
+                }
+                break;
+            case "{dowShortdd}":
+                out = this.dateRange(ra.date.dowShortdd);
+                break;
+            case "{dowShortddmm}":
+                out = this.dateRange(ra.date.dowShortddmm, true);
+                //out = "<b>" + ra.date.dowShortddmm(this.walkDate) + this.addYear() + "</b>";
+                break;
+            case "{dowShortddyyyy}": // published in error
+            case "{dowShortddmmyyyy}":
+                out = this.dateRange(ra.date.dowShortddmmyyyy);
+                //out = "<b>" + ra.date.dowShortddmmyyyy(this.walkDate) + "</b>";
+                break;
+            case "{dowdd}":
+                out = this.dateRange(ra.date.dowdd);
+                //out = "<b>" + ra.date.dowdd(this.walkDate) + "</b>";
+                break;
+            case "{dowddmm}":
+                out = this.dateRange(ra.date.dowddmm, true);
+                //out = "<b>" + ra.date.dowddmm(this.walkDate) + this.addYear() + "</b>";
+                break;
+            case "{dowddmmyyyy}":
+                out = this.dateRange(ra.date.dowddmmyyyy);
+                //out = "<b>" + ra.date.dowddmmyyyy(this.walkDate) + "</b>";
+                break;
+
             default:
         }
-
         return out;
+        ;
+    };
+    this.dateRange = function (func, addYear = false) {
+        var out = func(this.walkDate);
+        if (addYear) {
+            out = out + this.addYear();
+        }
+        if (this.multiDate) {
+            out = out + " - " + func(this.finishDate);
+        }
+        return  "<b>" + out + "</b>";
     };
     this.getIntValue = function ($option) {
         switch ($option) {
@@ -942,15 +968,17 @@ ra.event.basics = function () {
                 return ra.date.dow(this.walkDate);
             case "displayMonth":
                 return ra.date.month(this.walkDate) + this.addYear();
-            case "_finishTime":
-                if (this.finishDate === null) {
-                    return "";
-                }
+            case "filterDaysofweek":
+                var dsow = [];
+                dsow.push(ra.date.dow(this.walkDate));
                 if (this.multiDate) {
-                    return ra.time.HHMMshort(this.finishDate) + " " + ra.date.dowdd(this.finishDate);
-                } else {
-                    return ra.time.HHMMshort(this.finishDate);
+                    var endDate = this.walkDate;
+                    do {
+                        endDate = ra.date.addDays(endDate, 1);
+                        dsow.push(ra.date.dow(endDate));
+                    } while (ra.date.YYYYMMDD(this.finishDate) > ra.date.YYYYMMDD(endDate));
                 }
+                return dsow;
         }
         console.log("Invalid internal request: " + $option);
         return "";

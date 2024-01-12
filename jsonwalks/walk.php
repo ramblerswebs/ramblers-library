@@ -448,6 +448,7 @@ class RJsonwalksWalk implements JsonSerializable {
             case "{title}":
             case "{description}":
             case "{additionalNotes}":
+            case "{finishTime}":
                 $out = $this->basics->getValue($option);
                 break;
             case "{meet}":
@@ -473,7 +474,6 @@ class RJsonwalksWalk implements JsonSerializable {
             case "{finishPlace}":
             case "{finishGR}":
             case "{finishPC}":
-            case "{finishTime}":
                 $out = $this->finish->getValue(str_replace("finish", "", $option));
                 break;
             case "{difficulty}":

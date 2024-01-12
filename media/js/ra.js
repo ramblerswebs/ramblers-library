@@ -555,6 +555,7 @@ ra.date = (function () {
                 return "th";
         }
     };
+    // not sure the following gives correct value!
     date.periodInDays = function (date1, date2) {
         var d1 = date.getDateTime(date1);
         var d2 = date.getDateTime(date2);

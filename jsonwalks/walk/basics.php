@@ -9,7 +9,7 @@ class RJsonwalksWalkBasics implements JsonSerializable {
 
     private $admin;
     private $walkDate;               // date of the walk as a datetime object
-    private $finishDate;             // End/Finish date time
+    private $finishDate;             // End/Finish date time or NULL
     private $multiDate = false;      // is item a multi date event true/false
     private $dayofweek;              // day of the week as text
     private $day;                    // the day number as text
@@ -25,7 +25,9 @@ class RJsonwalksWalkBasics implements JsonSerializable {
         $this->admin = $admin;
         $this->walkDate = $walkDate;
         $this->finishDate = $finishDate;
-        $this->multiDate = $this->walkDate->format('Y-m-d') !== $this->finishDate->format('Y-m-d');
+        if ($finishDate !== null) {
+            $this->multiDate = $this->walkDate->format('Y-m-d') !== $this->finishDate->format('Y-m-d');
+        }
         $this->title = RHtml::removeNonBasicTags($title);
         $desc = str_replace(array("\r\n", "\n", "\r"), '', $descriptionHtml);  // CRLF not needed in Html and srews up ICS output
         $this->descriptionHtml = trim(RHtml::convert_mails($desc)); // change email addresses so do not have a link
@@ -44,24 +46,6 @@ class RJsonwalksWalkBasics implements JsonSerializable {
     public function getValue($option) {
         $out = "";
         switch ($option) {
-            case "{dowShortdd}":
-                $out = "<b>" . $this->walkDate->format('D, jS ') . "</b>";
-                break;
-            case "{dowShortddmm}":
-                $out = "<b>" . $this->walkDate->format('D, jS F') . $this->addYear() . "</b>";
-                break;
-            case "{dowShortddmmyyyy}":
-                $out = "<b>" . $this->walkDate->format('D, jS F Y') . "</b>";
-                break;
-            case "{dowdd}":
-                $out = "<b>" . $this->walkDate->format('l, jS') . "</b>";
-                break;
-            case "{dowddmm}":
-                $out = "<b>" . $this->walkDate->format('l, jS F') . $this->addYear() . "</b>";
-                break;
-            case "{dowddmmyyyy}":
-                $out = "<b>" . $this->walkDate->format('l, jS F Y') . "</b>";
-                break;
             case "{title}":
                 $out = $this->title;
                 $out = "<b>" . $out . "</b>";
@@ -72,8 +56,49 @@ class RJsonwalksWalkBasics implements JsonSerializable {
             case "{additionalNotes}":
                 $out = $this->additionalNotes;
                 break;
+            case "{finishTime}":
+                if ($this->finishDate !== null) {
+                    $timeHHMM = $this->finishDate->format('g:ia');
+                    $out = str_replace(":00", "", $timeHHMM);
+                }
+                break;
+            case "{dowShortdd}":
+                //  $out = "<b>" . $this->walkDate->format('D, jS ') . "</b>";
+                $out = $this->dateRange('D, jS ');
+                break;
+            case "{dowShortddmm}":
+                //  $out = "<b>" . $this->walkDate->format('D, jS F') . $this->addYear() . "</b>";
+                $out = $this->dateRange('D, jS F', true);
+                break;
+            case "{dowShortddmmyyyy}":
+                //  $out = "<b>" . $this->walkDate->format('D, jS F Y') . "</b>";
+                $out = $this->dateRange('D, jS F Y');
+                break;
+            case "{dowdd}":
+                //  $out = "<b>" . $this->walkDate->format('l, jS') . "</b>";
+                $out = $this->dateRange('l, jS');
+                break;
+            case "{dowddmm}":
+                // $out = "<b>" . $this->walkDate->format('l, jS F') . $this->addYear() . "</b>";
+                $out = $this->dateRange('l, jS F', true);
+                break;
+            case "{dowddmmyyyy}":
+                // $out = "<b>" . $this->walkDate->format('l, jS F Y') . "</b>";
+                $out = $this->dateRange('l, jS F Y');
+                break;
         }
         return $out;
+    }
+
+    private function dateRange($format, $addYear = false) {
+        $out = $this->walkDate->format($format);
+        if ($addYear) {
+            $out = $out . $this->addYear();
+        }
+        if ($this->multiDate) {
+            $out = $out . " - " . $this->finishDate->format($format);
+        }
+        return "<b>" . $out . "</b>";
     }
 
     public function getIntValue($option) {
