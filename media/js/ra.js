@@ -563,6 +563,11 @@ ra.date = (function () {
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays;
     };
+    date.addDays = function (date, days) {
+        var result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
+    };
     date.secondsSinceMidnight = function (d) {
         var e = new Date(d);
         return d - e.setHours(0, 0, 0, 0);
