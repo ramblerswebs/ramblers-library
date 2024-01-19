@@ -1322,7 +1322,7 @@ ra.event.timelocation = function () {
                 break;
             case "Start":
                 display.title = "Start place";
-                display.notes = "Start times are often when the group will start walking rather than when to get there.";
+                display.notes = "Start time is when the walk leaves. Please arrive earlier to ensure you are ready for the start";
                 break;
             case "Rough":
                 display.title = "<b>No start place - Rough location only</b>";

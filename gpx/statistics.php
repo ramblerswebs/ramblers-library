@@ -25,6 +25,7 @@ class RGpxStatistics {
         }
         $lastModFile = $this->latestFile();
         if ($lastModFile !== self::JSONFILE) {
+            // process files and create statistics file
             $this->jsonfile = new RGpxJsonlog($this->folder . "/" . self::JSONFILE);
             $this->processFolder();
             $this->jsonfile->writeFile();
@@ -55,6 +56,10 @@ class RGpxStatistics {
 
     private function processFolder() {
         $files = scandir($this->folder, SCANDIR_SORT_ASCENDING);
+        if ($files === false) {
+            echo "<p>Processing GPX files: Error access folder" . $this->folder . "</p>";
+            $files = [];
+        }
         // for each GPX file
         //       get stats and create new record
         echo "<h2>Processing GPX files</h2>";
@@ -63,7 +68,7 @@ class RGpxStatistics {
         echo "<table>";
         echo RHtml::addTableHeader(['Filename/<b>Title</b>', 'Author', 'Date', 'Longitude', 'Latitude', 'Distance', 'Elevation Gain', 'min Alt', 'max Alt', 'Tracks,Segments', 'Routes']);
         foreach ($files as $file) {
-            if ($this->endsWith($file, ".gpx") || $this->endsWith($file, ".GPX")) {
+            if ($this->endsWith(strtolower($file), ".gpx")) {
                 $stat = $this->processGPXFile($file);
                 $this->jsonfile->addItem("id" . $stat->id, $stat);
             }
