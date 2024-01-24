@@ -1501,7 +1501,6 @@ ra.event.timelocation = function () {
                 alert("Error 0001");
         }
 
-
         var marker = L.marker([this.latitude, this.longitude], {icon: icon, title: title, riseOnHover: true}).addTo(layer);
         marker.bindPopup(popup, {offset: popupoffset, autoClose: false}).closePopup();
         var openPopups = true;
@@ -1510,10 +1509,6 @@ ra.event.timelocation = function () {
                 marker.openPopup();
             }
             openPopups = false;
-        });
-        map.on("mouseout", function (event) {
-            marker.closePopup();
-            openPopups = true;
         });
     };
     this._addPostcodeMarker = function (layer) {
