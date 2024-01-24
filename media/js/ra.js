@@ -555,12 +555,18 @@ ra.date = (function () {
                 return "th";
         }
     };
+    // not sure the following gives correct value!
     date.periodInDays = function (date1, date2) {
         var d1 = date.getDateTime(date1);
         var d2 = date.getDateTime(date2);
         const diffTime = Math.abs(d1 - d2);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays;
+    };
+    date.addDays = function (date, days) {
+        var result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
     };
     date.secondsSinceMidnight = function (d) {
         var e = new Date(d);

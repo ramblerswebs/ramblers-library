@@ -56,7 +56,7 @@ span.walksummary img{
     padding: 10px;
     border-width: 2px;
     border-style: solid;
-    border-color: #69897E
+    border-color: var(--cancelled);
 }
 .cancelledWalks h3 {
     color:var(--cancelled);
@@ -161,7 +161,7 @@ div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem.group{
 }
 
 div.walkstdfulldetails.walkCancelled.stdfulldetails div.walkitem {
-    color: var(--midgrey);
+    color: #b0b0b0;
 }
 
 /* Popups */
@@ -911,7 +911,7 @@ div.ra-filteritem{
     border:1px solid var(--midgrey);
     background-color: white;
     color:black;
-    width: max-content;
+    width: fit-content;
     line-height: 1;
 
 }

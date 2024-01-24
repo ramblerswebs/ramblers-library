@@ -78,15 +78,28 @@ class RJsonwalksWmOrganisation {
                 } else {
                     $groups = json_decode($result);
                     if (json_last_error() === JSON_ERROR_NONE) {
-                        foreach ($groups as $group) {
-                            $code = $group->group_code;
-                            $groupData->$code = $group->date_walks_events_updated;
-                        }
+                        $groups = $this->removeProperties($groups);
                     }
                 }
             }
         }
-        return json_encode($groupData);
+        return json_encode($groups, JSON_PRETTY_PRINT);
+    }
+
+    private function removeProperties($groups) {
+        foreach ($groups as $group) {
+            foreach ($group as $key => $value) {
+                switch ($key) {
+                    case "group_code":
+                    case "name":
+                    case "date_walks_events_updated":
+                        break;
+                    default:
+                        unset($group->$key);
+                }
+            }
+        }
+        return $groups;
     }
 
     private function startsWith($string, $startString) {

@@ -26,6 +26,9 @@ class RJsonwalksWalkWalk implements JsonSerializable {
             case "figure of eight":
                 $this->shape = "Figure of Eight";
                 break;
+           case "event":
+                $this->shape = "";
+                break;
             default:
                 $app = JFactory::getApplication();
                 $app->enqueueMessage("Processing walks - invalid shape: " . $shape, 'Error');

@@ -30,11 +30,11 @@ class RLeafletGpxMaplist extends RLeafletMap {
         };
         $this->data->items = json_decode($items);
         if ($this->displayAsPreviousWalks) {
-            usort($this->data->items, function($a, $b) {
+            usort($this->data->items, function ($a, $b) {
                 return strcmp($a->date, $b->date);
             });
-        }else{
-              usort($this->data->items, function($a, $b) {
+        } else {
+            usort($this->data->items, function ($a, $b) {
                 return strcmp($a->title, $b->title);
             });
         }
@@ -78,7 +78,7 @@ class RLeafletGpxMaplist extends RLeafletMap {
         $document = JFactory::getDocument();
         RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
-         RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js", "text/javascript");
+        RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js", "text/javascript");
     }
 
     private function loggedon() {
@@ -88,16 +88,6 @@ class RLeafletGpxMaplist extends RLeafletMap {
         }
         return false;
     }
-
-//    private function hasDescriptions($items) {
-//        return true;
-//        foreach ($items as $item) {
-//            if ($item->description !== '') {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
     private function downloadState() {
         $state = 0; // no download link

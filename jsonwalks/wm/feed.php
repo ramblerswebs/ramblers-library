@@ -16,6 +16,7 @@ class RJsonwalksWmFeed {
 
     private $cacheFolder = null;
     private $organisation = null;
+    private $method = "time";
 
     public function __construct() {
         $this->cacheFolder = new RJsonwalksWmCachefolder('ra_wm_feed');
@@ -56,12 +57,17 @@ class RJsonwalksWmFeed {
         $debug = false;
         $feedurl = $feedOpts->getFeedURL();
         $cachedWalksFileName = $feedOpts->getCacheFileName("walks.json");
-        $source = $this->organisation->whereToGetWalksFrom($feedOpts);
+        if ($this->method === "time") {
+            $source = $this->whichSource($cachedWalksFileName);
+        } else {
+            $source = $this->organisation->whereToGetWalksFrom($feedOpts);
+        }
+
         if ($debug) {
             $this->debugMsg($feedurl, "Reading data from " . $source);
         }
         if ($source === READSOURCE::CACHE) {
-            $result =  $this->cacheFolder->readFile($cachedWalksFileName);
+            $result = $this->cacheFolder->readFile($cachedWalksFileName);
             if ($result === false) {
                 RJsonwalksWmFileio::errorMsg("Error reading walks from cache: ");
                 $source = READSOURCE::FEED;
@@ -71,7 +77,7 @@ class RJsonwalksWmFeed {
             // read from feed and then cache data
             $result = RJsonwalksWmFileio::readFile($feedurl);
             if ($result === false) { // unable to read feed, try using cache
-                if (file_exists($cachedWalksFileName)) {
+                if ($this->cacheFolder->fileExists($cachedWalksFileName)) {
                     // error msg
                     RJsonwalksWmFileio::errorMsg("Error reading walks from Central Office");
                     $result = RJsonwalksWmFileio::readFile($cachedWalksFileName);
@@ -93,6 +99,20 @@ class RJsonwalksWmFeed {
             return [];
         }
         return $items->data;
+    }
+
+    private function whichSource($cachedWalksFileName) {
+        if ($this->cacheFolder->fileExists($cachedWalksFileName)) {
+            $cachedDate = $this->cacheFolder->lastModified($cachedWalksFileName);
+            if ($cachedDate !== false) {
+                $date = new DateTimeImmutable();
+                $elapsed = $date->getTimestamp() - $cachedDate;
+                if ($elapsed < 60 * 10) {
+                    return READSOURCE::CACHE;
+                }
+            }
+        }
+        return READSOURCE::FEED;
     }
 
     private function convertResults($result, $feedurl) {

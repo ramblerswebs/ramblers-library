@@ -23,8 +23,8 @@ ra.display.walksTabs = function (mapOptions, data) {
         displayStartTime: true,
         displayStartDescription: true,
         displayDetailsPrompt: true,
-        tabOrder: ["Grades", "Table", "List", "Calendar", "Map", "Contacts"],
-        tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{title}","{mediathumbr}" ]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
+        tabOrder: ["Grades", "Table", "List", "Calendar", "Map"],
+        tableFormat: [{"title": "Date", "items": ["{dowddmm}"]}, {"title": "Meet", "items": ["{meet}", "{,meetGR}", "{,meetPC}"]}, {"title": "Start", "items": ["{start}", "{,startGR}", "{,startPC}"]}, {"title": "Title", "items": ["{title}", "{mediathumbr}"]}, {"title": "Difficulty", "items": ["{difficulty+}"]}, {"title": "Contact", "items": ["{contact}"]}],
         listFormat: ["{dowdd}", "{,meet}", "{,start}", "{,title}", "{,distance}", "{,contactname}", "{,telephone}"],
         gradesFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
         calendarFormat: ["{gradeimgMiddle}", "{title}", "{,distance}", ",", " ", "{meetTime}", "{< or >startTime}"],
@@ -339,7 +339,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         $out1 += "<div data-jplist-item >";
         if ($displayMonth) {
-      
+
             $out1 += "<h3>" + $walk.getIntValue("basics", "displayMonth") + "</h3>";
         }
         $out1 += "<div  class='" + $customClass + " walk" + $walk.admin.status + "' >";
@@ -379,7 +379,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         var $customClass = "";
         if ($displayMonth) {
             $out += "<tr data-jplist-item ><td>";
-            $out += "<h3>" +  $walk.getIntValue("basics", "displayMonth") + "</h3>";
+            $out += "<h3>" + $walk.getIntValue("basics", "displayMonth") + "</h3>";
             $out += "</td></tr>";
         }
         if (typeof displayTableRowClass === 'function') {
@@ -453,6 +453,9 @@ ra.display.walksTabs = function (mapOptions, data) {
             var event = {};
             event.id = $walk.admin.id;
             event.start = $walk.basics.walkDate;
+            if ($walk.basics.multiDate) {
+                event.end = $walk.basics.finishDate;
+            }
             event.raContent = '<div><span class="ra wrap">' + $walk.getEventValues($items, false) + '</span></div>';
             event.textColor = '#111111';
             if ($walk.admin.status === 'Cancelled') {
@@ -466,7 +469,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             event.classNames = ['pointer'];
             event.display = 'block';
             //    event.eventContent = {html: '<div class="fc-event-main-frame"><span class="ra wrap">' + $walk.getEventValues( $items, false) + '</span></div>'};
-          //  event.eventContent = {html: '<div class="fc-event-main-frame"><span class="ra wrap">xgbdfhngdnhg</span></div>'};
+            //  event.eventContent = {html: '<div class="fc-event-main-frame"><span class="ra wrap">xgbdfhngdnhg</span></div>'};
             event.eventContent = {html: ''};
             events.push(event);
         });
