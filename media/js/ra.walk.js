@@ -677,7 +677,7 @@ ra.event = function () {
         var $html = "";
         if (this.nationalUrl !== '') {
             $html += "<div><img src=\"" + ra.baseDirectory() + "media/lib_ramblers/images/ralogo.png\" alt=\"Ramblers\" width=\"17\" height=\"17\"> ";
-            $html += "<a href='" + this.admin.nationalUrl + "' target='_blank' >View walk on Ramblers national web site</a></div>";
+            $html += "<a href='" + this.admin.nationalUrl + "' target='_blank' >View " + this.admin.eventType + " on Ramblers national web site</a></div>";
         }
         var url = new URL(window.location.href);
         var params = new URLSearchParams(url.search);
@@ -1322,7 +1322,7 @@ ra.event.timelocation = function () {
                 break;
             case "Start":
                 display.title = "Start place";
-                display.notes = "Start time is when the walk leaves. Please arrive earlier to ensure you are ready for the start";
+                display.notes = "Start time is when the walk commences. Please arrive earlier to ensure you are ready for the start";
                 break;
             case "Rough":
                 display.title = "<b>No start place - Rough location only</b>";

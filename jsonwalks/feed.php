@@ -186,19 +186,19 @@ class RJsonwalksFeed {
             return;
         }
         RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
-        $version = new JVersion();
+//        $version = new JVersion();
         // Joomla4 Update to use correct call.
-        if (version_compare($version->getShortVersion(), '4.0', '<')) {
-            $printOn = JRequest::getVar('print') == 1;
-        } else {
-            $jinput = JFactory::getApplication()->getInput();
-            $printOn = $jinput->getVar('print') == 1;
-        }
-        if ($printOn) {
-            $style = 'BODY {color: #000000;}';
-            $document = JFactory::getDocument();
-            $document->addStyleDeclaration($style);
-        }
+//        if (version_compare($version->getShortVersion(), '4.0', '<')) {
+//            $printOn = JRequest::getVar('print') == 1;
+//        } else {
+//            $jinput = JFactory::getApplication()->getInput();
+//            $printOn = $jinput->getVar('print') == 1;
+//        }
+//        if ($printOn) {
+//            $style = 'BODY {color: #000000;}';
+//            $document = JFactory::getDocument();
+//            $document->addStyleDeclaration($style);
+//        }
         $displayclass->DisplayWalks($this->walks);
     }
 
@@ -209,7 +209,7 @@ class RJsonwalksFeed {
         $display->setPreText($pretext);
         $display->setLinkText($linktext);
         $display->setPostText($posttext);
-        $display->Display("de02walks", $events); // display walks information
+        $display->Display($name, $events); // display walks information
 // is this line correct and is function used
     }
 
