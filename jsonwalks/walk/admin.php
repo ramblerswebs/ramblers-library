@@ -102,6 +102,10 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
         return strtoupper($this->status) === strtoupper($value);
     }
 
+    public function isWalk($walkadmin) {
+        return $walkadmin->id === $this->id;
+    }
+
     public function filterEvents() {
         return $this->type === TypeOfWalk::GroupEvent;
     }
