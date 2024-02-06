@@ -15,7 +15,7 @@ abstract class RJsonwalksDisplaybase {
 
     protected $displayStartTime = false;
     protected $displayStartDescription = false;
-    protected $printOn = false;
+ //   protected $printOn = false;
     public $displayGradesIcon = true;
     public $displayGradesSidebar = true;
     public $emailDisplayFormat = 1;
@@ -34,14 +34,14 @@ abstract class RJsonwalksDisplaybase {
     abstract protected function DisplayWalks($walks);
 
     public function __construct() {
-        $version = new JVersion();
+//        $version = new JVersion();
         // Joomla4 Update to use correct call.
-        if (version_compare($version->getShortVersion(), '4.0', '<')) {
-            $this->printOn = JRequest::getVar('print') == 1;
-        } else {
-            $jinput = JFactory::getApplication()->getInput();
-            $this->printOn = $jinput->getVar('print') == 1;
-        }
+//        if (version_compare($version->getShortVersion(), '4.0', '<')) {
+//            $this->printOn = JRequest::getVar('print') == 1;
+//        } else {
+//            $jinput = JFactory::getApplication()->getInput();
+//            $this->printOn = $jinput->getVar('print') == 1;
+//        }
         $this->script = new RLeafletScript();
         $this->options = new RLeafletMapoptions();
         // default map options for display of walk
