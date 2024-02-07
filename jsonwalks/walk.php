@@ -74,6 +74,10 @@ class RJsonwalksWalk implements JsonSerializable {
         array_push($this->media, $media);
     }
 
+    public function isWalk($walk) {
+        return $walk->admin->isWalk($this->admin);
+    }
+
     public function setFlags($flags) {
         $this->flags = $flags;
     }

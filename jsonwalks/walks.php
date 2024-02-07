@@ -12,6 +12,11 @@ class RJsonwalksWalks {
     }
 
     public function addWalk($walk) {
+        foreach ($this->arrayofwalks as $item) {
+            if ($item->isWalk($walk)) {
+                return;
+            }
+        }
         $this->arrayofwalks[] = $walk;
     }
 

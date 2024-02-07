@@ -8,7 +8,7 @@
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
     <authorEmail>webmaster@ramblers-webs.org.uk</authorEmail>
     <authorUrl>https://github.com/ramblerswebs/ramblers-library/</authorUrl>
-    <version>4.6.2</version>
+    <version>4.6.3</version>
     <description>Ramblers Library to provide diplay walks, GPX routes etc</description>
     
     <files>
@@ -17,9 +17,6 @@
         <folder>accounts</folder>
         <folder>calendar</folder>
         <folder>conf</folder>
-        <folder>conf/htaccess</folder>
-        <folder>conf/phpini</folder>
-        <folder>conf/userini</folder>
         <folder>directory</folder>
         <folder>dns</folder>
         <folder>errors</folder>
