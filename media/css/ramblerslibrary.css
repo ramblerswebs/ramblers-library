@@ -843,6 +843,10 @@ span.link{
     margin-left:5px;
 }
 /*  Display.php/js walks filter                    */
+table.detailsView {
+    display: block;
+    overflow-x: auto;
+}
 table.detailsView tr td{
     vertical-align: top;
 }

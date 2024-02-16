@@ -54,12 +54,9 @@ class RJsonwalksFeed {
                 $this->noWalks($limit);
             }
         }
+        $this->setNewWalks(7);
     }
 
-//    private function startsWith($string, $startString) {
-//        $len = strlen($startString);
-//        return (substr($string, 0, $len) === $startString);
-//    }
 
     public function setNewWalks($days) {
         $this->walks->setNewWalks($days);
