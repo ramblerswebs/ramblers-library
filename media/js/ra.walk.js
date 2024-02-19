@@ -96,6 +96,10 @@ ra.events = function () {
         filter.addGroup(ra.filterType.DateRange, "idDate", "Dates");
         filter.addGroup(ra.filterType.Limit, "idUpdate", "Updated", updateItems);
         filter.addGroup(ra.filterType.Unique, "idStatus", "Status");
+        filter.addGroup(ra.filterType.AnyOf, "Facilities", "Facilities");
+        filter.addGroup(ra.filterType.AnyOf, "Transport", "Transport");
+        filter.addGroup(ra.filterType.AnyOf, "Accessibility", "Accessibility");
+
         this.events.forEach(event => {
             event.initialiseFilter(filter);
         });
@@ -453,9 +457,6 @@ ra.event = function () {
         var valueSet = new ra.filter.valueSet();
         valueSet.add(new ra.filter.value("idDate", this.basics.walkDate));
         valueSet.add(new ra.filter.value("idType", this.admin.eventType));
-        //  var dow = ra.date.dow(this.basics.walkDate);
-        //  valueSet.add(new ra.filter.value("idDOW", dow));
-
         var dsow = this.getIntValue("basics", "filterDaysofweek");
         dsow.forEach(dow => {
             valueSet.add(new ra.filter.value("idDOW", dow));
@@ -471,6 +472,13 @@ ra.event = function () {
         valueSet.add(new ra.filter.value("idDistance", dist));
         valueSet.add(new ra.filter.value("idGroup", this.admin.groupName));
         valueSet.add(new ra.filter.value("idUpdate", this.admin.filterUpdate()));
+        valueSet.add(new ra.filter.value("Accessibility", null)); // needed in case no flags in section
+        valueSet.add(new ra.filter.value("Facilities", null));
+        valueSet.add(new ra.filter.value("Transport", null));
+        var flags = this.flags.getFlags();
+        flags.forEach(flag => {
+            valueSet.add(new ra.filter.value(flag.section, flag.name));
+        });
         return valueSet;
     };
     this.resetDisplay = function (tag) {
@@ -1756,6 +1764,9 @@ ra.event.flags = function () {
                 name: flag.name};
             this._flags.push(newflag);
         });
+    };
+    this.getFlags = function () {
+        return this._flags;
     };
     this.addFlagsSection = function (tag) {
         if (this._flags.length === 0) {

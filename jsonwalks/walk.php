@@ -82,6 +82,21 @@ class RJsonwalksWalk implements JsonSerializable {
         $this->flags = $flags;
     }
 
+    public function filterFlags($flags, $include = true) {
+        $all = true;
+        foreach ($flags as $flag) {
+            $exists = $this->flags->flagExists($flag);
+            if (!$exists) {
+                $all = false;
+            }
+        }
+        if ($all) {
+            return !$include;
+        } else {
+            return $include;
+        }
+    }
+
     public function getSortValue($type) {
         switch ($type) {
             case self::SORT_CONTACT :
