@@ -57,7 +57,6 @@ class RJsonwalksFeed {
         $this->setNewWalks(7);
     }
 
-
     public function setNewWalks($days) {
         $this->walks->setNewWalks($days);
     }
@@ -148,6 +147,10 @@ class RJsonwalksFeed {
 
     public function filterDayofweek($days) {
         $this->walks->filterDayofweek($days);
+    }
+
+    public function filterFlags($flags, $include = true) {
+        $this->walks->filterFlags($flags, $include);
     }
 
     public function limitNumberWalks($no) {
@@ -252,6 +255,7 @@ class RJsonwalksFeed {
 
     // function used to test filters on local PC
     public function testFilters() {
+
         $a = "BREAK HERE";
         // uncomment the filter you wish to test
         //    $this->setNewWalks(10); // Sets the number of days that a walk is considered to be 'new' after it has been published or updated
@@ -284,6 +288,9 @@ class RJsonwalksFeed {
         $lon = 1.2;
         $distanceKm = 10000;
         //   $this->filterDistanceFromLatLong($lat, $lon, $distanceKm);
+        $flags = ["Accessible by public transport", "No car needed"];
+        $flags = ["Toilets available"];
+    //    $this->filterFlags($flags, true);
 // filter/remove events
         //   $this->filterEvents();
 // filter/remove walks

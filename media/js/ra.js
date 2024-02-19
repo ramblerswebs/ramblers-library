@@ -1835,6 +1835,7 @@ ra.help = function (tag, helpFunction) {
 
 };
 ra.filterType = {Unique: "Unique",
+    AnyOf: "AnyOf",
     Limit: "Limit",
     DateRange: "DateRange",
     NumberRange: "NumberRamge"};
@@ -1866,6 +1867,7 @@ ra.filter = function (eventTag, eventName) {
                 });
                 break;
             case ra.filterType.Unique:
+            case ra.filterType.AnyOf:
                 group.valueOrder = data; // data is the title order for the items
                 break;
         }
@@ -1901,15 +1903,16 @@ ra.filter = function (eventTag, eventName) {
                 var value = i.value;
                 var tagId = i.tagId;
                 switch (group.type) {
-                    case "NumberRange":
-                    case "DateRange":
+                    case ra.filterType.NumberRange:
+                    case ra.filterType.DateRange:
                         this._insertGroupRange(id, value);
                         break;
-                    case "Limit":
+                    case ra.filterType.Limit:
                         this._insertGroupLimit(id, value);
                         break;
-                    case "Unique":
-                        this._insertGroupUnique(id, value, tagId);
+                    case ra.filterType.AnyOf:
+                    case ra.filterType.Unique:
+                        this._insertGroupItems(id, value, tagId);
                         break;
                 }
             });
@@ -1941,9 +1944,9 @@ ra.filter = function (eventTag, eventName) {
         }
 
     };
-    this._insertGroupUnique = function (id, value, tagId) {
+    this._insertGroupItems = function (id, value, tagId) {
         var group = this._getGroup(id);
-        group.type = "Unique";
+        //  group.type = "Unique";
         var values = group.values;
         if (!values.hasOwnProperty(value)) {
             values[value] = {};
@@ -1964,7 +1967,6 @@ ra.filter = function (eventTag, eventName) {
                 item.no += 1;
             }
         }
-
     };
 
     this.display = function (tag) {
@@ -1986,19 +1988,20 @@ ra.filter = function (eventTag, eventName) {
             filters.appendChild(div);
             var group = this._groups[propt];
             switch (group.type) {
-                case "Unique":
+                case ra.filterType.AnyOf:
+                case ra.filterType.Unique:
                     var keys = Object.keys(group.values);
                     if (keys.length > 1 || group.displaySingle) {
-                        this._displayGroupUnique(div, group);
+                        this._displayGroupItem(div, group);
                     }
                     break;
-                case "DateRange":
+                case ra.filterType.DateRange:
                     this._displayGroupDateRange(div, group);
                     break;
-                case "NumberRange":
+                case ra.filterType.NumberRange:
                     this._displayGroupNumberRange(div, group);
                     break;
-                case "Limit":
+                case ra.filterType.Limit:
                     this._displayGroupLimit(div, group);
                     break;
                 default:
@@ -2035,7 +2038,7 @@ ra.filter = function (eventTag, eventName) {
         // display range
         alert("number range not imlpemented");
     };
-    this._displayGroupUnique = function (tag, group) {
+    this._displayGroupItem = function (tag, group) {
         // display title
         var h = document.createElement('h3');
         h.textContent = group.title;
@@ -2047,7 +2050,7 @@ ra.filter = function (eventTag, eventName) {
                     var item = group.values[name];
                     this._displayUniqueItem(tag, item);
                 } else {
-                    this._displaygroupUniqueItemNil(tag, name);
+                    this._displaygroupItemNil(tag, name);
                 }
             });
         } else { // display in alphabetical order
@@ -2060,7 +2063,7 @@ ra.filter = function (eventTag, eventName) {
         }
     };
     this._displayUniqueItem = function (tag, item) {
-        if (item.no > 0) {
+        if (item.no > 0 && item.name !== null) {
             var div = document.createElement('div');
             div.setAttribute('class', 'ra-filteritem ');
             if (item.tagId !== null) {
@@ -2080,7 +2083,7 @@ ra.filter = function (eventTag, eventName) {
             });
         }
     };
-    this._displaygroupUniqueItemNil = function (tag, name) {
+    this._displaygroupItemNil = function (tag, name) {
         var div = document.createElement('div');
         div.setAttribute('class', 'ra-filteritemnil ');
         div.style.display = 'none';
@@ -2185,22 +2188,25 @@ ra.filter = function (eventTag, eventName) {
         }
         var group = this._groups[id];
         switch (group.type) {
-            case "Unique":
-                return this._shouldDisplayUnique(group, item.value);
+            case ra.filterType.AnyOf:
+            case ra.filterType.Unique:
+                return this._shouldDisplayItems(group, item.value);
                 break;
-            case "DateRange":
+            case ra.filterType.DateRange:
                 return  this._shouldDisplayDateRange(group, item.value);
                 break;
-            case "NumberRange":
+            case ra.filterType.NumberRange:
                 return  this._shouldDisplayNumberRange(group, item.value);
                 break;
-            case "Limit":
+            case ra.filterType.Limit:
                 return  this._shouldDisplayLimit(group, item.value);
                 break;
+            case ra.filterType.AnyOf:
+                return this._shouldDisplayAnyof(group, item.value);
         }
         return true;
     };
-    this._shouldDisplayUnique = function (group, value) {
+    this._shouldDisplayItems = function (group, value) {
         var anyActive = false;
         var items = group.values;
         for (var propt in items) {

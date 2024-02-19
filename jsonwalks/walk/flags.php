@@ -33,15 +33,14 @@ class RJsonwalksWalkFlags implements JsonSerializable {
     }
 
     public function flagExists($flag) {
-        $result = false;
         foreach ($this->items as $item) {
             if ($item->isFlag(($flag))) {
-                $result = true;
+                return true;
             }
         }
-        return $result;
+        return false;
     }
-    
+
     public function jsonSerialize(): mixed {
         return $this->items;
     }
