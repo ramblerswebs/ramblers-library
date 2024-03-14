@@ -21,9 +21,8 @@ class RJsonwalksMlPrint extends RJsonwalksStdWalktable {
         parent::customFormat($this->tableFormat);
         RJsonwalksWalk::setCustomValues($this, "customValue");
         parent::setRowClass($this, 'rowClass');
-        $document = JFactory::getDocument();
-        $document->addStyleSheet("media/lib_ramblers/jsonwalks/ml/style.css");
-        $document->addSCript("media/lib_ramblers/jsonwalks/ml/script.js");
+        RLoad::addStyleSheet("media/lib_ramblers/jsonwalks/ml/style.css");
+        RLoad::addSCript("media/lib_ramblers/jsonwalks/ml/script.js");
         parent::setWalksClass("mlprint");
         echo "<div id='ml-buttons'></div>";
     }
