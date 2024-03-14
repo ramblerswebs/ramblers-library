@@ -7,6 +7,7 @@
  */
 // Live Site Definition Below
 define("WALKMANAGER", "https://walks-manager.ramblers.org.uk/api/volunteers/walksevents?");
+// https://walks-manager.ramblers.org.uk/api/volunteers/walksevents?&types=group-walk&api-key=853aa876db0a37ff0e6780db2d2addee&groups=er05
 // API Key for the walks manager
 define("APIKEY", "853aa876db0a37ff0e6780db2d2addee");
 // no direct access

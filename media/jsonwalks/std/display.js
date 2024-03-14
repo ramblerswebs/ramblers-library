@@ -237,7 +237,6 @@ ra.display.walksTabs = function (mapOptions, data) {
             $col.blank = true;
             this.events.forEachFiltered($walk => {
                 if ($col.blank) {
-                    //   content = ra.walk.addTooltip($walk, ra.walk.getWalkValues($walk, $items));
                     content = $walk.getEventValues($col.items);
                     if (content !== '') {
                         $col.blank = false;

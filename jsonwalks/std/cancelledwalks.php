@@ -29,8 +29,12 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         $walkslist = "";
+        $cancelledWalks=[];
         foreach ($items as $walk) {
-            $walkslist .= $this->displayWalk($walk);
+            if ($walk->isCancelled()) {
+                $cancelledWalks[]=$walk;
+                $walkslist .= $this->displayWalk($walk);
+            }
         }
         if ($walkslist != "") {
             $out .= "<div class='" . $this->walksClass . "' >" . PHP_EOL;
@@ -38,6 +42,7 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
             $out .= $walkslist;
             $out .= "</div><p></p>" . PHP_EOL;
         }
+        RLeafletScript::registerWalks(array_values($cancelledWalks));
         return $out;
     }
 
@@ -50,19 +55,16 @@ class RJsonwalksStdCancelledwalks extends RJsonwalksDisplaybase {
     }
 
     private function displayWalk($walk) {
-
         $out = "";
-        if ($walk->isCancelled()) {
-            $groupName = $walk->getIntValue("admin", "groupName");
-            $cancellationReason = $walk->getIntValue("admin", "cancellationReason");
-            $walkDate = $walk->getIntValue("basics", "walkDate");
-            $out .= "<div><b>" . $groupName . ": " . $walkDate->format('l, jS F') . "</b>";
-            $out .= $walk->getWalkValues($this->listFormat);
-            if ($cancellationReason === "") {
-                $cancellationReason = "No reason given";
-            }
-            $out .= "</div><div class='cancelreason' ><b>Reason:</b> " . $cancellationReason . "</div>" . PHP_EOL;
+        $groupName = $walk->getIntValue("admin", "groupName");
+        $cancellationReason = $walk->getIntValue("admin", "cancellationReason");
+        $walkDate = $walk->getIntValue("basics", "walkDate");
+        $out .= "<div><b>" . $groupName . ": " . $walkDate->format('l, jS F') . "</b>";
+        $out .= $walk->getWalkValues($this->listFormat);
+        if ($cancellationReason === "") {
+            $cancellationReason = "No reason given";
         }
+        $out .= "</div><div class='cancelreason' ><b>Reason:</b> " . $cancellationReason . "</div>" . PHP_EOL;
         return $out;
     }
 

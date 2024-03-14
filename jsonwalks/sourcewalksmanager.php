@@ -167,6 +167,9 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
                     $latitude = $loc->latitude;
                     $longitude = $loc->longitude;
                     $w3w = $loc->w3w;
+                    if ($w3w === null || $w3w === "") {
+                        $w3w = "walks.manager.error";
+                    }
                     $postcode = $loc->postcode;
                     $meeting = new RJsonwalksWalkTimelocation("Meeting", "", $time, $name,
                             $latitude, $longitude, $gridref, $w3w,
@@ -183,6 +186,9 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
                     $latitude = $loc->latitude;
                     $longitude = $loc->longitude;
                     $w3w = $loc->w3w;
+                    if ($w3w === null || $w3w === "") {
+                        $w3w = "walks.manager.error";
+                    }
                     $postcode = $loc->postcode;
                     $type = "Start";
                     if (str_contains(strtolower($name), 'location shown is only indicative')) {
@@ -206,6 +212,9 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
                     $latitude = $loc->latitude;
                     $longitude = $loc->longitude;
                     $w3w = $loc->w3w;
+                    if ($w3w === null || $w3w === "") {
+                        $w3w = "walks.manager.error";
+                    }
                     $postcode = $loc->postcode;
                     $finish = new RJsonwalksWalkTimelocation("Finish", "", $time, $name,
                             $latitude, $longitude, $gridref, $w3w,
@@ -255,6 +264,9 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
                     $latitude = $loc->latitude;
                     $longitude = $loc->longitude;
                     $w3w = $loc->w3w;
+                    if ($w3w === null || $w3w === "") {
+                        $w3w = "walks.manager.error";
+                    }
                     $postcode = $loc->postcode;
                     $location = new RJsonwalksWalkTimelocation("Location", "", $time, $name,
                             $latitude, $longitude, $gridref, $w3w,

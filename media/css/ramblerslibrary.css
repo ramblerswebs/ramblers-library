@@ -306,8 +306,7 @@ div.groupA,div.groupG,div.groupS {
 .grade-t {
     background-color: var(--gradeT) !important;
 }
-div.leaflet-popup-content div.walkPublished img,
-div.leaflet-popup-content div.walkNew img{
+div.leaflet-popup-content div.walkPublished img{
     height:30px;
     width:30px;
     float: right;
@@ -319,7 +318,6 @@ div.leaflet-popup-content div.walkCancelled img{
 
 
 div.nextwalk div.walkPublished,
-div.nextwalk div.walkNew,
 div.nextwalk div.walkCancelled{
     min-height: 30px;
     line-height: 1.2em;
@@ -454,8 +452,6 @@ pre.ra-diagnostics {
     }
 }
 
-
-
 /* The Close Button */
 .link-button.modal-close,
 .link-button.modal-print{
@@ -513,19 +509,15 @@ div#ra-help-helptag{
         /*   width: 100%;*/
     }
 }
-/* do not use !important on the follwoing colours */
-.odd.walkPublished,
-.odd.walkNew {
+/* do not use !important on the following colours */
+.odd.walkPublished {
     background-color:#FFFFFF !important;
 }
-.even.walkPublished,
-.even.walkNew {
+.even.walkPublished {
     background-color:#EEEEEE !important;
 }
 .odd.walkPublished:hover,
-.odd.walkNew:hover,
-.even.walkPublished:hover,
-.even.walkNew:hover {
+.even.walkPublished:hover{
     background-color:#DDDDDD !important;
 
 }
@@ -766,7 +758,7 @@ span[data-descr]:hover::after {
     content: attr(data-descr);
     position: absolute;
     top: -30px;
-    width: 100px;
+    min-width: 100px;
     border: 2px #ffffff solid;
     border-radius: 10px;
     background-color: var(--pantone0555);
@@ -776,8 +768,19 @@ span[data-descr]:hover::after {
     line-height: 14px;
     z-index: 9999;
 }
+span.new[data-descr]:hover::after {
+    background-color:rgb(0, 128, 0);
+    left:0px;
+    min-width: 150px;
+}
+span.updated[data-descr]:hover::after {
+    background-color: rgb(0, 156, 0);
+    left:0px;
+    min-width: 150px;
+}
 span[data-descr].walkCancelled:hover::after {
     background-color: var(--cancelled);
+    min-width: 110px;
 }
 span.middle[data-descr]:hover::after{
     left:40px;

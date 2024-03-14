@@ -180,25 +180,20 @@ class RJsonwalksFeed {
         return $number;
     }
 
+    public function appendWalkTitle($group, $title) {
+        $ugroup = strtoupper($group);
+        $items = $this->walks->allWalks();
+        foreach ($items as $walk) {
+            $walk->appendWalkTitle($ugroup, $title);
+        }
+    }
+
     public function display($displayclass) {
         if ($this->walks == null) {
             echo "No walks found";
             return;
         }
         RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
-//        $version = new JVersion();
-        // Joomla4 Update to use correct call.
-//        if (version_compare($version->getShortVersion(), '4.0', '<')) {
-//            $printOn = JRequest::getVar('print') == 1;
-//        } else {
-//            $jinput = JFactory::getApplication()->getInput();
-//            $printOn = $jinput->getVar('print') == 1;
-//        }
-//        if ($printOn) {
-//            $style = 'BODY {color: #000000;}';
-//            $document = JFactory::getDocument();
-//            $document->addStyleDeclaration($style);
-//        }
         $displayclass->DisplayWalks($this->walks);
     }
 
@@ -290,14 +285,11 @@ class RJsonwalksFeed {
         //   $this->filterDistanceFromLatLong($lat, $lon, $distanceKm);
         $flags = ["Accessible by public transport", "No car needed"];
         $flags = ["Toilets available"];
-    //    $this->filterFlags($flags, true);
+        //    $this->filterFlags($flags, true);
 // filter/remove events
         //   $this->filterEvents();
 // filter/remove walks
         //    $this->filterWalks();
-// NO LONGER SUPPORTED
-        //   $this->filterStrands("strand"); // NO LONGER SUPPORTED
-        //   $this->setDisplayLimit(60);    // NO LONGER SUPPORTED
-    }
 
+    }
 }

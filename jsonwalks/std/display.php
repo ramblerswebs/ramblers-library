@@ -53,22 +53,10 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $items = $walks->allWalks();
         $display = new RJsonwalksStdCancelledwalks();
         $number = $this->noCancelledWalks($items);
-
-// Display anyway
-        $diagnostics = 0;
-        if ($diagnostics == 1) {
-            echo '<div class="cancelledWalks">';
-            echo "<h3>Cancelled walks - Diagnostics</h3>";
-            echo "<h4>Number of cancelled walks: " . $number . "</h4>";
-            echo '</div><p></p>';
-        }
-//     $cancelledOutput = "";
         if ($number > 3) {
             echo "<div class='cancelledWalks' style='margin-bottom:10px;'>";
-//           echo "Sorry: We have had to cancel " . $number . " walks, full list at the bottom of the page.";
             echo "Sorry: We have had to cancel " . $number . " walks.";
             echo "</div>";
-//      $cancelledOutput = $display->getWalksOutput($walks);
         } else {
             $display->DisplayWalks($walks);  // display cancelled walks information
         }

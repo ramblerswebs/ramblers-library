@@ -24,6 +24,8 @@ class RLeafletScript {
     }
 
     public function add($options) {
+        $version = new JVersion();
+        $jv = $version->getShortVersion();
         $document = JFactory::getDocument();
         $options->setLicenses();
         if ($this->command !== "noDirectAction") {
@@ -38,7 +40,7 @@ class RLeafletScript {
             $text .= "var data=null;" . PHP_EOL;
         }
 
-        $text .= "ra.bootstrapper('" . $this->command . "',mapOptions,data);});" . PHP_EOL;
+        $text .= "ra.bootstrapper('" . $jv . "','" . $this->command . "',mapOptions,data);});" . PHP_EOL;
         $document->addScriptDeclaration($text, "text/javascript");
 
         $this->addScriptsandStyles($options);

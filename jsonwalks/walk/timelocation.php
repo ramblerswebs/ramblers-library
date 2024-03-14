@@ -102,6 +102,11 @@ class RJsonwalksWalkTimelocation implements JsonSerializable {
                     $out = $this->timeHHMMshort;
                 }
                 break;
+             case "{Timefull}":
+                if ($this->type !== self::LOCATION_ROUGH) {
+                    $out = $this->timeHHMM;
+                }
+                break;
             case "{Place}":
                 if ($this->type !== self::LOCATION_ROUGH) {
                     $out = $this->description;

@@ -215,7 +215,7 @@ class RJsonwalksWalk implements JsonSerializable {
         $out .= "<div class='event-list-cal-event-single-link " . $class . " " . $this->EventStatus() . "'>" . PHP_EOL;
         $out .= $text . PHP_EOL;
 
-        $out .= "<hr/></div>" . PHP_EOL;
+        $out .= "</div>" . PHP_EOL;
         return $out;
     }
 
@@ -425,9 +425,7 @@ class RJsonwalksWalk implements JsonSerializable {
         $out = "";
         $lastItem = '';
         foreach ($items as $item) {
-
             $options = $this->getPrefix($item);
-
             $thisItem = $this->getWalkValue($options->walkValue);
             if ($lastItem !== '' && $thisItem !== '') {
                 $out .= $options->previousPrefix;
@@ -482,6 +480,7 @@ class RJsonwalksWalk implements JsonSerializable {
                 break;
             case "{start}":
             case "{startTime}":
+            case "{startTimefull}":
             case "{startPlace}":
             case "{startGR}":
             case "{startPC}":
@@ -650,8 +649,14 @@ class RJsonwalksWalk implements JsonSerializable {
             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" . $text . "</span>";
         }
         if ($this->admin->isNew()) {
+            $dateCreated = $this->getIntValue("admin", "dateCreated");
+            $status = $this->getIntValue("admin", "status");
+            return "<span class='new' data-descr='New Walk/Event created " . $dateCreated->format('D, jS M') . "' class=' walk" . $status . "'>" . $text . "</span>";
+        }
+       if ($this->admin->isUpdated()) {
             $dateUpdated = $this->getIntValue("admin", "dateUpdated");
-            return "<span data-descr='Walk updated " . $dateUpdated->format('D, jS M') . "' class=' walkNew'>" . $text . "</span>";
+            $status = $this->getIntValue("admin", "status");
+            return "<span class='updated' data-descr='Walk/Event updated " . $dateUpdated->format('D, jS M') . "' class=' walk" . $status . "'>" . $text . "</span>";
         }
         return $text;
     }

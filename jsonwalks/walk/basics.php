@@ -158,6 +158,10 @@ class RJsonwalksWalkBasics implements JsonSerializable {
         return $this->contains(strtolower($filter), strtolower($this->title));
     }
 
+    public function appendWalkTitle($extra) {
+        $this->title = $extra . $this->title;
+    }
+
     private function contains($needle, $haystack) {
         return strpos($haystack, $needle) !== false;
     }
@@ -186,5 +190,4 @@ class RJsonwalksWalkBasics implements JsonSerializable {
             'external_url' => $this->external_url
         ];
     }
-
 }
