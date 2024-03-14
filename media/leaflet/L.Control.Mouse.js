@@ -477,6 +477,25 @@ L.Control.Rightclick = L.Control.extend({
             distance: null
         }
     },
+    rightClickOptions: [
+        {group: 'General Information',
+            items: {
+                details: 'Display map co-ordinates',
+                postcode: 'Display Postcodes',
+                osmaps: 'Ordnance Survey Maps'}},
+        {group: "Ramblers Information",
+            items: {groups: 'Display Ramblers Groups',
+                starting: 'Display Starting Places'}},
+        {group: 'Open Street Map information',
+            items: {
+                parking: 'Display Parking',
+                bus_stops: 'Display Bus Stops',
+                cafes: 'Display Cafes',
+                pubs: 'Display Public Houses',
+                toilets: 'Display Toilets'}}],
+    //   alltags: 'What\'s here?'}}],
+    rightClickOption: "details",
+
     onAdd: function (map) {
         this._map = map;
         this._readSettings();
@@ -499,7 +518,7 @@ L.Control.Rightclick = L.Control.extend({
         osmOptions["pubs"] = {tag: "amenity", type: "pub", title: "Pubs", single: "Pub"};
         osmOptions["toilets"] = {tag: "amenity", type: "toilets", title: "Toilets", single: "Toilets"};
         osmOptions["bus_stops"] = {tag: "highway", type: "bus_stop", title: "Bus Stops", single: "Bus Stop"};
-        osmOptions["alltags"] = {tag: "alltags", type: "alltags", title: "Whats there", single: "Whats there"};
+        osmOptions["alltags"] = {tag: "", type: "", title: "What's there", single: "What's here?"};
         this.osmOptions = osmOptions;
         L.DomEvent.disableClickPropagation(this._containerAll);
         return this._containerAll;
@@ -522,8 +541,12 @@ L.Control.Rightclick = L.Control.extend({
         L.DomEvent.addListener(container, 'mouseover', function () {
             holder.style.display = "";
         }, this);
+        var _this = this;
         L.DomEvent.addListener(container, 'click', function (event) {
             holder.style.display = "";
+            var tag = document.createElement('div');
+            _this.settingsForm(tag);
+            ra.modals.createModal(tag, false, true, null);
             event.stopPropagation();
         }, this);
         this.closeHolder = false;
@@ -542,48 +565,23 @@ L.Control.Rightclick = L.Control.extend({
             ev.stopPropagation();
         });
 
-        var clearDiv = L.DomUtil.create('div', 'remove', holder);
-        clearDiv.innerHTML = "Clear item(s)";
-        clearDiv.title = "Clear information currently displayed by mouse right click";
-        var self = this;
-        clearDiv.addEventListener('click', function () {
-            self._mouseLayer.clearLayers();
-            self._places.clearLayers();
-        });
+//        var clearDiv = L.DomUtil.create('div', 'remove', holder);
+//        clearDiv.innerHTML = "Clear item(s)";
+//        clearDiv.title = "Clear information currently displayed by mouse right click";
+//        var self = this;
+//        clearDiv.addEventListener('click', function () {
+//            self._mouseLayer.clearLayers();
+//            self._places.clearLayers();
+//        });
+//
+//        L.DomEvent.addListener(container, 'mouseover', function () {
+//            if (this.noLayers() > 0) {
+//                clearDiv.style.display = "";
+//            } else {
+//                clearDiv.style.display = "none";
+//            }
+//        }, this);
 
-        L.DomEvent.addListener(container, 'mouseover', function () {
-            if (this.noLayers() > 0) {
-                clearDiv.style.display = "";
-            } else {
-                clearDiv.style.display = "none";
-            }
-        }, this);
-
-        var options = ['<optgroup label="General Information">',
-            '<option selected value="details">Display map co-ordinates</option>',
-            '<option value="postcode">Display Postcodes</option>',
-            '<option value="osmaps">Ordnance Survey Maps</option>',
-            '</optgroup>',
-            '<optgroup label="Ramblers Information">',
-            '<option value="groups">Display Ramblers Groups</option>',
-            '<option value="starting">Display Starting Places</option>',
-            '</optgroup>',
-            '<optgroup label="Open Street Map information">',
-            '<option value="parking"> Display Parking</option>',
-            '<option value="bus_stops">Display Bus Stops</option>',
-            '<option value="cafes">Display Cafes</option>',
-            '<option value="pubs"> Display Public Houses</option>',
-            '<option value="toilets">Display Toilets</option>',
-            '</optgroup>'];
-        this.selectOptions = document.createElement('select');
-        this.selectOptions.setAttribute('class', 'ra-mouse-options');
-        this.selectOptions.setAttribute('size', '13');
-        this.selectOptions.title = "Select which information is displayed";
-        this.selectOptions.innerHTML = options.join('');
-        holder.appendChild(this.selectOptions);
-        L.DomEvent.addListener(this.selectOptions, 'click', function () {
-            holder.style.display = "none";
-        }, this);
     },
 
     Enabled: function (status) {
@@ -601,8 +599,8 @@ L.Control.Rightclick = L.Control.extend({
     _onRightClick: function (e) {
         this._mouseLayer.clearLayers();
         this._places.clearLayers();
-        var ele = this.selectOptions;
-        var option = ele.options[ele.selectedIndex].value;
+        var option = this.rightClickOption;
+
         if (this.enabled) {
             switch (option) {
                 case "details":
@@ -644,7 +642,8 @@ L.Control.Rightclick = L.Control.extend({
                     this._displayOSM(e, "bus_stops");
                     break;
                 case "alltags":
-                    this._displayAllTags(e);
+                    this._displayOSM(e, "alltags");
+                    //   this._displayAllTags(e);
                     break;
             }
         }
@@ -951,6 +950,8 @@ L.Control.Rightclick = L.Control.extend({
         //   node({{bbox}})(if:count_tags() > 0);
         //  var query = this.getQuery(queryTemplate, null, null);
 
+
+        var queryTemplate = '(node({{bbox}});<;);out meta;';
         var kwargs = {bbox: this.getBox()};
         var query = L.Util.template(queryTemplate, kwargs);
         //console.log("Query: " + query);
@@ -1106,15 +1107,59 @@ L.Control.Rightclick = L.Control.extend({
 
     settingsForm: function (tag) {
         var comment;
-        // var mouse = this._ramblersMap.PostcodeStatus;
         var title = document.createElement('h3');
         title.textContent = 'Mouse right click/tap and hold';
         tag.appendChild(title);
-        var comments = document.createElement('p');
-        comments.innerHTML = 'Right click, or tap and hold, is used to view location information. ';
-        comments.innerHTML += "It can display postcodes, Ramblers' Areas and Groups, meeting/starting places and information from <a href='https://www.openstreetmap.org/about' target='_blank'>Open Street Map</a> ";
-        comments.innerHTML += "<br/>The settings below control how much information is displayed.";
-        tag.appendChild(comments);
+        comment = document.createElement('p');
+        comment.innerHTML = 'This option is used to view location information. ';
+        comment.innerHTML += "It can display postcodes, Ramblers' Areas and Groups, meeting/starting places and information from <a href='https://www.openstreetmap.org/about' target='_blank'>Open Street Map</a> ";
+        tag.appendChild(comment);
+        var title2 = document.createElement('h2');
+        title2.textContent = 'Select which information should be displayed';
+        tag.appendChild(title2);
+
+        var so = document.createElement('select');
+        so.setAttribute('class', 'ra-mouse-options');
+        // so.setAttribute('size', '13');
+        so.title = "Select which information is displayed";
+        this.rightClickOptions.forEach((group) => {
+            var gr = document.createElement("optgroup");
+            gr.label = group.group;
+            for (var prop in group.items) {
+                var option = document.createElement("option");
+                option.value = prop;
+                option.text = group.items[prop];
+                gr.appendChild(option);
+            }
+            so.appendChild(gr);
+        });
+        so.value = this.rightClickOption;
+
+        tag.appendChild(so);
+        var _this = this;
+        so.addEventListener("change", function (e) {
+            _this.rightClickOption = so.value;
+        });
+
+        tag.appendChild(document.createElement('hr'));
+        if (this.noLayers() > 0) {
+            var clearDiv = document.createElement("button");
+            clearDiv.innerHTML = "Clear displayed item(s)";
+            clearDiv.setAttribute('class', 'rightClick clearItems');
+            clearDiv.title = "Clear information currently displayed by mouse right click";
+            var self = this;
+            clearDiv.addEventListener('click', function () {
+                self._mouseLayer.clearLayers();
+                self._places.clearLayers();
+                clearDiv.style.display = "none";
+            });
+            tag.appendChild(clearDiv);
+            tag.appendChild(document.createElement('hr'));
+        }
+
+        comment = document.createElement('p');
+        comment.innerHTML += "<b>The settings below control how much information is displayed.</b>";
+        tag.appendChild(comment);
 
         tag.appendChild(document.createElement('hr'));
         var hdg2 = document.createElement('h5');
@@ -1152,7 +1197,7 @@ L.Control.Rightclick = L.Control.extend({
         tag.appendChild(hdg4);
         comment = document.createElement('p');
         comment.setAttribute('class', 'smaller');
-        comment.textContent = 'This option affects the display of parking, bus stops, cafes, public housea and toilets.';
+        comment.textContent = 'This option affects the display of parking, bus stops, cafes, public houses and toilets.';
         tag.appendChild(comment);
         this.controls.osm.distance = ra.html.input.number(tag, '', 'Display items within %n km', this._userOptions.osm, 'distance', 0.5, 5, 0.5);
         this.controls.groups.distance.addEventListener("ra-input-change", function (e) {

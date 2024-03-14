@@ -57,14 +57,14 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
         return $json;
     }
 
-    public function getWMUrl() {
-        $feedurl = "";
-        if ($this->groups !== null) {
-            $feedurl = TESTWALKSFEED;
-//   $feedurl = $feedurl . '&groups=' . $this->groups;
-        }
-        return $feedurl;
-    }
+//    public function getWMUrl() {
+//        $feedurl = "";
+//        if ($this->groups !== null) {
+//            $feedurl = TESTWALKSFEED;
+////   $feedurl = $feedurl . '&groups=' . $this->groups;
+//        }
+//        return $feedurl;
+//    }
 
     public function convertToInternalFormat($walk, $item) {
 

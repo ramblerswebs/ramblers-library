@@ -597,10 +597,18 @@ div.ra.legend div.legendbox{
     height:20px;
     border: 2px solid #cccccc;
     display:inline-block;
+    margin-left:30px;
 }
-div.ra.legend div.legendtext{
-    display:inline;
-    padding-left:30px;
+div.ra.legend div.legendbox{
+    padding: 8px;
+    min-width:200px;
+    height:20px;
+    border: 2px solid #cccccc;
+    display:inline-block;
+    margin-left:30px;
+}
+div.ra.legend.title{
+
     font-weight: bold;
     font-size: 17px;
 }

@@ -168,6 +168,13 @@ class RJsonwalksWalk implements JsonSerializable {
         return $result;
     }
 
+    public function appendWalkTitle($group, $title) {
+        $code = $this->admin->getIntValue("groupCode");
+        If ($code === $group) {
+            $this->basics->appendWalkTitle($title);
+        }
+    }
+
     public function flagsExists($flags) {
         $result = [];
         foreach ($flags as $item) {
@@ -653,7 +660,7 @@ class RJsonwalksWalk implements JsonSerializable {
             $status = $this->getIntValue("admin", "status");
             return "<span class='new' data-descr='New Walk/Event created " . $dateCreated->format('D, jS M') . "' class=' walk" . $status . "'>" . $text . "</span>";
         }
-       if ($this->admin->isUpdated()) {
+        if ($this->admin->isUpdated()) {
             $dateUpdated = $this->getIntValue("admin", "dateUpdated");
             $status = $this->getIntValue("admin", "status");
             return "<span class='updated' data-descr='Walk/Event updated " . $dateUpdated->format('D, jS M') . "' class=' walk" . $status . "'>" . $text . "</span>";
@@ -683,5 +690,4 @@ class RJsonwalksWalk implements JsonSerializable {
             'media' => $this->media
         ];
     }
-
 }
