@@ -71,6 +71,7 @@ class RJsonwalksMlPrint extends RJsonwalksStdWalktable {
 
     public function DisplayWalks($walks) {
         $allWalks = $walks->allWalks();
+        echo "<div id='ml-printwalks'>";
         $total = count($allWalks);
         if ($total > 0) {
             $this->firstWalkDate = $allWalks[0]->getIntValue("basics", "walkDate");
@@ -99,7 +100,8 @@ class RJsonwalksMlPrint extends RJsonwalksStdWalktable {
         } else {
             echo "No walks found in current walks programme";
         }
-         echo "<br/>";
+        echo "<br/>";
         parent::DisplayWalks($walks);
+        echo "</div>";
     }
 }

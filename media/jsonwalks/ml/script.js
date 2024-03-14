@@ -1,6 +1,24 @@
+addPrintButton = function (tag) {
+    var printButton = document.createElement('button');
+    printButton.setAttribute('class', 'link-button tiny button mintcake right');
+    printButton.textContent = 'Print';
+    tag.appendChild(printButton);
+
+    printButton.addEventListener('click', function () {
+        var collection = document.getElementById("ml-printwalks");
+        if (collection!==null) {
+            var content = collection.innerHTML;
+            ra.html.printHTML(content);
+        } else {
+            alert("Program error");
+        }
+
+    });
+};
 function mlSetButtons(id) {
     var tag = document.getElementById(id);
     // create button
+      addPrintButton(tag);
     var allWalks = document.createElement('button');
     allWalks.textContent = "All walks";
     allWalks.classList.add("active");
@@ -24,6 +42,7 @@ function mlSetButtons(id) {
         allWalks.classList.add("active");
 
     });
+  
     fiveWeeks.addEventListener("click", function () {
         allWalks.classList.remove("active");
         fiveWeeks.classList.remove("active");
@@ -40,6 +59,8 @@ function mlSetButtons(id) {
 
         fiveWeeks.classList.add("active");
     });
+    fiveWeeks.click();
+
 }
 
 window.addEventListener('load', function () {

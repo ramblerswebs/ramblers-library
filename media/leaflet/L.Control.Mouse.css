@@ -1,5 +1,5 @@
 :root {
-    --xoption:#eeeeee;
+    --xoption:#919187;
     --xoptionHover:#757570;
 }
 .leaflet-container .leaflet-control-mouseposition {
@@ -42,21 +42,11 @@ div.leaflet-control-rightclick-container div.remove{
     padding-top:3px;
     padding-bottom:3px;
 }
-select.ra-mouse-optionsxx:hover{
-    background-color: var(--xoptionHover);
-}
 
 select.ra-mouse-options {
     border-radius: 10px;
     font-size:20px;
 
-}
-select.ra-mouse-optionsxx::-ms-expand {
-    display: none;
-}
-
-select.ra-mouse-optionsxx option {
-    font-weight:normal;
 }
 
 div.leaflet-control-osmaps{
