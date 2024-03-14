@@ -1,8 +1,11 @@
-div.item-page table.mlprint{
-    border: 2px solid skyblue;
+table.mlprint{
+    border: 2px solid skyblue !important;
 }
-div.item-page table.mlprint tr td{
-    border: 2px solid skyblue;
+table.mlprint tr th,
+table.mlprint tr td{
+    border: 2px solid skyblue !important;
+    page-break-inside: avoid;
+    vertical-align: top;
 }
 span.title{
     color:skyblue;
