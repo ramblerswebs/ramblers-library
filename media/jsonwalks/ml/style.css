@@ -1,5 +1,7 @@
 table.mlprint{
     border: 2px solid skyblue !important;
+    margin:10px;
+    width:95%;
 }
 table.mlprint tr th,
 table.mlprint tr td{

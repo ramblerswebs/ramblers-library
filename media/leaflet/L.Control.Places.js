@@ -200,9 +200,13 @@ L.Control.Places = L.Control.extend({
         this._container.style.display = 'inherit';
         var self = this;
         var p = new LatLon(_locationOptions.location.lat, _locationOptions.location.lng);
-        var point = L.marker(p).bindPopup("<b>Searching for Meeting and Starting Places ...</b>");
-        this._masterlayer.addLayer(point);
-        point.openPopup();
+        var pt = {lat: _locationOptions.location.lat, lng: _locationOptions.location.lng};
+        var marker = new L.Control.RightclickMarker(pt, this._masterlayer, null);
+
+        marker.setContent("<b>Searching for Meeting and Starting Places ...</b>");
+        //  var point = L.marker(p, {icon: icon}).bindPopup("<b>Searching for Meeting and Starting Places ...</b>");
+        //  this._masterlayer.addLayer(point);
+        //  point.openPopup();
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
         if (gr !== "") {
@@ -213,26 +217,26 @@ L.Control.Places = L.Control.extend({
             ra.ajax.getJSON(url, function (err, items) {
                 if (err !== null) {
                     self._closeProgressBar();
-                    point.getPopup().setContent("Error: Sorry something went wrong: " + err);
+                    marker.setContent("Error: Sorry something went wrong: " + err);
                 } else {
                     var no = items.length;
-                    point.getPopup().setContent("<b>" + no + " Meeting/Starting Places found within " + _locationOptions.distance + "km" + "</b>");
+                    marker.setContent("<b>" + no + " Meeting/Starting Places found within " + _locationOptions.distance + "km" + "</b>");
                     if (no === 0) {
-                        point.getPopup().setContent("No meeting/starting places found within " + _locationOptions.distance + "km");
+                        marker.setContent("No meeting/starting places found within " + _locationOptions.distance + "km");
                     } else {
                         self._processItems(items, 2000);
                         var bounds = self._getPlacesBounds();
                         self._map.fitBounds(bounds, {padding: [50, 50]});
                     }
-                    setTimeout(function (point) {
-                        self._map.removeLayer(point);
-                    }, 3000, point);
+//                    setTimeout(function (point) {
+//                        self._map.removeLayer(point);
+//                    }, 3000, point);
                 }
                 self._addClusteredPlaces();
             });
         } else {
             self._closeProgressBar();
-            alert("Outside OS Grid");
+            marker.setContent("Outside OS Grid");
         }
     },
     displayAllPlaces: function () {
