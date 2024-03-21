@@ -426,9 +426,7 @@ L.Control.RightclickMarker = function (latlng, layer, actiontag) {
     var icon = L.icon({
         iconUrl: ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/mouseloc.png',
         iconSize: [18, 18], // size of the icon
-
         iconAnchor: [9, 9], // point of the icon which will correspond to marker's location
-
         popupAnchor: [0, -9] // point from which the popup should open relative to the iconAnchor
     });
     this._marker = L.marker(this.p, {icon: icon}).bindPopup("Processing...");
@@ -450,12 +448,8 @@ L.Control.RightclickMarker = function (latlng, layer, actiontag) {
         } else {
             elements.content.appendChild(contentTag);
         }
-
         this._marker.getPopup().setContent(popup);
         this._addOptionsLink(elements.options);
-    };
-    this.displayxx = function () {
-
     };
     this._addOptionsLink = function (tag) {
         if (this.actiontag === null) {
@@ -630,7 +624,8 @@ L.Control.Rightclick = L.Control.extend({
                     var options = {
                         location: e.latlng,
                         distance: this._userOptions.starting.distance,
-                        limit: this._userOptions.starting.number};
+                        limit: this._userOptions.starting.number,
+                        mouseOptions:  this._containerAll};
                     this._places.displayPlaces(options);
                     break;
                 case "groups":
@@ -664,27 +659,6 @@ L.Control.Rightclick = L.Control.extend({
     rightClickClearPlaces: function () {
         this._places.clearLayers();
     },
-//    _addOptionsLink: function (tag) {
-//        var _this = this;
-//        var div = document.createElement('div');
-//        div.classList.add("ra-mouse-option");
-//        tag.appendChild(div);
-//        var opt = document.createElement('a');
-//        var img = document.createElement("img");
-//        img.setAttribute('src', ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/mouse-right-click-icon.png');
-//        img.setAttribute('height', '18px');
-//        img.setAttribute('width', '18px');
-//        img.classList.add('rotateimg90');
-//        opt.appendChild(img);
-//        var link = document.createTextNode("Right click options ");
-//        opt.appendChild(link);
-//        opt.title = "Change the way Mouse Right Click works";
-//        opt.classList.add("pointer");
-//        opt.addEventListener("click", function (e) {
-//            _this._containerAll.click();
-//        });
-//        div.appendChild(opt);
-//    },
     _displayDetails: function (e) {
         var desc, links = '', gr, gr10, grid;
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
@@ -1108,9 +1082,12 @@ L.Control.Rightclick = L.Control.extend({
         return this._userOptions.osm.distance * 1000;
     },
     optionsForm: function (tag) {
-        var title2 = document.createElement('h2');
-        title2.textContent = 'Select which information should be displayed';
+        var title2 = document.createElement('h3');
+        title2.textContent = 'Mouse right click/tap hold';
         tag.appendChild(title2);
+        var title3 = document.createElement('h2');
+        title3.textContent = 'Select which information should be displayed';
+        tag.appendChild(title3);
         var so = document.createElement('select');
         so.setAttribute('class', 'ra-mouse-options');
         // so.setAttribute('size', '13');

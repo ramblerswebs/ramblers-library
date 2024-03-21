@@ -12,6 +12,7 @@ ra.display.csvList = (function () {
         this.list = null;
         this.options = options;  
         this.data = data;
+        this.data.list.rows=this.data.list.items[0].values.length;
         //this.paginationDefault = 10;
         
         this.load = function ( ) {

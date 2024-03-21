@@ -189,7 +189,8 @@ L.Control.Places = L.Control.extend({
     displayPlaces: function (locationOptions) {
         var _locationOptions = {location: {lat: 52, lng: -2},
             distance: 20,
-            limit: 100
+            limit: 100,
+            mouseOptions:null
         };
         if (this._popupinfo) {
             this._popupinfo = false;
@@ -201,7 +202,7 @@ L.Control.Places = L.Control.extend({
         var self = this;
         var p = new LatLon(_locationOptions.location.lat, _locationOptions.location.lng);
         var pt = {lat: _locationOptions.location.lat, lng: _locationOptions.location.lng};
-        var marker = new L.Control.RightclickMarker(pt, this._masterlayer, null);
+        var marker = new L.Control.RightclickMarker(pt, this._masterlayer, _locationOptions.mouseOptions);
 
         marker.setContent("<b>Searching for Meeting and Starting Places ...</b>");
         //  var point = L.marker(p, {icon: icon}).bindPopup("<b>Searching for Meeting and Starting Places ...</b>");

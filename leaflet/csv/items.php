@@ -24,14 +24,18 @@ class RLeafletCsvItems {
 
     public function addItem($item) {
         $this->items[] = $item;
-        $item->jpclass="var".count($this->items);
+        $item->jpclass = "var" . count($this->items);
     }
 
     public function getItem($no) {
-        if (array_key_exists ($no,$this->items)){
-             return $this->items[$no];
+        if (array_key_exists($no, $this->items)) {
+            return $this->items[$no];
         } else {
             return null;
         }
+    }
+
+    public function getItems() {
+        return $this->items;
     }
 }

@@ -1456,6 +1456,9 @@ ra.w3w = (function () {
         if (words === "") {
             return "";
         }
+          if (words === "walks.manager.error") {
+            return "<b>Error: </b>No W3W data provided";
+        }
         var out = '<a class="w3w" href="https://what3words.com/about-us/" title="See information about W3W" target="_blank">What3Words: </a>';
         out += '<a class="mappopup" title="See W3W map of location" href="https://what3words.com/' + words + '" target="_blank"> ///' + words + '</a><br/>';
         if (nearestPlace !== "") {

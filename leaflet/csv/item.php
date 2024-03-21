@@ -23,11 +23,12 @@ class RLeafletCsvItem {
     public $longitude = false;
     public $easting = false;
     public $northing = false;
-    public $linkmarker=false;
-    public $align='right';
+    public $linkmarker = false;
+    public $align = 'right';
     public $type = "text";
-    public $jpclass="";
+    public $jpclass = "";
     public $values = [];
+    public $columnName = null; // used by sql option
 
     public function __construct($name) {
         $this->name = $name;
@@ -40,8 +41,8 @@ class RLeafletCsvItem {
     public function addOptions($value) {
         $options = explode(" ", $value);
         foreach ($options as $option) {
-            $option=trim($option);
-            $option=strtolower($option);
+            $option = trim($option);
+            $option = strtolower($option);
             switch ($option) {
                 case "sort":
                     $this->sort = true;
@@ -81,7 +82,7 @@ class RLeafletCsvItem {
                 case "link":
                     $this->type = "link";
                     break;
-               case "linkmarker":
+                case "linkmarker":
                     $this->linkmarker = true;
                     break;
                 case "left":
@@ -97,12 +98,11 @@ class RLeafletCsvItem {
                     $this->align = 'center';
                     break;
                 case "":
-                    
+
                     break;
                 default:
                     Echo "<p>Invalid options supplied:" . $option . "</p>";
             }
         }
     }
-
 }

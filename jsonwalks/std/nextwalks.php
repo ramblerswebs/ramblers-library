@@ -25,5 +25,10 @@ class RJsonwalksStdNextwalks extends RJsonwalksStdSimplelist {
     public function noWalks($no) {
         $this->nowalks = $no;
     }
+    
+     public function DisplayWalks($walks) {
+        $walks->noWalks($this->nowalks);
+        parent::DisplayWalks($walks);
+    }
 
 }
