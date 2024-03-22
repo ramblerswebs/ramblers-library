@@ -50,11 +50,11 @@ class RLeafletCsvList extends RLeafletMap {
         $data->list = $this->list;
         $data->paginationDefault = $this->paginationDefault;
 
-        parent::setCommand('ra.display.csvList.display');
+        parent::setCommand('ra.display.tableList.display');
         parent::setDataObject($data);
         parent::display();
-        RLoad::addScript("media/lib_ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
-        RLoad::addStyleSheet("media/lib_ramblers/leaflet/csv/csvlist.css", "text/css");
+        RLoad::addScript("media/lib_ramblers/leaflet/table/ramblerstable.js", "text/javascript");
+        RLoad::addStyleSheet("media/lib_ramblers/leaflet/table/style.css", "text/css");
         RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
 
         RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
@@ -65,7 +65,7 @@ class RLeafletCsvList extends RLeafletMap {
     private function readCSV() {
         $row = 1;
         $item = null;
-        $this->list = new RLeafletCsvItems();
+        $this->list = new RLeafletTableItems();
         if (($handle = fopen($this->filename, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 $num = count($data);
@@ -80,7 +80,7 @@ class RLeafletCsvList extends RLeafletMap {
                 for ($col = 0; $col < $num; $col++) {
                     $value = $data[$col];
                     if ($row === 1) {
-                        $item = new RLeafletCsvItem($value);
+                        $item = new RLeafletTableItem($value);
                         $this->list->addItem($item);
                     } else {
                         $item = $this->list->getItem($col);

@@ -14,7 +14,6 @@
 class RLeafletSqlList extends RLeafletMap {
 
     private $tableName = "";
-    private $diagnostic = false;
     private $validOptions = false;
     private $list = null;
     private $fields = [];
@@ -30,7 +29,7 @@ class RLeafletSqlList extends RLeafletMap {
             echo "ERROR: RLeafletSqlList options  must be an array";
             return;
         }
-        $this->list = new RLeafletCsvItems();
+        $this->list = new RLeafletTableItems();
         foreach ($options as $option) {
             if (!array_key_exists("heading", $option)) {
                 echo "ERROR: RLeafletSqlList options  does not contain heading field";
@@ -44,7 +43,7 @@ class RLeafletSqlList extends RLeafletMap {
                 echo "ERROR: RLeafletSqlList options  does not contain options field";
                 return;
             }
-            $item = new RLeafletCsvItem($option["heading"]);
+            $item = new RLeafletTableItem($option["heading"]);
             $this->list->addItem($item);
             $item->addOptions($option["options"]);
             $item->columnName = $option["column"];
@@ -68,7 +67,6 @@ class RLeafletSqlList extends RLeafletMap {
         foreach ($result as $row) {
             $items = $this->list->getItems();
             foreach ($items as $item) {
-                $a = 1;
                 if (property_exists($row, $item->columnName)) {
                     $col = $item->columnName;
                     $value = $row->$col;
@@ -96,11 +94,11 @@ class RLeafletSqlList extends RLeafletMap {
         $data->list = $this->list;
         $data->paginationDefault = $this->paginationDefault;
 
-        parent::setCommand('ra.display.csvList.display');
+        parent::setCommand('ra.display.tableList.display');
         parent::setDataObject($data);
         parent::display();
-        RLoad::addScript("media/lib_ramblers/leaflet/csv/ramblerscsvlist.js", "text/javascript");
-        RLoad::addStyleSheet("media/lib_ramblers/leaflet/csv/csvlist.css", "text/css");
+        RLoad::addScript("media/lib_ramblers/leaflet/table/ramblerstable.js", "text/javascript");
+        RLoad::addStyleSheet("media/lib_ramblers/leaflet/table/style.css", "text/css");
         RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
 
         RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
@@ -123,102 +121,4 @@ class RLeafletSqlList extends RLeafletMap {
         $results = $db->loadObjectList();
         return $results;
     }
-
-    private function readDisplayOptions() {
-        $row = 1;
-        $item = null;
-        $this->list = new RLeafletCsvItems();
-        if (($handle = fopen($this->filename, "r")) !== FALSE) {
-            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                $num = count($data);
-                if ($this->diagnostic) {
-                    if ($row === 1) {
-                        echo "<table>";
-                        echo RHtml::addTableHeader($data);
-                    } else {
-                        echo RHtml::addTableRow($data);
-                    }
-                }
-                for ($col = 0; $col < $num; $col++) {
-                    $value = $data[$col];
-                    if ($row === 1) {
-                        $item = new RLeafletCsvItem($value);
-                        $this->list->addItem($item);
-                    } else {
-                        $item = $this->list->getItem($col);
-                        if ($item == null) {
-                            echo "<p>Column " . $col . " has no header title</p>";
-                        } else {
-                            if ($row == 2) {
-                                $item->addOptions($value);
-                            } else {
-                                $item->addValue($value);
-                            }
-                        }
-                    }
-                }
-
-                $row++;
-            }
-            if ($item != null) {
-                $this->list->rows = count($item->values);
-            }
-            if ($this->diagnostic) {
-                echo "</table>";
-            }
-        } else {
-            return false;
-        }
-        fclose($handle);
-        return true;
-    }
-
-//   private function readCSV() {
-//        $row = 1;
-//        $item = null;
-//        $this->list = new RLeafletCsvItems();
-//        if (($handle = fopen($this->filename, "r")) !== FALSE) {
-//            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-//                $num = count($data);
-//                if ($this->diagnostic) {
-//                    if ($row === 1) {
-//                        echo "<table>";
-//                        echo RHtml::addTableHeader($data);
-//                    } else {
-//                        echo RHtml::addTableRow($data);
-//                    }
-//                }
-//                for ($col = 0; $col < $num; $col++) {
-//                    $value = $data[$col];
-//                    if ($row === 1) {
-//                        $item = new RLeafletCsvItem($value);
-//                        $this->list->addItem($item);
-//                    } else {
-//                        $item = $this->list->getItem($col);
-//                        if ($item == null) {
-//                            echo "<p>Column " . $col . " has no header title</p>";
-//                        } else {
-//                            if ($row == 2) {
-//                                $item->addOptions($value);
-//                            } else {
-//                                $item->addValue($value);
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                $row++;
-//            }
-//            if ($item != null) {
-//                $this->list->rows = count($item->values);
-//            }
-//            if ($this->diagnostic) {
-//                echo "</table>";
-//            }
-//        } else {
-//            return false;
-//        }
-//        fclose($handle);
-//        return true;
-//    }
 }

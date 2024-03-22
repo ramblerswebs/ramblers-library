@@ -11,7 +11,7 @@
  *
  * @author Chris Vaughan
  */
-class RLeafletCsvItem {
+class RLeafletTableItem {
 
     public $name = "";
     public $sort = false;
@@ -21,8 +21,8 @@ class RLeafletCsvItem {
     public $gridref = false;
     public $latitude = false;
     public $longitude = false;
-    public $easting = false;
-    public $northing = false;
+ //   public $easting = false;
+ //   public $northing = false;
     public $linkmarker = false;
     public $align = 'right';
     public $type = "text";
@@ -41,9 +41,7 @@ class RLeafletCsvItem {
     public function addOptions($value) {
         $options = explode(" ", $value);
         foreach ($options as $option) {
-            $option = trim($option);
-            $option = strtolower($option);
-            switch ($option) {
+            switch (strtolower(trim($option))) {
                 case "sort":
                     $this->sort = true;
                     break;
@@ -66,10 +64,10 @@ class RLeafletCsvItem {
                     $this->longitude = true;
                     break;
                 case "easting":
-                    $this->easting = true;
-                    break;
+ //                   $this->easting = true;
+ //                   break;
                 case "northing":
-                    $this->northing = true;
+ //                   $this->northing = true;
                     break;
                 case "int":
                 case "integer":
@@ -92,8 +90,6 @@ class RLeafletCsvItem {
                     $this->align = 'right';
                     break;
                 case "centre":
-                    $this->align = 'center';
-                    break;
                 case "center":
                     $this->align = 'center';
                     break;

@@ -11,7 +11,7 @@
  *
  * @author Chris Vaughan
  */
-class RLeafletCsvItems {
+class RLeafletTableItems {
 
     public $items = [];
     public $displayMap = false;
