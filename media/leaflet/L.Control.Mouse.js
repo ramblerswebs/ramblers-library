@@ -688,11 +688,7 @@ L.Control.Rightclick = L.Control.extend({
         //   ele.innerHTML = desc;
         var elements = ra.html.generateTags(pop, tags);
         marker.setContent(pop);
-        //  var point = L.marker(p).bindPopup(pop);
-        //  this._mouseLayer.addLayer(point);
-        //  point.openPopup();
-        //  this._addOptionsLink(elements.options);
-        ra.w3w.get(e.latlng.lat, e.latlng.lng, elements.w3w, true);
+        ra.w3w.get(e.latlng.lat, e.latlng.lng, elements.w3w, false);
     },
     _displayPostcodes: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);

@@ -1,22 +1,15 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of items
  *
  * @author Chris Vaughan
  */
-class RLeafletTableItems {
+class RLeafletTableItems implements JsonSerializable {
 
-    public $items = [];
-    public $displayMap = false;
-    public $paginateList = true;
-    public $rows = 0;
+    private $items = [];
+    private $displayMap = false;
+    private $paginateList = true;
 
     public function __construct() {
         
@@ -24,7 +17,7 @@ class RLeafletTableItems {
 
     public function addItem($item) {
         $this->items[] = $item;
-        $item->jpclass = "var" . count($this->items);
+        $item->setJpClass("var" . count($this->items));
     }
 
     public function getItem($no) {
@@ -37,5 +30,13 @@ class RLeafletTableItems {
 
     public function getItems() {
         return $this->items;
+    }
+
+    public function jsonSerialize(): mixed {
+        return [
+            'items' => $this->items,
+            'displayMap' => $this->displayMap,
+            'paginateList' => $this->paginateList
+        ];
     }
 }

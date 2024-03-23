@@ -12,7 +12,7 @@ ra.display.tableList = (function () {
         this.list = null;
         this.options = options;  
         this.data = data;
-        this.data.list.rows=this.data.list.items[0].values.length;
+        this.numberOfRows=this.data.list.items[0].values.length;
         //this.paginationDefault = 10;
         
         this.load = function ( ) {
@@ -46,7 +46,7 @@ ra.display.tableList = (function () {
         };
 
         this.displayCsvData = function () {
-            this.addPagination(this.data.list.rows, this.elements.raPagination1);
+            this.addPagination(this.numberOfRows, this.elements.raPagination1);
             this.testForMap();
             this.displayCSVTable();
 
@@ -193,7 +193,7 @@ ra.display.tableList = (function () {
         this.displayCSVRows = function (tag) {
             var no, index;
             var item;
-            for (no = 0; no < this.data.list.rows; ++no) {
+            for (no = 0; no < this.numberOfRows; ++no) {
                 var items = this.data.list.items;
                 var tr = document.createElement('tr');
                 tag.appendChild(tr);
@@ -233,7 +233,7 @@ ra.display.tableList = (function () {
         };
 
         this.addCSVMarkers = function () {
-            for (var index = 0; index < this.data.list.rows; ++index) {
+            for (var index = 0; index < this.numberOfRows; ++index) {
                 this.addCSVMarker(index);
             }
             this.cluster.addClusterMarkers();

@@ -1,37 +1,34 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of item
  *
  * @author Chris Vaughan
  */
-class RLeafletTableItem {
+class RLeafletTableItem implements JsonSerializable {
 
-    public $name = "";
-    public $sort = false;
-    public $table = false;
-    public $filter = false;
-    public $popup = false;
-    public $gridref = false;
-    public $latitude = false;
-    public $longitude = false;
- //   public $easting = false;
- //   public $northing = false;
-    public $linkmarker = false;
-    public $align = 'right';
-    public $type = "text";
-    public $jpclass = "";
-    public $values = [];
+    private $name = "";
+    private $sort = false;
+    private $table = false;
+    private $filter = false;
+    private $popup = false;
+    private $gridref = false;
+    private $latitude = false;
+    private $longitude = false;
+    //   public $easting = false;
+    //   public $northing = false;
+    private $linkmarker = false;
+    private $align = 'right';
+    private $type = "text";
+    private $jpclass = "";
+    private $values = [];
     public $columnName = null; // used by sql option
 
     public function __construct($name) {
         $this->name = $name;
+    }
+    public function setJpClass($value){
+        $this->jpclass=$value;
     }
 
     public function addValue($value) {
@@ -64,10 +61,10 @@ class RLeafletTableItem {
                     $this->longitude = true;
                     break;
                 case "easting":
- //                   $this->easting = true;
- //                   break;
+                //                   $this->easting = true;
+                //                   break;
                 case "northing":
- //                   $this->northing = true;
+                    //                   $this->northing = true;
                     break;
                 case "int":
                 case "integer":
@@ -100,5 +97,23 @@ class RLeafletTableItem {
                     Echo "<p>Invalid options supplied:" . $option . "</p>";
             }
         }
+    }
+
+    public function jsonSerialize(): mixed {
+        return [
+            'name' => $this->name,
+            'sort' => $this->sort,
+            'table' => $this->table,
+            'filter' => $this->filter,
+            'popup' => $this->popup,
+            'gridref' => $this->gridref,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
+            'linkmarker' => $this->linkmarker,
+            'align' => $this->align,
+            'type' => $this->type,
+            'jpclass' => $this->jpclass,
+            'values' => $this->values
+        ];
     }
 }
