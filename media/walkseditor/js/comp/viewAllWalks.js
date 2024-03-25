@@ -10,7 +10,7 @@ if (typeof (ra.walkseditor.comp) === "undefined") {
 }
 
 // walks editor that COMPONENT
-ra.walkseditor.comp.viewAllWalks = function (mapOptions, data) {
+ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
     this.data = data;
     this.newUrl = this.data.newUrl;
     this.programme = new ra.walkseditor.walks();
