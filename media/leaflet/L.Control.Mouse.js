@@ -625,7 +625,7 @@ L.Control.Rightclick = L.Control.extend({
                         location: e.latlng,
                         distance: this._userOptions.starting.distance,
                         limit: this._userOptions.starting.number,
-                        mouseOptions:  this._containerAll};
+                        mouseOptions: this._containerAll};
                     this._places.displayPlaces(options);
                     break;
                 case "groups":
@@ -858,18 +858,11 @@ L.Control.Rightclick = L.Control.extend({
     _displayOSM: function (e, option) {
         var self = this;
         var osmOption = this.osmOptions[option];
+         var myicon = this.nodeIcon(option);
         var tag = osmOption.tag;
         var type = osmOption.type;
         var title = osmOption.title;
         var single = osmOption.single;
-        var p = new LatLon(e.latlng.lat, e.latlng.lng);
-        var i;
-        //  var msg = "<b>Searching for " + type + " ...</b>";
-        //  this._mouseLayer.clearLayers();
-        //  var point = L.marker(p).bindPopup(msg);
-        //  this._mouseLayer.addLayer(point);
-        //  point.getPopup().setContent(msg);
-        //  point.openPopup();
         var marker = new L.Control.RightclickMarker(e.latlng, this._mouseLayer, this._containerAll);
         marker.setContent("<b>Searching for " + type + " ...</b>");
         this._latlng = e.latlng;
@@ -891,9 +884,9 @@ L.Control.Rightclick = L.Control.extend({
                     msg += "<p>" + items.osm3s.copyright + "</p>";
                     marker.setContent(msg);
                     //  point.openPopup();
-                    for (i = 0; i < items.elements.length; i++) {
+                    for (var i = 0; i < items.elements.length; i++) {
                         var item = items.elements[i];
-                        self.displayElement(item, single);
+                        self.displayElement(item, single, myicon);
                     }
                     var bounds = self._mouseLayer.getBounds();
                     self._map.fitBounds(bounds, {padding: [50, 50]});
@@ -945,7 +938,7 @@ L.Control.Rightclick = L.Control.extend({
                     point.openPopup();
                     for (i = 0; i < items.elements.length; i++) {
                         var item = items.elements[i];
-                        self.displayElement(item, single);
+                        self.displayElement(item, single, "");
                     }
                     var bounds = self._mouseLayer.getBounds();
                     self._map.fitBounds(bounds, {padding: [50, 50]});
@@ -956,20 +949,20 @@ L.Control.Rightclick = L.Control.extend({
             }, 6000, point);
         });
     },
-    displayElement: function (node, title) {
+    displayElement: function (node, title, myicon) {
         switch (node.type) {
             case "node":
-                this.displayNode(node, title);
+                this.displayNode(node, title, myicon);
                 break;
             case "way":
-                this.displayWay(node, title);
+                this.displayWay(node, title, myicon);
                 break;
             case "relation":
 
                 break;
         }
     },
-    displayNode: function (node, title) {
+    displayNode: function (node, title, myicon) {
         var tags = node.tags;
         var popup = "<b>" + title + "</b><br/>";
         if (typeof tags.name !== 'undefined') {
@@ -978,10 +971,41 @@ L.Control.Rightclick = L.Control.extend({
         this.deleteTags(node.tags, ['name', 'amenity', 'fhrs:id', 'source']);
         popup += this.listTags(tags, null);
         var pt = new L.latLng(node.lat, node.lon);
-        var marker = L.marker(pt).bindPopup(popup);
+      
+        var marker = L.marker(pt, {icon: myicon}).bindPopup(popup);
         this._mouseLayer.addLayer(marker);
     },
-    displayWay: function (node, title) {
+    nodeIcon: function (type) {
+        var icon = L.icon({
+            iconUrl: ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/redmarker.png',
+            iconSize: [22, 22], 
+            iconAnchor: [11, 1], 
+            popupAnchor: [0, -1] 
+        });
+        switch (type) {
+            case "parking":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/parking.svg';
+                break;
+            case "cafes":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/cafe.svg';
+                break;
+            case "pubs":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/pub.svg';
+                break;
+            case "toilets":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/toilets.svg';
+                break;
+            case "bus_stops":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/bus_stop.svg';
+                break;
+            default:
+
+        }
+
+        return icon;
+    },
+
+    displayWay: function (node, title, myicon) {
         var tags = node.tags;
         var popup = "<b>" + title + "</b><br/>";
         if (typeof tags.name !== 'undefined') {
@@ -989,8 +1013,9 @@ L.Control.Rightclick = L.Control.extend({
         }
         this.deleteTags(node.tags, ['name', 'amenity', 'fhrs:id', 'source']);
         popup += this.listTags(tags);
+      
         var pt = new L.latLng(node.center.lat, node.center.lon);
-        var marker = L.marker(pt).bindPopup(popup);
+        var marker = L.marker(pt, {icon: myicon}).bindPopup(popup);
         this._mouseLayer.addLayer(marker);
     },
     deleteTags: function (tags, excludeProperties) {
@@ -1210,6 +1235,7 @@ L.Control.Rightclick = L.Control.extend({
         ra.settings.save(save, '__rightclick', this._userOptions);
     }
 });
+
 L.control.rightclick = function (options) {
     return new L.Control.Rightclick(options);
 };
