@@ -4,6 +4,7 @@ if (typeof (ra) === "undefined") {
 }
 ra._isES6 = null;
 ra._baseDirectory = '';
+ra._jversion = "1.5.0";
 ra.uniquenumber = 0;
 ra.defaultMapOptions = {
     "divId": "",
@@ -38,6 +39,9 @@ ra.defaultMapOptions = {
 ra.baseDirectory = function () {
     return ra._baseDirectory;
 };
+ra.joomlaVersion = function () {
+    return ra._jversion;
+};
 ra.decodeOptions = function (value) {
     var options = JSON.parse(value);
     if (options.hasOwnProperty('base')) {
@@ -63,8 +67,9 @@ ra.uniqueID = function () {
     ra.uniquenumber += 1;
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
-ra.bootstrapper = function (displayClass, mapOptions, _data) {
+ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
     ra.loading.start();
+    ra._jversion = jversion;
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
         var data = ra.decodeData(_data);
@@ -1450,6 +1455,9 @@ ra.w3w = (function () {
     w3w.toText = function (words, nearestPlace) {
         if (words === "") {
             return "";
+        }
+          if (words === "walks.manager.error") {
+            return "<b>Error: </b>No W3W data provided";
         }
         var out = '<a class="w3w" href="https://what3words.com/about-us/" title="See information about W3W" target="_blank">What3Words: </a>';
         out += '<a class="mappopup" title="See W3W map of location" href="https://what3words.com/' + words + '" target="_blank"> ///' + words + '</a><br/>';

@@ -7,7 +7,16 @@ if (typeof (ra.walkseditor) === "undefined") {
     ra.walkseditor = {};
 }
 ra.walkseditor.inputFields = function () {
+    this.predefinedUrls = {
+        contacts: ra.baseDirectory() + "index.php?option=com_ra_walkseditor&task=contacts.controller&format=json&search=",
+        grades: ra.baseDirectory() + "index.php?option=com_ra_walkseditor&task=grades.controller&format=json",
+        places: ra.baseDirectory() + "index.php?option=com_ra_walkseditor&task=places.controller&format=json&search="};
 
+    this.setPredefinedURLsforJ5 = function () {
+        this.predefinedUrls.contacts = ra.baseDirectory() + "index.php?option=com_ra_walks_editor&view=contacts&format=json&search=";
+        this.predefinedUrls.grades = ra.baseDirectory() + "index.php?option=com_ra_walks_editor&view=grades&format=json";
+        this.predefinedUrls.places = ra.baseDirectory() + "index.php?option=com_ra_walks_editor&view=places&format=json&search=";
+    };
     this.addText = function (tag, divClass, label, raobject, property, placeholder = '', helpFunction = null) {
         var itemDiv = document.createElement('div');
         itemDiv.setAttribute('class', divClass);
@@ -448,7 +457,7 @@ ra.walkseditor.inputFields = function () {
         inputTag.addEventListener("change", function (e) {
             e.target.raobject[e.target.raproperty] = e.target.value;
         });
-        var url = ra.baseDirectory() + "index.php?option=com_ra_walkseditor&task=grades.controller&format=json";
+        var url = this.predefinedUrls.grades;
         var option = document.createElement("option");
         option.value = "";
         option.text = "Please Select...";
@@ -512,7 +521,7 @@ ra.walkseditor.inputFields = function () {
             var target = e.target;
             var title = 'Predefined Location Search';
             var context = 'Search for predefined location, enter part of the name and then use search button';
-            var url = ra.baseDirectory() + "index.php?option=com_ra_walkseditor&task=places.controller&format=json&search=";
+            var url = this.predefinedUrls.places;
             var record = function (item) {
                 return item.name + "   (" + item.gridreference + ")";
             };
@@ -541,12 +550,13 @@ ra.walkseditor.inputFields = function () {
             new ra.help(tag, helpFunction).add();
         }
         var feed = new ra.feedhandler();
+        var url = this.predefinedUrls.contacts;
         findButton.feedhelper = feed;
         findButton.addEventListener("click", function (e) {
             var target = e.target;
             var title = 'Contact Search';
             var context = 'Search for predefined contact details, enter part of name and then use the search button';
-            var url = ra.baseDirectory() + "index.php?option=com_ra_walkseditor&task=contacts.controller&format=json&search=";
+
             var record = function (item) {
                 return item.displayname + "   (" + item.contactname + ", " + item.email + ", " + item.telephone1 + ", " + item.telephone2 + ")";
             };

@@ -5,13 +5,14 @@ if (typeof (ra) === "undefined") {
 if (typeof (ra.display) === "undefined") {
     ra.display = {};
 }
-ra.display.csvList = (function () {
-    var csvList = {};
+ra.display.tableList = (function () {
+    var tableList = {};
 
-    csvList.display = function (options,data) {
+    tableList.display = function (options,data) {
         this.list = null;
         this.options = options;  
         this.data = data;
+        this.numberOfRows=this.data.list.items[0].values.length;
         //this.paginationDefault = 10;
         
         this.load = function ( ) {
@@ -23,12 +24,12 @@ ra.display.csvList = (function () {
                 {name: 'map', parent: 'row', tag: 'td', attrs: {class: 'ra-tab'}, textContent: 'Map'},
                 {name: 'list', parent: 'row', tag: 'td', attrs: {class: 'ra-tab active'}, textContent: 'List'},
                 {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {class: 'gpxouter'}},
-                {name: 'csvmap', parent: 'gpxouter', tag: 'div', style: {display: 'none'}},
-                {name: 'csvrecord', parent: 'gpxouter', tag: 'div'},
-                {name: 'csvlist', parent: 'gpxouter', tag: 'div'},
-                {name: 'csvFilter', parent: 'csvlist', tag: 'div', attrs: {class: 'csvFilter'}, textContent: 'Program loading: please give this a minute or so.If this does not vanish then please contact the web master!'},
-                {name: 'raPagination1', parent: 'csvlist', tag: 'div'},
-                {name: 'dataTab', parent: 'csvlist', tag: 'div'}
+                {name: 'tablemap', parent: 'gpxouter', tag: 'div', style: {display: 'none'}},
+                {name: 'tablerecord', parent: 'gpxouter', tag: 'div'},
+                {name: 'tablelist', parent: 'gpxouter', tag: 'div'},
+                {name: 'tableFilter', parent: 'tablelist', tag: 'div', attrs: {class: 'tableFilter'}, textContent: 'Program loading: please give this a minute or so.If this does not vanish then please contact the web master!'},
+                {name: 'raPagination1', parent: 'tablelist', tag: 'div'},
+                {name: 'dataTab', parent: 'tablelist', tag: 'div'}
             ];
             this.masterdiv = document.getElementById(options.divId);
 
@@ -45,12 +46,12 @@ ra.display.csvList = (function () {
         };
 
         this.displayCsvData = function () {
-            this.addPagination(this.data.list.rows, this.elements.raPagination1);
+            this.addPagination(this.numberOfRows, this.elements.raPagination1);
             this.testForMap();
             this.displayCSVTable();
 
             if (this.displayMap) {
-                this.lmap = new ra.leafletmap(this.elements.csvmap, this.options);
+                this.lmap = new ra.leafletmap(this.elements.tablemap, this.options);
                 this.map = this.lmap.map;
                 this.cluster = new cluster(this.map);
                 this.ra_format("Map");
@@ -58,7 +59,7 @@ ra.display.csvList = (function () {
                 this.addCSVMarkers();
             }
 
-            this.myjplist.init('ra-csv-list');
+            this.myjplist.init('ra-table-list');
             this.myjplist.updateControls();
 
         };
@@ -153,7 +154,7 @@ ra.display.csvList = (function () {
         this.displayCSVHeader = function (tag) {
             var items = this.data.list.items;
             var table = document.createElement('table');
-            table.setAttribute('class', "csvdetails");
+            table.setAttribute('class', "tabledetails");
             tag.appendChild(table);
             var thead = document.createElement('thead');
             table.appendChild(thead);
@@ -186,13 +187,13 @@ ra.display.csvList = (function () {
                     }
                 }
             }
-            this.elements.csvFilter.innerHTML = filter;
+            this.elements.tableFilter.innerHTML = filter;
         };
 
         this.displayCSVRows = function (tag) {
             var no, index;
             var item;
-            for (no = 0; no < this.data.list.rows; ++no) {
+            for (no = 0; no < this.numberOfRows; ++no) {
                 var items = this.data.list.items;
                 var tr = document.createElement('tr');
                 tag.appendChild(tr);
@@ -232,7 +233,7 @@ ra.display.csvList = (function () {
         };
 
         this.addCSVMarkers = function () {
-            for (var index = 0; index < this.data.list.rows; ++index) {
+            for (var index = 0; index < this.numberOfRows; ++index) {
                 this.addCSVMarker(index);
             }
             this.cluster.addClusterMarkers();
@@ -305,10 +306,10 @@ ra.display.csvList = (function () {
                 }
             }
             $details += "</div>";
-            this.elements.csvrecord.innerHTML = $details;
+            this.elements.tablerecord.innerHTML = $details;
         };
         this.removeRecordDisplay = function () {
-            this.elements.csvrecord.innerHTML = "";
+            this.elements.tablerecord.innerHTML = "";
         };
         this.selectMarker = function (event) {
             var no = parseInt(event.target.getAttribute('data-marker-number'));
@@ -333,14 +334,14 @@ ra.display.csvList = (function () {
             switch (option) {
                 case 'List':
                     this.elements.list.classList.add('active');
-                    this.elements.csvmap.style.display = "none";
-                    this.elements.csvlist.style.display = "inline";
+                    this.elements.tablemap.style.display = "none";
+                    this.elements.tablelist.style.display = "inline";
                     this.myjplist.updateControls();
                     break;
                 case 'Map':
                     this.elements.map.classList.add('active');
-                    this.elements.csvlist.style.display = "none";
-                    this.elements.csvmap.style.display = "inline";
+                    this.elements.tablelist.style.display = "none";
+                    this.elements.tablemap.style.display = "inline";
                     this.map.invalidateSize();
                     break;
             }
@@ -366,6 +367,6 @@ ra.display.csvList = (function () {
         };
 
     };
-    return csvList;
+    return tableList;
 }
 ());

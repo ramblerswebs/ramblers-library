@@ -19,6 +19,7 @@ class RWalkseditor {
         RLoad::addScript($path . "js/maplocation.js", "text/javascript");
         RLoad::addScript($path . "js/placeEditor.js", "text/javascript");
         RLoad::addScript($path . "js/comp/viewAllWalks.js", "text/javascript");
+        RLoad::addScript($path . "js/comp/viewAllPlaces.js", "text/javascript");
         RLoad::addScript($path . "js/walkeditor.js", "text/javascript");
         RLoad::addScript($path . "js/walksEditorHelps.js", "text/javascript");
         RLoad::addStyleSheet($path . "css/style.css", "text/css");

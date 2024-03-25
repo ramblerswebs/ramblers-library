@@ -464,9 +464,6 @@ ra.event = function () {
         var grade = this.getIntValue("walks", "_nationalGrade");
         valueSet.add(new ra.filter.value("idGrade", grade));
         var status = this.admin.status;
-        if (status === "New") {
-            status = "Published";
-        }
         valueSet.add(new ra.filter.value("idStatus", status));
         var dist = this.getIntValue("walks", "_filterDistance");
         valueSet.add(new ra.filter.value("idDistance", dist));
@@ -710,8 +707,11 @@ ra.event = function () {
         if (this.isCancelled()) {
             return "<span data-descr='Walk Cancelled' class=' walkCancelled'>" + $text + "</span>";
         }
-        if (this.admin.status.toLowerCase() === "new") {
-            return "<span data-descr='Walk updated " + ra.date.dowShortddmmyyyy(this.admin.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";
+        if (this.admin.flagNew) {
+            return "<span class='new' data-descr='New walk/event created " + ra.date.dowShortddmmyyyy(this.admin.dateCreated) + "' class=' walkNew'>" + $text + "</span>";
+        }
+       if (this.admin.flagUpdated) {
+            return "<span class='updated' data-descr='Walk/event updated " + ra.date.dowShortddmmyyyy(this.admin.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";
         }
         return $text;
     };
@@ -860,6 +860,8 @@ ra.event.admin = function () {
         this.groupCode = admin.groupCode;
         this.groupName = admin.groupName;
         this.status = admin.status;
+        this.flagNew = admin.flagNew;
+        this.flagUpdated = admin.flagUpdated;
         this.cancellationReason = admin.cancellationReason;
         this.dateUpdated = ra.date.getDateTime(admin.dateUpdated.date);
         this.dateCreated = ra.date.getDateTime(admin.dateCreated.date);

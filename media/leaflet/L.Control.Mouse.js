@@ -1,4 +1,9 @@
 var L, ra, OsGridRef;
+// this file contains three controls
+// Mouse to display grid reference
+// OSInfo to display oS Map outlines
+// Rightclick to define mouse right click actions
+
 L.Control.Mouse = L.Control.extend({
     options: {
         position: 'bottomleft',
@@ -98,13 +103,13 @@ L.Control.Mouse = L.Control.extend({
                     var bounds = this._osGridToLatLongSquare(grid, 100);
                     this.gridsquare100 = L.polygon(bounds, {color: "#ff7800", weight: 1, ignore: true});
                     // ignore property is for Zoom All
-                    this.OSGridSquareLayer.addLayer(this.gridsquare100);  // change rectangle
+                    this.OSGridSquareLayer.addLayer(this.gridsquare100); // change rectangle
                 }
                 if (zoom > 16) {
                     var bounds2 = this._osGridToLatLongSquare(grid, 10);
                     this.gridsquare10 = L.polygon(bounds2, {color: "#884000", weight: 1, ignore: true});
                     // ignore property is for Zoom All
-                    this.OSGridSquareLayer.addLayer(this.gridsquare10);     // change rectangle
+                    this.OSGridSquareLayer.addLayer(this.gridsquare10); // change rectangle
                 }
             }
         }
@@ -132,7 +137,6 @@ L.Control.Mouse = L.Control.extend({
         this._container.innerHTML = grtext + latlong;
         return;
     },
-
     settingsForm: function (tag) {
         try {
             if (!L.Browser.mobile) {
@@ -179,12 +183,9 @@ L.Control.Mouse = L.Control.extend({
         ra.settings.save(save, '__mouseossquare', this._userOptions);
     }
 });
-
-
 L.control.mouse = function (options) {
     return new L.Control.Mouse(options);
 };
-
 L.Control.OSInfo = L.Control.extend({
     options: {
         position: 'bottomleft'
@@ -205,7 +206,6 @@ L.Control.OSInfo = L.Control.extend({
         this._containerAll = L.DomUtil.create('div', 'leaflet-control-osmaps leaflet-bar leaflet-control');
         // this._container = L.DomUtil.create('div', '', this._containerAll);
         this._containerAll.title = "Display the coverage of all OS Explore/Landranger maps";
-
         L.DomEvent.disableClickPropagation(this._containerAll);
         this._appendButtons(this._containerAll);
         this.holder.style.display = "none";
@@ -223,7 +223,6 @@ L.Control.OSInfo = L.Control.extend({
             }
         }, this);
         this._readSettings();
-
         map.on('zoomend', function () {
             self.displayOSGrid();
         });
@@ -235,34 +234,26 @@ L.Control.OSInfo = L.Control.extend({
     },
     _appendButtons: function (container) {
         this.holder = L.DomUtil.create('div', 'leaflet-os-options', container);
-
-
         this.osGridMenuItem = L.DomUtil.create('div', 'osgrid', this.holder);
         this.osGridMenuItem.title = "Display Ordnance Survey grid over the map";
         this.osGridMenuItem.innerHTML = "OS Grid [OFF]";
         L.DomEvent.addListener(this.osGridMenuItem, 'click', this._osgrid, this);
-
         var element = L.DomUtil.create('div', 'explorer', this.holder);
         element.title = "Display coverage of all Explorer maps";
         element.innerHTML = "Explorer 25K";
         L.DomEvent.addListener(element, 'click', this._disp25K, this);
-
         var element = L.DomUtil.create('div', 'landranger', this.holder);
         element.title = "Display coverage of all Landranger maps";
         element.innerHTML = "Landranger 50K";
         L.DomEvent.addListener(element, 'click', this._disp50K, this);
-
         this.removeDiv = L.DomUtil.create('div', 'remove', this.holder);
         this.removeDiv.title = "Remove coverage of maps";
         this.removeDiv.innerHTML = "Clear maps";
         L.DomEvent.addListener(this.removeDiv, 'click', this._clear, this);
-
         this.disclaimDiv = L.DomUtil.create('div', 'disclaim', this.holder);
         this.disclaimDiv.title = "Disclaimer about OS Map coverage";
         this.disclaimDiv.innerHTML = "Map disclaimer";
         L.DomEvent.addListener(this.disclaimDiv, 'click', this._disclaim, this);
-
-
     },
     onRemove: function (map) {
 
@@ -292,7 +283,6 @@ L.Control.OSInfo = L.Control.extend({
     },
     _disclaim: function () {
         var container = document.createElement('div');
-
         var title = document.createElement('h4');
         title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
         container.appendChild(title);
@@ -346,7 +336,6 @@ L.Control.OSInfo = L.Control.extend({
         }
         this.drawOSMapGrid(ne, sw, gs, this.OSGrid.layer);
     },
-
     displayOSMapOutlines: function (type) {
         // type should be '25K' or '50K'
         var self = this;
@@ -426,13 +415,69 @@ L.Control.OSInfo = L.Control.extend({
         ra.settings.save(save, '__osmapinfo', this._userOptions);
     }
 });
-
-
 L.control.osinfo = function (options) {
     return new L.Control.OSInfo(options);
 };
+L.Control.RightclickMarker = function (latlng, layer, actiontag) {
+    this.p = new LatLon(latlng.lat, latlng.lng);
+    this.actiontag = actiontag;
+    this._layer = layer;
+    layer.clearLayers();
+    var icon = L.icon({
+        iconUrl: ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/mouseloc.png',
+        iconSize: [18, 18], // size of the icon
+        iconAnchor: [9, 9], // point of the icon which will correspond to marker's location
+        popupAnchor: [0, -9] // point from which the popup should open relative to the iconAnchor
+    });
+    this._marker = L.marker(this.p, {icon: icon}).bindPopup("Processing...");
+    this._layer.addLayer(this._marker);
+    this._marker.openPopup();
+    setTimeout(function (marker) {
+        marker.closePopup();
+    }, 10000, this._marker);
+
+    this.setContent = function (contentTag) {
+        var tags = [
+            {name: 'content', parent: 'root', tag: 'div'},
+            {name: 'options', parent: 'root', tag: 'div'}
+        ];
+        var popup = document.createElement('div');
+        var elements = ra.html.generateTags(popup, tags);
+        if (typeof contentTag === 'string') {
+            elements.content.innerHTML = contentTag;
+        } else {
+            elements.content.appendChild(contentTag);
+        }
+        this._marker.getPopup().setContent(popup);
+        this._addOptionsLink(elements.options);
+    };
+    this._addOptionsLink = function (tag) {
+        if (this.actiontag === null) {
+            return;
+        }
+        var _this = this;
+        var div = document.createElement('div');
+        div.classList.add("ra-mouse-option");
+        tag.appendChild(div);
+        var opt = document.createElement('a');
+        var img = document.createElement("img");
+        img.setAttribute('src', ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/mouse-right-click-icon.png');
+        img.setAttribute('height', '18px');
+        img.setAttribute('width', '18px');
+        img.classList.add('rotateimg90');
+        opt.appendChild(img);
+        var link = document.createTextNode("Right click options ");
+        opt.appendChild(link);
+        opt.title = "Change the way Mouse Right Click works";
+        opt.classList.add("pointer");
+        opt.addEventListener("click", function (e) {
+            _this.actiontag.click();
+        });
+        div.appendChild(opt);
+    };
 
 
+};
 L.Control.Rightclick = L.Control.extend({
     options: {
         position: 'bottomleft',
@@ -477,6 +522,24 @@ L.Control.Rightclick = L.Control.extend({
             distance: null
         }
     },
+    rightClickOptions: [
+        {group: 'General Information',
+            items: {
+                details: 'Display map co-ordinates',
+                postcode: 'Display Postcodes',
+                osmaps: 'Ordnance Survey Maps'}},
+        {group: "Ramblers Information",
+            items: {groups: 'Display Ramblers Groups',
+                starting: 'Display Starting Places'}},
+        {group: 'Open Street Map information',
+            items: {
+                parking: 'Display Parking',
+                bus_stops: 'Display Bus Stops',
+                cafes: 'Display Cafes',
+                pubs: 'Display Public Houses',
+                toilets: 'Display Toilets'}}],
+    //   alltags: 'What\'s here?'}}],
+    rightClickOption: "details",
     onAdd: function (map) {
         this._map = map;
         this._readSettings();
@@ -484,22 +547,18 @@ L.Control.Rightclick = L.Control.extend({
         this._mouseLayer.addTo(this._map);
         this._places = new L.Control.Places({cluster: false});
         this._places.addTo(map);
-        this._map.on('zoomend', this._onZoomEnd, this);
         this._map.on('contextmenu', this._onRightClick, this);
         this.enabled = true;
-
         this._containerAll = L.DomUtil.create('div', 'leaflet-control-rightclick leaflet-bar leaflet-control');
         this._containerAll.title = "Mouse right click/ Tap & hold setting";
-
         this._appendButtons(this._containerAll);
-
         var osmOptions = [];
         osmOptions["cafes"] = {tag: "amenity", type: "cafe", title: "Cafes", single: "Cafe"};
         osmOptions["parking"] = {tag: "amenity", type: "parking", title: "Car Parks", single: "Car Park"};
         osmOptions["pubs"] = {tag: "amenity", type: "pub", title: "Pubs", single: "Pub"};
         osmOptions["toilets"] = {tag: "amenity", type: "toilets", title: "Toilets", single: "Toilets"};
         osmOptions["bus_stops"] = {tag: "highway", type: "bus_stop", title: "Bus Stops", single: "Bus Stop"};
-        osmOptions["alltags"] = {tag: "alltags", type: "alltags", title: "Whats there", single: "Whats there"};
+        osmOptions["alltags"] = {tag: "", type: "", title: "What's there", single: "What's here?"};
         this.osmOptions = osmOptions;
         L.DomEvent.disableClickPropagation(this._containerAll);
         return this._containerAll;
@@ -511,81 +570,25 @@ L.Control.Rightclick = L.Control.extend({
         return no;
     },
     onRemove: function () {
-        this._map.off('zoomend', this._onZoomEnd);
         this._map.off('contextmenu', this._onRightClick);
     },
     _appendButtons: function (container) {
-
         var holder = L.DomUtil.create('div', 'leaflet-control-rightclick-container', container);
         holder.style.display = "none";
         L.DomEvent.disableClickPropagation(holder);
-        L.DomEvent.addListener(container, 'mouseover', function () {
-            holder.style.display = "";
-        }, this);
+        var _this = this;
         L.DomEvent.addListener(container, 'click', function (event) {
             holder.style.display = "";
+            var tag = document.createElement('div');
+            _this.optionsForm(tag);
+            ra.modals.createModal(tag, false, true, null);
             event.stopPropagation();
         }, this);
         this.closeHolder = false;
-        holder.addEventListener("mouseover", function () {
-            self.closeHolder = true;
-        });
-        holder.addEventListener("mouseout", function () {
-            if (self.closeHolder) {
-                self.closeHolder = false;
-                holder.style.display = "none";
-            }
-        });
-
-
         holder.addEventListener("click", function (ev) {
             ev.stopPropagation();
         });
-
-        var clearDiv = L.DomUtil.create('div', 'remove', holder);
-        clearDiv.innerHTML = "Clear item(s)";
-        clearDiv.title = "Clear information currently displayed by mouse right click";
-        var self = this;
-        clearDiv.addEventListener('click', function () {
-            self._mouseLayer.clearLayers();
-            self._places.clearLayers();
-        });
-
-        L.DomEvent.addListener(container, 'mouseover', function () {
-            if (this.noLayers() > 0) {
-                clearDiv.style.display = "";
-            } else {
-                clearDiv.style.display = "none";
-            }
-        }, this);
-
-        var options = ['<optgroup label="General Information">',
-            '<option selected value="details">Display map co-ordinates</option>',
-            '<option value="postcode">Display Postcodes</option>',
-            '<option value="osmaps">Ordnance Survey Maps</option>',
-            '</optgroup>',
-            '<optgroup label="Ramblers Information">',
-            '<option value="groups">Display Ramblers Groups</option>',
-            '<option value="starting">Display Starting Places</option>',
-            '</optgroup>',
-            '<optgroup label="Open Street Map information">',
-            '<option value="parking"> Display Parking</option>',
-            '<option value="bus_stops">Display Bus Stops</option>',
-            '<option value="cafes">Display Cafes</option>',
-            '<option value="pubs"> Display Public Houses</option>',
-            '<option value="toilets">Display Toilets</option>',
-            '</optgroup>'];
-        this.selectOptions = document.createElement('select');
-        this.selectOptions.setAttribute('class', 'ra-mouse-options');
-        this.selectOptions.setAttribute('size', '13');
-        this.selectOptions.title = "Select which information is displayed";
-        this.selectOptions.innerHTML = options.join('');
-        holder.appendChild(this.selectOptions);
-        L.DomEvent.addListener(this.selectOptions, 'click', function () {
-            holder.style.display = "none";
-        }, this);
     },
-
     Enabled: function (status) {
         this.enabled = status === true;
     },
@@ -601,8 +604,7 @@ L.Control.Rightclick = L.Control.extend({
     _onRightClick: function (e) {
         this._mouseLayer.clearLayers();
         this._places.clearLayers();
-        var ele = this.selectOptions;
-        var option = ele.options[ele.selectedIndex].value;
+        var option = this.rightClickOption;
         if (this.enabled) {
             switch (option) {
                 case "details":
@@ -622,7 +624,8 @@ L.Control.Rightclick = L.Control.extend({
                     var options = {
                         location: e.latlng,
                         distance: this._userOptions.starting.distance,
-                        limit: this._userOptions.starting.number};
+                        limit: this._userOptions.starting.number,
+                        mouseOptions: this._containerAll};
                     this._places.displayPlaces(options);
                     break;
                 case "groups":
@@ -644,7 +647,8 @@ L.Control.Rightclick = L.Control.extend({
                     this._displayOSM(e, "bus_stops");
                     break;
                 case "alltags":
-                    this._displayAllTags(e);
+                    this._displayOSM(e, "alltags");
+                    //   this._displayAllTags(e);
                     break;
             }
         }
@@ -655,11 +659,8 @@ L.Control.Rightclick = L.Control.extend({
     rightClickClearPlaces: function () {
         this._places.clearLayers();
     },
-    _onZoomEnd: function (e) {
-//        var zoom = this._map.getZoom();
-    },
     _displayDetails: function (e) {
-        var desc, w3w, links = '', gr, gr10, grid;
+        var desc, links = '', gr, gr10, grid;
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
         grid = OsGridRef.latLonToOsGrid(p);
         gr = grid.toString(6);
@@ -675,25 +676,19 @@ L.Control.Rightclick = L.Control.extend({
         }
         links += '<a href="javascript:ra.link.googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
         links += '<a href="javascript:ra.loc.directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
-        this._mouseLayer.clearLayers();
+        var marker = new L.Control.RightclickMarker(e.latlng, this._mouseLayer, this._containerAll);
+
         var tags = [
             {parent: 'root', tag: 'div', 'innerHTML': desc},
             {name: 'w3w', parent: 'root', tag: 'div'},
-            {parent: 'root', tag: 'div', 'innerHTML': links}
-
+            {parent: 'root', tag: 'div', 'innerHTML': links},
+            {name: 'options', parent: 'root', tag: 'div'}
         ];
         var pop = document.createElement('div');
         //   ele.innerHTML = desc;
         var elements = ra.html.generateTags(pop, tags);
-        var point = L.marker(p).bindPopup(pop);
-        this._mouseLayer.addLayer(point);
-        //    point.getPopup().setContent(ele);
-        //      ra.html.createElement(tag, 'span').innerHTML = desc;
-        //         w3w = ra.html.createElement(tag, 'span');
-        //         ra.html.createElement(tag, 'span').innerHTML = links;
-
-        point.openPopup();
-        ra.w3w.get(e.latlng.lat, e.latlng.lng, elements.w3w, true);
+        marker.setContent(pop);
+        ra.w3w.get(e.latlng.lat, e.latlng.lng, elements.w3w, false);
     },
     _displayPostcodes: function (e) {
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
@@ -703,13 +698,10 @@ L.Control.Rightclick = L.Control.extend({
         var marker;
         var desc = " ";
         var self = this;
-        this._mouseLayer.clearLayers();
-        var msg = "   ";
-        var point = L.marker(p).bindPopup(msg);
-        this._mouseLayer.addLayer(point);
+        var marker = new L.Control.RightclickMarker(e.latlng, this._mouseLayer, this._containerAll);
         if (gr !== "") {
-            point.getPopup().setContent("<b>Searching for postcodes ...</b>");
-            point.openPopup();
+            marker.setContent("<b>Searching for postcodes ...</b>");
+
             // get postcodes around this point       
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
@@ -718,11 +710,11 @@ L.Control.Rightclick = L.Control.extend({
             ra.ajax.getJSON(url, function (err, items) {
                 if (err !== null) {
                     var msg = "Error: Something went wrong: " + err;
-                    point.getPopup().setContent(msg);
+                    marker.setContent(msg);
                 } else {
                     if (items.length === 0) {
                         var closest = "No postcodes found within " + self._userOptions.postcodes.distance + "km";
-                        point.getPopup().setContent(closest);
+                        marker.setContent(closest);
                     } else {
                         for (i = 0; i < items.length; i++) {
                             var item = items[i];
@@ -735,24 +727,23 @@ L.Control.Rightclick = L.Control.extend({
                             var popup = item.Postcode + "<br />     Location " + self._kFormatter(Math.round(location.distance * 1000)) + "m " + location.direction.name + " from marker";
                             var style;
                             if (i === 0) {
-                                marker = L.marker(pt, {icon: ra.map.icon.postcodeClosest()}).bindPopup(popup);
+                                pcmarker = L.marker(pt, {icon: ra.map.icon.postcodeClosest()}).bindPopup(popup);
                                 style = {color: 'green', weight: 3, opacity: 0.2};
                             } else {
-                                marker = L.marker(pt, {icon: ra.map.icon.postcode()}).bindPopup(popup);
+                                pcmarker = L.marker(pt, {icon: ra.map.icon.postcode()}).bindPopup(popup);
                                 style = {color: 'blue', weight: 3, opacity: 0.2};
                             }
 
-                            self._mouseLayer.addLayer(marker);
+                            self._mouseLayer.addLayer(pcmarker);
                             self._mouseLayer.addLayer(L.polyline([pt, p], style));
                         }
-                        point.getPopup().setContent("<b>" + items.length + " Postcodes found within " + self._userOptions.postcodes.distance + "km</b>");
-                        point.openPopup();
+                        marker.setContent("<b>" + items.length + " Postcodes found within " + self._userOptions.postcodes.distance + "km</b>");
                         var bounds = self._mouseLayer.getBounds();
                         self._map.fitBounds(bounds, {padding: [50, 50]});
                     }
                 }
                 setTimeout(function (point) {
-                    self._map.removeLayer(point);
+                    point.closePopup();
                 }, 3000, point);
             });
         } else {
@@ -762,6 +753,7 @@ L.Control.Rightclick = L.Control.extend({
         }
 
     },
+
     _kFormatter: function (num) {
         return num > 999 ? (num / 1000).toFixed(1) + 'K' : num;
     },
@@ -769,28 +761,23 @@ L.Control.Rightclick = L.Control.extend({
         var p = new LatLon(e.latlng.lat, e.latlng.lng);
         var grid = OsGridRef.latLonToOsGrid(p);
         var gr = grid.toString(6);
-        var i;
-        var desc = " ";
         var self = this;
-        this._mouseLayer.clearLayers();
-        var msg = "   ";
-        var point = L.marker(p).bindPopup(msg);
-        this._mouseLayer.addLayer(point);
+        var marker = new L.Control.RightclickMarker(e.latlng, this._mouseLayer, this._containerAll);
+
         if (gr !== "") {
-            point.getPopup().setContent("<b>Searching for Ordnance Survey maps ...</b>");
-            point.openPopup();
+            marker.setContent("<b>Searching for Ordnance Survey maps ...</b>");
+            //  point.openPopup();
             var east = Math.round(grid.easting);
             var north = Math.round(grid.northing);
             var url = "https://osmaps.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north;
             ra.ajax.getJSON(url, function (err, items) {
                 if (err !== null) {
-                    var msg = "Error: Something went wrong: " + err;
-                    point.getPopup().setContent(msg);
+                    marker.setContent("Error: Something went wrong: " + err);
                 } else {
-                    var content = "No Ordnance Survey Maps found for this location";
+                    marker.setContent("No Ordnance Survey Maps found for this location");
                     if (items.length !== 0) {
                         content = "<b>" + items.length + " Ordnance Survey maps found</b>";
-                        for (i = 0; i < items.length; i++) {
+                        for (var i = 0; i < items.length; i++) {
                             var item = items[i];
                             content += "<h4>" + item.type + " " + item.number + "</h4>";
                             content += "<p>" + item.title + "</p>";
@@ -798,48 +785,35 @@ L.Control.Rightclick = L.Control.extend({
                         }
                     }
 
-                    point.getPopup().setContent(content);
-                    point.openPopup();
+                    marker.setContent(content);
                     var bounds = self._mouseLayer.getBounds();
                     self._map.fitBounds(bounds, {padding: [50, 50]});
                 }
             });
         } else {
-            desc += "<br/>Outside OS Grid";
-            point.getPopup().setContent(desc);
-            point.openPopup();
+            marker.setContent("<br/>Outside OS Grid");
         }
 
     },
     _displayGroups: function (e) {
-        var p = new LatLon(e.latlng.lat, e.latlng.lng);
-        var i;
-        var marker;
-        var msg = "<b>Searching for Ramblers Groups ...</b>";
-        this._mouseLayer.clearLayers();
-        var point = L.marker(p).bindPopup(msg);
         var self = this;
-        this._mouseLayer.addLayer(point);
-        //  point.getPopup().setContent(msg);
-        point.openPopup();
+        var marker = new L.Control.RightclickMarker(e.latlng, this._mouseLayer, this._containerAll);
+        marker.setContent("<b>Searching for Ramblers Groups ...</b>");
         var $latitude = e.latlng.lat;
         var $longitude = e.latlng.lng;
         var options = "&dist=" + this._userOptions.groups.distance + "&maxpoints=" + this._userOptions.groups.number;
         var url = "https://groups.theramblers.org.uk/index.php?latitude=" + $latitude + "&longitude=" + $longitude + options;
         ra.ajax.getJSON(url, function (err, items) {
             if (err !== null) {
-                var msg = "Error: Something went wrong: " + err;
-                point.getPopup().setContent(msg);
+                marker.setContent("Error: Something went wrong: " + err);
             } else {
-
                 if (items.length === 0) {
                     var closest = "No Ramblers Groups found within " + self._userOptions.groups.distance + "km";
-                    point.getPopup().setContent(closest);
+                    marker.setContent(closest);
                 } else {
-                    msg = "<b>" + items.length + " Ramblers Groups found within " + self._userOptions.groups.distance + "km</b>";
-                    point.getPopup().setContent(msg);
-                    point.openPopup();
-                    for (i = 0; i < items.length; i++) {
+                    marker.setContent("<b>" + items.length + " Ramblers Groups found within " + self._userOptions.groups.distance + "km</b>");
+                    //   point.openPopup();
+                    for (var i = 0; i < items.length; i++) {
                         var item = items[i];
                         var popup = "<b>";
                         switch (item.scope) {
@@ -869,35 +843,28 @@ L.Control.Rightclick = L.Control.extend({
                         var pt = new L.latLng(item.latitude, item.longitude);
                         var title = item.name;
                         var icon = L.divIcon({className: $iclass, iconSize: null, html: title});
-                        marker = L.marker(pt, {icon: icon}).bindPopup(popup);
-                        //   style = {color: 'blue', weight: 3, opacity: 0.2};
-
-                        self._mouseLayer.addLayer(marker);
+                        var gmarker = L.marker(pt, {icon: icon}).bindPopup(popup);
+                        self._mouseLayer.addLayer(gmarker);
                     }
                     var bounds = self._mouseLayer.getBounds();
                     self._map.fitBounds(bounds, {padding: [50, 50]});
                 }
             }
-            setTimeout(function (point) {
-                self._map.removeLayer(point);
-            }, 3000, point);
+//            setTimeout(function (point) {
+//                self._map.removeLayer(point);
+//            }, 3000, point);
         });
     },
     _displayOSM: function (e, option) {
         var self = this;
         var osmOption = this.osmOptions[option];
+         var myicon = this.nodeIcon(option);
         var tag = osmOption.tag;
         var type = osmOption.type;
         var title = osmOption.title;
         var single = osmOption.single;
-        var p = new LatLon(e.latlng.lat, e.latlng.lng);
-        var i;
-        var msg = "<b>Searching for " + type + " ...</b>";
-        this._mouseLayer.clearLayers();
-        var point = L.marker(p).bindPopup(msg);
-        this._mouseLayer.addLayer(point);
-        //  point.getPopup().setContent(msg);
-        point.openPopup();
+        var marker = new L.Control.RightclickMarker(e.latlng, this._mouseLayer, this._containerAll);
+        marker.setContent("<b>Searching for " + type + " ...</b>");
         this._latlng = e.latlng;
         var queryTemplate = '[out:json]; (node["{tag}"="{type}"](around:{radius},{lat},{lng});way["{tag}"="{type}"](around:{radius},{lat},{lng});relation["{tag}"="{type}"](around:{radius},{lat},{lng}););out center;';
         var query = this.getQuery(queryTemplate, tag, type);
@@ -907,27 +874,25 @@ L.Control.Rightclick = L.Control.extend({
         ra.ajax.getJSON(url, function (err, items) {
             if (err !== null) {
                 var msg = "Error: Something went wrong: " + err;
-                point.getPopup().setContent(msg);
+                marker.setContent(msg);
             } else {
                 if (items.elements.length === 0) {
                     var closest = "No " + title + " found within " + self._userOptions.osm.distance + "km";
-                    point.getPopup().setContent(closest);
+                    marker.setContent(closest);
                 } else {
                     msg = "<b>" + items.elements.length + " " + title + " found within " + self._userOptions.osm.distance + "km</b>";
                     msg += "<p>" + items.osm3s.copyright + "</p>";
-                    point.getPopup().setContent(msg);
-                    point.openPopup();
-                    for (i = 0; i < items.elements.length; i++) {
+                    marker.setContent(msg);
+                    //  point.openPopup();
+                    for (var i = 0; i < items.elements.length; i++) {
                         var item = items.elements[i];
-                        self.displayElement(item, single);
+                        self.displayElement(item, single, myicon);
                     }
                     var bounds = self._mouseLayer.getBounds();
                     self._map.fitBounds(bounds, {padding: [50, 50]});
                 }
             }
-            setTimeout(function (point) {
-                self._map.removeLayer(point);
-            }, 6000, point);
+
         });
     },
     _displayAllTags: function (e) {
@@ -951,6 +916,8 @@ L.Control.Rightclick = L.Control.extend({
         //   node({{bbox}})(if:count_tags() > 0);
         //  var query = this.getQuery(queryTemplate, null, null);
 
+
+        var queryTemplate = '(node({{bbox}});<;);out meta;';
         var kwargs = {bbox: this.getBox()};
         var query = L.Util.template(queryTemplate, kwargs);
         //console.log("Query: " + query);
@@ -971,7 +938,7 @@ L.Control.Rightclick = L.Control.extend({
                     point.openPopup();
                     for (i = 0; i < items.elements.length; i++) {
                         var item = items.elements[i];
-                        self.displayElement(item, single);
+                        self.displayElement(item, single, "");
                     }
                     var bounds = self._mouseLayer.getBounds();
                     self._map.fitBounds(bounds, {padding: [50, 50]});
@@ -982,20 +949,20 @@ L.Control.Rightclick = L.Control.extend({
             }, 6000, point);
         });
     },
-    displayElement: function (node, title) {
+    displayElement: function (node, title, myicon) {
         switch (node.type) {
             case "node":
-                this.displayNode(node, title);
+                this.displayNode(node, title, myicon);
                 break;
             case "way":
-                this.displayWay(node, title);
+                this.displayWay(node, title, myicon);
                 break;
             case "relation":
 
                 break;
         }
     },
-    displayNode: function (node, title) {
+    displayNode: function (node, title, myicon) {
         var tags = node.tags;
         var popup = "<b>" + title + "</b><br/>";
         if (typeof tags.name !== 'undefined') {
@@ -1004,10 +971,41 @@ L.Control.Rightclick = L.Control.extend({
         this.deleteTags(node.tags, ['name', 'amenity', 'fhrs:id', 'source']);
         popup += this.listTags(tags, null);
         var pt = new L.latLng(node.lat, node.lon);
-        var marker = L.marker(pt).bindPopup(popup);
+      
+        var marker = L.marker(pt, {icon: myicon}).bindPopup(popup);
         this._mouseLayer.addLayer(marker);
     },
-    displayWay: function (node, title) {
+    nodeIcon: function (type) {
+        var icon = L.icon({
+            iconUrl: ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/redmarker.png',
+            iconSize: [22, 22], 
+            iconAnchor: [11, 1], 
+            popupAnchor: [0, -1] 
+        });
+        switch (type) {
+            case "parking":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/parking.svg';
+                break;
+            case "cafes":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/cafe.svg';
+                break;
+            case "pubs":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/pub.svg';
+                break;
+            case "toilets":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/toilets.svg';
+                break;
+            case "bus_stops":
+                icon.options.iconUrl = ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/bus_stop.svg';
+                break;
+            default:
+
+        }
+
+        return icon;
+    },
+
+    displayWay: function (node, title, myicon) {
         var tags = node.tags;
         var popup = "<b>" + title + "</b><br/>";
         if (typeof tags.name !== 'undefined') {
@@ -1015,8 +1013,9 @@ L.Control.Rightclick = L.Control.extend({
         }
         this.deleteTags(node.tags, ['name', 'amenity', 'fhrs:id', 'source']);
         popup += this.listTags(tags);
+      
         var pt = new L.latLng(node.center.lat, node.center.lon);
-        var marker = L.marker(pt).bindPopup(popup);
+        var marker = L.marker(pt, {icon: myicon}).bindPopup(popup);
         this._mouseLayer.addLayer(marker);
     },
     deleteTags: function (tags, excludeProperties) {
@@ -1103,19 +1102,62 @@ L.Control.Rightclick = L.Control.extend({
     getRadius: function () {
         return this._userOptions.osm.distance * 1000;
     },
-
+    optionsForm: function (tag) {
+        var title2 = document.createElement('h3');
+        title2.textContent = 'Mouse right click/tap hold';
+        tag.appendChild(title2);
+        var title3 = document.createElement('h2');
+        title3.textContent = 'Select which information should be displayed';
+        tag.appendChild(title3);
+        var so = document.createElement('select');
+        so.setAttribute('class', 'ra-mouse-options');
+        // so.setAttribute('size', '13');
+        so.title = "Select which information is displayed";
+        this.rightClickOptions.forEach((group) => {
+            var gr = document.createElement("optgroup");
+            gr.label = group.group;
+            for (var prop in group.items) {
+                var option = document.createElement("option");
+                option.value = prop;
+                option.text = group.items[prop];
+                gr.appendChild(option);
+            }
+            so.appendChild(gr);
+        });
+        so.value = this.rightClickOption;
+        tag.appendChild(so);
+        var _this = this;
+        so.addEventListener("change", function (e) {
+            _this.rightClickOption = so.value;
+        });
+        tag.appendChild(document.createElement('hr'));
+        var clearDiv = document.createElement("button");
+        clearDiv.innerHTML = "Clear displayed item(s)";
+        clearDiv.setAttribute('class', 'rightClick clearItems');
+        clearDiv.title = "Clear information currently displayed by mouse right click";
+        if (this.noLayers() > 0) {
+            clearDiv.classList.add("active");
+        }
+        var self = this;
+        clearDiv.addEventListener('click', function () {
+            self._mouseLayer.clearLayers();
+            self._places.clearLayers();
+            clearDiv.classList.remove('active');
+        });
+        tag.appendChild(clearDiv);
+    },
     settingsForm: function (tag) {
         var comment;
-        // var mouse = this._ramblersMap.PostcodeStatus;
         var title = document.createElement('h3');
         title.textContent = 'Mouse right click/tap and hold';
         tag.appendChild(title);
-        var comments = document.createElement('p');
-        comments.innerHTML = 'Right click, or tap and hold, is used to view location information. ';
-        comments.innerHTML += "It can display postcodes, Ramblers' Areas and Groups, meeting/starting places and information from <a href='https://www.openstreetmap.org/about' target='_blank'>Open Street Map</a> ";
-        comments.innerHTML += "<br/>The settings below control how much information is displayed.";
-        tag.appendChild(comments);
-
+        comment = document.createElement('p');
+        comment.innerHTML = 'This option is used to view location information. ';
+        comment.innerHTML += "It can display postcodes, Ramblers' Areas and Groups, meeting/starting places and information from <a href='https://www.openstreetmap.org/about' target='_blank'>Open Street Map</a> ";
+        tag.appendChild(comment);
+        comment = document.createElement('p');
+        comment.innerHTML += "<b>The settings below control how much information is displayed.</b>";
+        tag.appendChild(comment);
         tag.appendChild(document.createElement('hr'));
         var hdg2 = document.createElement('h5');
         hdg2.textContent = 'Ramblers Area / Group Options';
@@ -1152,7 +1194,7 @@ L.Control.Rightclick = L.Control.extend({
         tag.appendChild(hdg4);
         comment = document.createElement('p');
         comment.setAttribute('class', 'smaller');
-        comment.textContent = 'This option affects the display of parking, bus stops, cafes, public housea and toilets.';
+        comment.textContent = 'This option affects the display of parking, bus stops, cafes, public houses and toilets.';
         tag.appendChild(comment);
         this.controls.osm.distance = ra.html.input.number(tag, '', 'Display items within %n km', this._userOptions.osm, 'distance', 0.5, 5, 0.5);
         this.controls.groups.distance.addEventListener("ra-input-change", function (e) {
@@ -1178,7 +1220,6 @@ L.Control.Rightclick = L.Control.extend({
         });
     },
     resetSettings: function () {
-
         ra.html.input.numberReset(this.controls.groups.number, 60);
         ra.html.input.numberReset(this.controls.groups.distance, 25);
         ra.html.input.numberReset(this.controls.postcodes.number, 20);
@@ -1194,6 +1235,7 @@ L.Control.Rightclick = L.Control.extend({
         ra.settings.save(save, '__rightclick', this._userOptions);
     }
 });
+
 L.control.rightclick = function (options) {
     return new L.Control.Rightclick(options);
 };

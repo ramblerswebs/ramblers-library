@@ -67,7 +67,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
                     }
                 }
             }
-            echo $this->displayWalk_Table($walk, $this->walkClass);
+            echo $this->displayWalk_Table($walk, $this->walkClass, $odd);
             $odd = !$odd;
         }
         echo "</table>" . PHP_EOL;
@@ -87,7 +87,7 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
     }
 
     public function setWalksClass($class) {
-        $this->walksClass = $class;
+        $this->tableClass = $class;
     }
 
     public function setWalkClass($class) {
@@ -107,13 +107,17 @@ class RJsonwalksStdWalktable extends RJsonwalksDisplaybase {
         return $out . "</tr>";
     }
 
-    private function displayWalk_Table($walk, $class) {
+    private function displayWalk_Table($walk, $class, $odd) {
         $cols = $this->tableFormat;
         $nClass = $class;
         if ($this->rowClassClass !== null) {
             $nClass = call_user_func(array($this->rowClassClass, $this->rowClassMethod), $walk);
         }
-        $out = "<tr class='" . $nClass . " walk" . $walk->getIntValue("admin", "status") . "' >";
+        if ($odd) {
+            $out = "<tr class='odd " . $nClass . " walk" . $walk->getIntValue("admin", "status") . "' >";
+        } else {
+            $out = "<tr class='even " . $nClass . " walk" . $walk->getIntValue("admin", "status") . "' >";
+        }
 
         foreach ($cols as $col) {
             if (array_key_exists('class', $col)) {

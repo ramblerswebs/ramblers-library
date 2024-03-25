@@ -3,28 +3,28 @@
     Author     : Chris Vaughan
 */
 
-.csvdetails th{
+.tabledetails th{
     vertical-align: middle;
 }
-.csvdetails {
+.tabledetails {
     width: 100%;
 
 }
-.csvdetails th.right,
-.csvdetails td.right{
+.tabledetails th.right,
+.tabledetails td.right{
     text-align: right;
 }
-.csvdetails th.left,
-.csvdetails td.left{
+.tabledetails th.left,
+.tabledetails td.left{
     text-align: left;
 }
-.csvdetails th.center,
-.csvdetails td.center{
+.tabledetails th.center,
+.tabledetails td.center{
     text-align: center;
 }
-.csvdetails th{
+.tabledetails th{
     line-height:30px;
 }
-div.csvFilter input{
+div.tableFilter input{
     display: block;
 }

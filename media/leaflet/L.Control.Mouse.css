@@ -42,33 +42,19 @@ div.leaflet-control-rightclick-container div.remove{
     padding-top:3px;
     padding-bottom:3px;
 }
-div.leaflet-control-rightclick-container select.ra-mouse-options:hover,
-div.leaflet-control-rightclick-container div.remove:hover{
-    background-color: var(--xoptionHover);
-}
 
-div.leaflet-control-rightclick-container select.ra-mouse-options {
-    display: inline-block;
-    background-color: var(--xoption);
-    width:auto;
-    padding-right:10px;
-    padding-left:10px;
-    padding-top:0px;
-    color:white;
-    cursor:pointer;
-    box-sizing: border-box;
-    margin: 0;
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    appearance: none;
-    overflow: hidden;
+select.ra-mouse-options {
+    color:var(--pantone0159);
+    border-radius: 10px;
+    font-size:20px;
+    margin-left: 20px
 }
-select.ra-mouse-options::-ms-expand {
-    display: none;
+div.ra-mouse-option{
+   
+    height:20px;
 }
-
-select.ra-mouse-options option {
-    font-weight:normal;
+div.ra-mouse-option a img{
+    margin-right: 10px;
 }
 
 div.leaflet-control-osmaps{
@@ -112,4 +98,28 @@ div.leaflet-os-options div.osgrid:hover{
 }
 div.leaflet-os-options div.disclaim:hover{
     background-color: var(--xoptionHover);
+}
+
+button.rightClick.clearItems{
+    cursor: default;
+    display: inline-block;
+    font-size: 1.1em;
+    padding: 3px 6px;
+    text-decoration: none;
+    color: #ffffff;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    margin-left:20px;
+    background-image: linear-gradient(-90deg, #C0C0C0 0%, #C0C0C0 100%);
+}
+button.rightClick.clearItems.active{
+    cursor: pointer;
+    background-image: linear-gradient(-90deg, #1191D1 0%, #0080C0 100%);
+}
+.rotateimg90 {
+    -webkit-transform:rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }

@@ -51,7 +51,6 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
     }
     this.masterdiv = document.getElementById(this.mapOptions.divId);
 
-
     this.load = function () {
         var tags = [
             {name: 'heading', parent: 'root', tag: 'h2'},
@@ -107,12 +106,8 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
                 var walk = e.ra.walk;
                 document.location.href = walk.deleteUrl;
             }
-
         });
-
-
     };
-
 
     this.addButton = function (div, name) {
         var button = document.createElement('button');
@@ -128,17 +123,18 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
         var tags = [
             {name: 'details', parent: 'root', tag: 'details', attrs: {open: true}},
             {name: 'summary', parent: 'details', tag: 'summary', textContent: 'Legend', attrs: {class: 'ra legendsummary'}},
-            {name: 'draft', parent: 'details', tag: 'div', attrs: {class: 'ra legend draft'}},
+            {name: 'privatewalks', parent: 'details', tag: 'div', textContent: 'Private',attrs: {class: 'ra legend title'}},
+           {name: 'draft', parent: 'privatewalks', tag: 'div', attrs: {class: 'ra legend draft'}},
             {parent: 'draft', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Draft'},
 
-            {name: 'waiting', parent: 'details', tag: 'div', attrs: {class: 'ra legend waiting'}},
+            {name: 'waiting', parent: 'privatewalks', tag: 'div', attrs: {class: 'ra legend waiting'}},
             {parent: 'waiting', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Awaiting Approval'},
 
-            {name: 'publicwalks', parent: 'details', tag: 'h5', textContent: 'Viewable by Public'},
-            {name: 'published', parent: 'details', tag: 'div', attrs: {class: 'ra legend published'}},
+            {name: 'publicwalks', parent: 'details', tag: 'div', textContent: 'Viewable by Public',attrs: {class: 'ra legend title'}},
+            {name: 'published', parent: 'publicwalks', tag: 'div', attrs: {class: 'ra legend published'}},
             {parent: 'published', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Published'},
 
-            {name: 'cancelled', parent: 'details', tag: 'div', attrs: {class: 'ra legend cancelled'}},
+            {name: 'cancelled', parent: 'publicwalks', tag: 'div', attrs: {class: 'ra legend cancelled'}},
             {parent: 'cancelled', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Cancelled'}
 
         ];

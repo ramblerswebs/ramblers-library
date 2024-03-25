@@ -11,6 +11,8 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
     private $id;                     // database ID of walk on Walks Finder
     private $groupCode;              // group code e.g. SR01
     private $groupName;              // the group name e.g. Derby & South Derbyshire
+    private $flagNew = false;        // new walk in last X days
+    private $flagUpdated = false;    // walk changed in last X days
     private $dateUpdated;            // date of the walk as a datetime object
     private $dateCreated;            // date of the walk as a datetime object
     private $status = "";                 // whether the walk is published, cancelled etc
@@ -76,12 +78,13 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
     }
 
     public function setNewWalk(DateTime $date) {
-        if (strtolower($this->status) == "new") {
-            $this->status = "Published";
-        }
-        if (strtolower($this->status) == "published") {
+        $this->flagNew = false;
+        $this->flagUpdated = false;
+        if ($this->dateCreated > $date) {
+            $this->flagNew = true;
+        } else {
             if ($this->dateUpdated > $date) {
-                $this->status = "New";
+                $this->flagUpdated = true;
             }
         }
     }
@@ -95,7 +98,11 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
     }
 
     public function isNew() {
-        return strtolower($this->status) === "new";
+        return $this->flagNew;
+    }
+
+    public function isUpdated() {
+        return $this->flagUpdated;
     }
 
     public function isStatus($value) {
@@ -131,6 +138,8 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
             'groupCode' => $this->groupCode,
             'groupName' => $this->groupName,
             'status' => $this->status,
+            'flagNew' => $this->flagNew,
+            'flagUpdated' => $this->flagUpdated,
             'cancellationReason' => $this->cancellationReason,
             'nationalUrl' => $this->nationalUrl,
             'dateUpdated' => $this->dateUpdated,
