@@ -210,6 +210,7 @@ img.walkmedia{
     max-width: 90%;
     max-height: 90vh;
     margin: auto;
+    border-radius: 8px;
 }
 div.mediapopup div{
     margin: auto;

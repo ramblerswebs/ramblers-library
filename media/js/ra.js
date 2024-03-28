@@ -55,24 +55,24 @@ ra.decodeOptions = function (value) {
     value = "";
     return options;
 };
-ra.decodeData = function (value) {
-    if (value === null) {
+ra.getDataViaKey = function (key) {
+    if (key === "") {
         return null;
     }
-    var data = JSON.parse(value);
-    value = "";
+    var prop="data"+key;
+    var data = ra[prop];
     return data;
 };
 ra.uniqueID = function () {
     ra.uniquenumber += 1;
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
-ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
+ra.bootstrapper = function (jversion, displayClass, mapOptions, _dataKey) {
     ra.loading.start();
     ra._jversion = jversion;
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
-        var data = ra.decodeData(_data);
+        var data = ra.getDataViaKey(_dataKey);
         var myclass;
         //  var load = true;
         if (displayClass !== 'noDirectAction') {

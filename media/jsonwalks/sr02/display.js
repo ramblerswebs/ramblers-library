@@ -19,7 +19,7 @@ displayCustomValues = function ($option, $walk) {
             }
             break;
         case "{xNationalGrade}":
-            $response.out = $walk.getIntValue("walks","nationalGrade").toUpperCase();
+            $response.out = $walk.getIntValue("walks","_nationalGrade").toUpperCase();
             break;
         case "{xContact}":
             $response.out = "<b>" + $walk.getIntValue("contacts","contactName") + "</b>";

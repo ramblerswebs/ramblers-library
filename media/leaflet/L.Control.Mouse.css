@@ -50,7 +50,7 @@ select.ra-mouse-options {
     margin-left: 20px
 }
 div.ra-mouse-option{
-   
+
     height:20px;
 }
 div.ra-mouse-option a img{
@@ -122,4 +122,8 @@ button.rightClick.clearItems.active{
     -ms-transform: rotate(-90deg);
     -o-transform: rotate(-90deg);
     transform: rotate(-90deg);
+}
+
+div.leaflet-popup-content ul {
+    margin-top: 0.5rem;
 }

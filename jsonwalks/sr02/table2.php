@@ -46,7 +46,7 @@ class RJsonwalksSr02Table2 extends RJsonwalksStdWalktable {
                 }
                 break;
             case "{xNationalGrade}":
-                $response->out = $walk->getIntValue("walks", "nationalGrade");
+                $response->out = strtoupper($walk->getIntValue("walks", "nationalGrade"));
                 break;
             case "{xContact}":
                 $response->out = "<b>" . $walk->getIntValue("contacts", "contactName") . "</b>";
