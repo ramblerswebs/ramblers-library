@@ -108,7 +108,10 @@ ra.display.walksTabs = function (mapOptions, data) {
         this.events.setAllWalks();
         this.checkColumnNotBlank(this.settings.tableFormat);
         this.events.setFilters(this.elements.walksFilter);
-        this.displayWalks();
+        setTimeout(function () {
+            // lets the map/list tabs be displayed straight away
+            _this.displayWalks();
+        }, 1);
         var _this = this;
         document.addEventListener("reDisplayWalks", function () {
             _this.events.setDisplayFilter();

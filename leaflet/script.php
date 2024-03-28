@@ -33,17 +33,67 @@ class RLeafletScript {
         }
         $text = "window.addEventListener('load', function () {" . PHP_EOL;
         $text .= "var mapOptions='" . addslashes(json_encode($options)) . "';" . PHP_EOL;
-        // set data object for this command      
-        if ($this->dataObject !== null) {
-            $text .= "var data='" . addslashes(json_encode($this->dataObject)) . "';" . PHP_EOL;
-        } else {
-            $text .= "var data=null;" . PHP_EOL;
-        }
 
-        $text .= "ra.bootstrapper('" . $jv . "','" . $this->command . "',mapOptions,data);});" . PHP_EOL;
+        $key = $this->saveDataAsScript($this->dataObject);
+
+        $text .= "ra.bootstrapper('" . $jv . "','" . $this->command . "',mapOptions,'$key');});" . PHP_EOL;
         $document->addScriptDeclaration($text, "text/javascript");
 
         $this->addScriptsandStyles($options);
+    }
+
+    private function saveDataAsScript($data) {
+        if ($data === null) {
+            return "";
+        }
+        $result = $this->getDataScriptDetails();
+        $tmpfname = $result["filename"];
+        $scriptFile = $result["path"];
+        $key = $result["key"];
+        $dir = $result["dir"];
+        $this->deleteOldFiles($dir);
+        $handle = fopen($tmpfname, "w");
+        $out = "var ra;"
+                . "if (typeof (ra) === 'undefined') { ra = {};}"
+                . "ra.data" . $key . " =  " . json_encode($this->dataObject) . ";";
+        //     . "ra.data =  " . json_encode($this->dataObject, JSON_PRETTY_PRINT) . ";";
+        fwrite($handle, $out);
+        fclose($handle);
+        $document = JFactory::getDocument();
+        $document->addScript($scriptFile, array("type" => "text/javascript"));
+        return $result["key"];
+    }
+
+    private function getDataScriptDetails() {
+        $result = [];
+        $result["dir"] = JPATH_BASE . "/tmp/ra-library";
+        if (!file_exists($result["dir"])) {
+            mkdir($result["dir"]);
+        }
+        $result["filename"] = tempnam($result["dir"], "data-");
+        $len = strlen(JPATH_BASE);
+        $result["path"] = substr($result["filename"], $len + 1);
+        $parts = explode("\\", $result["path"]);
+        $file = $parts[count($parts) - 1];
+        $parts2 = explode(".", $file);
+        $result["key"] = $parts2[0];
+        return $result;
+    }
+
+    private function deleteOldFiles($dir) {
+        $today = date("Y-m-d");
+        $date = new DateTime($today);
+        $date->sub(new DateInterval('P1D'));
+        $datestring = $date->format('Y-m-d');
+        $fileSystemIterator = new FilesystemIterator($dir);
+        foreach ($fileSystemIterator as $fileInfo) {
+            $entry = $fileInfo->getFilename();
+            $filename = $dir . '/' . $entry;
+            $modified = date("Y-m-d", filemtime($filename));
+            if ($modified < $datestring) {
+                unlink($filename);
+            }
+        }
     }
 
     private function addScriptsandStyles($options) {
@@ -152,7 +202,6 @@ class RLeafletScript {
         $script->setDataObject($data);
         $script->add($options);
     }
-
 }
 
 // need to add json error handling when converting options and data to JSON

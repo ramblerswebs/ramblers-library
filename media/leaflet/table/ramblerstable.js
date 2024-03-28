@@ -8,13 +8,13 @@ if (typeof (ra.display) === "undefined") {
 ra.display.tableList = (function () {
     var tableList = {};
 
-    tableList.display = function (options,data) {
+    tableList.display = function (options, data) {
         this.list = null;
-        this.options = options;  
+        this.options = options;
         this.data = data;
-        this.numberOfRows=this.data.list.items[0].values.length;
+        this.numberOfRows = this.data.list.items[0].values.length;
         //this.paginationDefault = 10;
-        
+
         this.load = function ( ) {
             this.dataGroup = ra.uniqueID();
             this.myjplist = new ra.jplist(this.dataGroup);
@@ -42,7 +42,9 @@ ra.display.tableList = (function () {
                 self.removeRecordDisplay();
                 self.ra_format("List");
             });
-            this.displayCsvData();
+            setTimeout(function () {
+                self.displayCsvData(); // lets the map/list tabs be displayed straight away
+            }, 1);
         };
 
         this.displayCsvData = function () {
@@ -347,9 +349,9 @@ ra.display.tableList = (function () {
             }
         };
         this.addPagination = function (no, tag) {
-          
+
             this.myjplist.addPagination(no, tag, "pagination1", 20);
-            
+
         };
         this.jplistFilter = function (item) {
             var min, max;

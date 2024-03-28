@@ -801,45 +801,40 @@ L.Control.Rightclick = L.Control.extend({
         marker.setContent("<b>Searching for Ramblers Groups ...</b>");
         var $latitude = e.latlng.lat;
         var $longitude = e.latlng.lng;
-        var options = "&dist=" + this._userOptions.groups.distance + "&maxpoints=" + this._userOptions.groups.number;
+        var options = "&dist=" + this._userOptions.groups.distance + "&maxpoints=" + this._userOptions.groups.number + "&v=2";
         var url = "https://groups.theramblers.org.uk/index.php?latitude=" + $latitude + "&longitude=" + $longitude + options;
         ra.ajax.getJSON(url, function (err, items) {
             if (err !== null) {
                 marker.setContent("Error: Something went wrong: " + err);
             } else {
-                if (items.length === 0) {
+                var length = Object.keys(items).length;
+                if (length === 0) {
                     var closest = "No Ramblers Groups found within " + self._userOptions.groups.distance + "km";
                     marker.setContent(closest);
                 } else {
-                    marker.setContent("<b>" + items.length + " Ramblers Groups found within " + self._userOptions.groups.distance + "km</b>");
+                    marker.setContent("<b>" + length + " Ramblers Groups found within " + self._userOptions.groups.distance + "km</b>");
                     //   point.openPopup();
-                    for (var i = 0; i < items.length; i++) {
-                        var item = items[i];
+                    for (var propt in items) {
+                        var item = items[propt];
+                        var type = "";
                         var popup = "<b>";
                         switch (item.scope) {
                             case "A":
                                 popup += "Area: ";
+                                type = "Area";
                                 break;
                             case "G":
                                 popup += "Group: ";
-                                break;
-                            case "S":
-                                popup += "Special Group: ";
+                                type = "Group";
                                 break;
                         }
                         popup += item.name + "</b><br/>" + item.description;
-                        popup += "<br/><a href='" + item.url + "' target='_blank'>More Info</a>";
-                        popup += "<br/><a href='https://www.ramblers.org.uk/find-a-walk.aspx?layer=walks&tab=walks&group=" + item.groupCode + "' target='_blank' >Group walks</a>";
-                        if ("status" in item) {
-                            if (item.status === "Hosted") {
-                                popup += "<br/>Web site: <a href='http://" + item.website + "' target='_blank' >" + item.website + "</a>";
-                            }
-                            if (item.scope !== "A") {
-                                popup += "<br/>Part of " + item.areaname + " area";
-                            }
+                        popup += "<br/>" + type + " information on <a href='" + item.url + "' target='_blank'>Ramblers.org.uk</a>";
+                        popup += "<br/>" + type + " site: <a href='http://" + item.website + "' target='_blank' >" + item.groupUrl + "</a>";
+                        if (item.scope !== "A") {
+                            popup += "<br/>Part of " + item.areaName;
                         }
                         var $iclass = "group-icon " + item.scope.toLowerCase();
-                        //   var style;
                         var pt = new L.latLng(item.latitude, item.longitude);
                         var title = item.name;
                         var icon = L.divIcon({className: $iclass, iconSize: null, html: title});
@@ -850,15 +845,12 @@ L.Control.Rightclick = L.Control.extend({
                     self._map.fitBounds(bounds, {padding: [50, 50]});
                 }
             }
-//            setTimeout(function (point) {
-//                self._map.removeLayer(point);
-//            }, 3000, point);
         });
     },
     _displayOSM: function (e, option) {
         var self = this;
         var osmOption = this.osmOptions[option];
-         var myicon = this.nodeIcon(option);
+        var myicon = this.nodeIcon(option);
         var tag = osmOption.tag;
         var type = osmOption.type;
         var title = osmOption.title;
@@ -971,16 +963,16 @@ L.Control.Rightclick = L.Control.extend({
         this.deleteTags(node.tags, ['name', 'amenity', 'fhrs:id', 'source']);
         popup += this.listTags(tags, null);
         var pt = new L.latLng(node.lat, node.lon);
-      
+
         var marker = L.marker(pt, {icon: myicon}).bindPopup(popup);
         this._mouseLayer.addLayer(marker);
     },
     nodeIcon: function (type) {
         var icon = L.icon({
             iconUrl: ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/redmarker.png',
-            iconSize: [22, 22], 
-            iconAnchor: [11, 1], 
-            popupAnchor: [0, -1] 
+            iconSize: [22, 22],
+            iconAnchor: [11, 1],
+            popupAnchor: [0, -1]
         });
         switch (type) {
             case "parking":
@@ -1007,13 +999,13 @@ L.Control.Rightclick = L.Control.extend({
 
     displayWay: function (node, title, myicon) {
         var tags = node.tags;
-        var popup = "<b>" + title + "</b><br/>";
+        var popup = "<b>" + title + "</b>";
         if (typeof tags.name !== 'undefined') {
             popup = "<h3>" + tags.name + "</h3>";
         }
         this.deleteTags(node.tags, ['name', 'amenity', 'fhrs:id', 'source']);
         popup += this.listTags(tags);
-      
+
         var pt = new L.latLng(node.center.lat, node.center.lon);
         var marker = L.marker(pt, {icon: myicon}).bindPopup(popup);
         this._mouseLayer.addLayer(marker);
