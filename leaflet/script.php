@@ -48,7 +48,7 @@ class RLeafletScript {
         }
         $result = $this->getDataScriptDetails();
         $tmpfname = $result["filename"];
-        $scriptFile = $result["path"];
+        $scriptFile = $result["file"];
         $key = $result["key"];
         $dir = $result["dir"];
         $this->deleteOldFiles($dir);
@@ -57,6 +57,7 @@ class RLeafletScript {
                 . "if (typeof (ra) === 'undefined') { ra = {};}"
                 . "ra.data" . $key . " =  " . json_encode($this->dataObject) . ";";
         //     . "ra.data =  " . json_encode($this->dataObject, JSON_PRETTY_PRINT) . ";";
+        //    $out.="var fred=".json_encode($result, JSON_PRETTY_PRINT);
         fwrite($handle, $out);
         fclose($handle);
         $document = JFactory::getDocument();
@@ -66,35 +67,62 @@ class RLeafletScript {
 
     private function getDataScriptDetails() {
         $result = [];
-        $result["dir"] = JPATH_BASE . "/tmp/ra-library";
-        if (!file_exists($result["dir"])) {
-            mkdir($result["dir"]);
+        $base = str_replace("\\", "/", JPATH_BASE);
+        $dir = $base . "/media/lib_ramblers/tmp";
+        if (!file_exists($dir)) {
+            $ok = mkdir($dir);
         }
-        $result["filename"] = tempnam($result["dir"], "data-");
-        $len = strlen(JPATH_BASE);
-        $result["path"] = substr($result["filename"], $len + 1);
-        $parts = explode("\\", $result["path"]);
-        $file = $parts[count($parts) - 1];
-        $parts2 = explode(".", $file);
-        $result["key"] = $parts2[0];
+        $filename1 = tempnam($dir, "data");
+        $filename = str_replace("\\", "/", $filename1);
+        if (!str_ends_with($filename, ".tmp")) {
+            $filename .= ".tmp";
+        }
+        $len = strlen($base);
+        $file = substr($filename, $len + 1);
+        $parts = explode("/", $file);
+        $f = $parts[count($parts) - 1];
+        $parts2 = explode(".", $f);
+        $key = $parts2[0];
+
+        $result["base"] = $base;
+        $result["dir"] = $dir;
+        $result["filename"] = $filename;
+        $result["file"] = $file;
+        $result["key"] = $key;
         return $result;
     }
 
     private function deleteOldFiles($dir) {
-        $today = date("Y-m-d");
-        $date = new DateTime($today);
-        $date->sub(new DateInterval('P1D'));
-        $datestring = $date->format('Y-m-d');
+        $from = new DateTime("now");
+        $from->sub(new DateInterval('PT5M'));
+
         $fileSystemIterator = new FilesystemIterator($dir);
         foreach ($fileSystemIterator as $fileInfo) {
             $entry = $fileInfo->getFilename();
             $filename = $dir . '/' . $entry;
-            $modified = date("Y-m-d", filemtime($filename));
-            if ($modified < $datestring) {
+            $mod = filemtime($filename);
+            $str = date('F d Y h:i A', $mod);
+            $modified = new DateTime($str);
+            if ($modified < $from) {
                 unlink($filename);
             }
         }
     }
+
+//     private function deleteOldFiles($dir) {
+//        $date = new DateTime("now");
+//        $date->sub(new DateInterval('P1D'));
+//        $datestring = $date->format('Y-m-d');
+//        $fileSystemIterator = new FilesystemIterator($dir);
+//        foreach ($fileSystemIterator as $fileInfo) {
+//            $entry = $fileInfo->getFilename();
+//            $filename = $dir . '/' . $entry;
+//            $modified = date("Y-m-d", filemtime($filename));
+//            if ($modified < $datestring) {
+//                unlink($filename);
+//            }
+//        }
+//    }
 
     private function addScriptsandStyles($options) {
 
