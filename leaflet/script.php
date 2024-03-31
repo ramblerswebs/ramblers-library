@@ -55,7 +55,7 @@ class RLeafletScript {
         $handle = fopen($tmpfname, "w");
         $out = "var ra;"
                 . "if (typeof (ra) === 'undefined') { ra = {};}"
-                . "ra.data" . $key . " =  " . json_encode($this->dataObject) . ";";
+                . "ra.tmp_" . $key . " =  " . json_encode($this->dataObject) . ";";
         //     . "ra.data =  " . json_encode($this->dataObject, JSON_PRETTY_PRINT) . ";";
         //    $out.="var fred=".json_encode($result, JSON_PRETTY_PRINT);
         fwrite($handle, $out);
