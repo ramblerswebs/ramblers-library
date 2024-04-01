@@ -710,7 +710,7 @@ ra.event = function () {
         if (this.admin.flagNew) {
             return "<span class='new' data-descr='New walk/event created " + ra.date.dowShortddmmyyyy(this.admin.dateCreated) + "' class=' walkNew'>" + $text + "</span>";
         }
-       if (this.admin.flagUpdated) {
+        if (this.admin.flagUpdated) {
             return "<span class='updated' data-descr='Walk/event updated " + ra.date.dowShortddmmyyyy(this.admin.dateUpdated) + "' class=' walkNew'>" + $text + "</span>";
         }
         return $text;
@@ -1984,11 +1984,9 @@ ra.walk = (function () {
         var phpwalks = null;
         phpwalks = data.walks;
         if (phpwalks !== null) {
-            //my.registerWalks(phpwalks);
             data.walks.forEach(phpwalk => {
                 var newEvent = new ra.event();
                 newEvent.convertPHPWalk(phpwalk);
-                // this._allwalks.push(newEvent);
                 my.walks.registerEvent(newEvent);
             });
             data.walks = null;
@@ -2016,7 +2014,16 @@ ra.walk = (function () {
         if (walk !== null) {
             walk.displayInModal(event);
         } else {
-            alert('SORRY unable to display specified walk/event.');
+            setTimeout(function () {
+                // wait for walk registration to complete
+                var walk = my.walks.getEvent(id);
+                if (walk !== null) {
+                    walk.displayInModal(event);
+                } else {
+                    alert('SORRY unable to display specified walk/event.');
+                }
+
+            }, 500);
         }
     };
     // static option to display grades popup

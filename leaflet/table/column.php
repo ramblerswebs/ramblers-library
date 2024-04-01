@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Description of item
+ * Description of Column
  *
  * @author Chris Vaughan
  */
-class RLeafletTableItem implements JsonSerializable {
+class RLeafletTableColumn implements JsonSerializable {
 
     private $name = "";
     private $sort = false;

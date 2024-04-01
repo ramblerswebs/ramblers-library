@@ -44,7 +44,7 @@ ra.display.tableList = (function () {
             });
             setTimeout(function () {
                 self.displayCsvData(); // lets the map/list tabs be displayed straight away
-            }, 1);
+            }, 0);
         };
 
         this.displayCsvData = function () {
