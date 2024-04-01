@@ -32,6 +32,15 @@ class RLeafletTableColumns implements JsonSerializable {
         return $this->columns;
     }
 
+    public function removeIgnoredColumns() {
+        foreach ($this->columns as $key => $col) {
+            if ($col->getIgnore()) {
+                unset($this->columns[$key]);
+            }
+        }
+        $this->columns = array_values($this->columns);
+    }
+
     public function jsonSerialize(): mixed {
         return [
             'items' => $this->columns,

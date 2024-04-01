@@ -39,6 +39,8 @@ class RLeafletScript {
         } else {
             $text .= "var data=null;" . PHP_EOL;
         }
+        // $this->dataObject no longer required
+        $this->dataObject=null;
 
         $text .= "ra.bootstrapper('" . $jv . "','" . $this->command . "',mapOptions,data);});" . PHP_EOL;
         $document->addScriptDeclaration($text, "text/javascript");

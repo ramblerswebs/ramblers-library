@@ -9,7 +9,6 @@ class RLeafletCsvList extends RLeafletMap {
 
     private $filename = "";
     private $list;
-    private $diagnostic = false;
     public $paginationDefault = 10;
 
     public function __construct($filename) {
@@ -63,14 +62,6 @@ class RLeafletCsvList extends RLeafletMap {
         if (($handle = fopen($this->filename, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 $num = count($data);
-                if ($this->diagnostic) {
-                    if ($row === 1) {
-                        echo "<table>";
-                        echo RHtml::addTableHeader($data);
-                    } else {
-                        echo RHtml::addTableRow($data);
-                    }
-                }
                 for ($col = 0; $col < $num; $col++) {
                     $value = $data[$col];
                     if ($row === 1) {
@@ -92,13 +83,11 @@ class RLeafletCsvList extends RLeafletMap {
 
                 $row++;
             }
-            if ($this->diagnostic) {
-                echo "</table>";
-            }
+            fclose($handle);
+            $this->list->removeIgnoredColumns();
         } else {
             return false;
         }
-        fclose($handle);
         return true;
     }
 }
