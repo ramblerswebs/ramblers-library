@@ -26,9 +26,7 @@ class RLeafletGpxMap extends RLeafletMap {
         $this->options->displayElevation = true;
         $this->options->print = true;
 
-        $this->data = new class {
-            
-        };
+        $this->data =  new stdClass();
         if ($this->imperial) {
             $this->data->imperial = "true";
         } else {

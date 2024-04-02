@@ -59,17 +59,4 @@ abstract class RJsonwalksDisplaybase {
     public function alwaysDisplayStartDescription($value) {
         $this->displayStartDescription = $value;
     }
-
-//    public function displayArticle($menu, $article) {
-////        $this->dispMenu = $menu;
-////        $this->dispArticle = $article;
-//    }
-
-//    public function getWalkMapHref($walk, $desc) {
-//        $out = "<a href=";
-//        $out .= "'javascript:ra.walk.displayWalkID(" . $walk->id . ");' >";
-//        $out .= $desc . "</a>";
-//        return $out;
-//    }
-
 }

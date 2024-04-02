@@ -9,7 +9,6 @@ class RLeafletCsvList extends RLeafletMap {
 
     private $filename = "";
     private $list;
-    private $diagnostic = false;
     public $paginationDefault = 10;
 
     public function __construct($filename) {
@@ -53,38 +52,30 @@ class RLeafletCsvList extends RLeafletMap {
 
         RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
-        RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1a/polyfill.min.js", "text/javascript");
+        RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js", "text/javascript");
     }
 
     private function readCSV() {
         $row = 1;
-        $item = null;
-        $this->list = new RLeafletTableItems();
+        $column = null;
+        $this->list = new RLeafletTableColumns();
         if (($handle = fopen($this->filename, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
                 $num = count($data);
-                if ($this->diagnostic) {
-                    if ($row === 1) {
-                        echo "<table>";
-                        echo RHtml::addTableHeader($data);
-                    } else {
-                        echo RHtml::addTableRow($data);
-                    }
-                }
                 for ($col = 0; $col < $num; $col++) {
                     $value = $data[$col];
                     if ($row === 1) {
-                        $item = new RLeafletTableItem($value);
-                        $this->list->addItem($item);
+                        $column = new RLeafletTableColumn($value);
+                        $this->list->addColumn($column);
                     } else {
-                        $item = $this->list->getItem($col);
-                        if ($item == null) {
+                        $column = $this->list->getColumn($col);
+                        if ($column == null) {
                             echo "<p>Column " . $col . " has no header title</p>";
                         } else {
                             if ($row == 2) {
-                                $item->addOptions($value);
+                                $column->addOptions($value);
                             } else {
-                                $item->addValue($value);
+                                $column->addValue($value);
                             }
                         }
                     }
@@ -92,13 +83,11 @@ class RLeafletCsvList extends RLeafletMap {
 
                 $row++;
             }
-            if ($this->diagnostic) {
-                echo "</table>";
-            }
+            fclose($handle);
+            $this->list->removeIgnoredColumns();
         } else {
             return false;
         }
-        fclose($handle);
         return true;
     }
 }

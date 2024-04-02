@@ -55,24 +55,30 @@ ra.decodeOptions = function (value) {
     value = "";
     return options;
 };
-ra.getDataViaKey = function (key) {
-    if (key === "") {
-        return null;
-    }
-    var prop="data"+key;
-    var data = ra[prop];
-    return data;
-};
+//ra.getDataViaKey = function (key) {
+//    if (key === "") {
+//        return null;
+//    }
+//    var prop = "tmp_" + key;
+//    if (!ra.hasOwnProperty(prop)) {
+//        alert("PROGRAM ERROR, no data supplied: Please report this error to the webnaster");
+//        return null;
+//    } else {
+//        var data = ra[prop];
+//    }
+//    return data;
+//};
 ra.uniqueID = function () {
     ra.uniquenumber += 1;
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
-ra.bootstrapper = function (jversion, displayClass, mapOptions, _dataKey) {
+ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
     ra.loading.start();
     ra._jversion = jversion;
     var options = ra.decodeOptions(mapOptions);
     if (document.getElementById(options.divId) !== null) {
-        var data = ra.getDataViaKey(_dataKey);
+        //var data = ra.getDataViaKey(_dataKey);
+        var data = ra.decodeData(_data);
         var myclass;
         //  var load = true;
         if (displayClass !== 'noDirectAction') {
@@ -81,16 +87,25 @@ ra.bootstrapper = function (jversion, displayClass, mapOptions, _dataKey) {
             for (let i = 0; i < parts.length; i++) {
                 myclass = myclass[parts[i]];
                 if (typeof myclass === 'undefined') {
-                    alert('Ra.Bootstrapper - ' + displayClass + ' option not known!');
+                    alert('RA.Bootstrapper - ' + displayClass + ' option not known!');
                     ra.loading.stop();
                     return;
                 }
             }
+
             var display = new myclass(options, data);
             display.load();
         }
     }
     ra.loading.stop();
+};
+ra.decodeData = function (value) {
+    if (value === null) {
+        return null;
+    }
+    var data = JSON.parse(value);
+    value = "";
+    return data;
 };
 // convert string to title case
 ra.titleCase = function (str) {
@@ -1456,7 +1471,7 @@ ra.w3w = (function () {
         if (words === "") {
             return "";
         }
-          if (words === "walks.manager.error") {
+        if (words === "walks.manager.error") {
             return "<b>Error: </b>No W3W data provided";
         }
         var out = '<a class="w3w" href="https://what3words.com/about-us/" title="See information about W3W" target="_blank">What3Words: </a>';

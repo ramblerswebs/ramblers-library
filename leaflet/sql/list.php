@@ -23,7 +23,7 @@ class RLeafletSqlList extends RLeafletMap {
             echo "ERROR: RLeafletSqlList options  must be an array";
             return;
         }
-        $this->list = new RLeafletTableItems();
+        $this->list = new RLeafletTableColumns();
         foreach ($options as $option) {
             if (!array_key_exists("heading", $option)) {
                 echo "ERROR: RLeafletSqlList options  does not contain heading field";
@@ -37,10 +37,10 @@ class RLeafletSqlList extends RLeafletMap {
                 echo "ERROR: RLeafletSqlList options  does not contain options field";
                 return;
             }
-            $item = new RLeafletTableItem($option["heading"]);
-            $this->list->addItem($item);
-            $item->addOptions($option["options"]);
-            $item->columnName = $option["column"];
+            $column= new RLeafletTableColumn($option["heading"]);
+            $this->list->addColumn($column);
+            $column->addOptions($option["options"]);
+            $column->columnName = $option["column"];
             $this->fields[] = $option["column"];
         }
         $this->validOptions = true;
@@ -59,12 +59,12 @@ class RLeafletSqlList extends RLeafletMap {
             return;
         }
         foreach ($result as $row) {
-            $items = $this->list->getItems();
-            foreach ($items as $item) {
-                if (property_exists($row, $item->columnName)) {
-                    $col = $item->columnName;
+            $columns = $this->list->getColumns();
+            foreach ($columns as $column) {
+                if (property_exists($row, $column->columnName)) {
+                    $col = $column->columnName;
                     $value = $row->$col;
-                    $item->addValue($value);
+                    $column->addValue($value);
                 }
             }
         }
@@ -97,7 +97,7 @@ class RLeafletSqlList extends RLeafletMap {
 
         RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
-        RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1a/polyfill.min.js", "text/javascript");
+        RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js", "text/javascript");
     }
 
     private function readSql() {

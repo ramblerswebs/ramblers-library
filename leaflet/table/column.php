@@ -1,12 +1,13 @@
 <?php
 
 /**
- * Description of item
+ * Description of Column
  *
  * @author Chris Vaughan
  */
-class RLeafletTableItem implements JsonSerializable {
+class RLeafletTableColumn implements JsonSerializable {
 
+    private $ignore = false;
     private $name = "";
     private $sort = false;
     private $table = false;
@@ -33,6 +34,9 @@ class RLeafletTableItem implements JsonSerializable {
 
     public function addValue($value) {
         $this->values[] = $value;
+    }
+    public function getIgnore(){
+        return $this->ignore;
     }
 
     public function addOptions($value) {
@@ -90,8 +94,10 @@ class RLeafletTableItem implements JsonSerializable {
                 case "center":
                     $this->align = 'center';
                     break;
-                case "":
-
+                case "ignore":
+                    $this->ignore=true;
+                    break;
+                 case "":
                     break;
                 default:
                     Echo "<p>Invalid options supplied:" . $option . "</p>";
