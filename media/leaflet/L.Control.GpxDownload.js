@@ -102,16 +102,9 @@ L.Control.GpxDownload = L.Control.extend({
     _details: function (evt) {
         var _this = this;
         this._map.fire('download:cancelled');
-        this.fullscreen = this._map.isFullscreen();
-        if (this.fullscreen) {
-            this._map.toggleFullscreen();
-        }
         var contentTag = document.createElement('div');
         _this.modal = ra.modals.createModal(contentTag, false);
         this._addDetailsForm(contentTag);
-    },
-    _returnToFullScreen: function () {
-        this._map.toggleFullscreen();
     },
     _addDetailsForm: function (formtag) {
         var heading = document.createElement('h2');

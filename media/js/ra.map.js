@@ -568,11 +568,5 @@ function cluster(map) {
         this.markerList.push(marker);
         return marker;
     };
-    this.turnOffFullscreen = function () {
-        var fullscreen = this._map.isFullscreen();
-        if (fullscreen) {
-            this._map.toggleFullscreen();
-        }
-    };
 
 }

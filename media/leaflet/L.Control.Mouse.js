@@ -290,7 +290,7 @@ L.Control.OSInfo = L.Control.extend({
         comment.innerHTML = 'Please note that our information showing the area covered be OS maps is unofficial and may be incorrect.<br/>Please check before buying a map.';
         comment.innerHTML += '<br/>If you notice any errors then do contact us via the help option.';
         container.appendChild(comment);
-        ra.modals.createModal(container, false, true, this._map);
+        ra.modals.createModal(container, false, true);
     },
     displayOSGrid: function () {
         this.OSGrid.layer.clearLayers();
@@ -581,7 +581,7 @@ L.Control.Rightclick = L.Control.extend({
             holder.style.display = "";
             var tag = document.createElement('div');
             _this.optionsForm(tag);
-            ra.modals.createModal(tag, false, true, null);
+            ra.modals.createModal(tag, false, true);
             event.stopPropagation();
         }, this);
         this.closeHolder = false;

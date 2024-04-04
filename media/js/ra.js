@@ -1520,15 +1520,13 @@ ra.w3w = (function () {
 }
 ());
 
-
-
-
 ra.modals = (function () {
     var modals = {};
-    modals.items = [];
+    modals._items = [];
 
     modals.masterdiv = null;
-    modals.createModal = function ($html, printButton = true, cancelButton = true, fullscreen = null) {
+    modals.createModal = function ($html, printButton = true, cancelButton = true) {
+
         if (modals.masterdiv === null) {
             var body = document.getElementsByTagName("BODY")[0];
             modals.masterdiv = document.createElement('div');
@@ -1536,32 +1534,33 @@ ra.modals = (function () {
             body.appendChild(modals.masterdiv);
         }
         var item = new ra.modal();
-        if (fullscreen !== null) {
-            if (fullscreen.isFullscreen()) {
-                fullscreen.toggleFullscreen();
-                item.fullscreen = fullscreen;
-            }
-        }
         item.setContent($html, printButton, cancelButton);
-        modals.items.push(item);
+        modals._items.push(item);
+       // modals.diag("Create");
         modals.masterdiv.innerHTML = '';
         modals.masterdiv.appendChild(item.getContent());
         return item;
     };
+    modals.diag = function (title) {
+        console.log("Status " + title);
+        console.log("No of modals " + modals._items.length);
+        var i = 1;
+        modals._items.forEach(item => {
+            item.diag(i);
+            i += 1;
+        });
+    };
 
     document.addEventListener("ra-modal-closing", function (event) {
-        // raise event to reset status that may be lost, e.g. map full screen
-        var modal = modals.items[modals.items.length - 1];
-        let e = new Event("ra-modal-closed");
-        e.ra = {modal: modal};
-        document.dispatchEvent(e);
-        modals.items.pop();
-        if (modals.items.length === 0) {
+        //modals.diag("Closing");
+        modals._items.pop();
+        if (modals._items.length === 0) {
             modals.masterdiv.innerHTML = '';
         } else {
-            var item = modals.items[modals.items.length - 1];
+            var item = modals._items[modals._items.length - 1];
             ra.html.setTag(modals.masterdiv, item.getContent());
         }
+       // modals.diag("Closing after");
     });
     return modals;
 }
@@ -1569,8 +1568,11 @@ ra.modals = (function () {
 
 ra.modal = function () {
     this.elements = {};
-    this.content;
-    this.fullscreen = null;
+    this._content;
+    this._fullScreenElement = document.fullscreenElement;
+    if (this._fullScreenElement !== null) {
+        document.exitFullscreen();
+    }
     this.setContent = function ($html, printButton = true, closeButton = true) {
         var _this = this;
         this._createModalTag(printButton, closeButton);
@@ -1586,8 +1588,15 @@ ra.modal = function () {
             };
     }
     };
+    this.diag = function (i) {
+        if (this._fullScreenElement === null) {
+            console.log("Modal " + i + " FS: Not set");
+        } else {
+            console.log("Modal " + i + " FS: Is set");
+        }
+    };
     this.getContent = function () {
-        return this.content;
+        return this._content;
     };
     this.headerDiv = function () {
         return this.elements.header;
@@ -1596,8 +1605,8 @@ ra.modal = function () {
         let e = new Event("ra-modal-closing");
         document.dispatchEvent(e);
         event.stopImmediatePropagation();
-        if (this.fullscreen !== null) {
-            this.fullscreen.toggleFullscreen();
+        if (this._fullScreenElement !== null) {
+            this._fullScreenElement.requestFullscreen();
         }
     };
 
@@ -1612,11 +1621,11 @@ ra.modal = function () {
             {name: 'data', parent: 'content', tag: 'div'},
             {parent: 'content', tag: 'hr'}
         ];
-        if (typeof this.content !== 'undefined') {
+        if (typeof this._content !== 'undefined') {
             this.elements.data.innerHTML = '';
         } else {
-            this.content = document.createElement('div');
-            this.elements = ra.html.generateTags(this.content, tags);
+            this._content = document.createElement('div');
+            this.elements = ra.html.generateTags(this._content, tags);
             this.elements.close.setAttribute('data-dismiss', 'modal');
         }
         this.elements.close.style.display = '';

@@ -7,7 +7,7 @@ L.Control.Search = L.Control.extend({
     _userOptions: null,
     searchLayer: null,
     modal: null,
-    fullscreen: false,
+    
     onAdd: function (map) {
         this._map = map;
         var _this = this;
@@ -21,7 +21,7 @@ L.Control.Search = L.Control.extend({
             _this.searchLayer.clearLayers();
             var searchDiv = document.createElement('div');
             searchDiv.setAttribute('class', 'search');
-            _this.modal = ra.modals.createModal(searchDiv, false, true, _this._map);
+            _this.modal = ra.modals.createModal(searchDiv, false, true);
             _this._addSearch(searchDiv);
         });
         return this.container;

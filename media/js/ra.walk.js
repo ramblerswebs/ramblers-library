@@ -1596,7 +1596,6 @@ ra.event.timelocation = function () {
         summaryDiv.setAttribute('class', 'pointer');
         summaryDiv.innerHTML = summary;
         summaryDiv.addEventListener("click", function (e) {
-            cluster.turnOffFullscreen();
             ra.walk.displayWalkID(e, id);
         });
         var linkDiv = document.createElement('div');
@@ -1606,7 +1605,6 @@ ra.event.timelocation = function () {
         gradeDiv.style.float = "right";
         gradeDiv.innerHTML = grade;
         gradeDiv.addEventListener("click", function (e) {
-            cluster.turnOffFullscreen();
             ra.walk.dGH();
         });
         $popup.appendChild(gradeDiv);
