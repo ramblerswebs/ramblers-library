@@ -22,7 +22,7 @@ L.Control.Settings = L.Control.extend({
         container.addEventListener("click", function (e) {
             var settingsDiv = document.createElement('div');
             settingsDiv.setAttribute('class', 'settings');
-            _this.modal = ra.modals.createModal(settingsDiv, false,true, _this._map);
+            _this.modal = ra.modals.createModal(settingsDiv, false, true);
             var title = document.createElement('h4');
             title.textContent = "Settings";
             settingsDiv.appendChild(title);
@@ -109,7 +109,7 @@ L.Control.Settings = L.Control.extend({
         this.leafletMap = value;
     },
     _addSave: function (tag) {
-          var hdg1 = document.createElement('h3');
+        var hdg1 = document.createElement('h3');
         hdg1.textContent = 'Save settings between sessions';
         tag.appendChild(hdg1);
         var save = ra.html.input.yesNo(tag, '', "Save settings between sessions/future visits to web site (you accept cookies)", this.saveOptions, 'saveSettings');
