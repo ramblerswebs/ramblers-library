@@ -194,7 +194,7 @@ ra.display.gpxFolder = function (options, data) {
     this._map = this.lmap.map;
     this.el = this.lmap.elevationControl();
     this.gpx = null;
-    this.cluster = new cluster(this._map);
+    this.cluster = new ra.map.cluster(this._map);
     this._map.on('popupopen', function () {
         var tabs = document.querySelectorAll('.leaflet-popup-content div[data-route-id]');
         for (var i = 0; i < tabs.length; ++i) {

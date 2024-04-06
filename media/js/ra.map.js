@@ -512,7 +512,8 @@ ra.latlongDecToDms = function (lat, long) {
 
 };
 
-function cluster(map) {
+ra.map.cluster = function (map) {
+
     var body = document.getElementsByTagName("BODY")[0];
     this.progressBar = document.createElement('div');
     this.progressBar.setAttribute('class', 'ra-cluster-progress-bar');
@@ -569,4 +570,4 @@ function cluster(map) {
         return marker;
     };
 
-}
+};

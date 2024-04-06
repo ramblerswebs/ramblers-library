@@ -103,7 +103,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         }
         this.lmap = new ra.leafletmap(this.elements.map, this.mapOptions);
         this.map = this.lmap.map;
-        this.cluster = new cluster(this.map);
+        this.cluster = new ra.map.cluster(this.map);
         this.processOptions(this.elements.raoptions);
         this.events.setAllWalks();
         this.checkColumnNotBlank(this.settings.tableFormat);
