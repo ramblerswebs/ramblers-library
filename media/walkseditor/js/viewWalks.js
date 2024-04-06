@@ -258,7 +258,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         var lmap = new ra.leafletmap(mapTags.mapped, this.mapOptions);
         var map = lmap.map;
         //  var layer = L.featureGroup().addTo(map);
-        var mycluster = new cluster(map);
+        var mycluster = new ra.map.cluster(map);
         var walks = this.programme.getWalks();
         var i, clen;
         for (i = 0, clen = walks.length; i < clen; ++i) {

@@ -55,7 +55,7 @@ ra.display.tableList = (function () {
             if (this.displayMap) {
                 this.lmap = new ra.leafletmap(this.elements.tablemap, this.options);
                 this.map = this.lmap.map;
-                this.cluster = new cluster(this.map);
+                this.cluster = new ra.map.cluster(this.map);
                 this.ra_format("Map");
                 this.map.invalidateSize();
                 this.addCSVMarkers();

@@ -23,7 +23,7 @@ class RLeafletScript {
         $this->dataObject = $value;
     }
 
-       public function add($options) {
+    public function add($options) {
         $version = new JVersion();
         $jv = $version->getShortVersion();
         $document = JFactory::getDocument();
@@ -45,7 +45,7 @@ class RLeafletScript {
 
         $this->addScriptsandStyles($options);
     }
- 
+
     private function addScriptsandStyles($options) {
 
         JHtml::_('jquery.framework');
@@ -140,9 +140,7 @@ class RLeafletScript {
 
     public static function registerWalks($walks) {
         // register walks from php methods into raWalks.js for display
-        $data = new class {
-            
-        };
+        $data = new stdClass();
         $data->walks = $walks;
         //   $print = json_encode($walks, JSON_PRETTY_PRINT);
         //   echo "<pre>" . $print . "</pre>";
