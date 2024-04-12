@@ -7,7 +7,7 @@
  */
 class RJsonwalksWalkContact implements JsonSerializable {
 
-    private $id=0;
+    private $id = 0;
     private $isLeader = false;       // is the contact info for the leader of the walk
     private $contactName = "";       // contact name
     private $email = "";             // email address for contact
@@ -26,8 +26,8 @@ class RJsonwalksWalkContact implements JsonSerializable {
         $this->telephone2 = $telephone2;
         $this->contactForm = $contactForm;
         if ($this->email !== "") {
-            $this->email = 'yes';
             $this->key = $this->encrypt($this->email);
+            $this->email = 'yes'; // overwrite email
         }
         if ($this->contactForm != "") {
             $this->email = 'yes';
@@ -170,5 +170,4 @@ class RJsonwalksWalkContact implements JsonSerializable {
             'telephone2' => $this->telephone2
         ];
     }
-
 }
