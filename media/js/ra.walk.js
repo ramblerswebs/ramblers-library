@@ -153,7 +153,7 @@ ra.event = function () {
         });
         // contact
         phpwalk.contact.forEach(item => {
-            var contact = new ra.event.contact();
+            var contact = new ra.event.contact(this.admin.id);
             this.contacts.addItem(contact.convertPHPContact(item));
         });
         // media
@@ -1708,6 +1708,8 @@ ra.event.contact = function (id) {
         switch ($option) {
             case "contactName":
                 return this.contactName;
+            case "key":
+                return this.key;
             case "_icsrecord":
                 var out = "";
                 if (this.contactName !== "") {
@@ -2046,7 +2048,7 @@ ra.walk = (function () {
 
         var $walk = my.walks.getEvent($id);
         var data = {};
-        data.key = $walk.key;
+        data.key = $walk.getIntValue("contacts", "key");
         data.group = $walk.admin.groupName;
         data.title = $walk.basics.title;
         data.date = ra.date.dowShortddmmyyyy($walk.basics.walkDate);
