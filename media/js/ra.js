@@ -42,6 +42,10 @@ ra.baseDirectory = function () {
 ra.joomlaVersion = function () {
     return ra._jversion;
 };
+ra.joomlaMajorVersion = function () {
+    var parts=ra._jversion.split(".");
+    return Number(parts[0]);
+};
 ra.decodeOptions = function (value) {
     var options = JSON.parse(value);
     if (options.hasOwnProperty('base')) {

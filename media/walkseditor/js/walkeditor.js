@@ -8,9 +8,7 @@ if (typeof (ra.walkseditor) === "undefined") {
 ra.walkseditor.walkeditor = function ( ) {
 
     this.input = new ra.walkseditor.inputFields;
-    if (ra.joomlaVersion()>"3"){
-        this.input.setPredefinedURLsforJ5();
-    }
+
     this.groups = null;
     this.localGrades = null;
     this._statusSelect = null;
