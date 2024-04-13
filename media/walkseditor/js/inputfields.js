@@ -582,4 +582,7 @@ ra.walkseditor.inputFields = function () {
         details.appendChild(summary);
         return {details: details, summary: summary};
     };
+    if (ra.joomlaMajorVersion() > 3) {
+        this.setPredefinedURLsforJ5();
+    }
 };
