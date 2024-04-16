@@ -106,7 +106,7 @@ class RLeafletSqlList extends RLeafletMap {
         // Create a new query object.
         $query = $db->getQuery(true);
         // $sql can be a select statement or a table name
-        if (str_starts_with("SELECT", strtoupper($this->sql))) {
+        if (str_starts_with(strtoupper($this->sql), "SELECT")) {
             $db->setQuery($this->sql);
             $db->execute();
         } elseif (substr($this->sql, 0, 1) == '#') {
