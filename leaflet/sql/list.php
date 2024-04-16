@@ -4,18 +4,19 @@
  * Description of list
  *
  * @author Chris Vaughan
+ * 15/04/24 Charlie Bigley Allow specification of a table name or a SELECT statement
  */
 class RLeafletSqlList extends RLeafletMap {
 
-    private $tableName = "";
+    private $sql = "";
     private $validOptions = false;
     private $list = null;
     private $fields = [];
     public $paginationDefault = 10;
 
-    public function __construct($tableName) {
+    public function __construct($sql) {
         parent::__construct();
-        $this->tableName = $tableName;
+        $this->sql = $sql;
     }
 
     public function setOptions($options) {
@@ -37,7 +38,7 @@ class RLeafletSqlList extends RLeafletMap {
                 echo "ERROR: RLeafletSqlList options  does not contain options field";
                 return;
             }
-            $column= new RLeafletTableColumn($option["heading"]);
+            $column = new RLeafletTableColumn($option["heading"]);
             $this->list->addColumn($column);
             $column->addOptions($option["options"]);
             $column->columnName = $option["column"];
@@ -96,7 +97,6 @@ class RLeafletSqlList extends RLeafletMap {
         RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
 
         RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
-        //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
         RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js", "text/javascript");
     }
 
@@ -105,13 +105,19 @@ class RLeafletSqlList extends RLeafletMap {
         $db = \JFactory::getDbo();
         // Create a new query object.
         $query = $db->getQuery(true);
-        $query->select($db->quoteName($this->fields));
-        $query->from($db->quoteName($this->tableName));
-        //   $query->where($db->quoteName('status') . " = " . "'Published'", 'OR');
-        //   $query->where($db->quoteName('status') . " = " . "'Cancelled'");
-        //   $query->order('ordering ASC');
-        // Reset the query using our newly populated query object.
-        $db->setQuery($query);
+        // $sql can be a select statement or a table name
+        if (str_starts_with("SELECT", strtoupper($this->sql))) {
+            $db->setQuery($this->sql);
+            $db->execute();
+        } elseif (substr($this->sql, 0, 1) == '#') {
+            $query->select($db->quoteName($this->fields));
+            $query->from($db->quoteName($this->sql));
+            $db->setQuery($query);
+        } else {
+            echo "ERROR: RLeafletSqlList $this->sql is not a valid parameter, should be table name or SELECT statement";
+            return false;
+        }
+        $db->replacePrefix($query);
         $results = $db->loadObjectList();
         return $results;
     }
