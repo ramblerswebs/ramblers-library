@@ -582,7 +582,7 @@ ra.display.walksTabs = function (mapOptions, data) {
                     first = false;
                     break;
                 default:
-                    alert("Invalid tab option " + value);
+                    ra.showError("Invalid tab option " + value);
             }
         });
         this.settings.defaultOptions += "</tr></table>";

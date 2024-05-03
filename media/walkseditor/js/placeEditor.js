@@ -64,7 +64,7 @@ placecontroller = function (tagContainer, data) {
     this.setInputValue = function (field, name) {
         var fieldtag = document.getElementById(this.data.fields[field]);
         if (fieldtag === null) {
-            alert("Program error setting field: " + field);
+            ra.showError("Program error setting field: " + field);
             return "";
         }
         if (this.data.record.hasOwnProperty(name)) {  // Initialise value

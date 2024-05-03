@@ -140,13 +140,11 @@ L.Control.GpxSimplify = L.Control.extend({
         this._simplifylayer.clearLayers();
         this._map.fire('simplify:saved');
         this.holder.style.display = "none";
-        // alert("save");
     },
     _cancel: function (evt) {
         this._simplifylayer.clearLayers();
         this._map.fire('simplify:cancelled');
         this.holder.style.display = "none";
-        //  alert("cancel");
     },
     _elevation: function (evt) {
         var element = evt.currentTarget;

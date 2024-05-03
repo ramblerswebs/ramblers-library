@@ -188,7 +188,6 @@ ra.leafletmap = function (tag, options) {
     var _this = this;
     this.map.on('baselayerchange', function (e) {
         _this.currentLayer = e.layer;
-        //alert('Changed to ' + e.name);
     });
 
     // bottom right controls

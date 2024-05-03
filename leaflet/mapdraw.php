@@ -63,8 +63,6 @@ class RLeafletMapdraw extends RLeafletMap {
         $document->addStyleSheet($path . "leaflet.draw.css", "text/css");
         RLoad::addScript($path . "leaflet.draw-src.js", "text/javascript");
         RLoad::addScript("media/lib_ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");
-        RLoad::addScript("media/lib_ramblers/vendors/blurt-1.0.2/dist/js/blurt.min.js", "text/javascript");
-        $document->addStyleSheet("media/lib_ramblers/vendors/blurt-1.0.2/dist/css/blurt.min.css", "text/css");
         RLoad::addScript("media/lib_ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
     }
 

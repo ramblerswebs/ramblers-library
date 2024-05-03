@@ -10,7 +10,7 @@ addPrintButton = function (tag) {
             var content = collection.innerHTML;
             ra.html.printHTML(content);
         } else {
-            alert("Program error");
+             ra.showError("Program error");
         }
 
     });

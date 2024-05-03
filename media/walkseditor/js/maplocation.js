@@ -51,7 +51,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                 this.fields.name = this.input.addText(this.tag, 'location', "Name of finish:", this.raobject, 'name', 'A name of the location so people can find it', ra.walkseditor.help.finishName);
                 break;
             default:
-                alert("Program error: Invalid place type");
+                ra.showError("Program error: Invalid place type");
         }
         var _locationdetails = document.createElement('div');
         _locationdetails.setAttribute('class', 'ra vertical-align');
@@ -140,7 +140,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                 var _this = this;
                 this.postcodeButton.addEventListener("click", function (e) {
                     if (_this.raobject.hasOwnProperty('postcode')) {
-                        var ok = confirm("Do you wish to remove the postcode");
+                        var ok = ra.showConfirm("Do you wish to remove the postcode");
                         if (ok) {
                             _this.postcodeLayer.clearLayers();
                             delete _this.raobject.postcode;
@@ -150,7 +150,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                         if (_this.raobject.isLatLongSet) {
                             _this.displayPostcodes();
                         } else {
-                            alert("You must position marker before adding postcode");
+                            ra.showMsg("You must position marker before adding postcode");
                         }
                     }
 
@@ -197,7 +197,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
             _this.raobject.gridref8 = grid.toString(6);
             _this.raobject.gridref10 = grid.toString(8);
             if (_this.raobject.hasOwnProperty('postcode')) {
-                var ok = confirm("Do you wish to remove the postcode");
+                var ok = ra.showConfirm("Do you wish to remove the postcode");
                 if (ok) {
                     _this.postcodeLayer.clearLayers();
                     delete _this.raobject.postcode;
@@ -418,11 +418,11 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         var east = Math.round(grid.easting);
         var north = Math.round(grid.northing);
         var _this = this;
-        // alert("The nearest postcodes will be displayed. \nYou can then select the appropriate one for SatNav. \nJust click the correct postcode");
+        // ("The nearest postcodes will be displayed. \nYou can then select the appropriate one for SatNav. \nJust click the correct postcode");
         var url = "https://postcodes.theramblers.org.uk/index.php?easting=" + east + "&northing=" + north + "&dist=10&maxpoints=20";
         ra.ajax.getJSON(url, function (err, pcs) {
             if (err !== null) {
-                alert('Sorry something went wrong fetching the postcode, error:' + err);
+                ra.showError('Sorry something went wrong fetching the postcode, error:' + err);
             } else {
                 if (pcs.length !== 0) {
                     pcs.forEach(function (pc) {
@@ -453,7 +453,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                     event.raData.layer = _this.postcodeLayer;
                     document.dispatchEvent(event);
                 } else {
-                    alert('No postcodes found within 10Km')
+                    ra.showMsg('No postcodes found within 10Km')
                 }
             }
         });
@@ -477,7 +477,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                     _this.placesDisplayed = true;
                     button.classList.add("active");
                 } else {
-                    alert("Marker position not set");
+                    ra.showMsg("Marker position not set");
                 }
             }
 
@@ -490,7 +490,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
 
 // Instance method will be available to all instances but only load once in memory 
 ra.walkseditor.mapLocationInput.prototype.publicMethod = function () {
-    alert(this.publicVariable);
+    ra.showError(this.publicVariable);
 };
 
 // Static variable shared by all instances

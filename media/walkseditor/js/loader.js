@@ -112,7 +112,7 @@ ra.walkseditor.editwalk = function (options, data) {
             var ele = e.target;
             var option = ele.options[ele.selectedIndex].text;
             if (option === "Cancelled") {
-                reason = prompt("Please say why the walk is being cancelled");
+                reason = ra.showPrompt("Please say why the walk is being cancelled");
             }
             draftwalk.setStatus(option, reason);
         });
@@ -193,7 +193,7 @@ ra.walkseditor.editwalk = function (options, data) {
             var element = _this.statusSelect;
             var disabled = element.selectedOptions[0].disabled;
             if (disabled) {
-                alert('Cannot save: Walk has errors and must be Draft status');
+                ra.showError('Cannot save: Walk has errors and must be Draft status');
             } else {
                 var status = document.getElementById(_this.data.fields.status);
                 status.value = _this.statusSelect.value;

@@ -80,7 +80,6 @@ ra.feedhandler = function () {
         });
         searchBtn.addEventListener("mapLocations", function (e) {
             var feed = e.target.raData.feedhelper;
-            //   alert("mapLocations " + e.target.tagName); // Hello from H1
             if (e.data.length === 1) {
                 let event = new Event("locationfound", {bubbles: true}); // (2)
                 event.raData = {};
@@ -364,7 +363,6 @@ ra.feedhandler = function () {
         acceptBtn.addEventListener("click", function (e) {
             var items = selectTag.raData.items;
             var item = items[selectTag.value];
-            //  alert("accept" + item.display_name);
             let event = new Event("recordfound", {bubbles: true}); // (2)
             event.raData = {};
             item.latitude = parseFloat(item.latitude); // in case it is char

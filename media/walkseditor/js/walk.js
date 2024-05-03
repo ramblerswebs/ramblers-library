@@ -195,7 +195,7 @@ ra.walkseditor.walk = function () {
             var data = JSON.parse(json);
             this.createFromObject(data);
         } catch (err) {
-            alert('Error processing walk (json=' + json + ' )');
+            ra.showError('Error processing walk (json=' + json + ' )');
             var data = {};
             this.createFromObject(data);
         }
@@ -591,7 +591,7 @@ ra.walkseditor.walk = function () {
         msg += "Reason: " + reason + "\n\r";
         msg += "Walk date: " + walkdate + "\n\r";
         msg += "Walk Tilte: " + title;
-        alert(msg);
+        ra.showError(msg);
     };
     this.previewWalk = function () {
         var $html = "<div id='ramblers-details-buttons1' ></div>";
@@ -646,7 +646,7 @@ ra.walkseditor.walk = function () {
                 switch (_this.getStatus()) {
                     case "Published":
                     case "Cancelled":
-                        ok = confirm(confirmMsg);
+                        ok = ra.showConfirm(confirmMsg);
                         break;
                 }
             }

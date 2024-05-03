@@ -167,7 +167,7 @@ L.Control.Mouse = L.Control.extend({
                 });
             }
         } catch (err) {
-            alert(err.message);
+            ra.showError(err.message);
         }
     },
     resetSettings: function () {
@@ -399,7 +399,7 @@ L.Control.OSInfo = L.Control.extend({
                 _this.displayOSGrid();
             });
         } catch (err) {
-            alert(err.message);
+            ra.showError(err.message);
         }
     },
     resetSettings: function () {
@@ -618,7 +618,7 @@ L.Control.Rightclick = L.Control.extend({
                     break;
                 case "starting":
                     if (!this._placesEnabled) {
-                        alert('The current map is already displaying all meeting and starting places and hence this option is currently disabled');
+                        ra.showMsg('The current map is already displaying all meeting and starting places and hence this option is currently disabled');
                         break;
                     }
                     var options = {
@@ -888,7 +888,7 @@ L.Control.Rightclick = L.Control.extend({
         });
     },
     _displayAllTags: function (e) {
-        // alert('This option not available yet');
+        // ('This option not available yet');
         //  return;
         var self = this;
         var title = "All items";

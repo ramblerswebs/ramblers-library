@@ -96,13 +96,13 @@ ra.walkseditor.form.submitwalk = function (options, data) {
         var upload = new ra.uploadFile();
         upload.addField(uploadButton, ".walks,.json");
         uploadButton.addEventListener("upload-file-read", function (e) {
-            var okay = confirm("Any existing data entered will be overwritten, Confirm action");
+            var okay = ra.showConfirm("Any existing data entered will be overwritten, Confirm action");
             if (!okay) {
                 return;
             }
             var walks = JSON.parse(e.ra.result);
             if (walks.length > 1) {
-                alert("More than one walk in upload file, only the first walk has been read");
+                ra.showMsg("More than one walk in upload file, only the first walk has been read");
             }
             walks.every(function (walk, index) {
                 if (index > 0) {
@@ -204,7 +204,7 @@ ra.walkseditor.form.submitwalk = function (options, data) {
             name = "groupwalk.walks";
             saveAs(blob, name);
         } catch (e) {
-            blurt('Your web browser does not support his option!');
+            ra.showError('Your web browser does not support his option!');
         }
     };
 };
