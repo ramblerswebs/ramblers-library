@@ -93,7 +93,7 @@ class RJsonwalksWalkWalk implements JsonSerializable {
                 $out = $this->getGradeSpan('right');
                 break;
             case "{grade}":
-                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
+                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
                     if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
                         $out .= $BR . $this->localGrade;
@@ -102,7 +102,7 @@ class RJsonwalksWalkWalk implements JsonSerializable {
                 break;
             case "{grade+}":
                 $out = $this->getGradeSpan("middle");
-                $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
+                $out .= "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 if ($this->localGrade !== "") {
                     if (strcmp($this->nationalGrade, $this->localGrade) != 0) {
                         $out .= $BR . $this->localGrade;
@@ -110,10 +110,10 @@ class RJsonwalksWalkWalk implements JsonSerializable {
                 }
                 break;
             case "{nationalGrade}":
-                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
+                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->nationalGrade . "</span>";
                 break;
             case "{nationalGradeAbbr}":
-                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='ra.walk.dGH()'>" . $this->gradeAbbr() . "</span>";
+                $out = "<span class='pointer " . str_replace("/ /g", "", $this->nationalGrade) . "' onclick='javascript:ra.walk.dGH()'>" . $this->gradeAbbr() . "</span>";
                 break;
             case "{localGrade}":
                 $out = $this->localGrade;
@@ -183,25 +183,25 @@ class RJsonwalksWalkWalk implements JsonSerializable {
         $img = $this->getGradeImg();
         switch ($this->nationalGrade) {
             case "Event":
-                $tag = "<span data-descr='Event' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
+                $tag = "<span data-descr='Event' class='grade " . $class . "' onclick='javascript:ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Easy Access":
-                $tag = "<span data-descr='Easy Access' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
+                $tag = "<span data-descr='Easy Access' class='grade " . $class . "' onclick='javascript:ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Easy":
-                $tag = "<span data-descr='Easy' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
+                $tag = "<span data-descr='Easy' class='grade " . $class . "' onclick='javascript:ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Leisurely":
-                $tag = "<span data-descr='Leisurely' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
+                $tag = "<span data-descr='Leisurely' class='grade " . $class . "' onclick='javascript:ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Moderate":
-                $tag = "<span data-descr='Moderate' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
+                $tag = "<span data-descr='Moderate' class='grade " . $class . "' onclick='javascript:ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Strenuous":
-                $tag = "<span data-descr='Strenuous' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
+                $tag = "<span data-descr='Strenuous' class='grade " . $class . "' onclick='javascript:ra.walk.dGH()'>" . $img . "</span>";
                 break;
             case "Technical":
-                $tag = "<span data-descr='Technical' class='grade " . $class . "' onclick='ra.walk.dGH()'>" . $img . "</span>";
+                $tag = "<span data-descr='Technical' class='grade " . $class . "' onclick='javascript:ra.walk.dGH()'>" . $img . "</span>";
                 break;
             default:
                 $app = JFactory::getApplication();

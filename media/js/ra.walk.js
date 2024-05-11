@@ -765,7 +765,7 @@ ra.event = function () {
     };
     this._addWalkLink = function ($text, $class = "") {
         if ($text !== '') {
-            return  "<span class='pointer " + $class + "' onclick=\"" + ra.walk.DisplayWalkFunction + "(event,'" + this.admin.id + "')\" title='Click to display walk details'>" + $text + "</span>";
+            return  "<span class='pointer " + $class + "' onclick=\"javascript:" + ra.walk.DisplayWalkFunction + "(event,'" + this.admin.id + "')\" title='Click to display walk details'>" + $text + "</span>";
         }
         return $text;
     };
@@ -1044,7 +1044,7 @@ ra.event.walk = function () {
                 break;
             case "{difficulty}":
                 out = this.getValue("{distance}");
-                out += "<br/><span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                out += "<br/><span class='pointer' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
                 if (this.localGrade !== "") {
                     out += BR + this.localGrade;
                 }
@@ -1052,7 +1052,7 @@ ra.event.walk = function () {
             case "{difficulty+}":
                 out = this.getValue("{distance}");
                 out += BR + this.nationalGrade.disp("middle") + BR;
-                out += "<span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                out += "<span class='pointer' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
                 if (this.localGrade !== "") {
                     out += BR + this.localGrade;
                 }
@@ -1067,7 +1067,7 @@ ra.event.walk = function () {
                 out = this.nationalGrade.disp('middle');
                 break;
             case "{grade}":
-                out = "<span class='pointer " + this.nationalGrade.key() + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                out = "<span class='pointer " + this.nationalGrade.key() + "' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
                 if (this.localGrade !== "") {
                     out += BR + this.localGrade;
                 }
@@ -1075,16 +1075,16 @@ ra.event.walk = function () {
             case "{grade+}":
                 out = "";
                 out += this.nationalGrade.disp("middle");
-                out += "<span class='pointer " + this.nationalGrade.key() + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                out += "<span class='pointer " + this.nationalGrade.key() + "' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
                 if (this.localGrade !== "") {
                     out += BR + this.localGrade;
                 }
                 break;
             case "{nationalGrade}":
-                out = "<span class='pointer' onclick='ra.walk.dGH()'>" + this.nationalGrade.toText() + "</span>";
+                out = "<span class='pointer' onclick='javascript:ra.walk.dGH()'>" + this.nationalGrade.toText() + "</span>";
                 break;
             case "{nationalGradeAbbr}":
-                out = "<span class='pointer' onclick='ra.walk.dGH()'>" + this.nationalGrade.abbr() + "</span>";
+                out = "<span class='pointer' onclick='javascript:ra.walk.dGH()'>" + this.nationalGrade.abbr() + "</span>";
                 break;
             case "{localGrade}":
                 out = this.localGrade;
@@ -1822,7 +1822,7 @@ ra.event.media = function () {
         return "";
     };
     this.getHtmlSection = function () {
-        var $html = "<div class='walk-image' onclick='ra.html.displayInModal(this)'><div class='mediapopup'><img class='walkmedia' src='" + this.medium + "' alt='" + this.alt + "' >" + "</div></div>";
+        var $html = "<div class='walk-image' onclick='javascript:ra.html.displayInModal(this)'><div class='mediapopup'><img class='walkmedia' src='" + this.medium + "' alt='" + this.alt + "' >" + "</div></div>";
         return $html;
     };
 };
@@ -1898,7 +1898,7 @@ ra.event.nationalGrade = function (grade) {
         var $tag = "";
         var $img = this.image();
         var dataDescr = this.gradekey.replace("_", " ");
-        $tag = "<span data-descr='" + dataDescr + "' class='grade " + $class + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $img + "</span>";
+        $tag = "<span data-descr='" + dataDescr + "' class='grade " + $class + "' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + $img + "</span>";
         return $tag;
     };
 };

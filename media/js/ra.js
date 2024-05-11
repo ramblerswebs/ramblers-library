@@ -908,7 +908,7 @@ ra.html = (function () {
                 mywindow.document.write(noprint);
             }
         }
-        mywindow.document.write('</head><body><div id="js-document"><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');
+        mywindow.document.write('</head><body><div id="js-document"><input type="button" value="Print" onclick="javascript:window.print(); return false;"><div class="div.component-content">');
         mywindow.document.write(html);
         mywindow.document.write('</div></div></body></html>');
         var span = mywindow.document.getElementById("js-document");

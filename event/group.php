@@ -68,7 +68,7 @@ class REventGroup {
                     self::$id += 1;
                     $ident = "ev" . strval(self::$id);
                     $out .= "<div class='event-list-cal-event'>" . PHP_EOL;
-                    $out .= "<div class='event-list-cal-day'><a onclick=\"ra.html.toggleVisibility('" . $ident . "')\">" . $text . "</a></div>" . PHP_EOL;
+                    $out .= "<div class='event-list-cal-day'><a onclick=\"javascript:ra.html.toggleVisibility('" . $ident . "')\">" . $text . "</a></div>" . PHP_EOL;
                     $out .= "<div class='event-list-cal-hover' id='" . $ident . "'>" . PHP_EOL;
                     $out .= $event->EventDate()->format('l, jS');
                 }
