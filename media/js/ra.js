@@ -89,7 +89,7 @@ ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
         }
     }
     ra.loading.stop();
-   // ra.showMsg('Hello world! ' + displayClass);
+    // ra.showMsg('Hello world! ' + displayClass);
 };
 ra.decodeData = function (value) {
     if (value === null) {
@@ -101,10 +101,10 @@ ra.decodeData = function (value) {
 };
 // alternatives to alert
 ra.showMsg = function (msg) {
-   ra.modals.createModal("<h3>Information</h3><p style='font-weight:bold; max-width:450px'>" + msg + "</p>", false);
+    ra.modals.createModal("<h3>Information</h3><p style='font-weight:bold; max-width:450px'>" + msg + "</p>", false);
 };
 ra.showError = function (msg) {
-     ra.modals.createModal("<h3>Error</h3><p style='font-weight:bold'>" + msg + "</p>", false);
+    ra.modals.createModal("<h3>Error</h3><p style='font-weight:bold'>" + msg + "</p>", false);
 };
 ra.showConfirm = function (msg) {
     return confirm(msg)
@@ -1574,10 +1574,7 @@ ra.modals = (function () {
 ra.modal = function () {
     this.elements = {};
     this._content;
-    this._fullScreenElement = document.fullscreenElement;
-    if (this._fullScreenElement !== null) {
-        document.exitFullscreen();
-    }
+    // rest of new code is at the end after functions are defined
     this.setContent = function ($html, printButton = true, closeButton = true) {
         var _this = this;
         this._createModalTag(printButton, closeButton);
@@ -1611,7 +1608,8 @@ ra.modal = function () {
         document.dispatchEvent(e);
         event.stopImmediatePropagation();
         if (this._fullScreenElement !== null) {
-            this._fullScreenElement.requestFullscreen();
+            //  this._fullScreenElement.requestFullscreen();
+            this._enterFullscreen(this._fullScreenElement);
         }
     };
 
@@ -1641,7 +1639,41 @@ ra.modal = function () {
             this.elements.print.style.display = 'none';
     }
     };
+    this._exitFullscreen = function () {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    };
 
+    this._enterFullscreen = function (container) {
+        // var container = this.getContainer();
+        if (container.requestFullscreen) {
+            container.requestFullscreen();
+        } else if (container.mozRequestFullScreen) {
+            container.mozRequestFullScreen();
+        } else if (container.webkitRequestFullscreen) {
+            //  container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            container.webkitRequestFullscreen();
+        } else if (container.msRequestFullscreen) {
+            container.msRequestFullscreen();
+        }
+    };
+    // this._fullScreenElement = document.fullscreenElement;
+    this._fullScreenElement =
+            document.fullscreenElement ||
+            document.mozFullScreenElement ||
+            document.webkitFullscreenElement ||
+            document.msFullscreenElement;
+    if (this._fullScreenElement !== null) {
+        //document.exitFullscreen();
+        this._exitFullscreen();
+    }
 };
 
 ra.math = (function () {
