@@ -194,7 +194,7 @@ L.Control.Places = L.Control.extend({
         };
         if (this._popupinfo) {
             this._popupinfo = false;
-            alert(this._notice);
+            ra.showMsg(this._notice);
         }
         _locationOptions = L.setOptions(_locationOptions, locationOptions);
         this._clearPlacesLayers();
@@ -249,7 +249,7 @@ L.Control.Places = L.Control.extend({
         var url = this._urlbase + "getall.php";
         ra.ajax.getJSON(url, function (err, items) {
             if (err !== null) {
-                alert("Error: Something went wrong: " + err);
+                ra.showError("Error: Something went wrong: " + err);
                 self._closeProgressBar();
             } else {
                 self._addClusteredPlaces();
@@ -257,7 +257,7 @@ L.Control.Places = L.Control.extend({
             }
         });
         this._container.addEventListener("display-item-complete", function (e) {
-            alert(self._notice);
+            ra.showMsg(self._notice);
         });
     },
     _processItems: function (items, chunk) {

@@ -43,7 +43,7 @@ ra.joomlaVersion = function () {
     return ra._jversion;
 };
 ra.joomlaMajorVersion = function () {
-    var parts=ra._jversion.split(".");
+    var parts = ra._jversion.split(".");
     return Number(parts[0]);
 };
 ra.decodeOptions = function (value) {
@@ -59,19 +59,6 @@ ra.decodeOptions = function (value) {
     value = "";
     return options;
 };
-//ra.getDataViaKey = function (key) {
-//    if (key === "") {
-//        return null;
-//    }
-//    var prop = "tmp_" + key;
-//    if (!ra.hasOwnProperty(prop)) {
-//        alert("PROGRAM ERROR, no data supplied: Please report this error to the webnaster");
-//        return null;
-//    } else {
-//        var data = ra[prop];
-//    }
-//    return data;
-//};
 ra.uniqueID = function () {
     ra.uniquenumber += 1;
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
@@ -91,7 +78,7 @@ ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
             for (let i = 0; i < parts.length; i++) {
                 myclass = myclass[parts[i]];
                 if (typeof myclass === 'undefined') {
-                    alert('RA.Bootstrapper - ' + displayClass + ' option not known!');
+                    ra.showError('RA.Bootstrapper - ' + displayClass + ' option not known!');
                     ra.loading.stop();
                     return;
                 }
@@ -102,6 +89,7 @@ ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
         }
     }
     ra.loading.stop();
+    // ra.showMsg('Hello world! ' + displayClass);
 };
 ra.decodeData = function (value) {
     if (value === null) {
@@ -110,6 +98,19 @@ ra.decodeData = function (value) {
     var data = JSON.parse(value);
     value = "";
     return data;
+};
+// alternatives to alert
+ra.showMsg = function (msg) {
+    ra.modals.createModal("<h3>Information</h3><p style='font-weight:bold; max-width:450px'>" + msg + "</p>", false);
+};
+ra.showError = function (msg) {
+    ra.modals.createModal("<h3>Error</h3><p style='font-weight:bold'>" + msg + "</p>", false);
+};
+ra.showConfirm = function (msg) {
+    return confirm(msg)
+};
+ra.showPrompt = function (msg) {
+    return prompt(msg)
 };
 // convert string to title case
 ra.titleCase = function (str) {
@@ -308,7 +309,7 @@ ra.ajax = (function () {
                 if (xmlhttp.status === 200) {
                     displayFunc(target, xmlhttp.responseText);
                 } else {
-                    alert('Unable to complete task');
+                    ra.showError('Unable to complete task');
                 }
             }
         };
@@ -434,7 +435,7 @@ ra.settings = (function () {
                     ra.settings._transferValues(cookie, settings);
                 }
             } catch (err) {
-                alert("Unable to retrieve settings from previous session [" + name + ']');
+                ra.showError("Unable to retrieve settings from previous session [" + name + ']');
             }
         }
     };
@@ -637,7 +638,7 @@ ra.date = (function () {
             if ((datetimestring instanceof Date)) {
                 return value;
             } else {
-                alert("Error RA0001: invalid datetime");
+                ra.showError("Error RA0001: invalid datetime");
             }
 
         }
@@ -817,13 +818,13 @@ ra.html = (function () {
                     if (result) {
                         result.element.appendChild(item.element);
                     } else {
-                        alert("generateTags: no parent");
+                        ra.showError("generateTags: no parent");
                         root.appendChild(item.element);
                     }
                 }
 
             } else {
-                alert("generateTags: no parent");
+                ra.showError("generateTags: no parent");
             }
         }
         return tags;
@@ -907,7 +908,7 @@ ra.html = (function () {
                 mywindow.document.write(noprint);
             }
         }
-        mywindow.document.write('</head><body><div id="js-document"><input type="button" value="Print" onclick="window.print(); return false;"><div class="div.component-content">');
+        mywindow.document.write('</head><body><div id="js-document"><input type="button" value="Print" onclick="javascript:window.print(); return false;"><div class="div.component-content">');
         mywindow.document.write(html);
         mywindow.document.write('</div></div></body></html>');
         var span = mywindow.document.getElementById("js-document");
@@ -1414,8 +1415,8 @@ ra.clipboard = (function () {
         // Copy the text inside the text field
         navigator.clipboard.writeText(text);
 
-        // Alert the copied text
-        alert("Text copied to clipboard: " + text);
+        // show the copied text
+        ra.showMsg("Text copied to clipboard: " + text);
     };
 
     return clipboard;
@@ -1540,7 +1541,7 @@ ra.modals = (function () {
         var item = new ra.modal();
         item.setContent($html, printButton, cancelButton);
         modals._items.push(item);
-       // modals.diag("Create");
+        // modals.diag("Create");
         modals.masterdiv.innerHTML = '';
         modals.masterdiv.appendChild(item.getContent());
         return item;
@@ -1564,7 +1565,7 @@ ra.modals = (function () {
             var item = modals._items[modals._items.length - 1];
             ra.html.setTag(modals.masterdiv, item.getContent());
         }
-       // modals.diag("Closing after");
+        // modals.diag("Closing after");
     });
     return modals;
 }
@@ -1573,10 +1574,7 @@ ra.modals = (function () {
 ra.modal = function () {
     this.elements = {};
     this._content;
-    this._fullScreenElement = document.fullscreenElement;
-    if (this._fullScreenElement !== null) {
-        document.exitFullscreen();
-    }
+    // rest of new code is at the end after functions are defined
     this.setContent = function ($html, printButton = true, closeButton = true) {
         var _this = this;
         this._createModalTag(printButton, closeButton);
@@ -1610,7 +1608,8 @@ ra.modal = function () {
         document.dispatchEvent(e);
         event.stopImmediatePropagation();
         if (this._fullScreenElement !== null) {
-            this._fullScreenElement.requestFullscreen();
+            //  this._fullScreenElement.requestFullscreen();
+            this._enterFullscreen(this._fullScreenElement);
         }
     };
 
@@ -1622,8 +1621,7 @@ ra.modal = function () {
             {name: 'print', parent: 'header', tag: 'button', attrs: {class: 'link-button granite tiny modal-print'}, textContent: 'Print'},
             {name: 'close', parent: 'header', tag: 'button', attrs: {class: 'link-button granite tiny modal-close'}, textContent: 'Close'},
             {parent: 'content', tag: 'div', style: {clear: 'right'}},
-            {name: 'data', parent: 'content', tag: 'div'},
-            {parent: 'content', tag: 'hr'}
+            {name: 'data', parent: 'content', tag: 'div'}
         ];
         if (typeof this._content !== 'undefined') {
             this.elements.data.innerHTML = '';
@@ -1641,7 +1639,41 @@ ra.modal = function () {
             this.elements.print.style.display = 'none';
     }
     };
+    this._exitFullscreen = function () {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    };
 
+    this._enterFullscreen = function (container) {
+        // var container = this.getContainer();
+        if (container.requestFullscreen) {
+            container.requestFullscreen();
+        } else if (container.mozRequestFullScreen) {
+            container.mozRequestFullScreen();
+        } else if (container.webkitRequestFullscreen) {
+            //  container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+            container.webkitRequestFullscreen();
+        } else if (container.msRequestFullscreen) {
+            container.msRequestFullscreen();
+        }
+    };
+    // this._fullScreenElement = document.fullscreenElement;
+    this._fullScreenElement =
+            document.fullscreenElement ||
+            document.mozFullScreenElement ||
+            document.webkitFullscreenElement ||
+            document.msFullscreenElement;
+    if (this._fullScreenElement !== null) {
+        //document.exitFullscreen();
+        this._exitFullscreen();
+    }
 };
 
 ra.math = (function () {
@@ -1822,7 +1854,7 @@ ra.help = function (tag, helpFunction) {
             _this.helpTag.style.display = 'none';
             var ele = e.target;
             if (ele.raHelpTag === 'undefined') {
-                alert('help undefined');
+                ra.showError('help undefined');
             }
             ele.raHelpTag.open = false;
         }
@@ -2041,7 +2073,7 @@ ra.filter = function (eventTag, eventName) {
                     this._displayGroupLimit(div, group);
                     break;
                 default:
-                    alert("Invalid filter type");
+                    ra.showError("Invalid filter type");
             }
         }
         var nodes = filters.getElementsByClassName("ra-filteritemnil");
@@ -2072,7 +2104,7 @@ ra.filter = function (eventTag, eventName) {
         h.textContent = group.title;
         tag.appendChild(h);
         // display range
-        alert("number range not imlpemented");
+        ra.showError("number range not imlpemented");
     };
     this._displayGroupItem = function (tag, group) {
         // display title
@@ -2220,7 +2252,7 @@ ra.filter = function (eventTag, eventName) {
     };
     this._shouldDisplayItem = function (id, item) {
         if (!this._groups.hasOwnProperty(id)) {
-            alert("Filter id error");
+            ra.showError("Filter id error");
         }
         var group = this._groups[id];
         switch (group.type) {
@@ -2479,7 +2511,7 @@ if (typeof (ra.ics) === "undefined") {
                 var name = "ramblerswalks.ics";
                 saveAs(blob, name);
             } catch (e) {
-                alert('Your web browser does not support this option!');
+                ra.showMsg('Your web browser does not support this option!');
             }
         };
         this._addRecord = function ($command, $content = "", $html = false) {
@@ -2693,7 +2725,7 @@ if (typeof (ra.ics) === "undefined") {
             if (oType === type) {
                 return true;
             } else {
-                alert('Incorrect type in ICS');
+                ra.showError('Incorrect type in ICS');
             }
             return false;
         };

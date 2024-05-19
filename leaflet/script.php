@@ -87,7 +87,6 @@ class RLeafletScript {
         RLoad::addScript("media/lib_ramblers/vendors/Leaflet.FeatureGroup.SubGroup-1.0.2/src/subgroup.js");
 
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.Places.js");
-
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.Mouse.js");
         RLoad::addStyleSheet("media/lib_ramblers/leaflet/L.Control.Mouse.css");
 

@@ -147,7 +147,7 @@ L.Control.GpxUpload = L.Control.extend({
                 cb(input, options);
             }
         } else {
-            alert("File does not appear to be a GPX file");
+            ra.showError("File does not appear to be a GPX file");
         }
     },
     _ra_gpx_parse_gpx_data: function (xml, options) {
@@ -358,7 +358,7 @@ L.Control.GpxUpload = L.Control.extend({
         try {
             xmlDoc = parser.parseFromString(text, "text/xml");
         } catch (e) {
-            alert("XML parsing error.");
+            ra.showError("XML parsing error.");
             return null;
         }
         var errorMsg = null;
@@ -377,7 +377,7 @@ L.Control.GpxUpload = L.Control.extend({
         }
 
         if (errorMsg) {
-            alert(errorMsg);
+            ra.showError(errorMsg);
             return null;
         }
 

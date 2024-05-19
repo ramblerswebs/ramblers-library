@@ -452,11 +452,11 @@ ra.loc = (function () {
         if (ra.data.location.found) {
             var myloc = ra.data.location;
             if (ra.data.location.accuracy > 500) {
-                alert("Unable to accurately obtain your location.\nYou may need to tell Google your true location.");
+                ra.showMsg("Unable to accurately obtain your location.\nYou may need to tell Google your true location.");
             }
             page = "https://maps.google.com?saddr=" + myloc.latitude.toString() + "," + myloc.longitude.toString() + "&daddr=" + $lat.toString() + "," + $long.toString();
         } else {
-            alert("Sorry - Unable to find your location, we will ask Google to try");
+            ra.showMsg("Sorry - Unable to find your location, we will ask Google to try");
             page = "https://www.google.com/maps/dir/Current+Location/" + $lat.toString() + "," + $long.toString();
         }
         // console.log(page);

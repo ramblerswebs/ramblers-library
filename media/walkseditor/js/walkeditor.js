@@ -268,7 +268,7 @@ ra.walkseditor.walkeditor = function ( ) {
                 locations.display();
                 break;
             default:
-                alert("Type error - please report this issue");
+                ra.showError("Type error - please report this issue");
     }
     };
     this.addMeetingLocation = function (editor, tag, no) {
@@ -294,7 +294,6 @@ ra.walkseditor.walkeditor = function ( ) {
             itemsDiv.addEventListener("predefinedLocation", function (e) {
                 var item = e.raData.item;
                 location.updateDetails(item);
-                //  alert('predefinedLocation');
                 _this.name.value = item.name;
                 _this.gridref10.value = item.gridreference;
                 _this.latitude.value = item.latitude;
@@ -346,7 +345,7 @@ ra.walkseditor.walkeditor = function ( ) {
                 _this.addArea(tag);
                 break;
             default:
-                alert("Starting Type error - please report this issue");
+                ra.showError("Starting Type error - please report this issue");
         }
     };
     this.addStart = function (tag) {
@@ -636,7 +635,7 @@ function raItems(options) {
             this._addItem.ra.raItems = this;
             tag.appendChild(this._sortItems);
             this._sortItems.addEventListener("click", function (e) {
-                alert('sort');
+                ra.showMsg('sort');
                 //         ramblers.controller.clickEditButton();
             });
             var p = document.createElement('div');
@@ -735,7 +734,7 @@ ra.walkseditor.exportToWM = function () {
     };
     this._ExportWalksToWM = function (programme) {
         // items is either an array or items or a single walk
-        alert("This feature is being developed please let us know if you have any issues");
+        ra.showMsg("This feature is being developed please let us know if you have any issues");
         var data = "";
         data = data + this._WMheader();
         var walks = programme.getWalks();
@@ -753,7 +752,7 @@ ra.walkseditor.exportToWM = function () {
             var name = "WalksManagerUpload.csv";
             saveAs(blob, name);
         } catch (e) {
-            alert('Your web browser does not support this option!');
+            ra.showError('Your web browser does not support this option!');
         }
     };
     this._WMheader = function () {
@@ -817,7 +816,7 @@ ra.walkseditor.exportToGWEM = function () {
     };
     this._ExportWalksToGWEM = function (programme) {
         // items is either an array or items or a single walk
-        alert("This feature is being developed please let us know if you have any issues");
+        ra.showMsg("This feature is being developed please let us know if you have any issues");
         var data = "";
         data = data + this._GWEMheader();
 
@@ -835,7 +834,7 @@ ra.walkseditor.exportToGWEM = function () {
             var name = "GWEMUpload.csv";
             saveAs(blob, name);
         } catch (e) {
-            alert('Your web browser does not support this option!');
+            ra.showError('Your web browser does not support this option!');
         }
     };
     this._GWEMheader = function () {

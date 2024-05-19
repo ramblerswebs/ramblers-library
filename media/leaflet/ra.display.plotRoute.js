@@ -337,7 +337,6 @@ ra.display.plotRoute = function (options, data) {
                 var content = '<span><b>Name</b></span><br/><input id="markerName" type="text"/ value="' + marker.name + '" /><br/><span><b>Description<b/></span><br/><textarea id="markerDesc" style="resize:vertical;">' + marker.desc + '</textarea><br/><span><b>Symbol</b></span><br/><input id="markerSymbol" type="text" value="' + marker.symbol + '"/>';
                 popup.setContent(content);
             }
-            //    alert('open');
         });
 
         this.drawnItems.on('popupclose', function (e) {
@@ -651,14 +650,14 @@ ra.display.plotRoute = function (options, data) {
         }
         if (nullItems.length > 0) { // need to fetch elevations
             if (nullItems.length > 1000) {
-                blurt("Tracks contains more than 1000 points, response may be slow, please wait...");
+                ra.showMsg("Tracks contains more than 1000 points, response may be slow, please wait...");
             }
             var points = "data=" + JSON.stringify(nullItems);
             var url = "https://elevation.theramblers.org.uk/";
             ra.ajax.postJSON(url, points, null, function (err, items) {
                 if (err !== null) {
                     var msg = "Error: Something went wrong: " + err;
-                    alert(msg);
+                    ra.showError(msg);
                 } else {
                     for (i = 0; i < items.length; i++) {
                         var item = items[i];

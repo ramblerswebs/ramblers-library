@@ -107,7 +107,7 @@ class RJsonwalksStdSimplelist extends RJsonwalksDisplaybase {
             $DisplayWalkFunction = "ra.walk.toggleDisplay";
             $text = $walk->addTooltip($walk->getWalkValues($this->listFormat, false));
             $out .= "<div class='" . $this->walkClass . $status . " " . $oddeven . " toggler pointer'"
-                    . " onclick=\"" . $DisplayWalkFunction . "(event,'" . $id . "')\">" . PHP_EOL;
+                    . " onclick=\"javascript:" . $DisplayWalkFunction . "(event,'" . $id . "')\">" . PHP_EOL;
             $out .= "<span class='item'>" . $text . "</span></div>" . PHP_EOL;
         } else {
             $text = $walk->addTooltip($walk->getWalkValues($this->listFormat));

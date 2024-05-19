@@ -478,13 +478,13 @@ ra.event = function () {
         });
         return valueSet;
     };
-    this.resetDisplay = function (tag) {
-        var htmltag = document.getElementById(tag);
-        if (htmltag) {
-            alert("resetDisplay found tag!");
-            htmltag.parentElement.style.display = "list-item";
-        }
-    };
+//    this.resetDisplay = function (tag) {
+//        var htmltag = document.getElementById(tag);
+//        if (htmltag) {
+//            ra.showError("resetDisplay found tag!");
+//            htmltag.parentElement.style.display = "list-item";
+//        }
+//    };
     this.addWalktoIcs = function (events) {
         var ev = new ra.ics.event();
         var $meetLocation, $startLocation, $before, $after, $summary, $description, $altDescription;
@@ -696,7 +696,7 @@ ra.event = function () {
         $html += "</div>";
         $html += "<div>Last update: " + ra.date.dowShortddmmyyyy(this.admin.dateUpdated) + "</div>";
         $html += "</div>";
-        $html += "<div>Walk ID " + this.admin.id + "</div>";
+        $html += "<div>Walk ID " + this.admin.id + "</div><hr";
         content.innerHTML = $html;
         tag.appendChild(content);
     };
@@ -765,7 +765,7 @@ ra.event = function () {
     };
     this._addWalkLink = function ($text, $class = "") {
         if ($text !== '') {
-            return  "<span class='pointer " + $class + "' onclick=\"" + ra.walk.DisplayWalkFunction + "(event,'" + this.admin.id + "')\" title='Click to display walk details'>" + $text + "</span>";
+            return  "<span class='pointer " + $class + "' onclick=\"javascript:" + ra.walk.DisplayWalkFunction + "(event,'" + this.admin.id + "')\" title='Click to display walk details'>" + $text + "</span>";
         }
         return $text;
     };
@@ -1044,7 +1044,7 @@ ra.event.walk = function () {
                 break;
             case "{difficulty}":
                 out = this.getValue("{distance}");
-                out += "<br/><span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                out += "<br/><span class='pointer' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
                 if (this.localGrade !== "") {
                     out += BR + this.localGrade;
                 }
@@ -1052,7 +1052,7 @@ ra.event.walk = function () {
             case "{difficulty+}":
                 out = this.getValue("{distance}");
                 out += BR + this.nationalGrade.disp("middle") + BR;
-                out += "<span class='pointer' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                out += "<span class='pointer' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
                 if (this.localGrade !== "") {
                     out += BR + this.localGrade;
                 }
@@ -1067,7 +1067,7 @@ ra.event.walk = function () {
                 out = this.nationalGrade.disp('middle');
                 break;
             case "{grade}":
-                out = "<span class='pointer " + this.nationalGrade.key() + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                out = "<span class='pointer " + this.nationalGrade.key() + "' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
                 if (this.localGrade !== "") {
                     out += BR + this.localGrade;
                 }
@@ -1075,16 +1075,16 @@ ra.event.walk = function () {
             case "{grade+}":
                 out = "";
                 out += this.nationalGrade.disp("middle");
-                out += "<span class='pointer " + this.nationalGrade.key() + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
+                out += "<span class='pointer " + this.nationalGrade.key() + "' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + this.nationalGrade.toText() + "</span>";
                 if (this.localGrade !== "") {
                     out += BR + this.localGrade;
                 }
                 break;
             case "{nationalGrade}":
-                out = "<span class='pointer' onclick='ra.walk.dGH()'>" + this.nationalGrade.toText() + "</span>";
+                out = "<span class='pointer' onclick='javascript:ra.walk.dGH()'>" + this.nationalGrade.toText() + "</span>";
                 break;
             case "{nationalGradeAbbr}":
-                out = "<span class='pointer' onclick='ra.walk.dGH()'>" + this.nationalGrade.abbr() + "</span>";
+                out = "<span class='pointer' onclick='javascript:ra.walk.dGH()'>" + this.nationalGrade.abbr() + "</span>";
                 break;
             case "{localGrade}":
                 out = this.localGrade;
@@ -1303,7 +1303,7 @@ ra.event.timelocation = function () {
                 $textdescription = "Finish: ";
                 break;
             default:
-                alert("Error 0003");
+                ra.showError("Error 0003");
         }
         if (this.type !== "Rough") {
             if (this.timeHHMMshort !== "") {
@@ -1346,7 +1346,7 @@ ra.event.timelocation = function () {
                 display.timeTitle = "<b>Estimated Time</b>: ";
                 break;
             default:
-                alert("Error 0004");
+                ra.showError("Error 0004");
         }
 
         var cancelled = "";
@@ -1508,7 +1508,7 @@ ra.event.timelocation = function () {
                 popupoffset = [0, -10];
                 break;
             default:
-                alert("Error 0001");
+                ra.showError("Error 0001");
         }
 
         var marker = L.marker([this.latitude, this.longitude], {icon: icon, title: title, riseOnHover: true}).addTo(layer);
@@ -1822,7 +1822,7 @@ ra.event.media = function () {
         return "";
     };
     this.getHtmlSection = function () {
-        var $html = "<div class='walk-image' onclick='ra.html.displayInModal(this)'><div class='mediapopup'><img class='walkmedia' src='" + this.medium + "' alt='" + this.alt + "' >" + "</div></div>";
+        var $html = "<div class='walk-image' onclick='javascript:ra.html.displayInModal(this)'><div class='mediapopup'><img class='walkmedia' src='" + this.medium + "' alt='" + this.alt + "' >" + "</div></div>";
         return $html;
     };
 };
@@ -1833,7 +1833,7 @@ ra.event.nationalGrade = function (grade) {
     if (valid.includes(grade)) {
         this.gradekey = grade.replace(" ", "_");
     } else {
-        alert("Error: invalid walks grade found");
+        ra.showError("Error: invalid walks grade found");
     }
     this.toText = function () {
         return this.grade;
@@ -1898,7 +1898,7 @@ ra.event.nationalGrade = function (grade) {
         var $tag = "";
         var $img = this.image();
         var dataDescr = this.gradekey.replace("_", " ");
-        $tag = "<span data-descr='" + dataDescr + "' class='grade " + $class + "' onclick='ra.walk.dGH()' title='Click to see grading system'>" + $img + "</span>";
+        $tag = "<span data-descr='" + dataDescr + "' class='grade " + $class + "' onclick='javascript:ra.walk.dGH()' title='Click to see grading system'>" + $img + "</span>";
         return $tag;
     };
 };
@@ -2020,7 +2020,7 @@ ra.walk = (function () {
                 if (walk !== null) {
                     walk.displayInModal(event);
                 } else {
-                    alert('SORRY unable to display specified walk/event.');
+                    ra.showMsg('SORRY unable to display specified walk/event.');
                 }
 
             }, 500);
@@ -2089,7 +2089,7 @@ ra.walk = (function () {
             if (walk !== null) {
                 walk.walkDetailsDisplay(tag);
             } else {
-                alert("Walk not found - program error, please report issue to the webmaster");
+                ra.showError("Walk not found - program error, please report issue to the webmaster");
             }
         }
     };

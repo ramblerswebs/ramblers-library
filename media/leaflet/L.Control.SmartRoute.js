@@ -59,7 +59,7 @@ L.Control.SmartRoute = L.Control.extend({
         if (this.enabled) {
             if (this.alert) {
                 this.alert = false;
-                alert('Smart Route follows paths/roads etc defined on the Open Street Map,\nregardless of which map is displayed.');
+                ra.showMsg('Smart Route follows paths/roads etc defined on the Open Street Map,regardless of which map is displayed.');
             }
             L.DomUtil.removeClass(this._container, 'ra-smart-toolbar-button-disabled');
             this.setOpacityZero();
@@ -108,7 +108,7 @@ L.Control.SmartRoute = L.Control.extend({
                         self._saveRoute = false;
                     }
                 } else {
-                    alert("Unable to fetch route, status " + this.status);
+                    ra.showError("Unable to fetch route, status " + this.status);
                 }
                 self.pending = false;
             }
@@ -159,7 +159,7 @@ L.Control.SmartRoute = L.Control.extend({
             available = parseInt(items["x-ratelimit-remaining"]);
         }
         if (available < 20) {
-            alert('Our usage of the Open Routing Service has reached the limit for today.\n\rPlease try again tomorrow or continue with straight line segments.');
+            ra.showError('Our usage of the Open Routing Service has reached the limit for today.\n\rPlease try again tomorrow or continue with straight line segments.');
             this.turnOffSmartRouting();
             return false;
         }

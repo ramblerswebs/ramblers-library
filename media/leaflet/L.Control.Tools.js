@@ -169,7 +169,7 @@ L.Control.Help = L.Control.extend({
                 page = ra.map.helpBase + page;
                 window.open(page, "_blank", "scrollbars=yes,width=990,height=480,menubar=yes,resizable=yes,status=yes");
             } else {
-                alert("Program error - no help file specified");
+                ra.showError("Program error - no help file specified");
             }
 
         });

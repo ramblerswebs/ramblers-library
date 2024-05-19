@@ -175,13 +175,13 @@ class RCalendar {
         $out.= '</div>';
         return $out;
 
-        // <a href="#" onclick="toggle_visibility('foo');">Click here to toggle visibility of element #foo</a>
+        // <a href="#" onclick="javascript:toggle_visibility('foo');">Click here to toggle visibility of element #foo</a>
     }
 
     private function getTogglePair($one, $two) {
         $idone = $this->getDivId($this->baseno + $one);
         $idtwo = $this->getDivId($this->baseno + $two);
-        return ' onclick="ra.html.toggleVisibilities(' . $idone . ',' . $idtwo . ')"';
+        return ' onclick="javascript:ra.html.toggleVisibilities(' . $idone . ',' . $idtwo . ')"';
     }
 
     private function getDivId($no) {

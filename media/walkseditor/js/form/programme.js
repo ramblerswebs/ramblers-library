@@ -75,7 +75,7 @@ ra.walkseditor.form.programme = function (options, data) {
         });
 
         document.addEventListener('preview-walk-delete', function (e) {
-            var $okay = confirm("This walk will be permanently deleted");
+            var $okay = ra.showConfirm("This walk will be permanently deleted");
             if ($okay) {
                 _this.programme.deleteWalk(e.ra.walk);
                 viewer.refresh();
@@ -143,7 +143,7 @@ ra.walkseditor.walksprogrammeViewer = function () {
 //        button.textContent = "Upload walk";
 //        button.title = "Upload/read a walk and add it to the walks programme";
 //        button.addEventListener('click', function () {
-//            alert("Upload walk");
+//            ra.showError("Upload walk");
 //        });
 //        topOptions.appendChild(button);
 
@@ -162,7 +162,7 @@ ra.walkseditor.walksprogrammeViewer = function () {
                 name = "walkprogramme.walks";
                 saveAs(blob, name);
             } catch (e) {
-                blurt('Your web browser does not support his option!');
+                ra.showError('Your web browser does not support his option!');
             }
         });
         topOptions.appendChild(saveButton);

@@ -339,10 +339,10 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
                         event.ra.date = walkdate;
                         document.dispatchEvent(event);
                     } else {
-                        alert('Walk MUST be in the future');
+                        ra.showMsg('Walk MUST be in the future');
                     }
                 } else {
-                    alert('You must log on to be able to add walks');
+                    ra.showMsg('You must log on to be able to add walks');
                 }
             }
         });
@@ -465,7 +465,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         return 'unknown';
     };
     this.addPastWalksOption = function (tag) {
-       
+
         var el1 = document.getElementById('ID12345Ndd');
         if (el1 !== null) {
             ra.html.triggerEvent(el1, 'click');

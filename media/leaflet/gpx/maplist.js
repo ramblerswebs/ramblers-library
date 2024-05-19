@@ -346,7 +346,7 @@ ra.display.gpxFolder = function (options, data) {
         var header, path;
         var route = this.getRoutefromID(id);
         header = "<h2>" + route.title + "</h2>";
-        header += "<button style='float:right' class=\"link-button sunset small white\" onclick=\"ra.html.showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><span>";
+        header += "<button style='float:right' class=\"link-button sunset small white\" onclick=\"javascript:ra.html.showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><span>";
         if (this.controls.displayAsPreviousWalks) {
             header += '<b>Date:</b> ' + route.date + '<br/>';
             header += '<b>Leader:</b> ' + route.author + '<br/>';

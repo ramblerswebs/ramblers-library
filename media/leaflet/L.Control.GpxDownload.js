@@ -140,7 +140,7 @@ L.Control.GpxDownload = L.Control.extend({
             var drawnItems = this._itemsCollection;
             var hasItems = drawnItems.getLayers().length !== 0;
             if (!hasItems) {
-                alert('No routes or markers defined');
+                ra.showError('No routes or markers defined');
             } else {
                 var data = this._createGPXdata();
                 try {
@@ -160,7 +160,7 @@ L.Control.GpxDownload = L.Control.extend({
                     }
                     saveAs(blob, name);
                 } catch (e) {
-                    blurt('Your web browser does not support his option!');
+                    ra.showMsg('Your web browser does not support his option!');
                 }
             }
         }
