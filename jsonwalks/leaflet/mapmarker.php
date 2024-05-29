@@ -26,7 +26,6 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $options->rightclick = true;
         $options->fitbounds = true;
         $options->print = true;
-        //    RLicense::BingMapKey(false);
     }
 
     public function getMap() {
@@ -58,5 +57,4 @@ class RJsonwalksLeafletMapmarker extends RJsonwalksDisplaybase {
         $this->map->display();
         RLoad::addScript("media/lib_ramblers/jsonwalks/leaflet/mapmarker.js", "text/javascript");
     }
-
 }

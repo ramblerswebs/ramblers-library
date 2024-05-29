@@ -1574,6 +1574,7 @@ ra.modals = (function () {
 ra.modal = function () {
     this.elements = {};
     this._content;
+    this._fullScreenElement = null;
     // rest of new code is at the end after functions are defined
     this.setContent = function ($html, printButton = true, closeButton = true) {
         var _this = this;
@@ -1664,14 +1665,15 @@ ra.modal = function () {
             container.msRequestFullscreen();
         }
     };
-    // this._fullScreenElement = document.fullscreenElement;
     this._fullScreenElement =
             document.fullscreenElement ||
             document.mozFullScreenElement ||
             document.webkitFullscreenElement ||
             document.msFullscreenElement;
+    if (typeof (this._fullScreenElement) === "undefined") {
+        this._fullScreenElement = null;
+    }
     if (this._fullScreenElement !== null) {
-        //document.exitFullscreen();
         this._exitFullscreen();
     }
 };
