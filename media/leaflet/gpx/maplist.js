@@ -77,10 +77,7 @@ ra.display.gpxSingle = function (options, data) {
             _this.pageDiv.appendChild(clear);
         });
         g.addTo(_map);
-        // copy elevation chart to page
-        // leaflet-control-container
 
-        var a = 1;
     };
     this.displayGpxdetails = function (g, divId) {
         var container = document.getElementById(divId);
@@ -100,7 +97,7 @@ ra.display.gpxSingle = function (options, data) {
                     header = '<b>Name:</b> ' + info.name + "<br/>";
                 }
                 header += '<b>Distance:</b> ' + ra.map.getGPXDistance(info.length) + '<br/>';
-                if (info.desc !== "undefined" && info.desc !== null) {
+                if (info.desc) {
                     header += '<b>Description:</b> ' + info.desc + '<br/>';
                 }
                 if (info.elevation.gain === 0) {
@@ -110,15 +107,21 @@ ra.display.gpxSingle = function (options, data) {
                     header += '<b>Max Altitude:</b> ' + info.elevation.max.toFixed(0) + ' m<br/>';
                     header += '<b>Elevation Gain:</b> ' + info.elevation.gain.toFixed(0) + ' m<br/>';
                 }
-                header += "<b>Est time:</b> " + ra.math.naismith(info.length, info.elevation.gain);
+                header += "<b>Est time:</b> " + ra.math.naismith(info.length, info.elevation.gain) + '<br/>';
+                if (typeof info.duration !== "undefined") {
+                    var duration = info.duration;
+                    if (typeof duration.total !== "undefined") {
+                        if (duration.total !== null) {
+                            var actual = duration.total / 1000;
+                            header += "<b>Actual Time:</b> " + ra.time.secsToHrsMins(actual) + '<br/>';
+                        }
+                    }
+                }
                 pageDiv.innerHTML = header;
                 this.pageDiv = pageDiv;
-
             }
         }
     };
-
-
 };
 ra.display.gpxGetElevationSVG = function () {
     const collection = document.getElementsByClassName("leaflet-control-container");

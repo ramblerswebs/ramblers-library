@@ -34,10 +34,6 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
 
         $this->rafeedurl = $this->site . $this->feedPath;
         $CacheTime = 5; // minutes
-        $time = getdate();
-        if ($time["hours"] < 7) {
-            $CacheTime = 7200; // 12 hours, rely on cache between midnight and 7am
-        }
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(15);

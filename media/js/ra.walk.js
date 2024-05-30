@@ -680,7 +680,7 @@ ra.event = function () {
         var content = document.createElement('div');
         content.setAttribute('class', 'walkitem walkdates');
         var $html = "";
-        if (this.nationalUrl !== '') {
+        if (this.admin.nationalUrl !== '') {
             $html += "<div><img src=\"" + ra.baseDirectory() + "media/lib_ramblers/images/ralogo.png\" alt=\"Ramblers\" width=\"17\" height=\"17\"> ";
             $html += "<a href='" + this.admin.nationalUrl + "' target='_blank' >View " + this.admin.eventType + " on Ramblers national web site</a></div>";
         }

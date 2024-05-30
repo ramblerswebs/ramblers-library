@@ -10,7 +10,7 @@
 // no direct access
 defined('_JEXEC') or die('Restricted access');
 
-class RUsersKunena {
+class RUsersKunenaOLD {
 
     function Display() {
         if (RSqlUtils::tableExists('#__kunena_categories')) {

@@ -100,7 +100,7 @@ class RLeafletSqlList extends RLeafletMap {
         RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js", "text/javascript");
     }
 
-    private function readSql() {
+    private function readSqlOLD() {
         // Get a db connection.
         $db = \JFactory::getDbo();
         // Create a new query object.
@@ -113,6 +113,39 @@ class RLeafletSqlList extends RLeafletMap {
             $query->select($db->quoteName($this->fields));
             $query->from($db->quoteName($this->sql));
             $db->setQuery($query);
+        } else {
+            echo "ERROR: RLeafletSqlList $this->sql is not a valid parameter, should be table name or SELECT statement";
+            return false;
+        }
+        $db->replacePrefix($query);
+        $results = $db->loadObjectList();
+        return $results;
+    }
+
+    private function readSql() {
+        // Get a db connection.
+        $db = \JFactory::getDbo();
+        // Create a new query object.
+        // $sql can be a select statement or a table name
+        if (str_starts_with(strtoupper($this->sql), "SELECT")) {
+            try {
+                $query = $db->getQuery(true);
+                $db->setQuery($this->sql);
+                $db->execute();
+            } catch (Exception $ex) {
+                echo "ERROR: RLeafletSqlList $this->sql cannot be executed";
+                return false;
+            }
+        } elseif (substr($this->sql, 0, 1) == '#') {
+            try {
+                $query = $db->getQuery(true);
+                $query->select($db->quoteName($this->fields));
+                $query->from($db->quoteName($this->sql));
+                $db->setQuery($query);
+            } catch (Exception $ex) {
+                echo "ERROR: RLeafletSqlList $this->sql is not a valid table";
+                return false;
+            }
         } else {
             echo "ERROR: RLeafletSqlList $this->sql is not a valid parameter, should be table name or SELECT statement";
             return false;

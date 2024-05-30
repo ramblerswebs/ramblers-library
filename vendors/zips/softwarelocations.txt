@@ -32,7 +32,7 @@ Simplify - reduce number of points
 Searching
     https://github.com/perliedman/leaflet-control-geocoder
 
-Blurt popup
+Blurt popup removed
     https://github.com/brijeshb42/blurt/
 Download saveas option
     https://github.com/eligrey/FileSaver.js

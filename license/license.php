@@ -35,21 +35,22 @@ class RLicense {
     }
 
     public static function BingMapKey($value) {
-        self::$binglicensekey = $value;
+        // deprecated
+        $app = JFactory::getApplication();
+        $app->enqueueMessage(JText::_("Deprecated: BingMapKey command is no longer supported"), "warning");
     }
 
     public static function getBingMapKey() {
         // return self::$binglicensekey;
         if (strpos(JURI::base(), 'localhost') !== false) {
-            return $key = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
+            //  return $key = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
+            return 'AshdQBFR1UGiLO-YaL2dF9XhyWcsUM7E8-MtIaaFXgtdKKi5Po_XZDrdeSTd7ket';
         } else {
-            return $key = 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
+            return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
         }
     }
 
     public static function isBingKeyMapSet() {
-        //   return false;
         return true;
     }
-
 }
