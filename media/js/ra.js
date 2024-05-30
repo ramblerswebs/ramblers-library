@@ -1641,30 +1641,38 @@ ra.modal = function () {
     }
     };
     this._exitFullscreen = function () {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitCancelFullScreen) {
-            document.webkitCancelFullScreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
+//        if (document.exitFullscreen) {
+//            document.exitFullscreen();
+//        } else if (document.mozCancelFullScreen) {
+//            document.mozCancelFullScreen();
+//        } else if (document.webkitCancelFullScreen) {
+//            document.webkitCancelFullScreen();
+//        } else if (document.msExitFullscreen) {
+//            document.msExitFullscreen();
+//        }
+        // Check which implementation is available
+        var requestMethod = document.exitFullscreen ||
+                document.mozCancelFullScreen ||
+                document.webkitCancelFullScreen ||
+                document.msExitFullscreen;
+
+        if (requestMethod) {
+            requestMethod.apply(document);
         }
     };
 
-    this._enterFullscreen = function (container) {
-        // var container = this.getContainer();
-        if (container.requestFullscreen) {
-            container.requestFullscreen();
-        } else if (container.mozRequestFullScreen) {
-            container.mozRequestFullScreen();
-        } else if (container.webkitRequestFullscreen) {
-            //  container.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-            container.webkitRequestFullscreen();
-        } else if (container.msRequestFullscreen) {
-            container.msRequestFullscreen();
+    this._enterFullscreen = function (element) {
+        // Check which implementation is available
+        var requestMethod = element.requestFullScreen ||
+                element.mozRequestFullScreen ||
+                element.webkitRequestFullScreen ||
+                element.mozRequestFullScreen;
+
+        if (requestMethod) {
+            requestMethod.apply(element);
         }
     };
+    // check if in full screen mode
     this._fullScreenElement =
             document.fullscreenElement ||
             document.mozFullScreenElement ||
