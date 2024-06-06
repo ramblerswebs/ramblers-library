@@ -165,8 +165,9 @@ class RJsonwalksWmFeed {
 
     private static function errorMsg($url, $msg) {
         $urlout = str_replace("&api-key=" . APIKEY, '', $url);
-        $app = JFactory::getApplication();
-        $app->enqueueMessage("Error reading walks: " . $msg . " " . $urlout, 'error');
+        //  $app = JFactory::getApplication();
+        //   $app->enqueueMessage("Error reading walks: " . $msg . " " . $urlout, 'error');
+        RErrors::notifyError("Error reading walks: " . $msg . " " . $urlout, "Walks Manager", 'error');
     }
 
     private static function debugMsg($url, $msg) {
@@ -179,12 +180,10 @@ class RJsonwalksWmFeed {
         $len = strlen($startString);
         return (substr($string, 0, $len) === $startString);
     }
-
 }
 
 abstract class READSOURCE {
 
     const FEED = 'FEED';
     const CACHE = 'CACHE';
-
 }

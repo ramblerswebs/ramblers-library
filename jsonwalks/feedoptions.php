@@ -102,9 +102,14 @@ class RJsonwalksFeedoptions {
     }
 
     public function addWalksEditorWalks($groupCode, $groupName, $site) {
-        $source = new RJsonwalksSourcewalkseditor();
-        $source->_initialise($groupCode, $groupName, $site);
-        $this->sources[] = $source;
+        if (str_contains($site,"<")) {
+            $app = JFactory::getApplication();
+            $app->enqueueMessage(JText::_("Site parameter must not contain html tags: " . $site), "error");
+        } else {
+            $source = new RJsonwalksSourcewalkseditor();
+            $source->_initialise($groupCode, $groupName, $site);
+            $this->sources[] = $source;
+        }
     }
 
     public function getWalks($walks) {
@@ -145,5 +150,4 @@ class RJsonwalksFeedoptions {
         $len = strlen($startString);
         return (substr($string, 0, $len) === $startString);
     }
-
 }

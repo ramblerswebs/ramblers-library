@@ -50,8 +50,9 @@ class RJsonwalksWmFileio {
     }
 
     public static function errorMsg($msg) {
-        $app = JFactory::getApplication();
-        $app->enqueueMessage($msg . self::$lastError, 'error');
+    //    $app = JFactory::getApplication();
+    //    $app->enqueueMessage($msg . self::$lastError, 'error');
+        RErrors::notifyError($msg. self::$lastError, "Walks Manager", 'error' );
     }
 
 }

@@ -1,11 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of errors
  *
@@ -15,20 +9,34 @@ use Joomla\CMS\Uri\Uri;
 
 class RErrors {
 
-    private static $ERROR_STORE_URL = "https://cache.ramblers-webs.org.uk/store_errors.php";
+     private static $ERROR_STORE_URL = "https://errors.theramblers.org.uk/store_errors.php";
+    // private static $ERROR_STORE_URL = "https://cache.ramblers-webs.org.uk/store_errors.php";
+    // private static $ERROR_STORE_URL = "http://localhost/storeerrors/store_errors.php";
 
     public static function notifyError($errorText, $action, $level, $returncode = null) {
 
         $url = self::$ERROR_STORE_URL;
 
+        switch (strtolower($level)) {
+            case "message":
+            case "notice":
+            case "warning":
+            case "error":
+                break;
+            default:
+                $level = "Error";
+                break;
+        }
+
         $data = [];
         $uri = Uri::getInstance();
         $data['domain'] = $uri->toString();
         $data['action'] = $action;
-        $data['error'] = $errorText;
         if ($returncode !== null) {
             $data['action'] = $action . " [" . $returncode . "]";
         }
+        $data['error'] = $errorText;
+        $data['trace'] = json_encode(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 5));
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -54,7 +62,7 @@ class RErrors {
         }
     }
 
-    public static function emailError($errorText, $action, $level) {
+    private static function emailError($errorText, $action, $level) {
         $domain = JURI::base();
         $mailer = JFactory::getMailer();
         $config = JFactory::getConfig();
@@ -116,7 +124,7 @@ class RErrors {
     }
 
     private static function checkJsonProperties($item, $properties) {
-        if ($properties===null){
+        if ($properties === null) {
             return 0;
         }
         foreach ($properties as $value) {
@@ -134,5 +142,4 @@ class RErrors {
         }
         return false;
     }
-
 }
