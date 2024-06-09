@@ -22,7 +22,11 @@ class RJsonwalksFeedoptions {
         $value = strtolower($value);
         if ($this->startsWith(strtolower($value), 'http')) {
             $app = JFactory::getApplication();
-            $app->enqueueMessage('Deprecated: Use of old style walks feed URL is no longer supported', 'information');
+            $msg="<br>DEPRECATED: Use of old style walks feed URL is no longer supported<br><br><br>";
+            $msg.="PLEASE notify the Webmaster or GroupCommittee that a change to the web site is required<br><br><br>";
+            $msg.="Webmaster: some code on this page needs to be updated to comply with the latest standard defined on https://ramblers-webs.org.uk/<br>";
+            $msg.="Raise a support email/ticket if you are uncertain what to do.<br><br>";
+            $app->enqueueMessage($msg, 'Error');
             $groups = $this->processGWEMurl($value);
             If ($groups === false) {
                 $app->enqueueMessage('Error: URL must specify one or more groups', 'error');
@@ -102,9 +106,14 @@ class RJsonwalksFeedoptions {
     }
 
     public function addWalksEditorWalks($groupCode, $groupName, $site) {
-        $source = new RJsonwalksSourcewalkseditor();
-        $source->_initialise($groupCode, $groupName, $site);
-        $this->sources[] = $source;
+        if (str_contains($site,"<")) {
+            $app = JFactory::getApplication();
+            $app->enqueueMessage(JText::_("Site parameter must not contain html tags: " . $site), "error");
+        } else {
+            $source = new RJsonwalksSourcewalkseditor();
+            $source->_initialise($groupCode, $groupName, $site);
+            $this->sources[] = $source;
+        }
     }
 
     public function getWalks($walks) {
@@ -145,5 +154,4 @@ class RJsonwalksFeedoptions {
         $len = strlen($startString);
         return (substr($string, 0, $len) === $startString);
     }
-
 }
