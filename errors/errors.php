@@ -9,7 +9,8 @@ use Joomla\CMS\Uri\Uri;
 
 class RErrors {
 
-     private static $ERROR_STORE_URL = "https://errors.theramblers.org.uk/store_errors.php";
+    private static $ERROR_STORE_URL = "https://errors.theramblers.org.uk/store_errors.php";
+
     // private static $ERROR_STORE_URL = "https://cache.ramblers-webs.org.uk/store_errors.php";
     // private static $ERROR_STORE_URL = "http://localhost/storeerrors/store_errors.php";
 
@@ -48,17 +49,21 @@ class RErrors {
         curl_setopt($curl, CURLOPT_HEADER, 1);
         curl_setopt($curl, CURLINFO_HEADER_OUT, true);
 
-        $json_response = curl_exec($curl);
-
-        // var_dump($json_response);
-        // var_dump(curl_getinfo($curl));
+        curl_exec($curl);
+        if (curl_errno($curl)) {
+            $error_msg = curl_error($curl);
+        }
 
         $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
+
         $app = JFactory::getApplication();
         $app->enqueueMessage(JText::_($errorText . ": " . $action), $level);
-        if ($status != 200) {
-            $app->enqueueMessage(JText::_('SYSTEM was unable to report error.'), 'warning');
+        if (isset($error_msg) || $status != 200) {
+            if (!isset($error_msg)) {
+                $error_msg = "Unknown cURL error";
+            }
+            $app->enqueueMessage(JText::_('SYSTEM was unable to report error.<br>cURL: ' . $error_msg), 'warning');
         }
     }
 
