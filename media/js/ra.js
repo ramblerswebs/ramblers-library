@@ -2279,8 +2279,8 @@ ra.filter = function (eventTag, eventName) {
             case ra.filterType.Limit:
                 return  this._shouldDisplayLimit(group, item.value);
                 break;
-            case ra.filterType.AnyOf:
-                return this._shouldDisplayAnyof(group, item.value);
+            default:
+                ra.showError("Invalid filter type");
         }
         return true;
     };

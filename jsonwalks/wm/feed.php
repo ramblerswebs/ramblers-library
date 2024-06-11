@@ -83,7 +83,7 @@ class RJsonwalksWmFeed {
                     RJsonwalksWmFileio::errorMsg("Error reading walks from Central Office");
                     $result = RJsonwalksWmFileio::readFile($cachedWalksFileName);
                     if ($result === false) {
-                        RJsonwalksWmFileio::errorMsg("Error reading walks from cache");
+                        RJsonwalksWmFileio::errorMsg("Error reading walks from cache: ");
                     }
                 }
             } else {

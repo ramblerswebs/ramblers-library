@@ -89,6 +89,7 @@ ra.events = function () {
         filter.addGroup(ra.filterType.Unique, "idType", "Type");
         filter.addGroup(ra.filterType.Unique, "idDOW", "Day of the week", dowOrder);
         filter.setDisplaySingle("idDOW", true);
+        filter.addGroup(ra.filterType.AnyOf, "Walk Shape/Type", "Walk Shape/Type");
         filter.addGroup(ra.filterType.Unique, "idDistance", "Distance", distanceOrder);
         filter.setDisplaySingle("idDistance", true);
         filter.addGroup(ra.filterType.Unique, "idGrade", "Grade", gradesOrder);
@@ -465,6 +466,21 @@ ra.event = function () {
         valueSet.add(new ra.filter.value("idGrade", grade));
         var status = this.admin.status;
         valueSet.add(new ra.filter.value("idStatus", status));
+
+        valueSet.add(new ra.filter.value("Walk Shape/Type", null));
+        this.walks.forEach(walk => {
+            var shape = walk.shape;
+            //   if (shape === "") {
+            //        shape = "Event only";
+            //    }
+            if (shape !== "") {
+                valueSet.add(new ra.filter.value("Walk Shape/Type", shape));
+            }
+
+
+        });
+
+
         var dist = this.getIntValue("walks", "_filterDistance");
         valueSet.add(new ra.filter.value("idDistance", dist));
         valueSet.add(new ra.filter.value("idGroup", this.admin.groupName));
@@ -620,10 +636,10 @@ ra.event = function () {
         if (this.basics.additionalNotes !== "") {
             $html += "<div class='additionalnotes'><b>Additional Notes</b>: " + this.basics.additionalNotes + "</div>";
         }
-        var shape = this.walks.getValue("{shape}");
-        if (shape !== "") {
-            $html += "<b>" + shape + " Walk</b>";
-        }
+//        var shape = this.walks.getValue("{shape}");
+//        if (shape !== "") {
+//            $html += "<b>" + shape + " Walk</b>";
+//        }
 
         var time = this.meeting.getValue("{Time}");
         if (time !== "") {
@@ -1163,8 +1179,14 @@ ra.event.walk = function () {
         if (this.nationalGrade.toText() === "Event") {
             return ""; // ignore dummy walk
         }
+        var $html;
+        var shape = this.getValue("{shape}");
+        if (shape !== "") {
+            $html = "<b>" + shape + " Walk</b>";
+        } else {
+            $html = "<b>Walk</b>";
+        }
 
-        var $html = "<b>Walk</b>: ";
         if (this.distanceMiles > 0) {
             $html += ra.html.addDiv("distance", "<b>Distance</b>: " + this.distanceMiles + "mi / " + this.distanceKm + "km");
         }
