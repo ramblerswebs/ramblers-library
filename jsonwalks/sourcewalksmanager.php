@@ -293,5 +293,4 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
             }
         }
     }
-
 }

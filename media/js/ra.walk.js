@@ -51,61 +51,66 @@ ra.events = function () {
         return no;
     };
     this.length = function () {
-        // return Object.keys(this.events).length;
         return this.events.length;
     };
     this.setFilters = function (tag) {
         var filter = new ra.filter(document, "reDisplayWalks");
         this.filter = filter;
-        var gradesOrder = [
-            'Easy Access',
-            'Easy',
-            'Leisurely',
-            'Moderate',
-            'Strenuous',
-            'Technical'];
-        var dowOrder = ['Monday',
-            'Tuesday',
-            'Wednesday',
-            'Thursday',
-            'Friday',
-            'Saturday',
-            'Sunday'];
-        var distanceOrder = ['See description',
-            'Up to 3 miles (5 km)',
-            '3+ to 5 miles (5-8 km)',
-            '5+ to 8 miles (8-13 km)',
-            '8+ to 10 miles (13-16 km)',
-            '10+ to 13 miles (16-21 km)',
-            '13+ to 15 miles (21-24 km)',
-            '15+ miles (24 km)'];
-        var updateItems = [{title: 'All walks', limit: 0},
-            {title: 'In last 3 months', limit: 93},
-            {title: 'In last month', limit: 31},
-            {title: 'In last 2 weeks', limit: 14},
-            {title: 'In last week', limit: 7}
-        ];
-        filter.addGroup(ra.filterType.Unique, "idGroup", "Group");
-        filter.addGroup(ra.filterType.Unique, "idType", "Type");
-        filter.addGroup(ra.filterType.Unique, "idDOW", "Day of the week", dowOrder);
-        filter.setDisplaySingle("idDOW", true);
-        filter.addGroup(ra.filterType.AnyOf, "Walk Shape/Type", "Walk Shape/Type");
-        filter.addGroup(ra.filterType.Unique, "idDistance", "Distance", distanceOrder);
-        filter.setDisplaySingle("idDistance", true);
-        filter.addGroup(ra.filterType.Unique, "idGrade", "Grade", gradesOrder);
-        filter.setDisplaySingle("idGrade", true);
-        filter.addGroup(ra.filterType.DateRange, "idDate", "Dates");
-        filter.addGroup(ra.filterType.Limit, "idUpdate", "Updated", updateItems);
-        filter.addGroup(ra.filterType.Unique, "idStatus", "Status");
-        filter.addGroup(ra.filterType.AnyOf, "Facilities", "Facilities");
-        filter.addGroup(ra.filterType.AnyOf, "Transport", "Transport");
-        filter.addGroup(ra.filterType.AnyOf, "Accessibility", "Accessibility");
+        var groupOptions = {displaySingle: false};
+        var typeOptions = {displaySingle: false};
+        var statusOptions = {displaySingle: false};
+
+        var gradesOptions = {order: [
+                'Easy Access',
+                'Easy',
+                'Leisurely',
+                'Moderate',
+                'Strenuous',
+                'Technical']};
+
+        var dowOptions = {order: ['Monday',
+                'Tuesday',
+                'Wednesday',
+                'Thursday',
+                'Friday',
+                'Saturday',
+                'Sunday']};
+        var shapeOptions = {displaySingle: false};
+        var distanceOptions = {displaySingle: true,
+            order: ['See description',
+                'Up to 3 miles (5 km)',
+                '3+ to 5 miles (5-8 km)',
+                '5+ to 8 miles (8-13 km)',
+                '8+ to 10 miles (13-16 km)',
+                '10+ to 13 miles (16-21 km)',
+                '13+ to 15 miles (21-24 km)',
+                '15+ miles (24 km)']};
+        var updateOptions = {
+            order: [{title: 'All walks', limit: 0},
+                {title: 'In last 3 months', limit: 93},
+                {title: 'In last month', limit: 31},
+                {title: 'In last 2 weeks', limit: 14},
+                {title: 'In last week', limit: 7}
+            ]};
+        filter.addGroup(new ra.filter.groupText("idGroup", "Group", groupOptions));
+        filter.addGroup(new ra.filter.groupText("idType", "Type", typeOptions));
+        filter.addGroup(new ra.filter.groupText("idDOW", "Day of the week", dowOptions));
+        filter.addGroup(new ra.filter.groupText("idShape", "Walk Shape/Type", shapeOptions));
+        filter.addGroup(new ra.filter.groupText("idDistance", "Distance", distanceOptions));
+        filter.addGroup(new ra.filter.groupText("idGrade", "Grade", gradesOptions));
+        filter.addGroup(new ra.filter.groupDate("idDate", "Dates"));
+        filter.addGroup(new ra.filter.groupLimit("idUpdate", "Updated", updateOptions));
+        filter.addGroup(new ra.filter.groupText("idStatus", "Status", statusOptions));
+        filter.addGroup(new ra.filter.groupText("idFacilities", "Facilities"));
+        filter.addGroup(new ra.filter.groupText("idTransport", "Transport"));
+        filter.addGroup(new ra.filter.groupText("idAccessibility", "Accessibility"));
 
         this.events.forEach(event => {
             event.initialiseFilter(filter);
         });
 
         filter.display(tag);
+      //  var fred = filter.getJson();
     };
 };
 ra.event = function () {
@@ -456,51 +461,31 @@ ra.event = function () {
     };
     this.getFilterValues = function () {
         var valueSet = new ra.filter.valueSet();
-        valueSet.add(new ra.filter.value("idDate", this.basics.walkDate));
-        valueSet.add(new ra.filter.value("idType", this.admin.eventType));
+        valueSet.add("idDate", this.basics.walkDate);
+        valueSet.add("idType", this.admin.eventType);
         var dsow = this.getIntValue("basics", "filterDaysofweek");
         dsow.forEach(dow => {
-            valueSet.add(new ra.filter.value("idDOW", dow));
+            valueSet.add("idDOW", dow);
         });
-        var grade = this.getIntValue("walks", "_nationalGrade");
-        valueSet.add(new ra.filter.value("idGrade", grade));
+
         var status = this.admin.status;
-        valueSet.add(new ra.filter.value("idStatus", status));
+        valueSet.add("idStatus", status);
 
-        valueSet.add(new ra.filter.value("Walk Shape/Type", null));
+        //   valueSet.add("idShape", null);
         this.walks.forEach(walk => {
-            var shape = walk.shape;
-            //   if (shape === "") {
-            //        shape = "Event only";
-            //    }
-            if (shape !== "") {
-                valueSet.add(new ra.filter.value("Walk Shape/Type", shape));
-            }
-
-
+            walk.setFilter(valueSet);
         });
 
+        valueSet.add("idGroup", this.admin.groupName);
+        valueSet.add("idUpdate", this.admin.filterUpdate());
 
-        var dist = this.getIntValue("walks", "_filterDistance");
-        valueSet.add(new ra.filter.value("idDistance", dist));
-        valueSet.add(new ra.filter.value("idGroup", this.admin.groupName));
-        valueSet.add(new ra.filter.value("idUpdate", this.admin.filterUpdate()));
-        valueSet.add(new ra.filter.value("Accessibility", null)); // needed in case no flags in section
-        valueSet.add(new ra.filter.value("Facilities", null));
-        valueSet.add(new ra.filter.value("Transport", null));
         var flags = this.flags.getFlags();
         flags.forEach(flag => {
-            valueSet.add(new ra.filter.value(flag.section, flag.name));
+            valueSet.add("id" + flag.section, flag.name);
         });
         return valueSet;
     };
-//    this.resetDisplay = function (tag) {
-//        var htmltag = document.getElementById(tag);
-//        if (htmltag) {
-//            ra.showError("resetDisplay found tag!");
-//            htmltag.parentElement.style.display = "list-item";
-//        }
-//    };
+
     this.addWalktoIcs = function (events) {
         var ev = new ra.ics.event();
         var $meetLocation, $startLocation, $before, $after, $summary, $description, $altDescription;
@@ -618,7 +603,7 @@ ra.event = function () {
         content.setAttribute('class', 'walkitem group ' + nationalGradeCSS);
         var $html = "<b>Group</b>: " + this.admin.groupName;
         if (this.isCancelled()) {
-            $html += "<div class='walkitem reason'>WALK CANCELLED: " + this.admin.cancellationReason + "</div>";
+            $html += "<div class='walkitem reason'>" + this.admin.eventType + " CANCELLED: " + this.admin.cancellationReason + "</div>";
         }
 
         content.innerHTML = $html;
@@ -636,10 +621,10 @@ ra.event = function () {
         if (this.basics.additionalNotes !== "") {
             $html += "<div class='additionalnotes'><b>Additional Notes</b>: " + this.basics.additionalNotes + "</div>";
         }
-//        var shape = this.walks.getValue("{shape}");
-//        if (shape !== "") {
-//            $html += "<b>" + shape + " Walk</b>";
-//        }
+        var shape = this.walks.getValue("{shape}");
+        if (shape !== "") {
+            $html += "<b>" + shape + " Walk</b>";
+        }
 
         var time = this.meeting.getValue("{Time}");
         if (time !== "") {
@@ -1038,6 +1023,13 @@ ra.event.walk = function () {
         this.pace = phpwalk.pace;
         this.ascent = phpwalk.ascent;
         return this;
+    };
+    this.setFilter = function (valueSet) {
+        if (this.nationalGrade.toText() !== "Event") {
+            valueSet.add("idShape", this.shape);
+            valueSet.add("idGrade", this.nationalGrade.toText());
+            valueSet.add("idDistance", this.filterDistance());
+        }
     };
     this.getValue = function ($option) {
         var BR = '<br/>';
@@ -1459,7 +1451,7 @@ ra.event.timelocation = function () {
         let event = new Event("display-os-map", {bubbles: false});
         event.items = items;
         tag.dispatchEvent(event);
-    }
+    };
     this._displayExtras = function (tag) {
         tag.innerHTML = ""; // cleat current display
         var ll = document.createElement('div');
@@ -1850,7 +1842,7 @@ ra.event.media = function () {
 };
 ra.event.nationalGrade = function (grade) {
     this.gradekey = "Event";
-    this.grade = grade;
+    this._grade = grade;
     var valid = ["Event", "Easy Access", "Easy", "Leisurely", "Moderate", "Strenuous", "Technical"];
     if (valid.includes(grade)) {
         this.gradekey = grade.replace(" ", "_");
@@ -1858,7 +1850,7 @@ ra.event.nationalGrade = function (grade) {
         ra.showError("Error: invalid walks grade found");
     }
     this.toText = function () {
-        return this.grade;
+        return this._grade;
     };
     this.key = function () {
         return this.gradekey;
@@ -1913,7 +1905,7 @@ ra.event.nationalGrade = function (grade) {
         };
         var image = images[this.gradekey];
         var $url = ra.baseDirectory() + "media/lib_ramblers/images/grades/";
-        $url = "<img src='" + $url + image + "' alt='" + this.grade + "' height='30' width='30'>";
+        $url = "<img src='" + $url + image + "' alt='" + this._grade + "' height='30' width='30'>";
         return $url;
     };
     this.disp = function ($class) {

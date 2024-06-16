@@ -67,9 +67,18 @@ class RJsonwalksWmFeedoptions {
 
     public function getCacheFileName($extension) {
         $url = "";
+        if ($this->include_walks) {
+            $url = $url . "walks";
+        }
+        if ($this->include_events) {
+            $url = $url . "events";
+        }
+        if ($this->include_wellbeing_walks) {
+            $url = $url . "wellbeing-walks";
+        }
         if ($this->groupCode !== null) {
             $url = 'cache_' . strtoupper($this->groupCode);
-            $url = str_replace(',', '_', $url);
+            $url = str_replace(',', '', $url);
         } else {
             if ($this->latitude !== null) {
                 $url = $url . 'latitude' . $this->latitude;
@@ -82,26 +91,19 @@ class RJsonwalksWmFeedoptions {
             }
         }
 
-        if ($this->include_walks) {
-            $url = $url . "_group-walk";
-        }
-        if ($this->include_events) {
-            $url = $url . "_group-event";
-        }
-        if ($this->include_wellbeing_walks) {
-            $url = $url . "_wellbeing-walk";
-        }
-
         if ($this->date_start !== null) {
-            $url = $url . '_date' . $this->date_start;
+            $url = $url . "_" . str_replace('-', '', $this->date_start);
+        }
+        if ($this->date_end !== null) {
+            $url = $url . "_" . str_replace('-', '', $this->date_end);
         }
 
         if ($this->limit !== null) {
             $url = $url . '_limit' . $this->limit;
         }
+        $url = str_replace('-', '_', $url);
         $url = str_replace(',', '_', $url);
         $url = str_replace('.', '_', $url);
         return $url . "." . $extension;
     }
-
 }

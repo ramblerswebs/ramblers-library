@@ -106,13 +106,8 @@ div.walkstdfulldetails div.walkitem {
 
 div.walkstdfulldetails  div.group {
     font-size: 115%;
-    margin: 2px;
-    border-radius: 10px 10px 10px 10px;
     padding: 7px;
-    display: table;
-    width:97%;
-    border: 0px;
-    background-color: #FFFFFF;
+
     color: #000000;
 }
 div.walkstdfulldetails div.group.grade-t {
@@ -914,7 +909,7 @@ div.ra-filtergroup div input[type=date] {
 div.ra-filtergroup div label {
     display: inline;
 }
-div.ra-filteritemnil,
+
 div.ra-filteritem{
     border-radius: 10px 10px 10px 10px;
     padding-left:5px;
@@ -927,12 +922,10 @@ div.ra-filteritem{
     color:black;
     width: fit-content;
     line-height: 1;
-
-}
-div.ra-filteritem{
     cursor: pointer;
 }
-div.ra-filteritemnil{
+
+div.ra-filteritem.nilFilter{
     line-height: 85%;
     font-size: 85%;
     color: gray;
@@ -943,18 +936,12 @@ div.ra-filteritem:hover{
 div.ra-filteritem.active{
     background-color: var(--sunset);
 }
-div.ra-displayall.active{
-    background-color: white;
-    font-weight:bold;
-    color:var(--mintcake);
-}
-div.ra-displayall:hover {
-    background-color: var(--lightgrey);
-}
-div.ra-displayall {
+
+div.ra-filteritem.right {
     cursor: pointer;
     margin-bottom:5px;
     background-color: var(--mintcake);
+    border:1px solid var(--mintcake);
     color:white;
     border-radius: 10px 10px 10px 10px;
     padding-left:5px;
@@ -963,6 +950,16 @@ div.ra-displayall {
     float:right;
     clear:both;
 }
+div.ra-filteritem.right.active{
+    background-color: white;
+    border:1px solid white;
+    font-weight:bold;
+    color:var(--mintcake);
+}
+div.ra-filteritem.right:hover {
+    background-color: var(--lightgrey);
+}
+
 div.ra-filter-spacer{
     height: 10px;
 }
