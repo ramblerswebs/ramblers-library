@@ -81,7 +81,7 @@ class RJsonwalksWmFeed {
                 RJsonwalksWmFileio::errorMsg("Error reading walks from Central Office: ");
                 if ($this->cacheFolder->fileExists($cachedWalksFileName)) {
                     // try reading walks from cache
-                    $result = RJsonwalksWmFileio::readFile($cachedWalksFileName);
+                    $result = $this->cacheFolder->readFile($cachedWalksFileName);
                     if ($result === false) {
                         RJsonwalksWmFileio::errorMsg("Error reading walks from cache: ");
                     }
