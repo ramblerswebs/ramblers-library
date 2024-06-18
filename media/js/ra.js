@@ -107,10 +107,10 @@ ra.showError = function (msg) {
     ra.modals.createModal("<h3>Error</h3><p style='font-weight:bold'>" + msg + "</p>", false);
 };
 ra.showConfirm = function (msg) {
-    return confirm(msg)
+    return confirm(msg);
 };
 ra.showPrompt = function (msg) {
-    return prompt(msg)
+    return prompt(msg);
 };
 // convert string to title case
 ra.titleCase = function (str) {
@@ -1909,48 +1909,16 @@ ra.help = function (tag, helpFunction) {
             lastHelp = _this;
         });
     };
-
-
 };
-ra.filterType = {Unique: "Unique",
-    AnyOf: "AnyOf",
-    Limit: "Limit",
-    DateRange: "DateRange",
-    NumberRange: "NumberRamge"};
+
 ra.filter = function (eventTag, eventName) {
     this.eventTag = eventTag;
     this.eventName = eventName;
+    this.initialised = false;   
     this._groups = {};
-    this.elements = null;
-    this.initialised = false;
-    this.addGroup = function (type, id, title, data = null) {
-        var group = {id: id,
-            type: type,
-            title: title,
-            values: {}
-        };
-        switch (group.type) {
-            case ra.filterType.NumberRange:
-            case ra.filterType.DateRange:
-                group.min = null;
-                group.max = null;
-                break;
-            case ra.filterType.Limit:
-                group.limit = 0;
-                group.displaySingle = false;
-                data.forEach(item => { // data is an array of the titles and limit for each 
-                    group.values[item.title] = {no: 0,
-                        limit: item.limit,
-                        active: false};
-                });
-                break;
-            case ra.filterType.Unique:
-            case ra.filterType.AnyOf:
-                group.valueOrder = data; // data is the title order for the items
-                break;
-        }
-        this._groups[id] = group;
-
+        this.addGroup = function (group) {
+        group.setFilter(this);
+        this._groups[group.id] = group;
         return group;
     };
     this._getGroup = function (id) {
@@ -1960,93 +1928,32 @@ ra.filter = function (eventTag, eventName) {
         }
         return this._groups[id];
     };
-
-
-    this.setDisplaySingle = function (id, yesno) {
-        var group = this._getGroup(id);
-        group.displaySingle = yesno;
+    this.signalEvent = function () {
+        this.eventTag.dispatchEvent(new Event(this.eventName));
+        var nodes = document.getElementsByClassName("ra-clear-filters");
+        nodes[0].style.display = "";
     };
-
+    this.getJson = function () {
+        function replacer(key, value) {
+            if (key === "_filter") {
+                return undefined;
+            } else {
+                return value;
+            }
+        }
+        return JSON.stringify(this, replacer);
+    };
     this.initialiseFilter = function (valueSet) {
-        valueSet.forEach(item => {
-            this.initialised = true;
-            var id = item.id;
+        this.initialised = true;
+        var valueGroups = valueSet.getGroups();
+        for (var id in valueGroups) {
+            var values = valueGroups[id];
             var group = this._getGroup(id);
-            if (group === null) {
-                return;
-            }
-            var values = item.valueItems;
-            values.forEach(i => {
-                var id = i.id;
-                var value = i.value;
-                var tagId = i.tagId;
-                switch (group.type) {
-                    case ra.filterType.NumberRange:
-                    case ra.filterType.DateRange:
-                        this._insertGroupRange(id, value);
-                        break;
-                    case ra.filterType.Limit:
-                        this._insertGroupLimit(id, value);
-                        break;
-                    case ra.filterType.AnyOf:
-                    case ra.filterType.Unique:
-                        this._insertGroupItems(id, value, tagId);
-                        break;
-                }
+            values.forEach(value => {
+                group._insert(value);
             });
-        });
-    };
-    this._insertGroupRange = function (id, value) {
-        var group = this._getGroup(id);
-        group.type = "NumberRange";
-        var type = Object.prototype.toString.call(value);
-        if (type === "[object Date]") {
-            group.type = "DateRange";
-        }
-        var values = group.values;
-        if (!values.hasOwnProperty("min")) {
-            values.min = value;
-            values.max = value;
-            group.min = value;
-            group.max = value;
-
-        } else {
-            if (values.min > value) {
-                values.min = value;
-                group.min = value;
-            }
-            if (value > values.max) {
-                values.max = value;
-                group.max = value;
-            }
-        }
-
-    };
-    this._insertGroupItems = function (id, value, tagId) {
-        var group = this._getGroup(id);
-        //  group.type = "Unique";
-        var values = group.values;
-        if (!values.hasOwnProperty(value)) {
-            values[value] = {};
-            values[value].no = 0;
-            values[value].name = "";
-            values[value].tagId = tagId;
-        }
-        values[value].no += 1;
-        values[value].name = value;
-        values[value].active = false;
-    };
-    this._insertGroupLimit = function (id, value) {
-        var group = this._getGroup(id);
-        var values = group.values;
-        for (var propt in values) {
-            var item = values[propt];
-            if (value <= item.limit || item.limit === 0) {
-                item.no += 1;
-            }
         }
     };
-
     this.display = function (tag) {
         if (!this.initialised) {
             return;
@@ -2056,41 +1963,43 @@ ra.filter = function (eventTag, eventName) {
             {name: 'summary', parent: 'details', tag: 'summary', textContent: 'Filter'},
             {name: 'filters', parent: 'details', tag: 'div', attrs: {class: 'ra-walksfilter'}}
         ];
-
-        this.elements = ra.html.generateTags(tag, tags);
-        var filters = this.elements.filters;
-
+        var elements = ra.html.generateTags(tag, tags);
+        var filters = elements.filters;
         for (var propt in this._groups) {
             var div = document.createElement('div');
             div.setAttribute('class', 'ra-filtergroup');
             filters.appendChild(div);
             var group = this._groups[propt];
-            switch (group.type) {
-                case ra.filterType.AnyOf:
-                case ra.filterType.Unique:
-                    var keys = Object.keys(group.values);
-                    if (keys.length > 1 || group.displaySingle) {
-                        this._displayGroupItem(div, group);
-                    }
-                    break;
-                case ra.filterType.DateRange:
-                    this._displayGroupDateRange(div, group);
-                    break;
-                case ra.filterType.NumberRange:
-                    this._displayGroupNumberRange(div, group);
-                    break;
-                case ra.filterType.Limit:
-                    this._displayGroupLimit(div, group);
-                    break;
-                default:
-                    ra.showError("Invalid filter type");
-            }
+            group._display(div);
         }
-        var nodes = filters.getElementsByClassName("ra-filteritemnil");
+
+        // clear filters
+        var displayClearFilters = document.createElement('div');
+        displayClearFilters.textContent = "Clear filters";
+        displayClearFilters.classList.add('ra-clear-filters');
+        displayClearFilters.classList.add('ra-filteritem');
+        displayClearFilters.classList.add('right');
+        displayClearFilters.style.display = "none";
+        filters.appendChild(displayClearFilters);
+        var _this = this;
+        displayClearFilters.onclick = function (event) {
+            var nodes = filters.getElementsByClassName("ra-filteritem");
+            if (nodes.length > 0) {
+                for (let i = 0; i < nodes.length; i++) {
+                    nodes[i].classList.remove('active');
+                }
+            }
+            _this.clearFilters();
+            _this.signalEvent();
+            displayClearFilters.style.display = "none";
+        };
+        // display empty categories 
+        var nodes = filters.getElementsByClassName("nilFilter");
         if (nodes.length > 0) {
             var displayall = document.createElement('div');
             displayall.textContent = "Empty categories";
-            displayall.classList.add('ra-displayall');
+            displayall.classList.add('ra-filteritem');
+            displayall.classList.add('right');
             filters.appendChild(displayall);
             displayall.onclick = function (event) {
                 var opt;
@@ -2108,75 +2017,72 @@ ra.filter = function (eventTag, eventName) {
             };
         }
     };
-    this._displayGroupNumberRange = function (tag, group) {
-        // display title
-        var h = document.createElement('h3');
-        h.textContent = group.title;
-        tag.appendChild(h);
-        // display range
-        ra.showError("number range not imlpemented");
-    };
-    this._displayGroupItem = function (tag, group) {
-        // display title
-        var h = document.createElement('h3');
-        h.textContent = group.title;
-        tag.appendChild(h);
-        // display items
-        if (group.valueOrder !== null) { // display in specified order
-            group.valueOrder.forEach(name => {
-                if (group.values.hasOwnProperty(name)) {
-                    var item = group.values[name];
-                    this._displayUniqueItem(tag, item);
-                } else {
-                    this._displaygroupItemNil(tag, name);
-                }
-            });
-        } else { // display in alphabetical order
-            var keys = Object.keys(group.values);
-            keys.sort();
-            keys.forEach(key => {
-                var item = group.values[key];
-                this._displayUniqueItem(tag, item);
-            });
-        }
-    };
-    this._displayUniqueItem = function (tag, item) {
-        if (item.no > 0 && item.name !== null) {
-            var div = document.createElement('div');
-            div.setAttribute('class', 'ra-filteritem ');
-            if (item.tagId !== null) {
-                div.setAttribute('id', item.tagId);
+
+    this.shouldDisplayItem = function (valueSet) {
+        var display = true;
+        // var vs = JSON.stringify(valueSet);
+
+        for (var propt in this._groups) {
+            var group = this._groups[propt];
+            var id = group.id;
+            var values = valueSet.getGroup(id);
+            var result = group._shouldDisplay(values);
+            if (!result) {
+                display = false;
             }
-            div.textContent = item.name + " [" + item.no + "]";
-            tag.appendChild(div);
-            var _this = this;
-            div.addEventListener("click", function (event) {
-                item.active = !item.active;
-                if (item.active) {
-                    div.classList.add('active');
-                } else {
-                    div.classList.remove('active');
-                }
-                _this.eventTag.dispatchEvent(new Event(_this.eventName));
-            });
+        }
+        return display;
+    };
+    this.clearFilters = function () {
+        for (var propt in this._groups) {
+            var group = this._groups[propt];
+            group._clearFilters();
         }
     };
-    this._displaygroupItemNil = function (tag, name) {
-        var div = document.createElement('div');
-        div.setAttribute('class', 'ra-filteritemnil ');
-        div.style.display = 'none';
-        div.textContent = name + " [0]";
-        tag.appendChild(div);
+
+};
+ra.filter.valueSet = function () {
+    this._valueGroup = {};
+    this.add = function (id, value) {
+        if (!this._valueGroup.hasOwnProperty(id)) {
+            this._valueGroup[id] = [];
+        }
+        this._valueGroup[id].push(value);
+
     };
-    this._displayGroupDateRange = function (tag, group) {
-        if (group.min === null) {
+
+    this.getGroup = function (id) {
+        var group = null;
+        if (id in this._valueGroup) {
+            group = this._valueGroup[id];
+        }
+        return group;
+    };
+    this.getGroups = function () {
+        return this._valueGroup;
+    };
+};
+
+ra.filter.groupDate = function (id, title) {
+    this.id = id;
+    this.title = title;
+    this._filter = null;
+    this.values = {};
+    this.min = null;
+    this.max = null;
+    this.inputs = [];
+    this.setFilter = function (filter) {
+        this._filter = filter;
+    };
+    this._display = function (tag) {
+        if (this.min === null) {
             return;
         }
         var h = document.createElement('h3');
-        h.textContent = group.title;
+        h.textContent = this.title;
         tag.appendChild(h);
         var titles = ["Start", "End"];
-        var initValue = group.min;
+        var initValue = this.min;
         titles.forEach(title => {
             var div = document.createElement('div');
             tag.appendChild(div);
@@ -2190,10 +2096,11 @@ ra.filter = function (eventTag, eventName) {
             label.textContent = title;
             div.appendChild(label);
             var input = document.createElement('input');
+            this.inputs.push(input);
             input.setAttribute('type', 'date');
             input.setAttribute('value', ra.date.YYYYMMDD(initValue));
-            input.setAttribute('min', ra.date.YYYYMMDD(group.min));
-            input.setAttribute('max', ra.date.YYYYMMDD(group.max));
+            input.setAttribute('min', ra.date.YYYYMMDD(this.min));
+            input.setAttribute('max', ra.date.YYYYMMDD(this.max));
             div.appendChild(input);
             var _this = this;
             input.addEventListener("input", function (event) {
@@ -2204,29 +2111,93 @@ ra.filter = function (eventTag, eventName) {
                         value = input.min;
                         input.value = ra.date.YYYYMMDD(value);
                     }
-                    group.values.min = ra.date.getDateTime(value);
+                    _this.values.min = ra.date.getDateTime(value);
                 }
                 if (title === "End") {
                     if (value === "") {
                         value = input.max;
                         input.value = ra.date.YYYYMMDD(value);
                     }
-                    group.values.max = ra.date.getDateTime(value);
+                    _this.values.max = ra.date.getDateTime(value);
                 }
-                _this.eventTag.dispatchEvent(new Event(_this.eventName));
+                if (input.value !== ra.date.YYYYMMDD(input.min) && input.value !== ra.date.YYYYMMDD(input.max)) {
+                    event.target.style.backgroundColor = "rgb(240, 128, 80,1)";
+                } else {
+                    event.target.style.backgroundColor = "#FFFFFF";
+                }
+
+                _this._filter.signalEvent();
             });
-            initValue = group.max;
+            initValue = this.max;
         });
     };
-    this._displayGroupLimit = function (tag, group) {
+    this._shouldDisplay = function (valueArray) {
+        var min = ra.date.YYYYMMDD(this.values.min);
+        var max = ra.date.YYYYMMDD(this.values.max);
+        var svalue = ra.date.YYYYMMDD(valueArray[0]);
+        if (svalue >= min && svalue <= max) {
+            return true;
+        }
+        return false;
+    };
+    this._clearFilters = function () {
+        this.inputs[0].value = this.min;
+        this.inputs[0].dispatchEvent(new Event('input'));
+        this.inputs[1].value = this.max;
+        this.inputs[1].dispatchEvent(new Event('input'));
+    };
+    this._insert = function (value) {
+
+        var values = this.values;
+        if (!values.hasOwnProperty("min")) {
+            values.min = value;
+            values.max = value;
+            this.min = value;
+            this.max = value;
+
+        } else {
+            if (values.min > value) {
+                values.min = value;
+                this.min = value;
+            }
+            if (value > values.max) {
+                values.max = value;
+                this.max = value;
+            }
+        }
+
+    };
+};
+ra.filter.groupLimit = function (id, title, options = null) {
+    this.id = id;
+    this.title = title;
+    this._filter = null;
+    this.values = {};
+    this.limit = 0;
+    this.select = null;
+
+    if (options !== null) {
+        if ('order' in options) {
+            options.order.forEach(item => { // data is an array of the titles and limit for each 
+                this.values[item.title] = {no: 0,
+                    limit: item.limit,
+                    active: false};
+            });
+        }
+    }
+    this.setFilter = function (filter) {
+        this._filter = filter;
+    };
+    this._display = function (tag) {
         var h = document.createElement('h3');
-        h.textContent = group.title;
+        h.textContent = this.title;
         tag.appendChild(h);
         var select = document.createElement('select');
+        this.select = select;
         select.style.marginLeft = '5px';
         tag.appendChild(select);
 
-        var values = group.values;
+        var values = this.values;
         for (var propt in values) {
             var item = values[propt];
             var option = document.createElement('option');
@@ -2237,56 +2208,105 @@ ra.filter = function (eventTag, eventName) {
         var _this = this;
         select.addEventListener("change", function (event) {
             // only works if you have one select as 'updated' is hard coded
-            group.limit = Number(event.target.value);
-            _this.eventTag.dispatchEvent(new Event(_this.eventName));
-        });
-
-
-    };
-    this.shouldDisplayItem = function (valueSet) {
-        var result = true;
-        valueSet.forEach(item => {
-            var id = item.id;
-            var values = item.valueItems;
-            var no = 0;
-            values.forEach(value => {
-                if (this._shouldDisplayItem(id, value)) {
-                    no += 1;
-                }
-            });
-            if (no === 0) {
-                result = false;
+            _this.limit = Number(event.target.value);
+            if (_this.limit !== 0) {
+                event.target.style.backgroundColor = "rgb(240 ,128 ,80,1)";
+            } else {
+                event.target.style.backgroundColor = "#FFFFFF";
             }
+            _this._filter.signalEvent();
         });
-        return result;
     };
-    this._shouldDisplayItem = function (id, item) {
-        if (!this._groups.hasOwnProperty(id)) {
-            ra.showError("Filter id error");
+    this._shouldDisplay = function (valueArray) {
+        var value = valueArray[0];
+        var limit = this.limit;
+        if (value <= limit || limit === 0) {
+            return true;
         }
-        var group = this._groups[id];
-        switch (group.type) {
-            case ra.filterType.AnyOf:
-            case ra.filterType.Unique:
-                return this._shouldDisplayItems(group, item.value);
-                break;
-            case ra.filterType.DateRange:
-                return  this._shouldDisplayDateRange(group, item.value);
-                break;
-            case ra.filterType.NumberRange:
-                return  this._shouldDisplayNumberRange(group, item.value);
-                break;
-            case ra.filterType.Limit:
-                return  this._shouldDisplayLimit(group, item.value);
-                break;
-            case ra.filterType.AnyOf:
-                return this._shouldDisplayAnyof(group, item.value);
-        }
-        return true;
+        return false;
     };
-    this._shouldDisplayItems = function (group, value) {
+    this._clearFilters = function () {
+        this.select.value = 0;
+        this.select.dispatchEvent(new Event('change'));
+    };
+    this._insert = function (value) {
+        var values = this.values;
+        for (var propt in values) {
+            var item = values[propt];
+            if (value <= item.limit || item.limit === 0) {
+                item.no += 1;
+            }
+        }
+    };
+};
+ra.filter.groupText = function (id, title, options = null) {
+    this.id = id;
+    this.title = title;
+    this._filter = null;
+    this.values = {};
+    this.displaySingle = true;
+    if (options !== null) {
+        if ('displaySingle' in options) {
+            this.displaySingle = options.displaySingle;
+        }
+
+        if ('order' in options) {
+            options.order.forEach(item => { // data is an array of the titles and limit for each 
+                this.values[item] = {"no": 0,
+                    "name": item,
+                    "active": false};
+            });
+
+        }
+    }
+    this.setFilter = function (filter) {
+        this._filter = filter;
+    };
+    this._display = function (tag) {
+        var keys = Object.keys(this.values);
+        if (keys.length === 0) {
+            return;
+        }
+        if (keys.length === 1 && !this.displaySingle) {
+            return;
+        }
+        var h = document.createElement('h3');
+        h.textContent = this.title;
+        tag.appendChild(h);
+        var values = this.values;
+        for (var propt in values) {
+            var item = values[propt];
+
+            var div = document.createElement('div');
+            div.classList.add("ra-filteritem");
+            if (item.no === 0) {
+                div.classList.add('nilFilter');
+                div.style.display = 'none';
+            }
+            div.textContent = propt + " [" + item.no + "]";
+            tag.appendChild(div);
+            if (item.no > 0) {
+                var _this = this;
+
+                div.ra = {option: item};
+                div.addEventListener("click", function (event) {
+                    var option = this.ra.option;
+                    option.active = !option.active;
+                    if (option.active) {
+                        this.classList.add('active');
+                    } else {
+                        this.classList.remove('active');
+                    }
+                    _this._filter.signalEvent();
+                });
+            }
+
+
+        }
+    };
+    this._shouldDisplay = function (valueArray) {
         var anyActive = false;
-        var items = group.values;
+        var items = this.values;
         for (var propt in items) {
             var item = items[propt];
             if (item.active) {
@@ -2296,66 +2316,43 @@ ra.filter = function (eventTag, eventName) {
         if (!anyActive) {
             return true;
         }
+        if (valueArray === null) {
+            return false;
+        }
         for (var propt in items) {
             var item = items[propt];
             if (item.active) {
-                if (item.name === value) {
+                if (valueArray.includes(propt)) {
                     return true;
                 }
             }
         }
         return false;
     };
-    this._shouldDisplayNumberRange = function (group, value) {
-        var min = group.values.min;
-        var max = group.values.max;
-        if (value >= min && value <= max) {
-            return true;
+    this._clearFilters = function () {
+        var items = this.values;
+        for (var propt in items) {
+            var item = items[propt];
+            item.active = false;
         }
-        return false;
     };
-    this._shouldDisplayDateRange = function (group, value) {
-        var min = ra.date.YYYYMMDD(group.values.min);
-        var max = ra.date.YYYYMMDD(group.values.max);
-        var svalue = ra.date.YYYYMMDD(value);
-        if (svalue >= min && svalue <= max) {
-            return true;
-        }
-        return false;
-    };
-    this._shouldDisplayLimit = function (group, value) {
-        var limit = group.limit;
-        if (value <= limit || limit === 0) {
-            return true;
-        }
-        return false;
-    };
+    this._insert = function (value) {
 
-};
-ra.filter.valueSet = function () {
-    this._valueGroup = {};
-    this.add = function (value) {
-        if (value.hasOwnProperty("id")) {
-            var id = value.id;
-            if (!this._valueGroup.hasOwnProperty(id)) {
-                this._valueGroup[id] = {id: id,
-                    valueItems: []};
-            }
-            this._valueGroup[id].valueItems.push(value);
+        var values = this.values;
+        if (!values.hasOwnProperty(value)) {
+            values[value] = {};
+            values[value].no = 0;
+            // values[value].name = "";
+            //   values[value].tagId = null; // tagId;
         }
-        //   console.error("filter.valueSet error: no value .id property");
-    };
-    this.forEach = function (fcn) {
-        for (var propt in this._valueGroup) {
-            fcn(this._valueGroup[propt]);
-        }
+        values[value].no += 1;
+        //  values[value].name = value;
+        values[value].active = false;
     };
 };
-ra.filter.value = function (id, value, tagId = null) {
-    this.id = id;
-    this.value = value;
-    this.tagId = tagId;
-};
+
+
+
 
 ra.jplist = function (group) {
     this.hasFilters = false;

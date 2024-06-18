@@ -2,6 +2,7 @@
 
 /**
  * Description of fileio
+ * All methods are static
  *
  * @author Chris Vaughan
  */
@@ -26,7 +27,7 @@ class RJsonwalksWmFileio {
     public static function readFile($url) {
         self::$lastError = "";
         $start = microtime(true);
-        $result = file_get_contents($url);
+        $result = self::file_get_contents($url);
         self::$lastTimeElapsedSecs = microtime(true) - $start;
         if ($result === false) {
             $e = error_get_last();
@@ -41,18 +42,29 @@ class RJsonwalksWmFileio {
         JFile::write($filename, $data);
     }
 
+    private static function file_get_contents($file) {
+        for ($i = 1; $i <= 2; $i++) {
+            // try function twice in case first fails 
+            $contents = file_get_contents($file);
+            if ($contents !== false) {
+                break;
+            }
+            sleep(1);
+        }
+        return $contents;
+    }
+
     private static function removeSecretStrings($str) {
         $out = $str;
         foreach (self::$secretStrings as $value) {
-            $out = str_replace($value, '???', $out);
+            $out = str_replace($value, 'xxx', $out);
         }
         return $out;
     }
 
     public static function errorMsg($msg) {
-    //    $app = JFactory::getApplication();
-    //    $app->enqueueMessage($msg . self::$lastError, 'error');
-        RErrors::notifyError($msg. self::$lastError, "Walks Manager", 'error' );
+        //    $app = JFactory::getApplication();
+        //    $app->enqueueMessage($msg . self::$lastError, 'error');
+        RErrors::notifyError($msg . self::$lastError, "Walks Manager", 'error');
     }
-
 }

@@ -1,7 +1,10 @@
 <?php
 
 /**
- * Description of feedupdate
+ * Description of organisation
+ *     Not used at moment
+ *     Was meant to chaeck if walks changed so only accessed walks then 
+ *     but this proved slow
  *
  * @author Chris Vaughan
  */

@@ -77,13 +77,13 @@ class RJsonwalksWmFeed {
         if ($source === READSOURCE::FEED) {
             // read from feed and then cache data
             $result = RJsonwalksWmFileio::readFile($feedurl);
-            if ($result === false) { // unable to read feed, try using cache
+            if ($result === false) { // unable to read feed
+                RJsonwalksWmFileio::errorMsg("Error reading walks from Central Office: ");
                 if ($this->cacheFolder->fileExists($cachedWalksFileName)) {
-                    // error msg
-                    RJsonwalksWmFileio::errorMsg("Error reading walks from Central Office");
-                    $result = RJsonwalksWmFileio::readFile($cachedWalksFileName);
+                    // try reading walks from cache
+                    $result = $this->cacheFolder->readFile($cachedWalksFileName);
                     if ($result === false) {
-                        RJsonwalksWmFileio::errorMsg("Error reading walks from cache");
+                        RJsonwalksWmFileio::errorMsg("Error reading walks from cache: ");
                     }
                 }
             } else {
@@ -108,7 +108,7 @@ class RJsonwalksWmFeed {
             if ($cachedDate !== false) {
                 $date = new DateTimeImmutable();
                 $elapsed = $date->getTimestamp() - $cachedDate;
-                if ($elapsed < 60 * 10) {
+                if ($elapsed < 60 * 10) { // walks were refreshed within 10 minutes
                     return READSOURCE::CACHE;
                 }
             }
