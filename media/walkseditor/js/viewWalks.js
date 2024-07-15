@@ -13,7 +13,8 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
     this._loggedOn = loggedOn;
     this.filter = null;
     this.settings = {
-        currentDisplay: "Table"
+        currentDisplay: "Table",
+        singleCategory: true
     };
 
     this.jplistGroup = ra.uniqueID();
