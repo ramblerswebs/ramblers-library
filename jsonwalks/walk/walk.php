@@ -23,6 +23,7 @@ class RJsonwalksWalkWalk implements JsonSerializable {
             case "circular":
                 $this->shape = "Circular";
                 break;
+            case "figure":
             case "figure of eight":
                 $this->shape = "Figure of Eight";
                 break;

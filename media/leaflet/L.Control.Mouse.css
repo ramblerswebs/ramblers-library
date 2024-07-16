@@ -47,7 +47,8 @@ select.ra-mouse-options {
     color:var(--pantone0159);
     border-radius: 10px;
     font-size:20px;
-    margin-left: 20px
+    margin-left: 20px;
+    width: auto;
 }
 div.ra-mouse-option{
 

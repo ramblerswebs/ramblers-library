@@ -13,7 +13,8 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
     this._loggedOn = loggedOn;
     this.filter = null;
     this.settings = {
-        currentDisplay: "Table"
+        currentDisplay: "Table",
+        singleCategory: true
     };
 
     this.jplistGroup = ra.uniqueID();
@@ -71,15 +72,15 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
             }
             self.ra_format("Calendar");
         });
-
-        this.programme.setFilters(this.elements.walksFilter);
-        this.addPastWalksOption(this.elements.pastwalks);
         self.ra_format(self.settings.currentDisplay);
         document.addEventListener("reDisplayWalks", function () {
             self.programme.setWalkDisplay();
             self.removeRecordDisplay();
             self.ra_format(self.settings.currentDisplay);
         });
+        this.programme.setFilters(this.elements.walksFilter);
+
+
     };
 
     this.displayDiagnostics = function () {
@@ -464,125 +465,125 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         }
         return 'unknown';
     };
-    this.addPastWalksOption = function (tag) {
+//    this.addPastWalksOption = function (tag) {
+//
+//        var el1 = document.getElementById('ID12345Ndd');
+//        if (el1 !== null) {
+//            ra.html.triggerEvent(el1, 'click');
+//        }
+//        var el2 = document.getElementById('ID12345Future');
+//        if (el2 !== null) {
+//            setTimeout(() => {
+//                ra.html.triggerEvent(el2, 'click');
+//            }, 500);
+//
+//        }
+//        // });
+//    };
 
-        var el1 = document.getElementById('ID12345Ndd');
-        if (el1 !== null) {
-            ra.html.triggerEvent(el1, 'click');
-        }
-        var el2 = document.getElementById('ID12345Future');
-        if (el2 !== null) {
-            setTimeout(() => {
-                ra.html.triggerEvent(el2, 'click');
-            }, 500);
-
-        }
-        // });
-    };
-
-    this.getWalksStats = function (walks) {
-        var result = {
-            group: {},
-            status: {},
-            category: {},
-            issues: {None: {no: 0, name: 'No Issues', id: 'RA_NoIssues'},
-                Has: {no: 0, name: 'Issues', id: 'RA_Issues'}},
-            dates: {min: {no: '9999-99-99', name: 'Start', id: 'RA_DateStart'},
-                max: {no: '0000-00-00', name: 'End ', id: 'RA_DateEnd'}},
-            timeSpan: {noDate: {no: 0, name: 'No Date', id: 'RA_noDate'},
-                past: {no: 0, name: 'Past', id: 'RA_DatePast'},
-                future: {no: 0, name: 'Future', id: 'RA_DateFuture'}},
-            dow: {Monday: {no: 0, name: 'Monday', id: 'RA_DayOfWeek_0'},
-                Tuesday: {no: 0, name: 'Tuesday', id: 'RA_DayOfWeek_1'},
-                Wednesday: {no: 0, name: 'Wednesday', id: 'RA_DayOfWeek_2'},
-                Thursday: {no: 0, name: 'Thursday', id: 'RA_DayOfWeek_3'},
-                Friday: {no: 0, name: 'Friday', id: 'RA_DayOfWeek_4'},
-                Saturday: {no: 0, name: 'Saturday', id: 'RA_DayOfWeek_5'},
-                Sunday: {no: 0, name: 'Sunday', id: 'RA_DayOfWeek_6'}},
-            contact: {},
-            editorNotes: {None: {no: 0, name: 'No notes', id: 'RA_NoNotes'},
-                Has: {no: 0, name: 'Has notes', id: 'RA_Notes'}}
-
-        };
-        var i, len;
-        var walk, yyyymmdd;
-        len = walks.length;
-
-
-        for (i = 0, len = walks.length; i < len; ++i) {
-            walk = walks[i];
-            var code = walk.getGroupCode();
-            var name = walk.getGroupName();
-            if (!result.group.hasOwnProperty(code)) {
-                result.group[code] = {no: 0};
-                result.group[code].name = name;
-                result.group[code].id = 'RA_Group_' + code;
-            }
-            result.group[code].no += 1;
-
-            var status = walk.getStatus();
-            if (!result.status.hasOwnProperty(status)) {
-                result.status[status] = {no: 0};
-                result.status[status].name = status;
-                result.status[status].id = 'RA_Status_' + status;
-            }
-            result.status[status].no += 1;
-
-            var category = walk.getCategory();
-            if (!result.category.hasOwnProperty(category)) {
-                result.category[category] = {no: 0};
-                result.category[category].name = category;
-                result.category[category].id = 'RA_Category_' + category;
-            }
-            result.category[category].no += 1;
-
-            var contact = walk.getContact();
-            if (!result.contact.hasOwnProperty(contact)) {
-                result.contact[contact] = {no: 0};
-                result.contact[contact].name = contact;
-                result.contact[contact].id = 'RA_Contact_' + contact;
-            }
-            result.contact[contact].no += 1;
-
-            var walkdate = ra.getObjProperty(walk.data, "basics.date", "");
-            var today = new Date().toISOString().slice(0, 10);
-            if (ra.date.isValidString(walkdate)) {
-                var dayofweek = ra.date.dow(walkdate);
-                result.dow[dayofweek].no += 1;
-                // result.dateSet.Set.no += 1;
-                yyyymmdd = ra.date.YYYYMMDD(walkdate);
-                if (yyyymmdd < result.dates.min.no) {
-                    result.dates.min.no = yyyymmdd;
-                }
-                if (yyyymmdd > result.dates.max.no) {
-                    result.dates.max.no = yyyymmdd;
-                }
-                if (yyyymmdd > today) {
-                    result.timeSpan.future.no += 1;
-                } else {
-                    result.timeSpan.past.no += 1;
-                }
-
-
-            } else {
-                result.timeSpan.noDate.no += 1;
-            }
-            var no = walk.getNoWalkIssues();
-            if (no === 0) {
-                result.issues.None.no += 1;
-            } else {
-                result.issues.Has.no += 1;
-            }
-
-            if (walk.hasEditorNotes()) {
-                result.editorNotes.Has.no += 1;
-            } else {
-                result.editorNotes.None.no += 1;
-            }
-
-        }
-        this.settings.singleCategory = Object.keys(result.category).length === 1;
-        return result;
-    };
+//    this.getWalksStats = function (walks) {
+//        var result = {
+//            group: {},
+//            status: {},
+//            category: {},
+//            issues: {None: {no: 0, name: 'No Issues', id: 'RA_NoIssues'},
+//                Has: {no: 0, name: 'Issues', id: 'RA_Issues'}},
+//            dates: {min: {no: '9999-99-99', name: 'Start', id: 'RA_DateStart'},
+//                max: {no: '0000-00-00', name: 'End ', id: 'RA_DateEnd'}},
+//            timeSpan: {noDate: {no: 0, name: 'No Date', id: 'RA_noDate'},
+//                past: {no: 0, name: 'Past', id: 'RA_DatePast'},
+//                future: {no: 0, name: 'Future', id: 'RA_DateFuture'}},
+//            dow: {Monday: {no: 0, name: 'Monday', id: 'RA_DayOfWeek_0'},
+//                Tuesday: {no: 0, name: 'Tuesday', id: 'RA_DayOfWeek_1'},
+//                Wednesday: {no: 0, name: 'Wednesday', id: 'RA_DayOfWeek_2'},
+//                Thursday: {no: 0, name: 'Thursday', id: 'RA_DayOfWeek_3'},
+//                Friday: {no: 0, name: 'Friday', id: 'RA_DayOfWeek_4'},
+//                Saturday: {no: 0, name: 'Saturday', id: 'RA_DayOfWeek_5'},
+//                Sunday: {no: 0, name: 'Sunday', id: 'RA_DayOfWeek_6'}},
+//            contact: {},
+//            editorNotes: {None: {no: 0, name: 'No notes', id: 'RA_NoNotes'},
+//                Has: {no: 0, name: 'Has notes', id: 'RA_Notes'}}
+//
+//        };
+//        var i, len;
+//        var walk, yyyymmdd;
+//        len = walks.length;
+//
+//
+//        for (i = 0, len = walks.length; i < len; ++i) {
+//            walk = walks[i];
+//            var code = walk.getGroupCode();
+//            var name = walk.getGroupName();
+//            if (!result.group.hasOwnProperty(code)) {
+//                result.group[code] = {no: 0};
+//                result.group[code].name = name;
+//                result.group[code].id = 'RA_Group_' + code;
+//            }
+//            result.group[code].no += 1;
+//
+//            var status = walk.getStatus();
+//            if (!result.status.hasOwnProperty(status)) {
+//                result.status[status] = {no: 0};
+//                result.status[status].name = status;
+//                result.status[status].id = 'RA_Status_' + status;
+//            }
+//            result.status[status].no += 1;
+//
+//            var category = walk.getCategory();
+//            if (!result.category.hasOwnProperty(category)) {
+//                result.category[category] = {no: 0};
+//                result.category[category].name = category;
+//                result.category[category].id = 'RA_Category_' + category;
+//            }
+//            result.category[category].no += 1;
+//
+//            var contact = walk.getContact();
+//            if (!result.contact.hasOwnProperty(contact)) {
+//                result.contact[contact] = {no: 0};
+//                result.contact[contact].name = contact;
+//                result.contact[contact].id = 'RA_Contact_' + contact;
+//            }
+//            result.contact[contact].no += 1;
+//
+//            var walkdate = ra.getObjProperty(walk.data, "basics.date", "");
+//            var today = new Date().toISOString().slice(0, 10);
+//            if (ra.date.isValidString(walkdate)) {
+//                var dayofweek = ra.date.dow(walkdate);
+//                result.dow[dayofweek].no += 1;
+//                // result.dateSet.Set.no += 1;
+//                yyyymmdd = ra.date.YYYYMMDD(walkdate);
+//                if (yyyymmdd < result.dates.min.no) {
+//                    result.dates.min.no = yyyymmdd;
+//                }
+//                if (yyyymmdd > result.dates.max.no) {
+//                    result.dates.max.no = yyyymmdd;
+//                }
+//                if (yyyymmdd > today) {
+//                    result.timeSpan.future.no += 1;
+//                } else {
+//                    result.timeSpan.past.no += 1;
+//                }
+//
+//
+//            } else {
+//                result.timeSpan.noDate.no += 1;
+//            }
+//            var no = walk.getNoWalkIssues();
+//            if (no === 0) {
+//                result.issues.None.no += 1;
+//            } else {
+//                result.issues.Has.no += 1;
+//            }
+//
+//            if (walk.hasEditorNotes()) {
+//                result.editorNotes.Has.no += 1;
+//            } else {
+//                result.editorNotes.None.no += 1;
+//            }
+//
+//        }
+//        this.settings.singleCategory = Object.keys(result.category).length === 1;
+//        return result;
+//    };
 
 };

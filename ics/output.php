@@ -14,7 +14,7 @@
 class RIcsOutput {
 
     private $isc="";
-
+    
     function __construct() {
         $this->addHeader();
     }
@@ -55,9 +55,9 @@ class RIcsOutput {
         $days = $interval->days;
         // Fix added to include number of seconds since midnight, forcing an update on each download. 
         // Otherwise, the event would only update daily. 
-        $this->sequence = strval($days) . strval(time() % 86400);
-        //$this->sequence = strval($days);
-        $this->addRecord("SEQUENCE:" . $this->sequence);
+        $sequence = strval($days) . strval(time() % 86400);
+       
+        $this->addRecord("SEQUENCE:" . $sequence);
     }
 
     private function addHeader() {

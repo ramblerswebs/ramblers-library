@@ -16,7 +16,9 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
     private $groupCode;
     private $groupName;
     private $site;
-    private $feedPath = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
+    private $feedPathJ5 = "index.php?option=com_ra_walks_editor&view=walks&format=json";
+    private $feedPathJ3 = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
+   // private $feedPath = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
 
     const TIMEFORMAT = "Y-m-d\TH:i:s";
 
@@ -31,8 +33,13 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
     }
 
     public function getWalks($walks) {
-
-        $this->rafeedurl = $this->site . $this->feedPath;
+        $version = new JVersion();
+        $jv = $version->getShortVersion();
+        if (version_compare($jv, '5.0.0', '<')) {
+            $this->rafeedurl = $this->site . $this->feedPathJ3;
+        } else {
+            $this->rafeedurl = $this->site . $this->feedPathJ5;
+        }
         $CacheTime = 5; // minutes
         $cacheLocation = $this->CacheLocation();
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
@@ -181,7 +188,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         if (property_exists($loc, 'postcode')) {
             $postcode = $loc->postcode->value;
         }
-        $osmaps=null;
+        $osmaps = null;
         if (property_exists($loc, 'postcode')) {
             $osmaps = $loc->osmaps;
         }
@@ -239,5 +246,4 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
 
         //     $walk->media = $walk->getMedia($item);
     }
-
 }

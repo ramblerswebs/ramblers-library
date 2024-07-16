@@ -96,57 +96,69 @@ ra.walkseditor.walks = function () {
     this.setFilters = function (tag) {
         var filter = new ra.filter(document, "reDisplayWalks");
         this.filter = filter;
-        var gradesOrder = ['Not defined',
-            'Event',
-            'Easy Access',
-            'Easy',
-            'Leisurely',
-            'Moderate',
-            'Strenuous',
-            'Technical'];
-        var dowOrder = ['Not defined',
-            'Monday',
-            'Tuesday',
-            'Wednesday',
-            'Thursday',
-            'Friday',
-            'Saturday',
-            'Sunday'];
-        var distanceOrder = ['Not set', 'Up to 3 miles (5 km)',
-            '3+ to 5 miles (5-8 km)',
-            '5+ to 8 miles (8-13 km)',
-            '8+ to 10 miles (13-16 km)',
-            '10+ to 13 miles (16-21 km)',
-            '13+ to 15 miles (21-24 km)',
-            '15+ miles (24 km)'];
-        var updateItems = [{title: 'All walks', limit: 0},
-            {title: 'In last 3 months', limit: 93},
-            {title: 'In last month', limit: 31},
-            {title: 'In last 2 weeks', limit: 14},
-            {title: 'In last week', limit: 7}
-        ];
+        var gradesOptions = {displaySingle: true,
+            order: ['Not defined',
+                'Event',
+                'Easy Access',
+                'Easy',
+                'Leisurely',
+                'Moderate',
+                'Strenuous',
+                'Technical']};
+        var dowOptions = {displaySingle: true,
+            order: ['Not defined',
+                'Monday',
+                'Tuesday',
+                'Wednesday',
+                'Thursday',
+                'Friday',
+                'Saturday',
+                'Sunday']};
+        var whenOptions = {displaySingle: true,
+            order: ['Not defined',
+                'Past',
+                'Future']};
+        var distanceOptions = {displaySingle: true,
+            order: ['Not defined',
+                'Up to 3 miles (5 km)',
+                '3+ to 5 miles (5-8 km)',
+                '5+ to 8 miles (8-13 km)',
+                '8+ to 10 miles (13-16 km)',
+                '10+ to 13 miles (16-21 km)',
+                '13+ to 15 miles (21-24 km)',
+                '15+ miles (24 km)']};
+        var updateOptions = {displaySingle: true,
+            order: [{title: 'All walks', limit: 0},
+                {title: 'In last 3 months', limit: 93},
+                {title: 'In last month', limit: 31},
+                {title: 'In last 2 weeks', limit: 14},
+                {title: 'In last week', limit: 7}
+            ]};
+        var categoryOptions = {displaySingle: false};
+        var statusOptions = {displaySingle: false};
+        var issuesOptions = {displaySingle: true};
+        var notesOptions = {displaySingle: false};
+        var shapeOptions = {displaySingle: false};
+        var contactsOptions = {displaySingle: false};
 
-        filter.addGroup(ra.filterType.Unique, "idStatus", "Status");
-        filter.addGroup(ra.filterType.Unique, "idCategory", "Category");
-        filter.addGroup(ra.filterType.Unique, "idIssues", "Issues");
-        filter.addGroup(ra.filterType.Unique, "idNotes", "Notes");
-        filter.addGroup(ra.filterType.Unique, "idDOW", "Day of the week", dowOrder);
-        filter.addGroup(ra.filterType.DateRange, "idDate", "Dates");
-        filter.addGroup(ra.filterType.Unique, "idWhen", "No date/Past/Future");
-        filter.addGroup(ra.filterType.Unique, "idDistance", "Distance", distanceOrder);
-        filter.addGroup(ra.filterType.Unique, "idGrade", "Grade", gradesOrder);
-        filter.addGroup(ra.filterType.Unique, "idShape", "Shape");
-        filter.addGroup(ra.filterType.Unique, "idContacts", "Contact");
-    //    filter.addGroupLimit("idUpdate", "Updated", updateItems);
-        filter.setDisplaySingle("idIssues", true);
-        filter.setDisplaySingle("idDOW", true);
-        filter.setDisplaySingle("idDistance", true);
-        filter.setDisplaySingle("idGrade", true);
+        filter.addGroup(new ra.filter.groupText("idStatus", "Status", statusOptions));
+        filter.addGroup(new ra.filter.groupText("idCategory", "Category", categoryOptions));
+        filter.addGroup(new ra.filter.groupText("idIssues", "Issues", issuesOptions));
+        filter.addGroup(new ra.filter.groupText("idNotes", "Notes", notesOptions));
+        filter.addGroup(new ra.filter.groupText("idDOW", "Day of the week", dowOptions));
+        filter.addGroup(new ra.filter.groupDate("idDate", "Dates"));
+        filter.addGroup(new ra.filter.groupText("idWhen", "No date/Past/Future", whenOptions));
+        filter.addGroup(new ra.filter.groupText("idDistance", "Distance", distanceOptions));
+        filter.addGroup(new ra.filter.groupText("idGrade", "Grade", gradesOptions));
+        filter.addGroup(new ra.filter.groupText("idShape", "Shape", shapeOptions));
+        filter.addGroup(new ra.filter.groupText("idContacts", "Contact", contactsOptions));
 
         this._walks.forEach(walk => {
             walk.initialiseFilter(filter);
         });
         filter.display(tag);
+        filter.activateFilterItem("idWhen", "Future");
+        filter.activateFilterItem("idWhen", "Not defined");
     };
 };
 
@@ -211,48 +223,48 @@ ra.walkseditor.walk = function () {
 
         var walkDate = ra.getObjProperty(this.data, "basics.date", "");
         if (walkDate !== "") {
-            valueSet.add(new ra.filter.value("idDOW", ra.date.dow(walkDate)));
-            valueSet.add(new ra.filter.value("idDate", ra.date.getDateTime(walkDate)));
+            valueSet.add("idDOW", ra.date.dow(walkDate));
+            valueSet.add("idDate", ra.date.getDateTime(walkDate));
         } else {
-            valueSet.add(new ra.filter.value("idDOW", "Not defined"));
+            valueSet.add("idDOW", "Not defined");
         }
 
         if (this.getNoWalkIssues() > 0) {
-            valueSet.add(new ra.filter.value("idIssues", "Has issues"));
+            valueSet.add("idIssues", "Has issues");
         } else {
-            valueSet.add(new ra.filter.value("idIssues", "No issues"));
+            valueSet.add("idIssues", "No issues");
         }
 
-        valueSet.add(new ra.filter.value("idStatus", ra.getObjProperty(this.data, "admin.status", "")));
+        valueSet.add("idStatus", ra.getObjProperty(this.data, "admin.status", ""));
 
         if (walkDate !== "") {
             if (ra.date.getDateTime(walkDate) < new Date()) {
-                valueSet.add(new ra.filter.value("idWhen", "Past","ID12345Past"));
+                valueSet.add("idWhen", "Past", "ID12345Past");
             } else {
-                valueSet.add(new ra.filter.value("idWhen", "Future","ID12345Future"));
+                valueSet.add("idWhen", "Future", "ID12345Future");
             }
         } else {
-            valueSet.add(new ra.filter.value("idWhen", "No date defined","ID12345Ndd"));
+            valueSet.add("idWhen", "Not defined", "ID12345Ndd");
         }
 
         var updated = ra.getObjProperty(this.data, "admin.updated", "");
         if (updated !== null && updated !== "") {
-       //     valueSet.add(new ra.filter.value("idUpdated", updated));
+            //     valueSet.add("idUpdated", updated);
         }
 
         var walks = ra.getObjProperty(this.data, 'walks', []);
         walks.forEach(item => {
-            valueSet.add(new ra.filter.value("idDistance", this.filterDistance(item)));
-            valueSet.add(new ra.filter.value("idGrade", ra.getObjProperty(item, 'natgrade', 'Not defined')));
-            valueSet.add(new ra.filter.value("idShape", ra.getObjProperty(item, 'shape', '')));
+            valueSet.add("idDistance", this.filterDistance(item));
+            valueSet.add("idGrade", ra.getObjProperty(item, 'natgrade', 'Not defined'));
+            valueSet.add("idShape", ra.getObjProperty(item, 'shape', ''));
         });
 
-        valueSet.add(new ra.filter.value("idContacts", ra.getObjProperty(this.data, "contact.displayName", "Not defined")));
+        valueSet.add("idContacts", ra.getObjProperty(this.data, "contact.displayName", "Not defined"));
 
         if (this.hasEditorNotes() > 0) {
-            valueSet.add(new ra.filter.value("idNotes", "Has notes"));
+            valueSet.add("idNotes", "Has notes");
         } else {
-            valueSet.add(new ra.filter.value("idNotes", "No notes"));
+            valueSet.add("idNotes", "No notes");
         }
         return  valueSet;
     };
@@ -262,7 +274,8 @@ ra.walkseditor.walk = function () {
         this.displayWalk = filter.shouldDisplayItem(values);
     };
     this.filterDistance = function (walk) {
-        var distanceOrder = ['Not set', 'Up to 3 miles (5 km)',
+        var distanceOrder = ['Not defined',
+            'Up to 3 miles (5 km)',
             '3+ to 5 miles (5-8 km)',
             '5+ to 8 miles (8-13 km)',
             '8+ to 10 miles (13-16 km)',

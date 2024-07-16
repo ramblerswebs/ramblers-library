@@ -164,7 +164,7 @@ class RJsonwalksWmFeed {
     }
 
     private static function errorMsg($url, $msg) {
-        $urlout = str_replace("&api-key=" . APIKEY, '', $url);
+        $urlout = str_replace(APIKEY, '???', $url);
         //  $app = JFactory::getApplication();
         //   $app->enqueueMessage("Error reading walks: " . $msg . " " . $urlout, 'error');
         RErrors::notifyError("Error reading walks: " . $msg . " " . $urlout, "Walks Manager", 'error');

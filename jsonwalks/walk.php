@@ -255,15 +255,6 @@ class RJsonwalksWalk implements JsonSerializable {
         $summary = $this->getIntValue("basics", "title");
         $summary .= $this->getIntValue("walks", "icsWalkDistance");
 
-        if ($this->isCancelled()) {
-            ev . method("CANCEL");
-            $summary = " CANCELLED " . $summary;
-            $description = "CANCELLED - REASON: " . $this->cancellationReason . " (" . $this->getIntValue("basics", "description") . ")";
-            $altDescription = "CANCELLED - REASON: " . $this->cancellationReason . " (" . $this->getIntValue("basics", "descriptionHtml") . ")";
-        } else {
-            $description = $before . $this->getIntValue("basics", "description") . $after;
-            $altDescription = $before . $this->getIntValue("basics", "descriptionHtml") . $after;
-        }
         $now = new datetime();
         $icsfile->addRecord("BEGIN:VEVENT");
         $this->addIcsTimes($icsfile);
@@ -272,15 +263,20 @@ class RJsonwalksWalk implements JsonSerializable {
         $icsfile->addSequence($this->getIntValue("admin", "dateUpdated"));
         $icsfile->addRecord("UID: walk" . $this->getIntValue("admin", "id") . "-isc@ramblers-webs.org.uk");
         $icsfile->addRecord("ORGANIZER;CN=" . $this->getIntValue("admin", "groupName") . ":mailto:ignore@ramblers-webs.org.uk");
-        if ($this->admin->isCancelled()) {
+
+        if ($this->isCancelled()) {
             $icsfile->addRecord("METHOD:CANCEL");
-            $icsfile->addRecord("SUMMARY: CANCELLED ", RHtml::convertToText($summary));
-            $icsfile->addRecord("DESCRIPTION: CANCELLED - REASON: ", RHtml::convertToText($this->cancellationReason) . " (" . $this->description . ")");
+            $summary = " CANCELLED " . $summary;
+            $cancellationReason = $this->getIntValue("admin", "cancellationReason");
+            $description = "CANCELLED - REASON: " . $cancellationReason . " (" . $this->getIntValue("basics", "description") . ")";
+            $altDescription = "CANCELLED - REASON: " . $cancellationReason . " (" . $this->getIntValue("basics", "descriptionHtml") . ")";
         } else {
-            $icsfile->addRecord("SUMMARY:", RHtml::convertToText($summary));
-            $icsfile->addRecord("DESCRIPTION:", $description);
-            $icsfile->addRecord("X-ALT-DESC;FMTTYPE=text/html:", $altDescription, true);
+            $description = $before . $this->getIntValue("basics", "description") . $after;
+            $altDescription = $before . $this->getIntValue("basics", "descriptionHtml") . $after;
         }
+        $icsfile->addRecord("SUMMARY:", RHtml::convertToText($summary));
+        $icsfile->addRecord("DESCRIPTION:", $description);
+        $icsfile->addRecord("X-ALT-DESC;FMTTYPE=text/html:", $altDescription, true);
         $icsfile->addRecord("CATEGORIES:", "Walk," . $this->getIntValue("admin", "groupName"));
         $icsfile->addRecord("DTSTAMP;VALUE=DATE-TIME:", $this->dateTimetoUTC($now));
         $icsfile->addRecord("CREATED;VALUE=DATE-TIME:", $this->dateTimetoUTC($this->getIntValue("admin", "dateCreated")));

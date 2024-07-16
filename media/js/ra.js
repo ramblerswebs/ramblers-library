@@ -1914,9 +1914,9 @@ ra.help = function (tag, helpFunction) {
 ra.filter = function (eventTag, eventName) {
     this.eventTag = eventTag;
     this.eventName = eventName;
-    this.initialised = false;   
+    this.initialised = false;
     this._groups = {};
-        this.addGroup = function (group) {
+    this.addGroup = function (group) {
         group.setFilter(this);
         this._groups[group.id] = group;
         return group;
@@ -2015,6 +2015,12 @@ ra.filter = function (eventTag, eventName) {
                     nodes[i].style.display = opt;
                 }
             };
+        }
+    };
+    this.activateFilterItem = function (groupID, item) {
+        var group = this._getGroup(groupID);
+        if (group !== null) {
+            group.activateFilterItem(item);
         }
     };
 
@@ -2132,6 +2138,9 @@ ra.filter.groupDate = function (id, title) {
         });
     };
     this._shouldDisplay = function (valueArray) {
+        if (valueArray === null) {
+            return true;
+        }
         var min = ra.date.YYYYMMDD(this.values.min);
         var max = ra.date.YYYYMMDD(this.values.max);
         var svalue = ra.date.YYYYMMDD(valueArray[0]);
@@ -2166,6 +2175,9 @@ ra.filter.groupDate = function (id, title) {
             }
         }
 
+    };
+    this.activateFilterItem = function (item) {
+        alert("Activate filter Item not implenetented");
     };
 };
 ra.filter.groupLimit = function (id, title, options = null) {
@@ -2218,6 +2230,9 @@ ra.filter.groupLimit = function (id, title, options = null) {
         });
     };
     this._shouldDisplay = function (valueArray) {
+        if (valueArray === null) {
+            return true;
+        }
         var value = valueArray[0];
         var limit = this.limit;
         if (value <= limit || limit === 0) {
@@ -2237,6 +2252,9 @@ ra.filter.groupLimit = function (id, title, options = null) {
                 item.no += 1;
             }
         }
+    };
+    this.activateFilterItem = function (item) {
+        alert("Activate filter Item not implenetented");
     };
 };
 ra.filter.groupText = function (id, title, options = null) {
@@ -2278,6 +2296,7 @@ ra.filter.groupText = function (id, title, options = null) {
             var item = values[propt];
 
             var div = document.createElement('div');
+            item.div = div;
             div.classList.add("ra-filteritem");
             if (item.no === 0) {
                 div.classList.add('nilFilter');
@@ -2348,6 +2367,15 @@ ra.filter.groupText = function (id, title, options = null) {
         values[value].no += 1;
         //  values[value].name = value;
         values[value].active = false;
+    };
+    this.activateFilterItem = function (name) {
+        var item = this.values[name];
+        if (item) {
+            if (item.no > 0) {
+                var div = item.div;
+                div.click();
+            }
+        }
     };
 };
 
