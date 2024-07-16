@@ -2017,6 +2017,12 @@ ra.filter = function (eventTag, eventName) {
             };
         }
     };
+    this.activateFilterItem = function (groupID, item) {
+        var group = this._getGroup(groupID);
+        if (group !== null) {
+            group.activateFilterItem(item);
+        }
+    };
 
     this.shouldDisplayItem = function (valueSet) {
         var display = true;
@@ -2170,6 +2176,9 @@ ra.filter.groupDate = function (id, title) {
         }
 
     };
+    this.activateFilterItem = function (item) {
+        alert("Activate filter Item not implenetented");
+    };
 };
 ra.filter.groupLimit = function (id, title, options = null) {
     this.id = id;
@@ -2244,6 +2253,9 @@ ra.filter.groupLimit = function (id, title, options = null) {
             }
         }
     };
+    this.activateFilterItem = function (item) {
+        alert("Activate filter Item not implenetented");
+    };
 };
 ra.filter.groupText = function (id, title, options = null) {
     this.id = id;
@@ -2284,6 +2296,7 @@ ra.filter.groupText = function (id, title, options = null) {
             var item = values[propt];
 
             var div = document.createElement('div');
+            item.div = div;
             div.classList.add("ra-filteritem");
             if (item.no === 0) {
                 div.classList.add('nilFilter');
@@ -2354,6 +2367,15 @@ ra.filter.groupText = function (id, title, options = null) {
         values[value].no += 1;
         //  values[value].name = value;
         values[value].active = false;
+    };
+    this.activateFilterItem = function (name) {
+        var item = this.values[name];
+        if (item) {
+            if (item.no > 0) {
+                var div = item.div;
+                div.click();
+            }
+        }
     };
 };
 

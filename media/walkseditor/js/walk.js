@@ -114,6 +114,10 @@ ra.walkseditor.walks = function () {
                 'Friday',
                 'Saturday',
                 'Sunday']};
+        var whenOptions = {displaySingle: true,
+            order: ['Not defined',
+                'Past',
+                'Future']};
         var distanceOptions = {displaySingle: true,
             order: ['Not defined',
                 'Up to 3 miles (5 km)',
@@ -143,21 +147,18 @@ ra.walkseditor.walks = function () {
         filter.addGroup(new ra.filter.groupText("idNotes", "Notes", notesOptions));
         filter.addGroup(new ra.filter.groupText("idDOW", "Day of the week", dowOptions));
         filter.addGroup(new ra.filter.groupDate("idDate", "Dates"));
-        filter.addGroup(new ra.filter.groupText("idWhen", "No date/Past/Future"));
+        filter.addGroup(new ra.filter.groupText("idWhen", "No date/Past/Future", whenOptions));
         filter.addGroup(new ra.filter.groupText("idDistance", "Distance", distanceOptions));
         filter.addGroup(new ra.filter.groupText("idGrade", "Grade", gradesOptions));
         filter.addGroup(new ra.filter.groupText("idShape", "Shape", shapeOptions));
         filter.addGroup(new ra.filter.groupText("idContacts", "Contact", contactsOptions));
-        //    filter.addGroupLimit("idUpdate", "Updated", updateItems);
-        //   filter.setDisplaySingle("idIssues", true);
-        //   filter.setDisplaySingle("idDOW", true);
-        //   filter.setDisplaySingle("idDistance", true);
-        //   filter.setDisplaySingle("idGrade", true);
 
         this._walks.forEach(walk => {
             walk.initialiseFilter(filter);
         });
         filter.display(tag);
+        filter.activateFilterItem("idWhen", "Future");
+        filter.activateFilterItem("idWhen", "Not defined");
     };
 };
 
@@ -273,7 +274,7 @@ ra.walkseditor.walk = function () {
         this.displayWalk = filter.shouldDisplayItem(values);
     };
     this.filterDistance = function (walk) {
-        var distanceOrder = ['Not defined', 
+        var distanceOrder = ['Not defined',
             'Up to 3 miles (5 km)',
             '3+ to 5 miles (5-8 km)',
             '5+ to 8 miles (8-13 km)',

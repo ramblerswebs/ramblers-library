@@ -72,15 +72,15 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
             }
             self.ra_format("Calendar");
         });
-
-        this.programme.setFilters(this.elements.walksFilter);
-     //   this.addPastWalksOption(this.elements.pastwalks);
         self.ra_format(self.settings.currentDisplay);
         document.addEventListener("reDisplayWalks", function () {
             self.programme.setWalkDisplay();
             self.removeRecordDisplay();
             self.ra_format(self.settings.currentDisplay);
         });
+        this.programme.setFilters(this.elements.walksFilter);
+
+
     };
 
     this.displayDiagnostics = function () {
