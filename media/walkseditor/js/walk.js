@@ -115,7 +115,8 @@ ra.walkseditor.walks = function () {
                 'Saturday',
                 'Sunday']};
         var distanceOptions = {displaySingle: true,
-            order: ['Not set', 'Up to 3 miles (5 km)',
+            order: ['Not defined',
+                'Up to 3 miles (5 km)',
                 '3+ to 5 miles (5-8 km)',
                 '5+ to 8 miles (8-13 km)',
                 '8+ to 10 miles (13-16 km)',
@@ -242,7 +243,7 @@ ra.walkseditor.walk = function () {
                 valueSet.add("idWhen", "Future", "ID12345Future");
             }
         } else {
-            valueSet.add("idWhen", "No date defined", "ID12345Ndd");
+            valueSet.add("idWhen", "Not defined", "ID12345Ndd");
         }
 
         var updated = ra.getObjProperty(this.data, "admin.updated", "");
@@ -272,7 +273,8 @@ ra.walkseditor.walk = function () {
         this.displayWalk = filter.shouldDisplayItem(values);
     };
     this.filterDistance = function (walk) {
-        var distanceOrder = ['Not set', 'Up to 3 miles (5 km)',
+        var distanceOrder = ['Not defined', 
+            'Up to 3 miles (5 km)',
             '3+ to 5 miles (5-8 km)',
             '5+ to 8 miles (8-13 km)',
             '8+ to 10 miles (13-16 km)',

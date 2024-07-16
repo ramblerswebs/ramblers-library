@@ -1914,9 +1914,9 @@ ra.help = function (tag, helpFunction) {
 ra.filter = function (eventTag, eventName) {
     this.eventTag = eventTag;
     this.eventName = eventName;
-    this.initialised = false;   
+    this.initialised = false;
     this._groups = {};
-        this.addGroup = function (group) {
+    this.addGroup = function (group) {
         group.setFilter(this);
         this._groups[group.id] = group;
         return group;
@@ -2132,6 +2132,9 @@ ra.filter.groupDate = function (id, title) {
         });
     };
     this._shouldDisplay = function (valueArray) {
+        if (valueArray === null) {
+            return true;
+        }
         var min = ra.date.YYYYMMDD(this.values.min);
         var max = ra.date.YYYYMMDD(this.values.max);
         var svalue = ra.date.YYYYMMDD(valueArray[0]);
@@ -2218,6 +2221,9 @@ ra.filter.groupLimit = function (id, title, options = null) {
         });
     };
     this._shouldDisplay = function (valueArray) {
+        if (valueArray === null) {
+            return true;
+        }
         var value = valueArray[0];
         var limit = this.limit;
         if (value <= limit || limit === 0) {
