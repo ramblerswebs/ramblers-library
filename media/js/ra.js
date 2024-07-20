@@ -2263,9 +2263,13 @@ ra.filter.groupText = function (id, title, options = null) {
     this._filter = null;
     this.values = {};
     this.displaySingle = true;
+    this._sort = false;
     if (options !== null) {
         if ('displaySingle' in options) {
             this.displaySingle = options.displaySingle;
+        }
+        if ('sort' in options) {
+            this._sort = options.sort;
         }
 
         if ('order' in options) {
@@ -2282,19 +2286,23 @@ ra.filter.groupText = function (id, title, options = null) {
     };
     this._display = function (tag) {
         var keys = Object.keys(this.values);
-        if (keys.length === 0) {
+        var len = keys.length;
+        if (len === 0) {
             return;
         }
-        if (keys.length === 1 && !this.displaySingle) {
+        if (len === 1 && !this.displaySingle) {
             return;
         }
         var h = document.createElement('h3');
         h.textContent = this.title;
         tag.appendChild(h);
-        var values = this.values;
-        for (var propt in values) {
-            var item = values[propt];
+        if (this._sort) {
+            keys.sort();
+        }
 
+        for (var i = 0; i < len; i++) {
+            var propt = keys[i];
+            var item = this.values[propt];
             var div = document.createElement('div');
             item.div = div;
             div.classList.add("ra-filteritem");

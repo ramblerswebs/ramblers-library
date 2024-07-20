@@ -133,6 +133,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         //     var wmexport = new ra.walkseditor.exportToWM();
         //     wmexport.button(tag, items);
         var pagination = document.createElement('div');
+        pagination.style.marginBottom = "10px";
         tag.appendChild(pagination);
         this.itemsPerPage = 10;
         this.myjplist.addPagination(walks.length, pagination, this.jplistGroup, this.itemsPerPage);
@@ -183,6 +184,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         //   var wmexport = new ra.walkseditor.exportToWM();
         //   wmexport.button(tag, items);
         var pagination = document.createElement('div');
+        pagination.style.marginBottom = "10px";
         tag.appendChild(pagination);
         this.itemsPerPage = 10;
         this.myjplist.addPagination(walks.length, pagination, this.jplistGroup, this.itemsPerPage);

@@ -139,7 +139,7 @@ ra.walkseditor.walks = function () {
         var issuesOptions = {displaySingle: true};
         var notesOptions = {displaySingle: false};
         var shapeOptions = {displaySingle: false};
-        var contactsOptions = {displaySingle: false};
+        var contactsOptions = {displaySingle: true, sort:true};
 
         filter.addGroup(new ra.filter.groupText("idStatus", "Status", statusOptions));
         filter.addGroup(new ra.filter.groupText("idCategory", "Category", categoryOptions));
@@ -1392,7 +1392,7 @@ ra.walkseditor.walk = function () {
         $html += "</div>" + PHP_EOL;
 
         var mapdiv = "detailsMapDiv";
-        $html += "<div id='" + mapdiv + "'></div>" + PHP_EOL;
+        $html += "<div class='ra preview section' id='" + mapdiv + "'></div>" + PHP_EOL;
 
         $html += "<div class='ra preview section'>" + PHP_EOL;
         $html += this.getWalkFacilities();
