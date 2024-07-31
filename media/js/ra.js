@@ -2402,6 +2402,9 @@ ra.jplist = function (group) {
         button.setAttribute('data-group', this.group);
         button.setAttribute('data-order', order);
         button.setAttribute('data-type', type);
+        if (type === "datetime") {
+            button.setAttribute('data-datetime-format', '{day}/{month}/{year}');
+        }
         button.setAttribute('data-name', "sortbutton");
         button.setAttribute('data-selected', "false");
         button.setAttribute('data-mode', "radio");

@@ -60,7 +60,7 @@ class RLeafletCsvList extends RLeafletMap {
         $column = null;
         $this->list = new RLeafletTableColumns();
         if (($handle = fopen($this->filename, "r")) !== FALSE) {
-            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            while (($data = fgetcsv($handle, null, ",")) !== FALSE) {
                 $num = count($data);
                 for ($col = 0; $col < $num; $col++) {
                     $value = $data[$col];
