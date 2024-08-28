@@ -43,13 +43,13 @@ ra.leafletmap = function (tag, options) {
         ra.html.generateTags(elements.copyright, tagcopy);
     }
     var self = this;
-    const crs = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs', {
-        resolutions: [896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75],
-        origin: [-238375.0, 1376256.0]
-    });
-    const transformCoords = function (arr) {
-        return proj4('EPSG:27700', 'EPSG:4326', arr).reverse();
-    };
+//    const crs = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs', {
+//        resolutions: [896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75],
+//        origin: [-238375.0, 1376256.0]
+//    });
+//    const transformCoords = function (arr) {
+//        return proj4('EPSG:27700', 'EPSG:4326', arr).reverse();
+//    };
 //        const mapOptions = {
 //        crs: crs,
 //        minZoom: 0,
@@ -103,10 +103,10 @@ ra.leafletmap = function (tag, options) {
     }
     if (options.licenseKeys.OSkey !== null) {
 
-        this.mapLayers["Ordnance Survey  Walking"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
-            minZoom: 0,
-            maxZoom: 9
-        });
+//        this.mapLayers["Ordnance Survey  Walking"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
+//            minZoom: 0,
+//            maxZoom: 9
+//        });
         this.mapLayers["Ordnance Survey Light"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Light_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
             maxZoom: 20
         });
@@ -361,5 +361,3 @@ ra.leafletmap = function (tag, options) {
         return this._mapDiv;
     };
 };
-
-
