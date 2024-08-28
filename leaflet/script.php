@@ -54,8 +54,9 @@ class RLeafletScript {
 
         RLoad::addScript("media/lib_ramblers/js/ra.js", array("type" => "text/javascript"));
         // Leaflet
-        $document->addStyleSheet("media/lib_ramblers/vendors/leaflet/leaflet.css", array("type" => "text/css"));
-        RLoad::addScript("media/lib_ramblers/vendors/leaflet/leaflet.js", array("type" => "text/javascript"));
+        $document->addStyleSheet("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css");
+        RLoad::addScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js");
+        // RLoad::addScript("media/lib_ramblers/vendors/leaflet/leaflet.js", array("type" => "text/javascript"));
         RLoad::addScript("media/lib_ramblers/leaflet/ra.leafletmap.js");
         RLoad::addStyleSheet("media/lib_ramblers/leaflet/ramblersleaflet.css");
 
@@ -71,15 +72,13 @@ class RLeafletScript {
             $document->addStyleSheet($path . "elevation.css", array("type" => "text/css"));
             RLoad::addScript("media/lib_ramblers/vendors/leaflet-gpx-1.3.1/gpx.js", array("type" => "text/javascript"));
         }
-        if (RLicense::isGoogleKeyMapSet()) {
-            // Google
-            //RLoad::addScript("https://maps.googleapis.com/maps/api/js?key=" . RLicense::getGoogleMapKey(), array("type"=>"text/javascript"), true, true);
-            RLoad::addScript("media/lib_ramblers/vendors/Leaflet.GridLayer.GoogleMutant/Leaflet.GoogleMutant.js");
-            RLoad::addScript("media/lib_ramblers/vendors/es6-promise-vv4.2.3/dist/es6-promise.auto.js");
-            //    $document->map->replaceString("// [set addGoogle]", "ramblersMap.options.google=true;");
-        }
 
-        // clustering
+        if ($options->licenseKeys->OSkey !== null) {
+            RLoad::addScript("https://cdn.jsdelivr.net/gh/OrdnanceSurvey/os-api-branding@0.3.1/os-api-branding.js");
+            RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js");
+            RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js");
+        }
+          // clustering
         $path = "media/lib_ramblers/vendors/Leaflet.markercluster-1.5.3/dist/";
         RLoad::addStyleSheet($path . "MarkerCluster.css");
         RLoad::addStyleSheet($path . "MarkerCluster.Default.css");
@@ -100,7 +99,7 @@ class RLeafletScript {
             RLoad::addScript("media/lib_ramblers/vendors/geodesy/osgridref.js");
         }
 
-        if (RLicense::isBingKeyMapSet()) {
+        if ($options->licenseKeys->bingkey !== null) {
             // Bing maps
             RLoad::addScript("media/lib_ramblers/vendors/bing/bing.js", array("type" => "text/javascript"));
         }
@@ -108,8 +107,8 @@ class RLeafletScript {
 
         $path = "media/lib_ramblers/vendors/leaflet.browser.print-1/dist/";
         RLoad::addScript($path . "leaflet.browser.print.js");
-        //     RLoad::addScript($path . "leaflet.browser.print.sizes.js", array("type" => "text/javascript"));
-        //     RLoad::addScript($path . "leaflet.browser.print.utils.js", array("type" => "text/javascript"));
+        //     RLoad::addScript($path . "leaflet.browser.print.sizes.js");
+        //     RLoad::addScript($path . "leaflet.browser.print.utils.js");
 
         if ($options->calendar) {
             $path = "media/lib_ramblers/vendors/fullcalendar-6.1.9/";

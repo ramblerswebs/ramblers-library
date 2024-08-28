@@ -31,6 +31,12 @@
 }
 
 /* Ramblers additions */
+div.loading-error{
+    border-radius: 10px;
+    border:3px solid;
+    border-color: red;
+    padding:10px;
+}
 .cancelled {
     color:var(--cancelled);
 }

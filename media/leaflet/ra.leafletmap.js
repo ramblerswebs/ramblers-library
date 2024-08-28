@@ -43,6 +43,27 @@ ra.leafletmap = function (tag, options) {
         ra.html.generateTags(elements.copyright, tagcopy);
     }
     var self = this;
+    const crs = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs', {
+        resolutions: [896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75],
+        origin: [-238375.0, 1376256.0]
+    });
+    const transformCoords = function (arr) {
+        return proj4('EPSG:27700', 'EPSG:4326', arr).reverse();
+    };
+//        const mapOptions = {
+//        crs: crs,
+//        minZoom: 0,
+//        maxZoom: 9,
+//        center: transformCoords([ 337297, 503695 ]),
+//        zoom: 7,
+//        maxBounds: [
+//            transformCoords([ -238375.0, 0.0 ]),
+//            transformCoords([ 900000.0, 1376256.0 ])
+//        ],
+//        attributionControl: false
+//    };
+
+//    this.map = L.map(this._mapDiv, mapOptions);
     this.map = new L.Map(this._mapDiv, {
         center: new L.LatLng(54.221592, -3.355007),
         zoom: 5,
@@ -51,17 +72,17 @@ ra.leafletmap = function (tag, options) {
         zoomControl: false
     });
     this.mapLayers = new Object();
-// map types
+    // map types
     this.mapLayers["Open Street Map"] = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "Map data &copy; <a href=\"https://openstreetmap.org\" target=\"_blank\">OpenStreetMap</a>"}).addTo(this.map);
     this.mapLayers["Open Topo Map"] = new L.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-        maxNativeZoom: 16,
+        maxNativeZoom: 15,
         attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org" target=\"_blank\">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
-    if (options.bingkey !== null) {
+    if (options.licenseKeys.bingkey !== null) {
         try {
-            this.mapLayers["Bing Aerial"] = new L.BingLayer(options.bingkey, {type: 'Aerial'});
-            this.mapLayers["Bing Aerial (Labels)"] = new L.BingLayer(options.bingkey, {type: 'AerialWithLabels'});
-            this.mapLayers["Ordnance Survey"] = new L.BingLayer(options.bingkey, {type: 'ordnanceSurvey',
+            this.mapLayers["Bing Aerial"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'Aerial'});
+            this.mapLayers["Bing Aerial (Labels)"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'AerialWithLabels'});
+            this.mapLayers["Bing Ordnance Survey"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'ordnanceSurvey',
                 //    minZoom: 11.5,
                 //   minNativeZoom: 11.5,
                 //   maxZoom: 18,
@@ -70,6 +91,48 @@ ra.leafletmap = function (tag, options) {
 
         }
 
+    }
+    if (options.licenseKeys.ESRIkey !== null) {
+        this.mapLayers["Esri_WorldImagery"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+
+        });
+        this.mapLayers["Esri_WorldTopoMap"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+        });
+    }
+    if (options.licenseKeys.OSkey !== null) {
+
+        this.mapLayers["Ordnance Survey  Walking"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
+            minZoom: 0,
+            maxZoom: 9
+        });
+        this.mapLayers["Ordnance Survey Light"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Light_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
+            maxZoom: 20
+        });
+        this.mapLayers["Ordnance Survey Outdoor"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
+            maxZoom: 20
+        });
+        this.mapLayers["Ordnance Survey Road"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Road_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
+            maxZoom: 20
+        });
+    }
+
+    if (options.licenseKeys.thunderForestkey !== null) {
+        this.mapLayers["Thunderforest Outdoor"] = L.tileLayer('https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=' + options.licenseKeys.thunderForestkey, {
+            maxZoom: 20
+        });
+    }
+
+    if (options.licenseKeys.mapBoxkey !== null) {
+        this.mapLayers["Mapbox"] = basemapd = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
+            tileSize: 512,
+            maxZoom: 18,
+            zoomOffset: -1,
+            id: 'mapbox/streets-v12',
+            accessToken: options.licenseKeys.mapBoxkey
+        });
     }
     // get my location for directions
     this.map.locate();
@@ -127,7 +190,7 @@ ra.leafletmap = function (tag, options) {
         closePopupsOnPrint: false
     }).addTo(this.map);
 
-    if (options.bingkey) {
+    if (options.licenseKeys.bingkey) {
         L.Control.BrowserPrint.Utils.registerLayer(
                 L.BingLayer,
                 "L.BingLayer",
@@ -200,7 +263,7 @@ ra.leafletmap = function (tag, options) {
         var pt = L.latLng(options.initialview.latitude, options.initialview.longitude);
         this.map.setView(pt, options.initialview.zoom);
     }
- 
+
     // top right controls
     this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
     if (options.topoMapDefault) {
@@ -208,6 +271,7 @@ ra.leafletmap = function (tag, options) {
     } else {
         this.map.addLayer(this.mapLayers["Open Street Map"]);
     }
+    //   this.mapLayers["Ordnance Survey  Walking"].addTo(this.map);
     var _this = this;
 
     // this.controls.settings.setErrorDiv(this.errorDivControl());
@@ -216,6 +280,7 @@ ra.leafletmap = function (tag, options) {
     });
     this.map.on('baselayerchange', function (e) {
         _this.baseTiles = e.name;
+        _this.baseTiles = e.layer.options.type;
         _this.osZoomLevel();
     });
     if (options.rightclick !== null) {
@@ -224,7 +289,7 @@ ra.leafletmap = function (tag, options) {
 
     this.osZoomLevel = function () {
         this.controls.zoomlevelOSMsg.setText("");
-        if (this.baseTiles === 'Ordnance Survey') {
+        if (this.baseTiles === 'ordnanceSurvey') {
             var zoom = this.map.getZoom();
             if (zoom === 17) {
                 this.controls.zoomlevelOSMsg.setErrorText("Ordnance Survey Maps: Cannot zoom in any further");

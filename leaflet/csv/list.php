@@ -10,10 +10,15 @@ class RLeafletCsvList extends RLeafletMap {
     private $filename = "";
     private $list;
     public $paginationDefault = 10;
+    private $displayOptions = null;
 
     public function __construct($filename) {
         parent::__construct();
         $this->filename = $filename;
+    }
+
+    public function setDisplayOptions($displayOptions) {
+        $this->displayOptions = $displayOptions;
     }
 
     public function display() {
@@ -40,6 +45,7 @@ class RLeafletCsvList extends RLeafletMap {
         $data = new class {
             
         };
+        $data->displayOptions = $this->displayOptions;
         $data->list = $this->list;
         $data->paginationDefault = $this->paginationDefault;
 

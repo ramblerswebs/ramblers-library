@@ -13,9 +13,10 @@ class RLeafletMapoptions {
     public $base = "";
     public $mapHeight = "500px";
     public $mapWidth = "100%";
-    public $bing = false;
-    public $bingkey = null;
-    public $ORSkey = null;
+    // public $bing = false;
+    public $licenseKeys;
+    //  public $bingkey = null;
+    //  public $ORSkey = null;
     public $helpPage = "";
     // the following can be true of false
     public $cluster = false;
@@ -43,6 +44,14 @@ class RLeafletMapoptions {
     public function __construct() {
         $this->divId = uniqid(rand());
         $this->base = JURI::base();
+        $this->licenseKeys = new stdClass();
+        $this->licenseKeys->bingkey = null;
+        $this->licenseKeys->ORSkey = null;
+
+        $this->licenseKeys->ESRIkey = null;
+
+        $this->licenseKeys->mapBoxkey = null;
+        $this->licenseKeys->thunderForestkey = null;
     }
 
     public function setinitialviewView($latitude, $longitude, $zoom) {
@@ -54,13 +63,16 @@ class RLeafletMapoptions {
     }
 
     public function setLicenses() {
-        if (RLicense::isBingKeyMapSet()) {
-            $this->bing = true;
-            $this->bingkey = RLicense::getBingMapKey();
-        }
-        if (RLicense::isOpenRoutingServiceKeySet()) {
-            $this->ORSkey = RLicense::getOpenRoutingServiceKey();
-        }
-    }
 
+        $this->licenseKeys->bingkey = RLicense::getBingMapKey();
+        $this->licenseKeys->ESRIkey = RLicense::getESRILicenseKey();
+
+        if (RLicense::isOpenRoutingServiceKeySet()) {
+            $this->licenseKeys->ORSkey = RLicense::getOpenRoutingServiceKey();
+        }
+
+        $this->licenseKeys->OSkey = RLicense::getOrdnanceSurveyLicenseKey();
+        $this->licenseKeys->mapBoxkey = RLicense::getMapBoxLicenseKey();
+        $this->licenseKeys->thunderForestkey = RLicense::getThunderForestLicenseKey();
+    }
 }

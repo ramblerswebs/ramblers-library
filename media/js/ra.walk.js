@@ -110,7 +110,7 @@ ra.events = function () {
         });
 
         filter.display(tag);
-      //  var fred = filter.getJson();
+        //  var fred = filter.getJson();
     };
 };
 ra.event = function () {

@@ -98,10 +98,10 @@ ra.display.plotRoute = function (options, data) {
             //  color: '#007A87',
         });
 
-        if (options.ORSkey !== null) {
+        if (options.licenseKeys.ORSkey !== null) {
             // add smart route layer
             this.SmartRouteControl = new L.Control.SmartRoute();
-            this.SmartRouteControl.routingKey(options.ORSkey);
+            this.SmartRouteControl.routingKey(options.licenseKeys.ORSkey);
             this.SmartRouteControl.userOptions(this._userOptions);
             this.SmartRouteControl.drawControl(this.drawControl);
             this.SmartRoute = this.SmartRouteControl;
