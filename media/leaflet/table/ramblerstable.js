@@ -240,19 +240,6 @@ ra.display.tableList = (function () {
                     if (items[index].values[no] !== "") {
                         if (items[index].values[no] !== "") {
                             $popup += this.displayItem(items[index].name, items[index].type, items[index].values[no]);
-//                            switch (items[index].type) {
-//                                case "link":
-//                                    $popup += '<b>' + items[index].name + ': </b><a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
-//                                    break;
-//                                case "textlink":
-//                                    $popup += '<b>' + items[index].name + ': </b><a href="' + items[index].values[no] + '" target="_blank">' + items[index].values[no] + '</a><br/>';
-//                                    break;
-//                                case "exturl":
-//                                    $popup += '<b>' + items[index].name + ': </b><a href="' + items[index].values[no] + '" target="_blank">' + items[index].values[no] + '</a><br/>';
-//                                    break;
-//                                default:
-//                                    $popup += '<b>' + items[index].name + ': </b>' + items[index].values[no] + '<br/>';
-//                            }
                         }
                     }
                 } else {
@@ -423,6 +410,4 @@ ra.display.tableList = (function () {
     };
     return tableList;
 }
-());
-
- 
+()); 
