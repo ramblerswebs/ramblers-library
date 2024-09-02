@@ -69,7 +69,7 @@ ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
         var instr = '<p>Unexpected error, this might be solved by reloading/refreshing the web page</p><ul>' +
                 '<li>In most browsers you can reload the page by pressing Ctrl+F5. </li>';
         var body = event.message + '\n\r' + 'Filename: ' + event.filename + '\n\r';
-        body = encodeURIComponent(body + event.error.stack);
+        body = ra.html.specialCharsToHex(body + event.error.stack).replace(/\n/g, '%0D%0A');
         var subject = encodeURIComponent("Unexpected error: " + window.location.href);
         var email = 'mailto:unexpected@ramblers-webs.org.uk?subject=' + subject + '&body=' + body;
         var emailLink = "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
@@ -78,9 +78,8 @@ ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
             online = "<h2>You may be off-line - check your internet connection</h2>";
         }
         var cont = "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
-        ra.showError(instr + emailLink + cont, "Fatal error");
+        ra.showError(instr + emailLink + online + cont, "Fatal error");
         event.stopImmediatePropagation();
-
         ra.loading.stop();
 
     });
@@ -135,13 +134,9 @@ ra.checkLoadingErrors = function () {
         body = encodeURIComponent(body);
         var subject = encodeURIComponent("Web page loading error: " + window.location.href);
         var email = 'mailto:unexpected@ramblers-webs.org.uk?subject=' + subject + '&body=' + body;
-        var online = "";
-        if (navigator.onLine) {
-            online = "<h2>You may be off-line - check your internet connection</h2>";
-        }
         var emailLink = "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
         var cont = "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
-        ra.showError("<div class='loading-error'>" + instr + emailLink + online + cont + "</div>", "Loading Error");
+        ra.showError("<div class='loading-error'>" + instr + emailLink + cont + "</div>", "Loading Error");
     }
 
 };
@@ -984,6 +979,11 @@ ra.html = (function () {
         };
         return text.replace(/[&<>"']/g, function (m) {
             return map[m];
+        });
+    };
+    html.specialCharsToHex = function (str) {
+        return str.replace(/[^\w\s]/g, function (char) {
+            return '%' + char.charCodeAt(0).toString(16).padStart(2, '0');
         });
     };
     // escape why?
