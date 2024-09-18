@@ -16,6 +16,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
     private $groupCode;
     private $groupName;
     private $site;
+    private $srfr;
     private $feedPathJ5 = "index.php?option=com_ra_walks_editor&view=walks&format=json";
     private $feedPathJ3 = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
    // private $feedPath = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';

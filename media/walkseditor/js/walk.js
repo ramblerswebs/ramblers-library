@@ -139,7 +139,7 @@ ra.walkseditor.walks = function () {
         var issuesOptions = {displaySingle: true};
         var notesOptions = {displaySingle: false};
         var shapeOptions = {displaySingle: false};
-        var contactsOptions = {displaySingle: true, sort:true};
+        var contactsOptions = {displaySingle: true, sort: true};
 
         filter.addGroup(new ra.filter.groupText("idStatus", "Status", statusOptions));
         filter.addGroup(new ra.filter.groupText("idCategory", "Category", categoryOptions));
@@ -238,7 +238,8 @@ ra.walkseditor.walk = function () {
         valueSet.add("idStatus", ra.getObjProperty(this.data, "admin.status", ""));
 
         if (walkDate !== "") {
-            if (ra.date.getDateTime(walkDate) < new Date()) {
+            var now = ra.date.YYYYMMDD(new Date());
+            if (walkDate < now) {
                 valueSet.add("idWhen", "Past", "ID12345Past");
             } else {
                 valueSet.add("idWhen", "Future", "ID12345Future");

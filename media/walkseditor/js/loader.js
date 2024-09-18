@@ -189,7 +189,7 @@ ra.walkseditor.editwalk = function (options, data) {
         submitButton.setAttribute('class', 'ra-button');
         submitButton.textContent = "Save";
         submitButton.addEventListener("click", function (e) {
-
+            _this.updateDateFields();
             var element = _this.statusSelect;
             var disabled = element.selectedOptions[0].disabled;
             if (disabled) {
@@ -205,20 +205,7 @@ ra.walkseditor.editwalk = function (options, data) {
 
         });
         submitButton.addEventListener("mouseover", function () {
-            var draftwalk = _this.data.walk;
-            var walk = draftwalk.data;
-            walk.admin.updated = new Date();
-            var errors = draftwalk.getNoWalkIssues();
-            _this.resetStatusButton(errors);
-
-            _this.editor.sortData();
-            var content = document.getElementById(_this.data.fields.content);
-            content.value = JSON.stringify(walk);
-            var date = document.getElementById(_this.data.fields.date);
-            date.value = walk.basics.date;
-            date.defaultValue = walk.basics.date;
-            date.setAttribute("data-local-value", walk.basics.date);
-            date.setAttribute("data-alt-value", walk.basics.date);
+            _this.updateDateFields();
         });
         tag.appendChild(submitButton);
         var cancelButton = document.createElement('button');
@@ -238,6 +225,23 @@ ra.walkseditor.editwalk = function (options, data) {
             _this.data.walk.previewWalk();
         });
         tag.appendChild(previewButton);
+    };
+    this.updateDateFields = function () {
+        var draftwalk = this.data.walk;
+        var walk = draftwalk.data;
+        walk.admin.updated = new Date();
+        var errors = draftwalk.getNoWalkIssues();
+        this.resetStatusButton(errors);
+
+        this.editor.sortData();
+        var content = document.getElementById(this.data.fields.content);
+        content.value = JSON.stringify(walk);
+        var dateField = document.getElementById(this.data.fields.date);
+        dateField.value = walk.basics.date;
+        dateField.defaultValue = walk.basics.date;
+        dateField.setAttribute("data-local-value", walk.basics.date);
+        dateField.setAttribute("data-alt-value", walk.basics.date);
+
     };
 
     this.resetStatusButton = function (errors) {
