@@ -904,7 +904,6 @@ ra.html = (function () {
                 rect.left >= 0 &&
                 rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
                 rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-
                 );
     };
     html.insertAfter = function (referenceNode, newNode) {
@@ -969,17 +968,20 @@ ra.html = (function () {
         return $text;
     };
     // escape why?
-    html.escape = function (text) {
-        var map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, function (m) {
-            return map[m];
-        });
+    html.escape = function (htmlStr) {
+        return htmlStr.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+    };
+    html.unEscape = function (htmlStr) {
+        htmlStr = htmlStr.replace(/&lt;/g, "<");
+        htmlStr = htmlStr.replace(/&gt;/g, ">");
+        htmlStr = htmlStr.replace(/&quot;/g, "\"");
+        htmlStr = htmlStr.replace(/&#39;/g, "\'");
+        htmlStr = htmlStr.replace(/&amp;/g, "&");
+        return htmlStr;
     };
     html.specialCharsToHex = function (str) {
         return str.replace(/[^\w\s]/g, function (char) {
@@ -1873,7 +1875,7 @@ ra.help = function (tag, helpFunction) {
         var _this = this;
         this.helpTag.addEventListener("click", function (e) {
             _this.helpTag.style.display = 'none';
-            var ele = e.target;
+            var ele = e.currentTarget;
             if (ele.raHelpTag === 'undefined') {
                 ra.showError('help undefined');
             }
@@ -1922,6 +1924,8 @@ ra.filter = function (eventTag, eventName) {
     this.eventTag = eventTag;
     this.eventName = eventName;
     this.initialised = false;
+    this.filterDiv = null;
+    this.filterButtonDiv = null;
     this._groups = {};
     this.addGroup = function (group) {
         group.setFilter(this);
@@ -1939,6 +1943,11 @@ ra.filter = function (eventTag, eventName) {
         this.eventTag.dispatchEvent(new Event(this.eventName));
         var nodes = document.getElementsByClassName("ra-clear-filters");
         nodes[0].style.display = "";
+        if (this.isAnyFilterActive()) {
+            this.filterButtonDiv.classList.add('active');
+        } else {
+            this.filterButtonDiv.classList.remove('active');
+        }
     };
     this.getJson = function () {
         function replacer(key, value) {
@@ -1972,6 +1981,8 @@ ra.filter = function (eventTag, eventName) {
         ];
         var elements = ra.html.generateTags(tag, tags);
         var filters = elements.filters;
+        this.filterDiv = filters;
+        this.filterButtonDiv = elements.summary;
         for (var propt in this._groups) {
             var div = document.createElement('div');
             div.setAttribute('class', 'ra-filtergroup');
@@ -2044,6 +2055,17 @@ ra.filter = function (eventTag, eventName) {
             }
         }
         return display;
+    };
+    this.isAnyFilterActive = function () {
+        var nodes = this.filterDiv.getElementsByClassName("ra-filteritem");
+        if (nodes.length > 0) {
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i].classList.contains('active')) {
+                    return true;
+                }
+            }
+        }
+        return false;
     };
     this.clearFilters = function () {
         for (var propt in this._groups) {

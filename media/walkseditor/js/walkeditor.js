@@ -23,7 +23,7 @@ ra.walkseditor.walkeditor = function ( ) {
         var form = document.createElement('div');
         this.form = form;
         form.setAttribute('class', 'ra_container');
-        form.setAttribute('id', 'ra_container');
+      //  form.setAttribute('id', 'ra_container');
         editDiv.appendChild(form);
         // Expand/Collapse Button
         this.addExpandButtons(form);

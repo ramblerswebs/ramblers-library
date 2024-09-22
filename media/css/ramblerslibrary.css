@@ -494,6 +494,8 @@ div.ra.help.helpblock div.help-border{
 }
 div.ra.help.helpblock span.close{
     color:black;
+    float: right;
+    padding-right: 20px;
 }
 div#ra-help-helptag{
     z-index: 99999;
@@ -885,6 +887,10 @@ details.ra-walksfilter summary{
     height:25px;
     float: right;
     list-style: none;
+}
+details.ra-walksfilter summary.active{
+    background-color: var(--sunset);
+    color:white;
 }
 details.ra-walksfilter summary::-webkit-details-marker {
     display: none; /* for safari */

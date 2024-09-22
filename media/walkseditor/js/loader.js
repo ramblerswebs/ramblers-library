@@ -75,14 +75,21 @@ ra.walkseditor.editwalk = function (options, data) {
         var tag = document.getElementById(options.divId);
         var topOptions = document.createElement('div');
         topOptions.setAttribute('class', 'ra-edit-options');
-        tag.appendChild(topOptions);
-        var topHelp = document.createElement('div');
-        topOptions.appendChild(topHelp);
 
-        var clear = document.createElement('div');
-        clear.setAttribute('class', 'clear');
-        tag.appendChild(clear);
+        tag.appendChild(topOptions);
+        var topDiv = document.createElement('div');
+        tag.appendChild(topDiv);
         var _this = this;
+        window.onscroll = function () {
+            if (!_this.elementInViewport(topDiv)) {
+                topOptions.style.position = 'fixed';
+            } else {
+                topOptions.style.position = 'relative';
+            }
+
+        };
+
+
         var soptions = this.getElementOptions(this.data.fields.status);
         var coptions = this.getElementOptions(this.data.fields.category);
         //   this.statusSelect = this.setElementOptions(topOptions, 'Status', soptions, ra.walkseditor.help.editButtons);
@@ -132,6 +139,25 @@ ra.walkseditor.editwalk = function (options, data) {
         this.editor.sortData();
         // editor.addEditForm();
 
+    };
+    this.elementInViewport = function (el) {
+        var top = el.offsetTop;
+        var left = el.offsetLeft;
+        var width = el.offsetWidth;
+        var height = el.offsetHeight;
+
+        while (el.offsetParent) {
+            el = el.offsetParent;
+            top += el.offsetTop;
+            left += el.offsetLeft;
+        }
+
+        return (
+                top >= window.pageYOffset &&
+                left >= window.pageXOffset &&
+                (top + height) <= (window.pageYOffset + window.innerHeight) &&
+                (left + width) <= (window.pageXOffset + window.innerWidth)
+                );
     };
     this.getElementOptions = function (id) {
         var element = document.getElementById(id);

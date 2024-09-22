@@ -625,7 +625,7 @@ ra.walkseditor.walk = function () {
             details.appendChild(summary);
             var div = document.createElement('div');
             details.appendChild(div);
-            div.innerHTML = "<pre>" + JSON.stringify(this.data, undefined, 4) + "</pre>";
+            div.innerHTML = "<pre>" + ra.html.escape(JSON.stringify(this.data, undefined, 4)) + "</pre>";
         }
         document.addEventListener('preview-close-modal', function (e) {
             modal.close();

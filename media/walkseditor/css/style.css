@@ -37,6 +37,11 @@ body {
 a{
     cursor:pointer;
 }
+pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+}
 
 details.section > summary  {
     font-size: 26px;
@@ -247,9 +252,7 @@ button.tablinks{
     background-color:blue;
     color:#FFF;
 }
-.XXXra-map-container{
-    break-inside: avoid-column
-}
+
 
 /* The Modal (background) */
 #js-raModal.ramodal {
@@ -348,17 +351,7 @@ div.location-editor{
         background-color: #ffffff;
         min-width: 200px;
     }
-    div.location-editorXXX{
-        display: flex;
-    }
-    div.ra.walksweditor.mapcontainerXXX{
-        width:70%;
-    }
-    div.ra-edit-options {
-        transform: scale(.5,.5);
-        bottom: 0px;
-        right: 0px;
-    }
+
 }
 @media only screen and (max-width: 769px){
     div.gpxouter table tr th:nth-child(4) ,
@@ -378,26 +371,20 @@ div.display h2{
     font-size:18px;
     line-height: 18px;
 }
-div.ra-edit-options {
-    background-color: #eeeeee;
-    position: fixed;
-    bottom: -20px;
-    right: -20px;
-    z-index:99;
+
+div.ra-edit-options{
+    top: 0;
     border: 2px solid var(--sunset);
+    background-color:white;
     padding: 5px;
     margin: 10px;
     border-radius: 10px;
-    transform: scale(0.75,0.75);
+    width: max-content;
+    z-index:99;
 }
 
-div.ra-edit-options:hover {
-    transform: scale(1.2,1.2);
-    bottom: 20px;
-    right: 20px;
-}
 div.ra-edit-options button{
-    display: block;
+    font-size:20px;
 }
 
 option:disabled{
@@ -407,10 +394,6 @@ option:disabled{
 }
 div#js-outer-content{
     clear:both;
-}
-
-form#form-draftgwem2event{
-
 }
 
 details summary {

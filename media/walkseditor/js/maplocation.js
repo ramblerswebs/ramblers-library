@@ -135,7 +135,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                 this.placesControl = new L.Control.RAContainer({position: 'topleft'}).addTo(this.map);
                 this.placeButton = this._createControlsButtons(this.placesControl.container, "Previous Meeting/Starting places", "Places groups have used before", ra.walkseditor.help.locationPlaces);
                 this.postcodeControl = new L.Control.RAContainer({position: 'topleft'}).addTo(this.map);
-                this.postcodeButton = this._createControlsButtons(this.postcodeControl.container, "Postcode", "Add or remove satnav postcode", ra.walkseditor.help.locationPostcode);
+                this.postcodeButton = this._createControlsButtons(this.postcodeControl.container, "Add Postcode", "Add or remove satnav postcode", ra.walkseditor.help.locationPostcode);
 
                 var _this = this;
                 this.postcodeButton.addEventListener("click", function (e) {
@@ -277,8 +277,10 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         if (this.hasOwnProperty('postcodeButton')) {
             if (this.raobject.hasOwnProperty('postcode')) {
                 this.postcodeButton.classList.add("active");
+                this.postcodeButton.innerText="Remove Postcode";
             } else {
                 this.postcodeButton.classList.remove("active");
+                 this.postcodeButton.innerText="Add Postcode";
             }
         }
     };
@@ -434,10 +436,11 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                         marker.ra.latlong = latlong;
                         marker.addEventListener('click', function (e) {
                             var marker = e.target;
-                            _this.raobject.postcode = {};
-                            _this.raobject.postcode.value = marker.ra.postcode;
-                            _this.raobject.postcode.latitude = marker.ra.latlong.lat;
-                            _this.raobject.postcode.longitude = marker.ra.latlong.lon;
+                            _this.raobject.postcode = {
+                                value: marker.ra.postcode,
+                                latitude: marker.ra.latlong.lat,
+                                longitude: marker.ra.latlong.lon
+                            };
                             _this.postcodeLayer.eachLayer(function (layer) {
                                 if (layer !== marker) {
                                     _this.postcodeLayer.removeLayer(layer);
@@ -453,7 +456,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                     event.raData.layer = _this.postcodeLayer;
                     document.dispatchEvent(event);
                 } else {
-                    ra.showMsg('No postcodes found within 10Km')
+                    ra.showMsg('No postcodes found within 10Km');
                 }
             }
         });
