@@ -19,7 +19,8 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
     private $srfr;
     private $feedPathJ5 = "index.php?option=com_ra_walks_editor&view=walks&format=json";
     private $feedPathJ3 = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
-   // private $feedPath = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
+
+    // private $feedPath = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
 
     const TIMEFORMAT = "Y-m-d\TH:i:s";
 
@@ -46,15 +47,14 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(15);
         $response = $this->readFeed($this->rafeedurl);
-        $id = 1;
         If ($response->version === '1.0') {
             $newwalks = $response->walks;
             If ($newwalks !== null) {
                 foreach ($newwalks as $item) {
+                    $id = $item->admin->id;
                     $walk = new RJsonwalksWalk();
                     $this->convertToInternalFormat($walk, $item, $this->groupCode . "-" . strval($id));
                     $walks->addWalk($walk);
-                    $id += 1;
                 }
             } else {
                 $app = JFactory::getApplication();

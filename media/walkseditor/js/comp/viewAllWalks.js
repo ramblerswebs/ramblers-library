@@ -24,6 +24,7 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
 
     var i, clen, item;
     var items = this.data.items;
+    var programDateErrors = "";
     for (i = 0, clen = items.length; i < clen; ++i) {
         item = items[i];
         //  try {
@@ -34,6 +35,9 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
         walk.createFromJson(json);
         walk.init(status, category, !this.loggedOn);
         //    var walkitem = new ra.walkseditor.programmeItem(walk);
+        if (!walk.isSqlDateCorrect(item.date)) {
+            programDateErrors += '<li>' + "Walk ID: " + item.id + "  " + walk.getWalkBasics("dateError") + "</li>";
+        }
         walk.editUrl = item.editUrl;
         walk.deleteUrl = item.deleteUrl;
         walk.duplicateUrl = item.duplicateUrl;
@@ -50,6 +54,11 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
         }
     }
     this.masterdiv = document.getElementById(this.mapOptions.divId);
+    if (programDateErrors !== "") {
+        ra.showError("<p>The data stored for some walk(s) is incorrect due to a software error.</p>" +
+                "<p>You may be able to correct this by editing and then saving the walk, you do not need to make any changes.</p><ul>" +
+                programDateErrors + "</ul>", "Walks Editor Error");
+    }
 
     this.load = function () {
         var tags = [
@@ -123,14 +132,14 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
         var tags = [
             {name: 'details', parent: 'root', tag: 'details', attrs: {open: true}},
             {name: 'summary', parent: 'details', tag: 'summary', textContent: 'Legend', attrs: {class: 'ra legendsummary'}},
-            {name: 'privatewalks', parent: 'details', tag: 'div', textContent: 'Private',attrs: {class: 'ra legend title'}},
-           {name: 'draft', parent: 'privatewalks', tag: 'div', attrs: {class: 'ra legend draft'}},
+            {name: 'privatewalks', parent: 'details', tag: 'div', textContent: 'Private', attrs: {class: 'ra legend title'}},
+            {name: 'draft', parent: 'privatewalks', tag: 'div', attrs: {class: 'ra legend draft'}},
             {parent: 'draft', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Draft'},
 
             {name: 'waiting', parent: 'privatewalks', tag: 'div', attrs: {class: 'ra legend waiting'}},
             {parent: 'waiting', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Awaiting Approval'},
 
-            {name: 'publicwalks', parent: 'details', tag: 'div', textContent: 'Viewable by Public',attrs: {class: 'ra legend title'}},
+            {name: 'publicwalks', parent: 'details', tag: 'div', textContent: 'Viewable by Public', attrs: {class: 'ra legend title'}},
             {name: 'published', parent: 'publicwalks', tag: 'div', attrs: {class: 'ra legend published'}},
             {parent: 'published', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Published'},
 

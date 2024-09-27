@@ -234,7 +234,7 @@ ra.event = function () {
         }
 
         var t = JSON.stringify(this, null, 4);
-        elements.pre.innerHTML = ra.syntaxHighlight(t);
+        elements.pre.innerHTML = "Times are in UTC so may be 1 hr out<br/>" + ra.syntaxHighlight(t);
     };
     this.getEventValues = function (items, link = true) {
         var out, lastItem, thisItem;
@@ -941,9 +941,9 @@ ra.event.basics = function () {
                 out = this.dateRange(ra.date.dowShortddmm, true);
                 //out = "<b>" + ra.date.dowShortddmm(this.walkDate) + this.addYear() + "</b>";
                 break;
-           case "{mapDowShortddmm}":
-               // out = this.dateRange(ra.date.dowShortddmm, true);
-                out =  ra.date.dowShortddmm(this.walkDate) + this.addYear();
+            case "{mapDowShortddmm}":
+                // out = this.dateRange(ra.date.dowShortddmm, true);
+                out = ra.date.dowShortddmm(this.walkDate) + this.addYear();
                 break;
             case "{dowShortddyyyy}": // published in error
             case "{dowShortddmmyyyy}":

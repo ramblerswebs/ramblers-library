@@ -367,7 +367,7 @@ ra.walkseditor.walk = function () {
     this.dateSet = function () {
         var basics = this.data.basics;
         if (basics.hasOwnProperty('date')) {
-            return true;
+            return basics.date !== "";
         } else {
             return false;
         }
@@ -379,6 +379,16 @@ ra.walkseditor.walk = function () {
         } else {
             return null;
         }
+    };
+    this.isSqlDateCorrect = function (d) {
+        var result;
+        if (this.dateSet()) {
+            var basics = this.data.basics;
+            result = ra.date.YYYYMMDD(basics.date) === ra.date.YYYYMMDD(d);
+        } else {
+            result = null === d;
+        }
+        return result;
     };
     this.getContact = function () {
         return ra.getObjProperty(this.data, 'contact.displayName', 'Undefined');
@@ -895,6 +905,8 @@ ra.walkseditor.walk = function () {
                     case 'list':
                     case 'details':
                         return  "<b>" + ra.date.dowdd(d) + "</b>" + " " + ra.date.month(d) + " " + ra.date.YY(d) + past;
+                    case 'dateError':
+                        return   ra.date.dowdd(d) + " " + ra.date.month(d) + " " + ra.date.YY(d);
                 }
             }
         }
@@ -922,6 +934,11 @@ ra.walkseditor.walk = function () {
                 out += '<h4>Description: </h4>' + description;
                 out += '<h4>Notes: </h4>' + notes;
 
+                return out;
+                break;
+            case 'dateError':
+                out = "Date: " + this.getWalkDate('dateError');
+                out += " Title: " + ra.getObjProperty(this.data, 'basics.title');
                 return out;
                 break;
             default:
