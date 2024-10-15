@@ -2326,7 +2326,7 @@ ra.filter.groupText = function (id, title, options = null) {
             return;
         }
         if (len === 1 && !this.displaySingle) {
-            return;
+            tag.classList.add("nilFilter");
         }
         var h = document.createElement('h3');
         h.textContent = this.title;

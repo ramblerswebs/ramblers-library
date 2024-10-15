@@ -258,7 +258,7 @@ ra.walkseditor.walk = function () {
         walks.forEach(item => {
             valueSet.add("idDistance", this.filterDistance(item));
             valueSet.add("idGrade", ra.getObjProperty(item, 'natgrade', 'Not defined'));
-            valueSet.add("idShape", ra.getObjProperty(item, 'shape', ''));
+            valueSet.add("idShape", ra.getObjProperty(item, 'type', 'Not defined'));
         });
         valueSet.add("idContacts", ra.getObjProperty(this.data, "contact.displayName", "Not defined"));
         if (this.hasEditorNotes() > 0) {
