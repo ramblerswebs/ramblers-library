@@ -147,6 +147,9 @@ div.gpxlist  ul li{
 #gpxdetails tr:nth-child(even){
     background-color: #f0f0f0;
 }
+#gpxdetails tr:hover{
+    background-color: #c6c3c3;
+}
 
 #gpxdetails  th,
 #gpxdetails  td{

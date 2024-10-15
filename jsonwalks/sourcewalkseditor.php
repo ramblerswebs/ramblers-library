@@ -124,6 +124,9 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $finishDate = null;
         $title = $item->basics->title;
         $descriptionHtml = $item->basics->description;
+        if ($descriptionHtml === null) {
+            $descriptionHtml = '';
+        }
         $additionalNotes = $item->basics->notes;
         $external_url = "";
         //    $walk->checkCancelledStatus();
@@ -146,7 +149,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
             if (property_exists($loc, 'postcode')) {
                 $postcode = $loc->postcode->value;
             }
-            $osmaps = $loc->osmaps;
+            $osmaps = null;
             $meet = new RJsonwalksWalkTimelocation("Meeting", "", $time, $name,
                     $latitude, $longitude, $gridref, $w3w,
                     $postcode, 0, 0, $osmaps);
@@ -190,10 +193,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
             $postcode = $loc->postcode->value;
         }
         $osmaps = null;
-        if (property_exists($loc, 'postcode')) {
-            $osmaps = $loc->osmaps;
-        }
-
+        // do not use $osmaps as it does not have bounds    
         $tl = new RJsonwalksWalkTimelocation($type, "", $time, $name,
                 $latitude, $longitude, $gridref, $w3w,
                 $postcode, 0, 0, $osmaps);

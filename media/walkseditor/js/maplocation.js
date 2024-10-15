@@ -277,10 +277,10 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         if (this.hasOwnProperty('postcodeButton')) {
             if (this.raobject.hasOwnProperty('postcode')) {
                 this.postcodeButton.classList.add("active");
-                this.postcodeButton.innerText="Remove Postcode";
+                this.postcodeButton.innerText = "Remove Postcode";
             } else {
                 this.postcodeButton.classList.remove("active");
-                 this.postcodeButton.innerText="Add Postcode";
+                this.postcodeButton.innerText = "Add Postcode";
             }
         }
     };
@@ -297,10 +297,6 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
                 if (err !== null) {
                 } else {
                     if (items.length !== 0) {
-                        items.forEach(function (item) {
-                            delete item.bounds;
-                        }
-                        );
                         let event = new Event("osmaps-found"); // (2)
                         event.ra = {};
                         event.ra.maps = items;
@@ -382,8 +378,8 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         });
         findButton.addEventListener("locationfound", function (e) {
             var item = e.raData.item;
-            item.latitude = item.lat;
-            item.longitude = item.lon;
+            item.latitude = parseFloat(item.lat);
+            item.longitude = parseFloat(item.lon);
             item.name = null;
             _this.map.setView([item.latitude, item.longitude], 15);
             _this.updateDetails(item);

@@ -19,14 +19,16 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
 
     this.jplistGroup = ra.uniqueID();
     this.myjplist = new ra.jplist(this.jplistGroup);
-    this.tableColumns = [{name: 'CHECKBOX'},
+    this.tableColumns = [
         {name: 'Status'},
         {name: 'Date', sortxx: {type: 'text', colname: 'wDate'}},
         {name: 'Meeting'},
         {name: 'Start'},
         {name: 'Title', sortxx: {type: 'text', colname: 'wTitle'}},
         {name: 'Difficulty'},
-        {name: 'Contact', sortxx: {type: 'text', colname: 'wContact'}}];
+        {name: 'Contact', sortxx: {type: 'text', colname: 'wContact'}},
+                //  {name: 'Options'}
+    ];
 
     this.load = function () {
         var tags = [
@@ -179,8 +181,6 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         var comment = document.createElement('p');
         comment.innerHTML = "Click on walk to view details";
         tag.appendChild(comment);
-        //   var wmexport = new ra.walkseditor.exportToWM();
-        //   wmexport.button(tag, items);
         var pagination = document.createElement('div');
         pagination.style.marginBottom = "10px";
         tag.appendChild(pagination);
@@ -223,23 +223,29 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
                     walkDiv.classList.add("first");
                 }
                 walkDiv.classList.add("draftwalk");
-                walk.addDisplayClasses(walkDiv.classList);
-
                 div.appendChild(walkDiv);
-                var out = walk.getWalkDate('list') + ', ' +
+
+                var statusTag = document.createElement('span');
+                statusTag.classList.add('ra-status');
+                statusTag.innerHTML = walk.getStatusCategory(' ', this.settings.singleCategory);
+                walk.addDisplayClasses(statusTag.classList);
+                walkDiv.appendChild(statusTag);
+
+                var contentDiv = document.createElement('span');
+                contentDiv.classList.add("indent");
+                contentDiv.innerHTML = walk.getWalkDate('list') + ', ' +
                         walk.getWalkMeeting('list') + ', ' +
                         walk.getWalkStart('list') + ', ' +
                         walk.getWalkTitle() + ', ' +
                         walk.getWalkDifficulty('list') +
                         walk.getWalkContact('list');
-                out += "<br/><div class='alignRight'>" + walk.getStatusCategory(' ', this.settings.singleCategory) + "</div>";
-                walkDiv.innerHTML = out;
+                walkDiv.appendChild(contentDiv);
                 first = false;
                 walkDiv.ra = {};
                 walkDiv.ra.walk = walk;
                 walkDiv.setAttribute('title', 'View walk details');
-                walkDiv.addEventListener('click', function () {
-                    walk.previewWalk();
+                walkDiv.addEventListener('click', function (e) {
+                    e.currentTarget.ra.walk.previewWalk();
                 });
             }
         }
@@ -257,7 +263,6 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         mapTags.comments.appendChild(comment);
         var lmap = new ra.leafletmap(mapTags.mapped, this.mapOptions);
         var map = lmap.map;
-        //  var layer = L.featureGroup().addTo(map);
         var mycluster = new ra.map.cluster(map);
         var walks = this.programme.getWalks();
         var i, clen;
@@ -376,11 +381,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         for (index = 0, len = this.tableColumns.length; index < len; ++index) {
             col = this.tableColumns[index];
             var th = document.createElement('th');
-            if (col.name !== 'CHECKBOX') {
-                th.innerHTML = col.name;
-            } else {
-                th.innerHTML = "<input type='checkbox' class='' >";
-            }
+            th.innerHTML = col.name;
 
             if (typeof (col.sort) !== "undefined") {
                 this.myjplist.sortButton(th, col.sort.colname, col.sort.type, "asc", "▲");
@@ -393,7 +394,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
     this.displayWalkRow = function (columns, table, walk, $class, $first) {
         var tr = document.createElement('tr');
         tr.setAttribute('data-jplist-item', '');
-        walk.addDisplayClasses(tr.classList);
+        //   walk.addDisplayClasses(tr.classList);
 
         tr.classList.add($class);
         if ($first) {
@@ -406,39 +407,43 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
             col = columns[index];
             var td = document.createElement('td');
             td.innerHTML = this.tableValue(walk, col.name);
+            if (index === 0) {
+                walk.addDisplayClasses(td.classList);
+            }
             if (typeof (col.sort) !== "undefined") {
                 td.setAttribute('class', col.sort.colname);
             }
+
+            //  if (index !== columns.length - 1) {
             td.classList.add('pointer');
             td.setAttribute('title', 'View walk details');
-            if (index !== 0) {
-                td.addEventListener('click', function () {
-                    walk.previewWalk();
-                });
-            }
+            td.addEventListener('click', function () {
+                walk.previewWalk();
+            });
+            //  }
             tr.appendChild(td);
         }
     };
 
     this.tableValue = function (walk, name) {
         switch (name) {
-            case "CHECKBOX":
-                return   "<input type='checkbox' class='' >";
+            case "Options":
+                return this.getOptions(walk);
                 break;
             case "State":
-                return   walk.getStatus();
+                return walk.getStatus();
                 break;
             case "Category":
-                return   walk.getCategory();
+                return walk.getCategory();
                 break;
             case "Date":
-                return   walk.getWalkDate('table');
+                return walk.getWalkDate('table');
                 break;
             case "Meeting":
-                return  walk.getWalkMeeting('table');
+                return walk.getWalkMeeting('table');
                 break;
             case "Start":
-                return  walk.getWalkStart('table');
+                return walk.getWalkStart('table');
                 break;
             case "Title":
                 return walk.getWalkTitle();
@@ -463,5 +468,17 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
                 break;
         }
         return 'unknown';
+    };
+    this.getOptions = function (walk) {
+        return this.getOptionEdit(walk) + this.getOptionDelete(walk);
+    };
+    this.getOptionEdit = function (walk) {
+        return '<a href="javascript:ra.walkseditor.comp.editWalk(\'' + walk.id + '\')" class="btn btn-mini" type="button">' +
+                '<i class="icon-edit" title="Edit walk"></i></a>';
+
+    };
+    this.getOptionDelete = function (walk) {
+        return '<a href="javascript:ra.walkseditor.comp.deleteWalk(\'' + walk.id + '\')" class="btn btn-mini delete-button" type="button">' +
+                ' <i class="icon-trash" title="Delete walk"></i></a>';
     };
 };

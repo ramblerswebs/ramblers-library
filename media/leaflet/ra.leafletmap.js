@@ -43,27 +43,7 @@ ra.leafletmap = function (tag, options) {
         ra.html.generateTags(elements.copyright, tagcopy);
     }
     var self = this;
-//    const crs = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs', {
-//        resolutions: [896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75],
-//        origin: [-238375.0, 1376256.0]
-//    });
-//    const transformCoords = function (arr) {
-//        return proj4('EPSG:27700', 'EPSG:4326', arr).reverse();
-//    };
-//        const mapOptions = {
-//        crs: crs,
-//        minZoom: 0,
-//        maxZoom: 9,
-//        center: transformCoords([ 337297, 503695 ]),
-//        zoom: 7,
-//        maxBounds: [
-//            transformCoords([ -238375.0, 0.0 ]),
-//            transformCoords([ 900000.0, 1376256.0 ])
-//        ],
-//        attributionControl: false
-//    };
 
-//    this.map = L.map(this._mapDiv, mapOptions);
     this.map = new L.Map(this._mapDiv, {
         center: new L.LatLng(54.221592, -3.355007),
         zoom: 5,
@@ -108,13 +88,33 @@ ra.leafletmap = function (tag, options) {
 //            maxZoom: 9
 //        });
         this.mapLayers["Ordnance Survey Light"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Light_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
-            maxZoom: 20
+            maxZoom: 20,
+            attribution:'Map &copy; Ordnance Survey'
         });
         this.mapLayers["Ordnance Survey Outdoor"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
-            maxZoom: 20
+              maxZoom: 20,
+            attribution:'Map &copy; Ordnance Survey'
         });
         this.mapLayers["Ordnance Survey Road"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Road_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
-            maxZoom: 20
+              maxZoom: 20,
+           attribution:'Map &copy; Ordnance Survey'
+        });
+        const customStyleJson = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Road.json';
+        this.mapLayers["Ordnance Survey Vector"] = L.maplibreGL({
+            style: customStyleJson,
+            attribution:'Map &copy; Ordnance Survey',
+            transformRequest: (url, resourceType) => {
+                if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
+                    url = new URL(url);
+                    if (!url.searchParams.has('key'))
+                        url.searchParams.append('key', options.licenseKeys.OSkey);
+                    if (!url.searchParams.has('srs'))
+                        url.searchParams.append('srs', 3857);
+                    return {
+                        url: new Request(url).url
+                    };
+                }
+            }
         });
     }
 

@@ -1418,7 +1418,7 @@ ra.event.timelocation = function () {
         var button = document.createElement('a');
         button.classList.add("mappopup");
         button.classList.add("pointer");
-        button.title = "Click to see additional location information";
+        button.title = "Click to see/hide additional location information";
         tag.appendChild(button);
         button.textContent = "[Extra Info+]";
         var extras = document.createElement('div');

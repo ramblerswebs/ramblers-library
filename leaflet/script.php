@@ -75,10 +75,10 @@ class RLeafletScript {
 
         if ($options->licenseKeys->OSkey !== null) {
             RLoad::addScript("https://cdn.jsdelivr.net/gh/OrdnanceSurvey/os-api-branding@0.3.1/os-api-branding.js");
-            RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js");
-            RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js");
+            RLoad::addScript("https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js");
+            RLoad::addScript("https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js");
         }
-          // clustering
+        // clustering
         $path = "media/lib_ramblers/vendors/Leaflet.markercluster-1.5.3/dist/";
         RLoad::addStyleSheet($path . "MarkerCluster.css");
         RLoad::addStyleSheet($path . "MarkerCluster.Default.css");

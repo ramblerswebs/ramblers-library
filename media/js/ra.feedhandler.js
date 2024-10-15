@@ -305,11 +305,6 @@ ra.feedhandler = function () {
         var p = document.createElement('p');
         contentTag.appendChild(p);
         var myModal = ra.modals.createModal(contentTag);
-//        var $html = '';
-//        $html += '<div id="js-location-search"></div>';
-//        $html += '<p></p>';
-//        ra.modal.display($html);
-        //  var formDiv = document.getElementById("js-location-search");
         var label = document.createElement('label');
         label.textContent = title;
         contentTag.appendChild(label);

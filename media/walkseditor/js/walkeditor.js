@@ -23,24 +23,21 @@ ra.walkseditor.walkeditor = function ( ) {
         var form = document.createElement('div');
         this.form = form;
         form.setAttribute('class', 'ra_container');
-      //  form.setAttribute('id', 'ra_container');
         editDiv.appendChild(form);
         // Expand/Collapse Button
         this.addExpandButtons(form);
-        // Basics section
 
+        // Basics section
         var basicsDiv = document.createElement('details');
         basicsDiv.setAttribute('class', 'section basics');
-        //  basicsDiv.title= 'Click to open or close section';
         basicsDiv.setAttribute('open', true);
         form.appendChild(basicsDiv);
         this.input.addHeader(basicsDiv, "summary", "Basic Details");
         this.addBasics(basicsDiv);
-        // Walks Section
 
+        // Walks Section
         var walksDiv = document.createElement('details');
         walksDiv.setAttribute('class', 'section walk');
-        //  walksDiv.title= 'Click to open or close section';
         walksDiv.setAttribute('open', true);
         form.appendChild(walksDiv);
         this.input.addHeader(walksDiv, "summary", "Walk");
@@ -56,52 +53,46 @@ ra.walkseditor.walkeditor = function ( ) {
 
         });
         walkItems.display();
-        // Meeting type section
 
+        // Meeting type section
         var optionsDiv = document.createElement('details');
         optionsDiv.setAttribute('class', 'section meeting');
-        //  optionsDiv.title= 'Click to open or close section';
         optionsDiv.setAttribute('open', true);
         form.appendChild(optionsDiv);
         this.input.addHeader(optionsDiv, "summary", "Meeting");
         this.addMeetingType(optionsDiv);
-        // Start Section
 
+        // Start Section
         var startDiv = document.createElement('details');
         startDiv.setAttribute('class', 'section start');
-        // startDiv.title= 'Click to open or close section';
         startDiv.setAttribute('open', true);
         form.appendChild(startDiv);
         this.input.addHeader(startDiv, "summary", "Start");
         this.addStartType(startDiv);
-        // Finish Section
 
+        // Finish Section
         var finishDiv = document.createElement('details');
         finishDiv.setAttribute('class', 'section finish');
-        // finishDiv.title= 'Click to open or close section';
-        //  finishDiv.setAttribute('open', '');
         form.appendChild(finishDiv);
         this.input.addHeader(finishDiv, "summary", "Finish");
         this.addFinish(finishDiv);
-        // Contacts Section
 
+        // Contacts Section
         var contactDiv = document.createElement('details');
         contactDiv.setAttribute('class', 'section xcontact');
-        // contactDiv.title= 'Click to open or close section';
         contactDiv.setAttribute('open', true);
         form.appendChild(contactDiv);
         this.input.addHeader(contactDiv, "summary", "Contact");
         this.addContact(contactDiv);
-        // Publicity
 
+        // Publicity
         var pubDiv = document.createElement('details');
         pubDiv.setAttribute('class', 'section publicity');
-        //   pubDiv.title= 'Click to open or close section';
         form.appendChild(pubDiv);
         this.input.addHeader(pubDiv, "summary", "Facilities, Accessibility and Transport ", null);
         this.addFacilities(pubDiv);
-        // Editors notes
 
+        // Editors notes
         var notesDiv = document.createElement('details');
         notesDiv.classList.add("notes");
         notesDiv.classList.add("section");
@@ -799,79 +790,4 @@ ra.walkseditor.exportToWM = function () {
         return out;
     };
 };
-ra.walkseditor.exportToGWEM = function () {
-    this.button = function (tag, programme) {
-//        if (!this.allowWMExport) {
-//            return;
-//        }
-        var wmexport = document.createElement('button');
-        wmexport.setAttribute('class', 'ra-button');
-        wmexport.title = 'Create CSV Upload file for Walks Manager';
-        wmexport.textContent = 'Export to GWEM';
-        tag.appendChild(wmexport);
-        var _this = this;
-        wmexport.addEventListener('click', function () {
-            _this._ExportWalksToGWEM(programme);
-        });
-    };
-    this._ExportWalksToGWEM = function (programme) {
-        // items is either an array or items or a single walk
-        ra.showMsg("This feature is being developed please let us know if you have any issues");
-        var data = "";
-        data = data + this._GWEMheader();
 
-        var walks = programme.getWalks();
-        var i, clen;
-        for (i = 0, clen = walks.length; i < clen; ++i) {
-            var walk = walks[i];
-            if (walk.displayWalk) {
-                data = data + walk.exportToGWEMLine();
-            }
-        }
-
-        try {
-            var blob = new Blob([data], {type: "application/gpx+xml;charset=utf-8"});
-            var name = "GWEMUpload.csv";
-            saveAs(blob, name);
-        } catch (e) {
-            ra.showError('Your web browser does not support this option!');
-        }
-    };
-    this._GWEMheader = function () {
-        var data = [];
-        data.push('Date');
-        data.push('Title');
-        data.push('Description');
-        data.push('Linear or Circular');
-        data.push('Starting location');
-        data.push('Starting postcode');
-        data.push('Starting gridref');
-        data.push('Starting location details');
-        data.push('Show exact starting point');
-        data.push('Start time');
-        data.push('Meeting location');
-        data.push('Meeting postcode');
-        data.push('Meeting gridref');
-        data.push('Meeting location details');
-        data.push('Show exact Meeting point');
-        data.push('Meeting time');
-        data.push('Finish location');
-        data.push('Finish postcode');
-        data.push('Finish gridref');
-        data.push('Finish location details');
-        data.push('Restriction');
-        data.push('Difficulty');
-        data.push('Local walk grade');
-        data.push('Distance km');
-        data.push('Distance miles');
-        data.push('Est finish time');
-        data.push('Contact id');
-        data.push('Is walk leader');
-        data.push('Walks leader name');
-        data.push('Festivals');
-        data.push('Strands');
-        data.push('Additional details');
-        var out = ra.arrayToCSV(data) + "\n\r";
-        return out;
-    };
-};

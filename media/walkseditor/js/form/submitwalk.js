@@ -16,7 +16,7 @@ if (typeof (ra.walkseditor.form) === "undefined") {
 }
 
 ra.walkseditor.form.submitwalk = function (options, data) {
-    this.emailURL = ra.baseDirectory() + "libraries/ramblers/walkseditor/sendemail.php";
+    this.emailURL = ra.baseDirectory() + "media/lib_ramblers/walkseditor/sendemail.php";
     this.data = data;
     this.groups = this.data.groups;
     this.localGrades = this.data.localGrades;

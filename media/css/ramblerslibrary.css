@@ -945,7 +945,9 @@ div.ra-filteritem.nilFilter{
 div.ra-filteritem:hover{
     background-color: var(--lightgrey);
 }
-div.ra-filteritem.active{
+div.ra-filteritem.active,
+input.ra-filteritem.active,
+select.ra-filteritem.active{
     background-color: var(--sunset);
 }
 
@@ -970,6 +972,7 @@ div.ra-filteritem.right.active{
 }
 div.ra-filteritem.right:hover {
     background-color: var(--lightgrey);
+    color:white;
 }
 
 div.ra-filter-spacer{

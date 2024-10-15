@@ -136,19 +136,6 @@ ra.walkseditor.walksprogrammeViewer = function () {
         });
         topOptions.appendChild(button);
 
-
-//        var button = document.createElement('button');
-//        button.setAttribute('type', 'button');
-//        button.classList.add('ra-button');
-//        button.textContent = "Upload walk";
-//        button.title = "Upload/read a walk and add it to the walks programme";
-//        button.addEventListener('click', function () {
-//            ra.showError("Upload walk");
-//        });
-//        topOptions.appendChild(button);
-
-
-
         var saveButton = document.createElement('button');
         saveButton.setAttribute('type', 'button');
         saveButton.setAttribute('class', 'ra-button');
@@ -189,8 +176,8 @@ ra.walkseditor.walksprogrammeViewer = function () {
 
         var wmexport = new ra.walkseditor.exportToWM();
         wmexport.button(topOptions, this.programme);
-        var gwemexport = new ra.walkseditor.exportToGWEM();
-        gwemexport.button(topOptions, this.programme);
+//        var gwemexport = new ra.walkseditor.exportToGWEM();
+//        gwemexport.button(topOptions, this.programme);
 
         var clear = document.createElement('div');
         clear.setAttribute('class', 'clear');

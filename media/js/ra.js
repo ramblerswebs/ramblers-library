@@ -65,24 +65,21 @@ ra.uniqueID = function () {
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
 ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
-    window.addEventListener("error", (event) => {
-        var instr = '<p>Unexpected error, this might be solved by reloading/refreshing the web page</p><ul>' +
-                '<li>In most browsers you can reload the page by pressing Ctrl+F5. </li>';
-        var body = event.message + '\n\r' + 'Filename: ' + event.filename + '\n\r';
-        body = ra.html.specialCharsToHex(body + event.error.stack).replace(/\n/g, '%0D%0A');
-        var subject = encodeURIComponent("Unexpected error: " + window.location.href);
-        var email = 'mailto:unexpected@ramblers-webs.org.uk?subject=' + subject + '&body=' + body;
-        var emailLink = "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
-        var online = "";
-        if (navigator.onLine) {
-            online = "<h2>You may be off-line - check your internet connection</h2>";
-        }
-        var cont = "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
-        ra.showError(instr + emailLink + online + cont, "Fatal error");
-        event.stopImmediatePropagation();
-        ra.loading.stop();
-
-    });
+//    window.addEventListener("error", (event) => {
+//        var body = event.message + '\n\r' + '\n\r' + 'Filename: ' + event.filename + '\n\r' + '\n\r';
+//        body = ra.html.specialCharsToHex(body + event.error.stack).replace(/\n/g, '%0D%0A');
+//        var subject = encodeURIComponent("Unexpected error: " + window.location.href);
+//        var email = 'mailto:unexpected@ramblers-webs.org.uk?subject=' + subject + '&body=' + body;
+//        var instr = '<p>Unexpected error, this might be solved by reloading/refreshing the web page</p><ul>' +
+//                '<li>In most browsers you can reload the page by pressing Ctrl+F5. </li>';
+//        instr += "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
+//
+//        instr += "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
+//        ra.showError(instr, "Whoops - unexpected error");
+//        event.stopImmediatePropagation();
+//        ra.loading.stop();
+//
+//    });
 
     ra.loading.start();
     ra._jversion = jversion;
@@ -109,6 +106,7 @@ ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
         }
     }
     ra.loading.stop();
+    // ra.wrong();
 };
 ra.decodeData = function (value) {
     if (value === null) {
@@ -121,22 +119,38 @@ ra.decodeData = function (value) {
 ra.checkLoadingErrors = function () {
     var errors = "";
     var res = performance.getEntriesByType("resource");
+    var notLoaded = [];
     for (let item of res) {
-        if (item.responseStatus && item.responseStatus > 400) {
+        if ('responseStatus' in item) {
+            if (item.responseStatus > 400) {
+                notLoaded.push(item);
+            }
+//            if (item.responseStatus === 0) {
+//                notLoaded.push(item);
+//            }
+        }
+    }
+    for (let item of notLoaded) {
+        if ('responseStatus' in item) {
             errors += "(" + item.responseStatus + ")  " + item.name + "\n\r";
         }
     }
 
     if (errors !== "") {
-        var instr = '<p>Web page failed to load correctly, this might be solved by reloading/refreshing the web page</p><ul>' +
-                '<li>In most browsers you can reload the page by pressing Ctrl+F5. </li>';
-        var body = 'Web page loading error on web page: ' + window.location.href + '\n\rResources\n\r' + errors + "\n\r";
+        var instr = "";
+        if (!navigator.onLine) {
+            instr += "<h2>You may be off-line - check your internet connection</h2>";
+        }
+
+        var body = 'Web page loading error on web page: ' + window.location.href + '\n\r\n\rResources\n\r\n\r' + errors + "\n\r\n\r";
         body = encodeURIComponent(body);
         var subject = encodeURIComponent("Web page loading error: " + window.location.href);
         var email = 'mailto:unexpected@ramblers-webs.org.uk?subject=' + subject + '&body=' + body;
-        var emailLink = "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
-        var cont = "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
-        ra.showError("<div class='loading-error'>" + instr + emailLink + cont + "</div>", "Loading Error");
+        instr += '<p>Web page failed to load correctly, this might be solved by reloading/refreshing the web page</p><ul>' +
+                '<li>In most browsers you can reload the page by pressing Ctrl+F5. </li>';
+        instr += "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
+        instr += "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
+        ra.showError("<div class='loading-error'>" + instr + "</div>", "Loading Error");
     }
 
 };
@@ -1920,12 +1934,14 @@ ra.help = function (tag, helpFunction) {
         });
     };
 };
+
 ra.filter = function (eventTag, eventName) {
     this.eventTag = eventTag;
     this.eventName = eventName;
     this.initialised = false;
     this.filterDiv = null;
     this.filterButtonDiv = null;
+    this.displayClearFilters = null;
     this._groups = {};
     this.addGroup = function (group) {
         group.setFilter(this);
@@ -1945,8 +1961,10 @@ ra.filter = function (eventTag, eventName) {
         nodes[0].style.display = "";
         if (this.isAnyFilterActive()) {
             this.filterButtonDiv.classList.add('active');
+            this.displayClearFilters.style.visibility = "";
         } else {
             this.filterButtonDiv.classList.remove('active');
+            this.displayClearFilters.style.visibility = "hidden";
         }
     };
     this.getJson = function () {
@@ -1977,12 +1995,15 @@ ra.filter = function (eventTag, eventName) {
         var tags = [
             {name: 'details', parent: 'root', tag: 'details', attrs: {class: "ra-walksfilter"}},
             {name: 'summary', parent: 'details', tag: 'summary', textContent: 'Filter'},
+            {name: 'clearFilter', parent: 'details', tag: 'div', textContent: 'Clear filters', attrs: {class: "ra-clear-filters ra-filteritem right"}},
             {name: 'filters', parent: 'details', tag: 'div', attrs: {class: 'ra-walksfilter'}}
         ];
         var elements = ra.html.generateTags(tag, tags);
         var filters = elements.filters;
         this.filterDiv = filters;
         this.filterButtonDiv = elements.summary;
+        this.displayClearFilters = elements.clearFilter;
+        this.displayClearFilters.style.visibility = "hidden";
         for (var propt in this._groups) {
             var div = document.createElement('div');
             div.setAttribute('class', 'ra-filtergroup');
@@ -1990,26 +2011,10 @@ ra.filter = function (eventTag, eventName) {
             var group = this._groups[propt];
             group._display(div);
         }
-
-        // clear filters
-        var displayClearFilters = document.createElement('div');
-        displayClearFilters.textContent = "Clear filters";
-        displayClearFilters.classList.add('ra-clear-filters');
-        displayClearFilters.classList.add('ra-filteritem');
-        displayClearFilters.classList.add('right');
-        displayClearFilters.style.display = "none";
-        filters.appendChild(displayClearFilters);
         var _this = this;
-        displayClearFilters.onclick = function (event) {
-            var nodes = filters.getElementsByClassName("ra-filteritem");
-            if (nodes.length > 0) {
-                for (let i = 0; i < nodes.length; i++) {
-                    nodes[i].classList.remove('active');
-                }
-            }
+        this.displayClearFilters.onclick = function (event) {
             _this.clearFilters();
             _this.signalEvent();
-            displayClearFilters.style.display = "none";
         };
         // display empty categories 
         var nodes = filters.getElementsByClassName("nilFilter");
@@ -2118,24 +2123,31 @@ ra.filter.groupDate = function (id, title) {
             tag.appendChild(div);
             var label = document.createElement('label');
             label.style.marginLeft = '5px';
+            var inputId = this.id;
             if (title === "Start") {
                 label.style.marginRight = '5px';
+                inputId += "Start";
             } else {
                 label.style.marginRight = '10px';
+                inputId += "End";
             }
+            label.setAttribute('for', inputId);
             label.textContent = title;
             div.appendChild(label);
             var input = document.createElement('input');
             this.inputs.push(input);
+            input.classList.add('ra-filteritem');
             input.setAttribute('type', 'date');
             input.setAttribute('value', ra.date.YYYYMMDD(initValue));
             input.setAttribute('min', ra.date.YYYYMMDD(this.min));
             input.setAttribute('max', ra.date.YYYYMMDD(this.max));
+            input.setAttribute('id', inputId);
             div.appendChild(input);
             var _this = this;
             input.addEventListener("input", function (event) {
                 var input = event.target;
                 var value = input.value;
+                var tag = event.target;
                 if (title === "Start") {
                     if (value === "") {
                         value = input.min;
@@ -2151,11 +2163,10 @@ ra.filter.groupDate = function (id, title) {
                     _this.values.max = ra.date.getDateTime(value);
                 }
                 if (input.value !== ra.date.YYYYMMDD(input.min) && input.value !== ra.date.YYYYMMDD(input.max)) {
-                    event.target.style.backgroundColor = "rgb(240, 128, 80,1)";
+                    tag.classList.add('active');
                 } else {
-                    event.target.style.backgroundColor = "#FFFFFF";
+                    tag.classList.remove('active');
                 }
-
                 _this._filter.signalEvent();
             });
             initValue = this.max;
@@ -2174,9 +2185,9 @@ ra.filter.groupDate = function (id, title) {
         return false;
     };
     this._clearFilters = function () {
-        this.inputs[0].value = this.min;
+        this.inputs[0].value = ra.date.YYYYMMDD(this.min);
         this.inputs[0].dispatchEvent(new Event('input'));
-        this.inputs[1].value = this.max;
+        this.inputs[1].value = ra.date.YYYYMMDD(this.max);
         this.inputs[1].dispatchEvent(new Event('input'));
     };
     this._insert = function (value) {
@@ -2228,6 +2239,7 @@ ra.filter.groupLimit = function (id, title, options = null) {
         tag.appendChild(h);
         var select = document.createElement('select');
         this.select = select;
+        select.classList.add('ra-filteritem');
         select.style.marginLeft = '5px';
         tag.appendChild(select);
         var values = this.values;
@@ -2242,10 +2254,13 @@ ra.filter.groupLimit = function (id, title, options = null) {
         select.addEventListener("change", function (event) {
             // only works if you have one select as 'updated' is hard coded
             _this.limit = Number(event.target.value);
+            var tag = event.target;
             if (_this.limit !== 0) {
-                event.target.style.backgroundColor = "rgb(240 ,128 ,80,1)";
+                //  event.target.style.backgroundColor = "rgb(240 ,128 ,80,1)";
+                tag.classList.add('active');
             } else {
-                event.target.style.backgroundColor = "#FFFFFF";
+                //   event.target.style.backgroundColor = "#FFFFFF";
+                tag.classList.remove('active');
             }
             _this._filter.signalEvent();
         });
@@ -2336,18 +2351,15 @@ ra.filter.groupText = function (id, title, options = null) {
                 var _this = this;
                 div.ra = {option: item};
                 div.addEventListener("click", function (event) {
-                    var option = this.ra.option;
-                    option.active = !option.active;
-                    if (option.active) {
-                        this.classList.add('active');
+                    var tag = event.target;
+                    if (tag.classList.contains('active')) {
+                        tag.classList.remove('active');
                     } else {
-                        this.classList.remove('active');
+                        tag.classList.add('active');
                     }
                     _this._filter.signalEvent();
                 });
             }
-
-
         }
     };
     this._shouldDisplay = function (valueArray) {
@@ -2355,7 +2367,7 @@ ra.filter.groupText = function (id, title, options = null) {
         var items = this.values;
         for (var propt in items) {
             var item = items[propt];
-            if (item.active) {
+            if (item.div.classList.contains('active')) {
                 anyActive = true;
             }
         }
@@ -2367,7 +2379,7 @@ ra.filter.groupText = function (id, title, options = null) {
         }
         for (var propt in items) {
             var item = items[propt];
-            if (item.active) {
+            if (item.div.classList.contains('active')) {
                 if (valueArray.includes(propt)) {
                     return true;
                 }
@@ -2379,21 +2391,16 @@ ra.filter.groupText = function (id, title, options = null) {
         var items = this.values;
         for (var propt in items) {
             var item = items[propt];
-            item.active = false;
+            item.div.classList.remove('active');
         }
     };
     this._insert = function (value) {
-
         var values = this.values;
         if (!values.hasOwnProperty(value)) {
             values[value] = {};
             values[value].no = 0;
-            // values[value].name = "";
-            //   values[value].tagId = null; // tagId;
         }
         values[value].no += 1;
-        //  values[value].name = value;
-        values[value].active = false;
     };
     this.activateFilterItem = function (name) {
         var item = this.values[name];
@@ -2405,6 +2412,7 @@ ra.filter.groupText = function (id, title, options = null) {
         }
     };
 };
+
 ra.jplist = function (group) {
     this.hasFilters = false;
     this.group = group;
