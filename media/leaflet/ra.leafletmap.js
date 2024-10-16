@@ -87,22 +87,40 @@ ra.leafletmap = function (tag, options) {
 //            minZoom: 0,
 //            maxZoom: 9
 //        });
-        this.mapLayers["Ordnance Survey Light"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Light_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
-            maxZoom: 20,
-            attribution:'Map &copy; Ordnance Survey'
-        });
+//        this.mapLayers["Ordnance Survey Light"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Light_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
+//            maxZoom: 20,
+//            attribution:'Map &copy; Ordnance Survey'
+//        });
         this.mapLayers["Ordnance Survey Outdoor"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
-              maxZoom: 20,
-            attribution:'Map &copy; Ordnance Survey'
+            maxZoom: 20,
+            attribution: 'Map &copy; Ordnance Survey'
         });
         this.mapLayers["Ordnance Survey Road"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Road_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
-              maxZoom: 20,
-           attribution:'Map &copy; Ordnance Survey'
+            maxZoom: 20,
+            attribution: 'Map &copy; Ordnance Survey'
         });
-        const customStyleJson = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Road.json';
-        this.mapLayers["Ordnance Survey Vector"] = L.maplibreGL({
+        const customStyleJson = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Outdoor.json';
+        this.mapLayers["Ordnance Survey Vector Outdoor"] = L.maplibreGL({
             style: customStyleJson,
-            attribution:'Map &copy; Ordnance Survey',
+            attribution: 'Map &copy; Ordnance Survey',
+            transformRequest: (url, resourceType) => {
+                if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
+                    url = new URL(url);
+                    if (!url.searchParams.has('key'))
+                        url.searchParams.append('key', options.licenseKeys.OSkey);
+                    if (!url.searchParams.has('srs'))
+                        url.searchParams.append('srs', 3857);
+                    return {
+                        url: new Request(url).url
+                    };
+                }
+            }
+        });
+
+        const customStyleJson2 = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Road.json';
+        this.mapLayers["Ordnance Survey Vector Road"] = L.maplibreGL({
+            style: customStyleJson2,
+            attribution: 'Map &copy; Ordnance Survey',
             transformRequest: (url, resourceType) => {
                 if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
                     url = new URL(url);
@@ -134,7 +152,7 @@ ra.leafletmap = function (tag, options) {
             accessToken: options.licenseKeys.mapBoxkey
         });
     }
-    // get my location for directions
+// get my location for directions
     this.map.locate();
 
     this.map.on('locationerror', function () {
@@ -144,12 +162,12 @@ ra.leafletmap = function (tag, options) {
         ra.loc.setPosition(e);
     });
 
-    // top right control for error messages
+// top right control for error messages
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
-    //this.controls.errorDiv.setText(ra.html.getBrowserStatus());
+//this.controls.errorDiv.setText(ra.html.getBrowserStatus());
     this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
     this.controls.zoomlevelOSMsg.getContainer().style.backgroundColor = "#eeeeee";
-    // top left controls
+// top left controls
     if (options.displayElevation) {
         this.controls.elevation = L.control.elevation({
             position: "topleft",
@@ -212,7 +230,7 @@ ra.leafletmap = function (tag, options) {
     this.controls.osinfo = L.control.osinfo().addTo(this.map);
     this.controls.rightclick = L.control.rightclick().addTo(this.map);
     this.controls.settings = L.control.settings();
-    // this.controls.settings.setHelpPage(options.helpPage);
+// this.controls.settings.setHelpPage(options.helpPage);
     this.controls.settings.addTo(this.map);
     this.controls.settings.setLeafletMap(this);
 
@@ -241,7 +259,7 @@ ra.leafletmap = function (tag, options) {
 
     });
 
-    // bottom left controls 
+// bottom left controls 
     if (options.mouseposition !== null) {
         this.controls.mouse = L.control.mouse().addTo(this.map);
     }
@@ -253,7 +271,7 @@ ra.leafletmap = function (tag, options) {
         _this.currentLayer = e.layer;
     });
 
-    // bottom right controls
+// bottom right controls
     if (options.controlcontainer) {
         // used by walks editor
         L.control.racontainer().addTo(this.map);
@@ -264,17 +282,17 @@ ra.leafletmap = function (tag, options) {
         this.map.setView(pt, options.initialview.zoom);
     }
 
-    // top right controls
+// top right controls
     this.controls.layers = L.control.layers(this.mapLayers).addTo(this.map);
     if (options.topoMapDefault) {
         this.map.addLayer(this.mapLayers["Open Topo Map"]);
     } else {
         this.map.addLayer(this.mapLayers["Open Street Map"]);
     }
-    //   this.mapLayers["Ordnance Survey  Walking"].addTo(this.map);
+//   this.mapLayers["Ordnance Survey  Walking"].addTo(this.map);
     var _this = this;
 
-    // this.controls.settings.setErrorDiv(this.errorDivControl());
+// this.controls.settings.setErrorDiv(this.errorDivControl());
     this.map.on('zoomend', function () {
         _this.osZoomLevel();
     });
