@@ -48,6 +48,9 @@ class RLicense {
         if (strpos(JURI::base(), 'localhost') !== false) {
             return 'bc99bda92702488ba51a8ca395da6807';
         }
+        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+            return 'bc99bda92702488ba51a8ca395da6807';
+        }
         return null;
     }
 
@@ -68,15 +71,15 @@ class RLicense {
         if ($endLicenseDate < $now) {
             return null;
         }
-        if (strpos(JURI::base(), 'localhost') !== false) {
-            return null;
-        }
-        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
-            return null;
-            //  return 'AshdQBFR1UGiLO-YaL2dF9XhyWcsUM7E8-MtIaaFXgtdKKi5Po_XZDrdeSTd7ket';
-        } else {
-            return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
-        }
+        //      if (strpos(JURI::base(), 'localhost') !== false) {
+        //          return null;
+        //      }
+        //      if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+        //          return null;
+        //  return 'AshdQBFR1UGiLO-YaL2dF9XhyWcsUM7E8-MtIaaFXgtdKKi5Po_XZDrdeSTd7ket';
+        //      } else {
+        return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
+        //      }
     }
 
     // deprecated
