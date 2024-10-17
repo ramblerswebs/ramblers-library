@@ -168,11 +168,20 @@ div.gpxlist  ul li{
     color:#000000;
 
 }
-
 #gpxdetails th[onclick]::before {
     padding-right:5px;
     content: url('images/updown.png') ;
 }
+@media only screen and (max-width: 1200px) {
+    table#gpxdetails  th.tablet,
+    table#gpxdetails  td.tablet{
+        display:none;
+    }
+    table#gpxdetails{
+        overflow-wrap: anywhere;
+    }
+}
+
 form input#gpxtitlesearch{
     float:right;
     margin-top:10px;
