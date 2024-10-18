@@ -75,14 +75,21 @@ ra.walkseditor.editwalk = function (options, data) {
         var tag = document.getElementById(options.divId);
         var topOptions = document.createElement('div');
         topOptions.setAttribute('class', 'ra-edit-options');
-        tag.appendChild(topOptions);
-        var topHelp = document.createElement('div');
-        topOptions.appendChild(topHelp);
 
-        var clear = document.createElement('div');
-        clear.setAttribute('class', 'clear');
-        tag.appendChild(clear);
+        tag.appendChild(topOptions);
+        var topDiv = document.createElement('div');
+        tag.appendChild(topDiv);
         var _this = this;
+        window.onscroll = function () {
+            if (!_this.elementInViewport(topDiv)) {
+                topOptions.style.position = 'fixed';
+            } else {
+                topOptions.style.position = 'relative';
+            }
+
+        };
+
+
         var soptions = this.getElementOptions(this.data.fields.status);
         var coptions = this.getElementOptions(this.data.fields.category);
         //   this.statusSelect = this.setElementOptions(topOptions, 'Status', soptions, ra.walkseditor.help.editButtons);
@@ -132,6 +139,25 @@ ra.walkseditor.editwalk = function (options, data) {
         this.editor.sortData();
         // editor.addEditForm();
 
+    };
+    this.elementInViewport = function (el) {
+        var top = el.offsetTop;
+        var left = el.offsetLeft;
+        var width = el.offsetWidth;
+        var height = el.offsetHeight;
+
+        while (el.offsetParent) {
+            el = el.offsetParent;
+            top += el.offsetTop;
+            left += el.offsetLeft;
+        }
+
+        return (
+                top >= window.pageYOffset &&
+                left >= window.pageXOffset &&
+                (top + height) <= (window.pageYOffset + window.innerHeight) &&
+                (left + width) <= (window.pageXOffset + window.innerWidth)
+                );
     };
     this.getElementOptions = function (id) {
         var element = document.getElementById(id);
@@ -189,7 +215,7 @@ ra.walkseditor.editwalk = function (options, data) {
         submitButton.setAttribute('class', 'ra-button');
         submitButton.textContent = "Save";
         submitButton.addEventListener("click", function (e) {
-
+            _this.updateDateFields();
             var element = _this.statusSelect;
             var disabled = element.selectedOptions[0].disabled;
             if (disabled) {
@@ -205,20 +231,7 @@ ra.walkseditor.editwalk = function (options, data) {
 
         });
         submitButton.addEventListener("mouseover", function () {
-            var draftwalk = _this.data.walk;
-            var walk = draftwalk.data;
-            walk.admin.updated = new Date();
-            var errors = draftwalk.getNoWalkIssues();
-            _this.resetStatusButton(errors);
-
-            _this.editor.sortData();
-            var content = document.getElementById(_this.data.fields.content);
-            content.value = JSON.stringify(walk);
-            var date = document.getElementById(_this.data.fields.date);
-            date.value = walk.basics.date;
-            date.defaultValue = walk.basics.date;
-            date.setAttribute("data-local-value", walk.basics.date);
-            date.setAttribute("data-alt-value", walk.basics.date);
+            _this.updateDateFields();
         });
         tag.appendChild(submitButton);
         var cancelButton = document.createElement('button');
@@ -238,6 +251,23 @@ ra.walkseditor.editwalk = function (options, data) {
             _this.data.walk.previewWalk();
         });
         tag.appendChild(previewButton);
+    };
+    this.updateDateFields = function () {
+        var draftwalk = this.data.walk;
+        var walk = draftwalk.data;
+        walk.admin.updated = new Date();
+        var errors = draftwalk.getNoWalkIssues();
+        this.resetStatusButton(errors);
+
+        this.editor.sortData();
+        var content = document.getElementById(this.data.fields.content);
+        content.value = JSON.stringify(walk);
+        var dateField = document.getElementById(this.data.fields.date);
+        dateField.value = walk.basics.date;
+        dateField.defaultValue = walk.basics.date;
+        dateField.setAttribute("data-local-value", walk.basics.date);
+        dateField.setAttribute("data-alt-value", walk.basics.date);
+
     };
 
     this.resetStatusButton = function (errors) {

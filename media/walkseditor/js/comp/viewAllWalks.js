@@ -14,6 +14,7 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
     this.data = data;
     this.newUrl = this.data.newUrl;
     this.programme = new ra.walkseditor.walks();
+    ra.walkseditor.comp.walks = this.programme;
     this.mapOptions = mapOptions;
     this.allowWMExport = false;
     this.settings = {
@@ -24,6 +25,7 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
 
     var i, clen, item;
     var items = this.data.items;
+    var programDateErrors = "";
     for (i = 0, clen = items.length; i < clen; ++i) {
         item = items[i];
         //  try {
@@ -32,8 +34,12 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
         var category = item.category_name;
         var walk = new ra.walkseditor.walk();
         walk.createFromJson(json);
+        walk.id = item.id;
         walk.init(status, category, !this.loggedOn);
         //    var walkitem = new ra.walkseditor.programmeItem(walk);
+        if (!walk.isSqlDateCorrect(item.date)) {
+            programDateErrors += '<li>' + "Walk ID: " + item.id + "  " + walk.getWalkBasics("dateError") + "</li>";
+        }
         walk.editUrl = item.editUrl;
         walk.deleteUrl = item.deleteUrl;
         walk.duplicateUrl = item.duplicateUrl;
@@ -50,6 +56,11 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
         }
     }
     this.masterdiv = document.getElementById(this.mapOptions.divId);
+    if (programDateErrors !== "") {
+        ra.showError("<p>The data stored for some walk(s) is incorrect due to a software error.</p>" +
+                "<p>You may be able to correct this by editing and then saving the walk, you do not need to make any changes.</p><ul>" +
+                programDateErrors + "</ul>", "Walks Editor Error");
+    }
 
     this.load = function () {
         var tags = [
@@ -123,21 +134,37 @@ ra.walkseditor.comp.viewAllwalks = function (mapOptions, data) {
         var tags = [
             {name: 'details', parent: 'root', tag: 'details', attrs: {open: true}},
             {name: 'summary', parent: 'details', tag: 'summary', textContent: 'Legend', attrs: {class: 'ra legendsummary'}},
-            {name: 'privatewalks', parent: 'details', tag: 'div', textContent: 'Private',attrs: {class: 'ra legend title'}},
-           {name: 'draft', parent: 'privatewalks', tag: 'div', attrs: {class: 'ra legend draft'}},
-            {parent: 'draft', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Draft'},
-
-            {name: 'waiting', parent: 'privatewalks', tag: 'div', attrs: {class: 'ra legend waiting'}},
-            {parent: 'waiting', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Awaiting Approval'},
-
-            {name: 'publicwalks', parent: 'details', tag: 'div', textContent: 'Viewable by Public',attrs: {class: 'ra legend title'}},
-            {name: 'published', parent: 'publicwalks', tag: 'div', attrs: {class: 'ra legend published'}},
-            {parent: 'published', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Published'},
-
-            {name: 'cancelled', parent: 'publicwalks', tag: 'div', attrs: {class: 'ra legend cancelled'}},
-            {parent: 'cancelled', tag: 'div', attrs: {class: 'legendbox'}, textContent: 'Cancelled'}
-
+            {name: 'draft', parent: 'details', tag: 'div', attrs: {class: 'ra legend'}},
+            {parent: 'draft', tag: 'div', attrs: {class: 'legendbox statusDraft'}, textContent: 'Draft'},
+            {name: 'waiting', parent: 'details', tag: 'div', attrs: {class: 'ra legend waiting'}},
+            {parent: 'waiting', tag: 'div', attrs: {class: 'legendbox statusAwaiting_Approval'}, textContent: 'Awaiting Approval'},
+            {name: 'published', parent: 'details', tag: 'div', attrs: {class: 'ra legend published'}},
+            {parent: 'published', tag: 'div', attrs: {class: 'legendbox statusPublished'}, textContent: 'Published'},
+            {name: 'publishedPast', parent: 'details', tag: 'div', attrs: {class: 'ra legend past'}},
+            {parent: 'publishedPast', tag: 'div', attrs: {class: 'legendbox statusPast'}, textContent: 'Published/Past'}
         ];
         ra.html.generateTags(tag, tags);
+    };
+    ra.walkseditor.comp.editWalk = function (id) {
+        var walk = ra.walkseditor.comp.walks.getWalkById(id);
+        var ok = true;
+        switch (walk.getStatus()) {
+            case "Published":
+            case "Cancelled":
+                ok = ra.showConfirm(ra.walkseditor.help.editQuestion());
+                break;
+        }
+        if (ok) {
+            document.location.href = walk.editUrl;
+        }
+
+    };
+    ra.walkseditor.comp.deleteWalk = function (id) {
+        var $okay = ra.showConfirm(ra.walkseditor.help.deleteQuestion());
+        if ($okay) {
+            var walk = ra.walkseditor.comp.walks.getWalkById(id);
+            document.location.href = walk.deleteUrl;
+        }
+
     };
 };

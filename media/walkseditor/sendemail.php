@@ -1,17 +1,26 @@
 <?php
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+$test = false;
 $result = new response();
 
-//$options = new Options();
-
-if ($_FILES['walk']['error'] == UPLOAD_ERR_OK               //checks for errors
-        && is_uploaded_file($_FILES['walk']['tmp_name'])) { //checks that file is uploaded
-    $xdata = file_get_contents($_FILES['walk']['tmp_name']);
+if ($test) {
+    $xdata = file_get_contents("TESTDATA.json");
+} else {
+    if ($_FILES['walk']['error'] == UPLOAD_ERR_OK               //checks for errors
+            && is_uploaded_file($_FILES['walk']['tmp_name'])) { //checks that file is uploaded
+        $xdata = file_get_contents($_FILES['walk']['tmp_name']);
+        file_put_contents("TESTDATA.json", $xdata);
+        checkDecode();
+    }
 }
 $data = json_decode($xdata);
-checkDecode();
 $walk = $data->walk;
-$swalk = json_encode($walk, JSON_PRETTY_PRINT);
+
+$attachment = json_encode($walk, JSON_PRETTY_PRINT);
 $walkbody = $data->walkbody;
 $email = $data->email;
 $fromSite = $data->fromSite;
@@ -24,7 +33,7 @@ $fromemail = $email->email;
 $sig = "<p></p><p>Walk submitted by: " . $fromname . "</p><p>Email: " . $fromemail . "</p>";
 $comment = "<p>Walk details are below, attached is a file containing the walk</p><hr/>";
 $fullbody = $reason . $sig . $message . $comment . $walkbody;
-sendEmail($subject, $coords, $fullbody, $swalk, $result);
+sendEmail($subject, $coords, $email, $fullbody, $attachment, $result);
 
 header("Access-Control-Allow-Origin: *");
 header("Content-type: application/json");
@@ -43,10 +52,11 @@ function checkDecode() {
     }
 }
 
-function sendEmail($subject, $coords, $body, $walk, $res) {
+function sendEmail($subject, $coords, $fromemail, $body, $attachment, $res) {
+    require_once('Exception.php');
+    require_once('PHPMailer.php');
+    require_once('SMTP.php');
     require_once('../../../configuration.php');
-    require_once('../../vendor/phpmailer/phpmailer/class.smtp.php');
-    require_once('../../vendor/phpmailer/phpmailer/class.phpmailer.php');
     $config = new JConfig();
     $mail = new PHPMailer(true);
     $res->sent = false;
@@ -64,12 +74,12 @@ function sendEmail($subject, $coords, $body, $walk, $res) {
             break;
     }
     $mail->setFrom($config->mailfrom, $config->fromname);
-    //  $mail->addReplyTo('info@mailtrap.io', 'Mailtrap');
+    $mail->addReplyTo($fromemail->email, $fromemail->name);
     foreach ($coords as $key => $value) {
         $mail->addAddress($key, $value);
     }
     $timestamp = date("YmdHis");
-    $mail->AddStringAttachment($walk, 'submitwalk' . $timestamp . '.walks');
+    $mail->AddStringAttachment($attachment, 'submitwalk' . $timestamp . '.walks');
 
     $mail->Subject = $subject;
     $style = file_get_contents('css/styleemail.css');
@@ -78,6 +88,7 @@ function sendEmail($subject, $coords, $body, $walk, $res) {
     if ($mail->send()) {
         $res->message = 'MESSAGE HAS BEEN SENT';
         $res->error = false;
+        $res->sent = true;
     } else {
         $res->message = 'Message could not be sent :' + $mail->ErrorInfo;
         $res->error = true;
@@ -90,7 +101,4 @@ class response {
 
     public $error = true;
     public $message = "Code not set";
-
-    //  public $errorMessage = "Code not set";
-    //  public $sent = "";
 }

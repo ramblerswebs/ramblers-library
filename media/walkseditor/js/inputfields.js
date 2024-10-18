@@ -71,14 +71,14 @@ ra.walkseditor.inputFields = function () {
         inputTag.setAttribute('step', '.01');
         return inputTag;
     };
-    this.addPostcodeDEL = function (tag, divClass, label, raobject, property, helpFunction = null) {
-        var inputTag = this.addText(tag, divClass, label, raobject, property, '', helpFunction);
-
-        inputTag.addEventListener("input", function (e) {
-            e.target.value = e.target.value.toUpperCase();
-        });
-        return inputTag;
-    };
+//    this.addPostcodeDEL = function (tag, divClass, label, raobject, property, helpFunction = null) {
+//        var inputTag = this.addText(tag, divClass, label, raobject, property, '', helpFunction);
+//
+//        inputTag.addEventListener("input", function (e) {
+//            e.target.value = e.target.value.toUpperCase();
+//        });
+//        return inputTag;
+//    };
     this.addEmail = function (tag, divClass, label, raobject, property, placeholder = '', helpFunction = null) {
         var inputTag = this.addText(tag, divClass, label, raobject, property, placeholder, helpFunction);
         inputTag.addEventListener("input", function (e) {
@@ -110,8 +110,7 @@ ra.walkseditor.inputFields = function () {
         }
         var quill = this.addQuill(inputTag);
         quill.on('text-change', function (delta, oldDelta, source) {
-            raobject[property] = quill.root.innerHTML.replaceAll('"', "'");
-            //  raobject[property] = quill.root.innerHTML;
+            raobject[property] = quill.getSemanticHTML();
         });
         quill.clipboard.addMatcher(Node.ELEMENT_NODE, function (node, delta) {
             var plaintext = node.innerText;
@@ -121,15 +120,15 @@ ra.walkseditor.inputFields = function () {
         return inputTag;
     };
     this.addQuill = function (container) {
-        var icons = Quill.import("ui/icons");
-        icons["undo"] = `<svg viewbox="0 0 18 18">
-          <polygon class="ql-fill ql-stroke" points="6 10 4 12 2 10 6 10"></polygon>
-          <path class="ql-stroke" d="M8.09,13.91A4.6,4.6,0,0,0,9,14,5,5,0,1,0,4,9"></path>
-          </svg>`;
-        icons["redo"] = `<svg viewbox="0 0 18 18">
-          <polygon class="ql-fill ql-stroke" points="12 10 14 12 16 10 12 10"></polygon>
-          <path class="ql-stroke" d="M9.91,13.91A4.6,4.6,0,0,1,9,14a5,5,0,1,1,5-5"></path>
-          </svg>`;
+//        var icons = Quill.import("ui/icons");
+//        icons["undo"] = `<svg viewbox="0 0 18 18">
+//          <polygon class="ql-fill ql-stroke" points="6 10 4 12 2 10 6 10"></polygon>
+//          <path class="ql-stroke" d="M8.09,13.91A4.6,4.6,0,0,0,9,14,5,5,0,1,0,4,9"></path>
+//          </svg>`;
+//        icons["redo"] = `<svg viewbox="0 0 18 18">
+//          <polygon class="ql-fill ql-stroke" points="12 10 14 12 16 10 12 10"></polygon>
+//          <path class="ql-stroke" d="M9.91,13.91A4.6,4.6,0,0,1,9,14a5,5,0,1,1,5-5"></path>
+//          </svg>`;
         var toolbarOptions = [[{'header': [false, 1, 2, 3]}],
             ['bold', 'italic', 'underline', 'strike', 'link'],
             [{'list': 'ordered'}, {'list': 'bullet'}]
@@ -139,24 +138,15 @@ ra.walkseditor.inputFields = function () {
         var quill = new Quill(container, {
             theme: 'snow',
             modules: {
-                toolbar: toolbarOptions,
-
-                history: {
-                    delay: 2000,
-                    maxStack: 500,
-                    userOnly: true
-                }
+                toolbar: toolbarOptions
+//                history: {
+//                    delay: 2000,
+//                    maxStack: 500,
+//                    userOnly: true
+//                }
             }
 
         });
-        // Handlers can also be added post initialization
-        //   var toolbar = quill.getModule('toolbar');
-        //   toolbar.addHandler('redo', quill.history.redo());
-        //   toolbar.addHandler('undo', quill.history.undo());
-
-//           container.addEventListener("change", function (e) {
-//            e.target.raobject[e.target.raproperty] =  quill.getContents();
-//        });
         return quill;
     };
     this.addHtmlAreaSummary = function (tag, divClass, label, rows, raobject, property, placeholder = '', helpFunction = null) {

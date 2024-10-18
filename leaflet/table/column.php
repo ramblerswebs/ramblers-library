@@ -83,8 +83,14 @@ class RLeafletTableColumn implements JsonSerializable {
                 case "float":
                     $this->type = "number";
                     break;
+                case "textlink":
+                    $this->type = "textlink";
+                    break;
                 case "link":
                     $this->type = "link";
+                    break;
+               case "exturl":
+                    $this->type = "exturl";
                     break;
                 case "linkmarker":
                     $this->linkmarker = true;

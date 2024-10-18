@@ -12,8 +12,6 @@
     border-color: #777777;
     border-style: solid;
     color: #333;
-    font-size: 11px;
-    font-family: 'Monaco', monospace;
 }
 
 div.leaflet-control-container div.leaflet-control-resizer-corner-s{
@@ -72,18 +70,17 @@ div.leaflet-control-osmaps{
 div.leaflet-os-options {
     width:600px;
     position:relative;
-    left:30px;
+    left:25px;
 }
 div.leaflet-os-options div{
     width:95px;
     font-weight: bold;
     padding:5px;
-    color:white;
-    background-color: var(--xoption);
-    border-radius: 5px;
-    border-width: 0px;
-
+    color:black;
+    background-color: white;
     margin-bottom:1px;
+    border: 1.5px solid var(--xoption);
+    border-radius: 5px;
 }
 div.leaflet-os-options div.explorer:hover{
     background-color: #FF7F50;

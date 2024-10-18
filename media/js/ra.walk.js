@@ -110,7 +110,7 @@ ra.events = function () {
         });
 
         filter.display(tag);
-      //  var fred = filter.getJson();
+        //  var fred = filter.getJson();
     };
 };
 ra.event = function () {
@@ -126,7 +126,7 @@ ra.event = function () {
     var mapSummary = ["{dowddmm}", "{;title}", "{,distance}"];
     var mapLinks = ["{startOSMap}", "{startDirections}"];
     var mapGrade = ["{mapGrade}"];
-    var mapTitle = ["{dowShortddmm}", "{distance}"];
+    var mapTitle = ["{mapDowShortddmm}", "{,distance}"];
     this.map = null;
     let maplayer = null;
     this.isCancelled = function () {
@@ -234,7 +234,7 @@ ra.event = function () {
         }
 
         var t = JSON.stringify(this, null, 4);
-        elements.pre.innerHTML = ra.syntaxHighlight(t);
+        elements.pre.innerHTML = "Times are in UTC so may be 1 hr out<br/>" + ra.syntaxHighlight(t);
     };
     this.getEventValues = function (items, link = true) {
         var out, lastItem, thisItem;
@@ -318,6 +318,7 @@ ra.event = function () {
                 break;
             case "{dowShortdd}":
             case "{dowShortddmm}":
+            case "{mapDowShortddmm}":
             case "{dowShortddyyyy}": // published in error
             case "{dowShortddmmyyyy}":
             case "{dowdd}":
@@ -940,6 +941,10 @@ ra.event.basics = function () {
                 out = this.dateRange(ra.date.dowShortddmm, true);
                 //out = "<b>" + ra.date.dowShortddmm(this.walkDate) + this.addYear() + "</b>";
                 break;
+            case "{mapDowShortddmm}":
+                // out = this.dateRange(ra.date.dowShortddmm, true);
+                out = ra.date.dowShortddmm(this.walkDate) + this.addYear();
+                break;
             case "{dowShortddyyyy}": // published in error
             case "{dowShortddmmyyyy}":
                 out = this.dateRange(ra.date.dowShortddmmyyyy);
@@ -1413,7 +1418,7 @@ ra.event.timelocation = function () {
         var button = document.createElement('a');
         button.classList.add("mappopup");
         button.classList.add("pointer");
-        button.title = "Click to see additional location information";
+        button.title = "Click to see/hide additional location information";
         tag.appendChild(button);
         button.textContent = "[Extra Info+]";
         var extras = document.createElement('div');

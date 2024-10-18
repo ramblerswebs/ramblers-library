@@ -55,6 +55,7 @@
                                                className + ' ' + classNameTransp + ' ' + classNameLoc,
                                                map.getContainer());
             var container = this._container;
+            container.title="Stretch the size of the map";
 
             L.DomEvent.on(container, 'mousedown mouseup click touchstart drag', L.DomEvent.stopPropagation);
 

@@ -18,16 +18,12 @@
     --gradeT:var(--granite);
     --pastcolor: #999;
 
-    --draftStatus:white;
-    --awaiting_ApprovalStatus:rgb(171, 171, 171);
+    --draftStatus:#E0E0E0;
+    --awaiting_ApprovalStatus:rgb(238, 163, 163);
     --cancelledStatus:var(--mintcake);
     --publishedStatus:var(--mintcake);
-
 }
 
-#form-draftgwem2event {
-    display: XXXnone;
-}
 body {
     background-color: #FFFFFF;
     font-family: verdana;
@@ -36,6 +32,11 @@ body {
 }
 a{
     cursor:pointer;
+}
+pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
 }
 
 details.section > summary  {
@@ -75,7 +76,6 @@ div.ra.preview.section{
     line-height: 1.5em;
 }
 div.location-group {
-
     padding: 0px;
     margin:0px;
     border-radius:0px;
@@ -85,7 +85,6 @@ div.specifiedlocation {
     font-size:18px;
 }
 div.js-items{
-
     padding: 3px;
     margin:0px;
     border-radius:10px;
@@ -124,7 +123,6 @@ button.locatemapbutton:hover {
     background-color: var(--midgrey);
 }
 button.right {
-
     float:right;
 }
 
@@ -247,9 +245,7 @@ button.tablinks{
     background-color:blue;
     color:#FFF;
 }
-.XXXra-map-container{
-    break-inside: avoid-column
-}
+
 
 /* The Modal (background) */
 #js-raModal.ramodal {
@@ -348,23 +344,17 @@ div.location-editor{
         background-color: #ffffff;
         min-width: 200px;
     }
-    div.location-editorXXX{
-        display: flex;
-    }
-    div.ra.walksweditor.mapcontainerXXX{
-        width:70%;
-    }
-    div.ra-edit-options {
-        transform: scale(.5,.5);
-        bottom: 0px;
-        right: 0px;
-    }
+
 }
 @media only screen and (max-width: 769px){
+    div.gpxouter table tr th:nth-child(3) ,
+    div.gpxouter table tr td:nth-child(3) ,
     div.gpxouter table tr th:nth-child(4) ,
     div.gpxouter table tr td:nth-child(4) ,
-    div.gpxouter table tr th:nth-child(7) ,
-    div.gpxouter table tr td:nth-child(7) {
+    div.gpxouter table tr th:nth-child(8) ,
+    div.gpxouter table tr td:nth-child(8) ,
+    div.gpxouter table tr th:nth-child(6) ,
+    div.gpxouter table tr td:nth-child(6) {
         display:none;
     }
 }
@@ -378,26 +368,20 @@ div.display h2{
     font-size:18px;
     line-height: 18px;
 }
-div.ra-edit-options {
-    background-color: #eeeeee;
-    position: fixed;
-    bottom: -20px;
-    right: -20px;
-    z-index:99;
+
+div.ra-edit-options{
+    top: 0;
     border: 2px solid var(--sunset);
+    background-color:white;
     padding: 5px;
     margin: 10px;
     border-radius: 10px;
-    transform: scale(0.75,0.75);
+    width: max-content;
+    z-index:99;
 }
 
-div.ra-edit-options:hover {
-    transform: scale(1.2,1.2);
-    bottom: 20px;
-    right: 20px;
-}
 div.ra-edit-options button{
-    display: block;
+    font-size:20px;
 }
 
 option:disabled{
@@ -407,10 +391,6 @@ option:disabled{
 }
 div#js-outer-content{
     clear:both;
-}
-
-form#form-draftgwem2event{
-
 }
 
 details summary {
@@ -482,21 +462,37 @@ details[open].section > summary {
     margin-bottom: 0.5rem;
 }
 
-.group.status-Draft{
+.group.statusDraft{
     background-color:  var(--draftStatus) !important;
     color: var(--graphite) !important;
     border: 2px solid #404141 !important;
 }
-.status-Draft{
+
+.statusDraft {
     background-color: var(--draftStatus) !important;
 }
-.status-Awaiting_Approval{
+.statusPast {
+    background-image: linear-gradient(to right, var(--mintcake), white);
+}
+
+.statusAwaiting_Approval {
     background-color: var(--awaiting_ApprovalStatus) !important;
 }
 
-.status-Published,.status-Cancelled {
+.statusPublished ,
+.statusCancelled {
     background-color:  var(--mintcake)!important;
 }
+span.indent {
+    display: table-cell;
+    padding-left:10px;
+}
+
+div span.ra-status{
+    width:120px;
+    display: table-cell;
+}
+
 div.draftwalk.first {
     border-top: 20px solid var(--skyBlue) !important;
 }
@@ -504,30 +500,33 @@ div.draftwalk.first {
 tr.first td  {
     border-top: 20px solid var(--skyBlue) !important;
 }
-.status-Draft:hover,
-.status-Awaiting_Approval:hover,
-.status-Published:hover,
-.status-Cancelled:hover {
+tr.odd:hover {
+    background-color: #DDDDDD;
+}
+
+div.popupStatus{
+    width:100%;
+    font-weight: bold;
+    text-align: center;
+}
+.statusDraft:hover,
+.statusAwaiting_Approval:hover,
+.statusPublished:hover,
+.statusCancelled:hover {
     opacity: 0.5;
 }
+.fc .fc-list-event-dot{
+    border:none;
+}
 
-.status-Cancelled {
-    text-decoration: line-through;
+.statusCancelled {
+    text-decoration: line-through !important;
     color: var(--cancelled) !important;
 }
-.fc-h-event.status-Draft {
-    background-color:  #eeeeee !important;
-    border-color:  var(--mintcake)!important;
+a.statusCancelled.fc-event div div div div {
+    text-decoration: line-through !important;
+    color: var(--cancelled) !important;
 }
-.fc-h-event.status-Awaiting_Approval{
-    background-color:  var(--awaiting_Approval) !important;
-    border-color:  var(--mintcake)!important;
-}
-.fc-h-event.status-Cancelled div div div div{
-    text-decoration: line-through;
-    color: var(--cancelled);
-}
-
 
 div.desc label.gwem {
     display:inline-block;
@@ -593,47 +592,19 @@ details.ra.legendheading h5{
 }
 div.ra.legend div.legendbox{
     padding: 8px;
-    min-width:200px;
+    min-width:160px;
     height:20px;
     border: 2px solid #cccccc;
     display:inline-block;
     margin-left:30px;
 }
-div.ra.legend div.legendbox{
-    padding: 8px;
-    min-width:200px;
-    height:20px;
-    border: 2px solid #cccccc;
-    display:inline-block;
-    margin-left:30px;
-}
-div.ra.legend.title{
 
+div.ra.legend.title{
     font-weight: bold;
     font-size: 17px;
 }
-div.ra.legend.draft div.legendbox{
-}
-div.ra.legend.waiting div.legendbox{
-    background-color:  #ababab;
-    border-color:#ababab;
-}
-div.raDDD.legend.past div.legendbox{
-    background-color: var(--mintcake);
 
-}
-div.raDDD.legend.past {
-    background-color: var(--pastcolor);
-    width:200px;
-}
-div.ra.legend.published div.legendbox{
-    background-color: var(--mintcake);
-}
-div.ra.legend.cancelled div.legendbox{
-    background-color: var(--mintcake);
-    text-decoration: line-through;
-    color: var(--cancelled) !important;
-}
+
 
 button.topbutton {
     display: none;

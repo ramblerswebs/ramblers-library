@@ -16,14 +16,24 @@ L.Control.Mouse = L.Control.extend({
         displayMouseGridSquare: true,
         displayGridRef: true,
         displayLatLong: true,
-        displayLatLongFormat: true
+        displayLatLongFormat: true,
+        displayZoom: false
+    },
+    _mapState: {
+        zoom: 0,
+        latlng: [0, 0],
+        gridref: 'Outside OS Grid',
+        firstLine: '',
+        middleLine: '',
+        lastLine: ''
     },
     onAdd: function (map) {
         var self = this;
         this._map = map;
         this._container = L.DomUtil.create('div', 'leaflet-control-mouseposition');
         L.DomEvent.disableClickPropagation(this._container);
-        map.on('mousemove', this._update, this);
+        map.on('mousemove', this._updateLocation, this);
+        map.on('zoom', this._updateZoom, this);
         this._container.innerHTML = this.options.emptyString;
         this.OSGridSquareLayer = L.featureGroup([]).addTo(map);
         this.OSGridSquareLayer.options.ignore = true;
@@ -45,7 +55,7 @@ L.Control.Mouse = L.Control.extend({
         }
     },
     onRemove: function (map) {
-        map.off('mousemove', this._update);
+        map.off('mousemove', this._updateState);
     },
     gridSquarePause: function () {
         this.SAVEdisplayMouseGridSquare = this._userOptions.displayMouseGridSquare;
@@ -54,8 +64,85 @@ L.Control.Mouse = L.Control.extend({
     gridSquareResume: function () {
         this._userOptions.displayMouseGridSquare = this.SAVEdisplayMouseGridSquares;
     },
-    _update: function (e) {
-        this._getMouseMoveAction(e.latlng);
+    _updateZoom: function () {
+        this._mapState.zoom = this._map.getZoom();
+        this._updateLocationPanel();
+    },
+    _updateLocation: function (e) {
+        var latlng = e.latlng;
+        this._mapState.latlng = e.latlng;
+        var gr;
+        var p = new LatLon(latlng.lat, latlng.lng);
+        var grid = OsGridRef.latLonToOsGrid(p);
+        var zoom = this._mapState.zoom;
+        if (zoom > 16) {
+            gr = grid.toString(8);
+            this._mapState.firstLine = '8 figure grid reference [10m<sup>2</sup>]<br/>';
+        } else {
+            gr = grid.toString(6);
+            this._mapState.firstLine = '6 figure grid reference [100m<sup>2</sup>]<br/>';
+
+        }
+        this.OSGridSquareLayer.clearLayers();
+        if (gr === "") {
+            this._mapState.firstLine = "Outside OS Grid<br/>";
+            this._mapState.gridref = "";
+        } else {
+            this._mapState.gridref = '<span class="osgridref">' + gr + "</span>";
+        }
+        var lng = latlng.lng.toFixed(5);
+        var lat = latlng.lat.toFixed(5);
+        this._mapState.lastLine = "";
+        if (this._userOptions.displayLatLong) {
+            if (this._userOptions.displayLatLongFormat) {
+                this._mapState.lastLine = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
+            } else {
+                this._mapState.lastLine = "Lat/long: " + ra.latlongDecToDms(latlng.lat, latlng.lng);
+            }
+        }
+
+        //   var grtext = '<span class="osgridref">' + gr + "</span>";
+
+        if (!this._userOptions.displayGridRef) {
+            this._mapState.gridref = '';
+        }
+
+        this._updateLocationPanel();
+        this._displayMouseGrid(gr, zoom, grid);
+        return;
+    },
+    _updateLocationPanel: function () {
+        if (this._userOptions.displayZoom) {
+            this._mapState.middleLine = this._mapState.gridref + "   Zoom[" + this._mapState.zoom + "]<br/>";
+        } else {
+            this._mapState.middleLine = this._mapState.gridref + "<br/>";
+        }
+
+        if (this._map.getSize().y > 300) {
+            this._container.innerHTML = this._mapState.firstLine + this._mapState.middleLine + this._mapState.lastLine;
+        } else {
+            this._container.innerHTML = this._mapState.middleLine + this._mapState.lastLine;
+        }
+
+    },
+    _displayMouseGrid: function (gr, zoom, grid) {
+        this.OSGridSquareLayer.clearLayers();
+        if (gr !== "") {
+            if (this._userOptions.displayMouseGridSquare) {
+                if (zoom > 12) {
+                    var bounds = this._osGridToLatLongSquare(grid, 100);
+                    this.gridsquare100 = L.polygon(bounds, {color: "#ff7800", weight: 1, ignore: true});
+                    // ignore property is for Zoom All
+                    this.OSGridSquareLayer.addLayer(this.gridsquare100); // change rectangle
+                }
+                if (zoom > 16) {
+                    var bounds2 = this._osGridToLatLongSquare(grid, 10);
+                    this.gridsquare10 = L.polygon(bounds2, {color: "#884000", weight: 1, ignore: true});
+                    // ignore property is for Zoom All
+                    this.OSGridSquareLayer.addLayer(this.gridsquare10); // change rectangle
+                }
+            }
+        }
     },
     _osGridToLatLongSquare: function (gridref, size) {
 //  if (!(gridref instanceof OsGridRef))
@@ -79,64 +166,6 @@ L.Control.Mouse = L.Control.extend({
             [ll4.lat, ll4.lon]];
         return bounds;
     },
-    _getMouseMoveAction: function (latlng) {
-        var gr, gridref;
-        var zoom = this._map.getZoom();
-        this.OSGridSquareLayer.clearLayers();
-        // console.log(zoom);
-        var p = new LatLon(latlng.lat, latlng.lng);
-        var grid = OsGridRef.latLonToOsGrid(p);
-        if (zoom > 16) {
-            gr = grid.toString(8);
-            gridref = '8 figure grid reference [10m<sup>2</sup>]<br/>';
-        } else {
-            gr = grid.toString(6);
-            gridref = '6 figure grid reference [100m<sup>2</sup>]<br/>';
-            ;
-        }
-        if (gr === "") {
-            gridref = "";
-            gr = "Outside OS Grid";
-        } else {
-            if (this._userOptions.displayMouseGridSquare) {
-                if (zoom > 12) {
-                    var bounds = this._osGridToLatLongSquare(grid, 100);
-                    this.gridsquare100 = L.polygon(bounds, {color: "#ff7800", weight: 1, ignore: true});
-                    // ignore property is for Zoom All
-                    this.OSGridSquareLayer.addLayer(this.gridsquare100); // change rectangle
-                }
-                if (zoom > 16) {
-                    var bounds2 = this._osGridToLatLongSquare(grid, 10);
-                    this.gridsquare10 = L.polygon(bounds2, {color: "#884000", weight: 1, ignore: true});
-                    // ignore property is for Zoom All
-                    this.OSGridSquareLayer.addLayer(this.gridsquare10); // change rectangle
-                }
-            }
-        }
-        var lng = latlng.lng.toFixed(5);
-        var lat = latlng.lat.toFixed(5);
-        var latlong = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
-        if (this._userOptions.displayLatLongFormat) {
-            latlong = "Lat/long: " + lat + ", " + lng; //+" z"+ zoom;
-        } else {
-            latlong = "Lat/long: " + ra.latlongDecToDms(latlng.lat, latlng.lng);
-        }
-        var grtext = '<span class="osgridref">' + gr + "</span>";
-        if (this._map.getSize().y > 300) {
-            grtext = gridref + grtext;
-        }
-        if (!this._userOptions.displayGridRef) {
-            grtext = '';
-        }
-        if (!this._userOptions.displayLatLong) {
-            latlong = '';
-        }
-        if (grtext !== "" && latlong !== "") {
-            grtext = grtext + "<br/>";
-        }
-        this._container.innerHTML = grtext + latlong;
-        return;
-    },
     settingsForm: function (tag) {
         try {
             if (!L.Browser.mobile) {
@@ -153,6 +182,7 @@ L.Control.Mouse = L.Control.extend({
                 var displayGR = ra.html.input.yesNo(tag, 'divClass', "Display Grid Reference", this._userOptions, 'displayGridRef');
                 var displayLatLong = ra.html.input.yesNo(tag, 'divClass', "Display Latitude/Longitude", this._userOptions, 'displayLatLong');
                 var displayLatLongFormat = ra.html.input.yesNo(tag, 'divClass', "Latitude/Longitude format", this._userOptions, 'displayLatLongFormat', ['Decimal', 'Degrees Minutes Seconds']);
+                var displayZoom = ra.html.input.yesNo(tag, 'divClass', "Display Zoom level", this._userOptions, 'displayZoom');
                 osMouse.addEventListener("ra-input-change", function (e) {
                     ra.settings.changed();
                 });
@@ -175,6 +205,7 @@ L.Control.Mouse = L.Control.extend({
         ra.html.input.yesNoReset(this._userOptions.displayGridRef, true);
         ra.html.input.yesNoReset(this._userOptions.displayLatLong, true);
         ra.html.input.yesNoReset(this._userOptions.displayLatLongFormat, false);
+        ra.html.input.yesNoReset(this._userOptions.displayZoom, false);
     },
     _readSettings: function () {
         ra.settings.read('__mouseossquare', this._userOptions);

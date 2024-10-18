@@ -31,6 +31,12 @@
 }
 
 /* Ramblers additions */
+div.loading-error{
+    border-radius: 10px;
+    border:3px solid;
+    border-color: red;
+    padding:10px;
+}
 .cancelled {
     color:var(--cancelled);
 }
@@ -488,6 +494,8 @@ div.ra.help.helpblock div.help-border{
 }
 div.ra.help.helpblock span.close{
     color:black;
+    float: right;
+    padding-right: 20px;
 }
 div#ra-help-helptag{
     z-index: 99999;
@@ -880,6 +888,10 @@ details.ra-walksfilter summary{
     float: right;
     list-style: none;
 }
+details.ra-walksfilter summary.active{
+    background-color: var(--sunset);
+    color:white;
+}
 details.ra-walksfilter summary::-webkit-details-marker {
     display: none; /* for safari */
 }
@@ -933,7 +945,9 @@ div.ra-filteritem.nilFilter{
 div.ra-filteritem:hover{
     background-color: var(--lightgrey);
 }
-div.ra-filteritem.active{
+div.ra-filteritem.active,
+input.ra-filteritem.active,
+select.ra-filteritem.active{
     background-color: var(--sunset);
 }
 
@@ -958,6 +972,7 @@ div.ra-filteritem.right.active{
 }
 div.ra-filteritem.right:hover {
     background-color: var(--lightgrey);
+    color:white;
 }
 
 div.ra-filter-spacer{

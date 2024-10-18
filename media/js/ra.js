@@ -1,4 +1,4 @@
-var ra, jplist;
+var ra, jplist, document, performance;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -6,34 +6,36 @@ ra._isES6 = null;
 ra._baseDirectory = '';
 ra._jversion = "1.5.0";
 ra.uniquenumber = 0;
+document.addEventListener('DOMContentLoaded', function () {
+    ra.checkLoadingErrors();
+}, false);
+
 ra.defaultMapOptions = {
-    "divId": "",
-    "mapHeight": "250px",
-    "mapWidth": "100%",
-    "helpPage": "single-led-walk.html",
-    "cluster": null,
-    "fullscreen": true,
-    //  "google": false,
-    //  "search": false,
-    //  "locationsearch": false,
-    "osgrid": true,
-    "mouseposition": true,
-    "rightclick": true,
-    "settings": true,
-    "mylocation": true,
-    "fitbounds": true,
-    "draw": false,
-    "print": true,
-    "displayElevation": null,
-    //  "smartRoute": false,
-    "bing": false,
-    "bingkey": "",
-    "ORSkey": null,
-    //   "ramblersPlaces": false,
-    "topoMapDefault": false,
-    "controlcontainer": false,
-    "copyright": null,
-    "initialview": null
+    divId: "",
+    mapHeight: "250px",
+    mapWidth: "100%",
+    helpPage: "single-led-walk.html",
+    cluster: null,
+    fullscreen: true,
+    osgrid: true,
+    mouseposition: true,
+    rightclick: true,
+    settings: true,
+    mylocation: true,
+    fitbounds: true,
+    draw: false,
+    print: true,
+    displayElevation: null,
+    licenseKeys: {
+        ORSkey: null,
+        bingkey: "",
+        OSkey: "",
+        mapBoxkey: null,
+        thunderForestkey: null},
+    topoMapDefault: false,
+    controlcontainer: false,
+    copyright: null,
+    initialview: null
 };
 // return base directory
 ra.baseDirectory = function () {
@@ -54,8 +56,7 @@ ra.decodeOptions = function (value) {
         var base = parts.join('/');
         ra._baseDirectory = "/" + base;
     }
-    ra.defaultMapOptions.bing = options.bing;
-    ra.defaultMapOptions.bingkey = options.bingkey;
+    ra.defaultMapOptions.licenseKeys = options.licenseKeys;
     value = "";
     return options;
 };
@@ -64,6 +65,22 @@ ra.uniqueID = function () {
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
 ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
+//    window.addEventListener("error", (event) => {
+//        var body = event.message + '\n\r' + '\n\r' + 'Filename: ' + event.filename + '\n\r' + '\n\r';
+//        body = ra.html.specialCharsToHex(body + event.error.stack).replace(/\n/g, '%0D%0A');
+//        var subject = encodeURIComponent("Unexpected error: " + window.location.href);
+//        var email = 'mailto:unexpected@ramblers-webs.org.uk?subject=' + subject + '&body=' + body;
+//        var instr = '<p>Unexpected error, this might be solved by reloading/refreshing the web page</p><ul>' +
+//                '<li>In most browsers you can reload the page by pressing Ctrl+F5. </li>';
+//        instr += "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
+//
+//        instr += "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
+//        ra.showError(instr, "Whoops - unexpected error");
+//        event.stopImmediatePropagation();
+//        ra.loading.stop();
+//
+//    });
+
     ra.loading.start();
     ra._jversion = jversion;
     var options = ra.decodeOptions(mapOptions);
@@ -89,7 +106,7 @@ ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
         }
     }
     ra.loading.stop();
-    // ra.showMsg('Hello world! ' + displayClass);
+    // ra.wrong();
 };
 ra.decodeData = function (value) {
     if (value === null) {
@@ -99,12 +116,60 @@ ra.decodeData = function (value) {
     value = "";
     return data;
 };
+ra.checkLoadingErrors = function () {
+    var errors = "";
+    var res = performance.getEntriesByType("resource");
+    var notLoaded = [];
+    for (let item of res) {
+        if ('responseStatus' in item) {
+            if (item.responseStatus > 400) {
+                notLoaded.push(item);
+            }
+//            if (item.responseStatus === 0) {
+//                notLoaded.push(item);
+//            }
+        }
+    }
+    for (let item of notLoaded) {
+        if ('responseStatus' in item) {
+            errors += "(" + item.responseStatus + ")  " + item.name + "\n\r";
+        }
+    }
+
+    if (errors !== "") {
+        var instr = "";
+        if (!navigator.onLine) {
+            instr += "<h2>You may be off-line - check your internet connection</h2>";
+        }
+
+        var body = 'Web page loading error on web page: ' + window.location.href + '\n\r\n\rResources\n\r\n\r' + errors + "\n\r\n\r";
+        body = encodeURIComponent(body);
+        var subject = encodeURIComponent("Web page loading error: " + window.location.href);
+        var email = 'mailto:unexpected@ramblers-webs.org.uk?subject=' + subject + '&body=' + body;
+        instr += '<p>Web page failed to load correctly, this might be solved by reloading/refreshing the web page</p><ul>' +
+                '<li>In most browsers you can reload the page by pressing Ctrl+F5. </li>';
+        instr += "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
+        instr += "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
+        ra.showError("<div class='loading-error'>" + instr + "</div>", "Loading Error");
+    }
+
+};
+
 // alternatives to alert
 ra.showMsg = function (msg) {
     ra.modals.createModal("<h3>Information</h3><p style='font-weight:bold; max-width:450px'>" + msg + "</p>", false);
 };
-ra.showError = function (msg) {
-    ra.modals.createModal("<h3>Error</h3><p style='font-weight:bold'>" + msg + "</p>", false);
+ra.showErrorModal = null;
+ra.showError = function (msg, title = "Error") {
+    var out = "<h3 style='font-weight:bold;color:red'>" + title + "</h3>" + msg;
+    if (ra.showErrorModal !== null) {
+        ra.showErrorModal.appendContent(out);
+    } else {
+        ra.showErrorModal = ra.modals.createModal(out, false);
+        document.addEventListener("ra-modal-closing", function (event) {
+            ra.showErrorModal = null;
+        });
+}
 };
 ra.showConfirm = function (msg) {
     return confirm(msg);
@@ -147,7 +212,6 @@ ra.convert_mails = function ($text) {
     var $img = '<img src="' + ra.baseDirectory() + 'media/lib_ramblers/images/symbol_at.png" alt="@ sign" />';
     var $emails = ra.fetch_mails($text);
     $emails.forEach(myFunction);
-
     function myFunction(value, index, array) {
         var email = value.replace("@", $img);
         $text = $text.replace(value, email);
@@ -229,7 +293,6 @@ ra.getObjProperty = function (obj, path, defaultvalue = null) {
         }
     }
     return item;
-
 };
 // sort object so listed in order of a value
 ra.sortObject = function (obj, property) {
@@ -280,7 +343,6 @@ ra.isRealOject = function (obj) {
 ra.arrayToCSV = function (arr) {
     var item, i;
     var line = [];
-
     for (i = 0; i < arr.length; ++i) {
         item = arr[i];
         if (item.indexOf && (item.indexOf(',') !== -1 || item.indexOf('"') !== -1)) {
@@ -291,8 +353,6 @@ ra.arrayToCSV = function (arr) {
 
     return line.join(',');
 };
-
-
 ra.ajax = (function () {
     var ajax = {};
     // request url and call function
@@ -387,8 +447,6 @@ ra.ajax = (function () {
     return ajax;
 }
 ());
-
-
 ra.cookie = (function () {
     var cookie = {};
     cookie.create = function (raobject, name, days) {
@@ -423,7 +481,6 @@ ra.cookie = (function () {
     return cookie;
 }
 ());
-
 ra.settings = (function () {
     var settings = {};
     settings.read = function (name, settings) {
@@ -467,11 +524,8 @@ ra.settings = (function () {
     return settings;
 }
 ());
-
-
 ra.date = (function () {
     var date = {};
-
 //      Possible values are "numeric", "2-digit", "narrow", "short", "long".
 
     date.getDate = function (datetime) {
@@ -518,6 +572,13 @@ ra.date = (function () {
         var value = date.getDateTime(datetime);
         var yyyymmdd = value.getFullYear().toString() + date.MM(value) + date.DD(value);
         var out = yyyymmdd + "T" + value.getHours().toString().padStart(2, '0') + value.getMinutes().toString().padStart(2, '0') + value.getSeconds().toString().padStart(2, '0');
+        return out;
+    };
+    date.YYYYMMDDmmhhss = function (datetime) {
+        var value = date.getDateTime(datetime);
+        var yyyymmdd = value.getFullYear().toString() + '-' + date.MM(value) + '-' + date.DD(value);
+        var time = value.getHours().toString().padStart(2, '0') + ':' + value.getMinutes().toString().padStart(2, '0') + ':' + value.getSeconds().toString().padStart(2, '0');
+        var out = yyyymmdd + " " + time; // + '.000000';
         return out;
     };
     date.toYYYYMMDDmmhhssFormat = function (datetime) {
@@ -619,29 +680,33 @@ ra.date = (function () {
     };
     date.getDateTime = function (datetimestring) {
         // also used by time
-        var value = datetimestring;
-        if (typeof value === "string") {
-            // set each item so it works on mac
-            var arr = datetimestring.split(/[\-\+ :T]/);
-            var date = new Date(arr[0], arr[1] - 1, arr[2]);
-            if (arr.length > 3) {
-                date.setHours(arr[3]);
-            }
-            if (arr.length > 4) {
-                date.setMinutes(arr[4]);
-            }
-            if (arr.length > 5) {
-                date.setSeconds(arr[5]);
-            }
-            return date;
-        } else {
-            if ((datetimestring instanceof Date)) {
-                return value;
-            } else {
-                ra.showError("Error RA0001: invalid datetime");
-            }
+        var type = typeof datetimestring;
+        switch (type.toLowerCase()) {
+            case "string":
+                // set each item so it works on mac
+                var arr = datetimestring.split(/[\-\+ :T]/);
+                var date = new Date(arr[0], arr[1] - 1, arr[2]);
+                if (arr.length > 3) {
+                    date.setHours(arr[3]);
+                }
+                if (arr.length > 4) {
+                    date.setMinutes(arr[4]);
+                }
+                if (arr.length > 5) {
+                    date.setSeconds(arr[5]);
+                }
+                return date;
+            case "object":
+                if (datetimestring instanceof Date) {
+                    return datetimestring;
+                }
+            case "number":
+                var date = new Date(datetimestring);
+                return date;
 
         }
+        console.log("Error RA0001: invalid datetime");
+        return null;
     };
 //Day 	--- 	---
 //d 	Day of the month, 2 digits with leading zeros 	01 to 31
@@ -678,8 +743,6 @@ ra.date = (function () {
     return date;
 }
 ());
-
-
 ra.time = (function () {
     var time = {};
     time.HHMM = function (datetime) {
@@ -715,8 +778,6 @@ ra.time = (function () {
     return time;
 }
 ());
-
-
 ra.html = (function () {
     var html = {};
     // add HTML Div tag with class and text
@@ -741,10 +802,7 @@ ra.html = (function () {
             var td = ra.html.createElement(tr, "td");
             td.innerHTML = col;
         });
-
     };
-
-
     html.displayInModal = function (tag) {
         // used by ra.walk to display images
         var ele = document.createElement("div");
@@ -860,7 +918,6 @@ ra.html = (function () {
                 rect.left >= 0 &&
                 rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
                 rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-
                 );
     };
     html.insertAfter = function (referenceNode, newNode) {
@@ -873,19 +930,14 @@ ra.html = (function () {
     };
     html.getCoords = function (elem) { // crossbrowser version
         var box = elem.getBoundingClientRect();
-
         var body = document.body;
         var docEl = document.documentElement;
-
         var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
         var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
-
         var clientTop = docEl.clientTop || body.clientTop || 0;
         var clientLeft = docEl.clientLeft || body.clientLeft || 0;
-
         var top = box.top + scrollTop - clientTop;
         var left = box.left + scrollLeft - clientLeft;
-
         return {top: Math.round(top), left: Math.round(left)};
     };
     // open window with tag content for printing
@@ -930,16 +982,24 @@ ra.html = (function () {
         return $text;
     };
     // escape why?
-    html.escape = function (text) {
-        var map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, function (m) {
-            return map[m];
+    html.escape = function (htmlStr) {
+        return htmlStr.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+    };
+    html.unEscape = function (htmlStr) {
+        htmlStr = htmlStr.replace(/&lt;/g, "<");
+        htmlStr = htmlStr.replace(/&gt;/g, ">");
+        htmlStr = htmlStr.replace(/&quot;/g, "\"");
+        htmlStr = htmlStr.replace(/&#39;/g, "\'");
+        htmlStr = htmlStr.replace(/&amp;/g, "&");
+        return htmlStr;
+    };
+    html.specialCharsToHex = function (str) {
+        return str.replace(/[^\w\s]/g, function (char) {
+            return '%' + char.charCodeAt(0).toString(16).padStart(2, '0');
         });
     };
     // escape why?
@@ -988,7 +1048,6 @@ ra.html = (function () {
         const doc = new DOMParser().parseFromString(dirtyString, 'text/html');
         return doc.body.textContent || '';
     };
-
     html.walkDOM = function (node, func) {
         func(node);  //this will invoke the functionToInvoke from arg
         node = node.firstChild;
@@ -1000,7 +1059,6 @@ ra.html = (function () {
     return html;
 }
 ());
-
 if (typeof (ra.html.input) === "undefined") {
     ra.html.input = {};
     ra.html.input.action = function (tag, divClass, label, name) {
@@ -1020,7 +1078,6 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.classList.add("button-p0555");
         inputTag.ra = {};
         inputTag.ra.name = name;
-
         inputTag.addEventListener("click", function (e) {
             inputTag.textContent = 'Done';
             inputTag.classList.remove("button-p0555");
@@ -1114,7 +1171,6 @@ if (typeof (ra.html.input) === "undefined") {
             optionTag.value = item.value;
             if (raobject[property] === item.value) {
                 which = item.value;
-
             }
             inputTag.appendChild(optionTag);
         });
@@ -1209,7 +1265,6 @@ if (typeof (ra.html.input) === "undefined") {
         inputColor.style.height = "30px";
         inputColor.style.width = "50px";
         inputColor.style.backgroundColor = "#DDDDDD";
-
         inputColor.addEventListener("input", function (e) {
             e.target.ra.object[e.target.ra.property] = e.target.value;
             let event = new Event("ra-input-change"); // (2)
@@ -1275,7 +1330,6 @@ if (typeof (ra.html.input) === "undefined") {
         ra.html.input.colorReset(itemDiv.ra.color, style.color, false);
         ra.html.input.numberReset(itemDiv.ra.weight, style.weight, false);
         ra.html.input.numberReset(itemDiv.ra.opacity, style.opacity, false);
-
         let event = new Event("ra-input-change"); // (2)
         itemDiv.dispatchEvent(event);
     };
@@ -1292,7 +1346,6 @@ if (typeof (ra.html.input) === "undefined") {
         itemDiv.style.width = length;
         itemDiv.style.height = "1px";
         tag.appendChild(itemDiv);
-
         return itemDiv;
     };
     ra.html.input._setExampleLineStyle = function (line, style) {
@@ -1336,7 +1389,6 @@ if (typeof (ra.html.input) === "undefined") {
         color.addEventListener("ra-input-change", function (e) {
             ra.html.input._setExampleLineStyle(example, raobject);
         });
-
         opacity.addEventListener("ra-input-change", function (e) {
             ra.html.input._setExampleLineStyle(example, raobject);
         });
@@ -1414,18 +1466,12 @@ ra.clipboard = (function () {
     clipboard.set = function (text) {
         // Copy the text inside the text field
         navigator.clipboard.writeText(text);
-
         // show the copied text
         ra.showMsg("Text copied to clipboard: " + text);
     };
-
     return clipboard;
 }
 ());
-
-
-
-
 ra.loading = (function () {
     var loading = {};
     loading.start = function () {
@@ -1443,14 +1489,14 @@ ra.loading = (function () {
         loading.elements = ra.html.generateTags(document.body, tags);
     };
     loading.stop = function () {
-        loading.elements.container.remove();
-        loading.elements = null;
+        if (loading.elements !== null) {
+            loading.elements.container.remove();
+            loading.elements = null;
+        }
     };
     return loading;
 }
 ());
-
-
 ra.w3w = (function () {
     var w3w = {};
     w3w.get = function (lat, lng, id, place) {
@@ -1516,7 +1562,6 @@ ra.w3w = (function () {
             tag.dispatchEvent(event);
         });
     };
-
     w3w.aboutUs = function () {
         var page = "https://what3words.com/about-us/";
         window.open(page, "_blank", "scrollbars=yes,width=990,height=480,menubar=yes,resizable=yes,status=yes");
@@ -1524,11 +1569,9 @@ ra.w3w = (function () {
     return w3w;
 }
 ());
-
 ra.modals = (function () {
     var modals = {};
     modals._items = [];
-
     modals.masterdiv = null;
     modals.createModal = function ($html, printButton = true, cancelButton = true) {
 
@@ -1555,7 +1598,6 @@ ra.modals = (function () {
             i += 1;
         });
     };
-
     document.addEventListener("ra-modal-closing", function (event) {
         //modals.diag("Closing");
         modals._items.pop();
@@ -1570,7 +1612,6 @@ ra.modals = (function () {
     return modals;
 }
 ());
-
 ra.modal = function () {
     this.elements = {};
     this._content;
@@ -1601,6 +1642,13 @@ ra.modal = function () {
     this.getContent = function () {
         return this._content;
     };
+    this.appendContent = function (extra) {
+        var hr = document.createElement("hr");
+        this.elements.data.appendChild(hr);
+        var div = document.createElement("div");
+        this.elements.data.appendChild(div);
+        ra.html.setTag(div, extra);
+    };
     this.headerDiv = function () {
         return this.elements.header;
     };
@@ -1613,7 +1661,6 @@ ra.modal = function () {
             this._enterFullscreen(this._fullScreenElement);
         }
     };
-
     this._createModalTag = function (print = true, closeButton = true) {
         var tags = [
             {name: 'modaltag', parent: 'root', tag: 'div', attrs: {class: 'js-modal ramblers'}, style: {display: 'none'}},
@@ -1628,6 +1675,7 @@ ra.modal = function () {
             this.elements.data.innerHTML = '';
         } else {
             this._content = document.createElement('div');
+            this._content.classList.add("ra-modal-container");
             this.elements = ra.html.generateTags(this._content, tags);
             this.elements.close.setAttribute('data-dismiss', 'modal');
         }
@@ -1641,33 +1689,22 @@ ra.modal = function () {
     }
     };
     this._exitFullscreen = function () {
-//        if (document.exitFullscreen) {
-//            document.exitFullscreen();
-//        } else if (document.mozCancelFullScreen) {
-//            document.mozCancelFullScreen();
-//        } else if (document.webkitCancelFullScreen) {
-//            document.webkitCancelFullScreen();
-//        } else if (document.msExitFullscreen) {
-//            document.msExitFullscreen();
-//        }
+
         // Check which implementation is available
         var requestMethod = document.exitFullscreen ||
                 document.mozCancelFullScreen ||
                 document.webkitCancelFullScreen ||
                 document.msExitFullscreen;
-
         if (requestMethod) {
             requestMethod.apply(document);
         }
     };
-
     this._enterFullscreen = function (element) {
         // Check which implementation is available
         var requestMethod = element.requestFullScreen ||
                 element.mozRequestFullScreen ||
                 element.webkitRequestFullScreen ||
                 element.mozRequestFullScreen;
-
         if (requestMethod) {
             requestMethod.apply(element);
         }
@@ -1685,7 +1722,6 @@ ra.modal = function () {
         this._exitFullscreen();
     }
 };
-
 ra.math = (function () {
     var math = {};
     math.deg2rad = function (value) {
@@ -1713,8 +1749,6 @@ ra.math = (function () {
     return math;
 }
 ());
-
-
 ra.geom = (function () {
     var geom = {};
     var KM = 6371.009;
@@ -1740,7 +1774,6 @@ ra.geom = (function () {
         {angle: 315, name: "North West", abbr: "NW"},
         {angle: 337.5, name: "North NorthWest", abbr: "NNW"},
         {angle: 360, name: "North", abbr: "N"}];
-
     geom.validateRadius = function ($unit) {
         if ($unit === "KM") {
             return KM;
@@ -1756,7 +1789,6 @@ ra.geom = (function () {
         //  out.directionAbbr = geom.directionAbbr(out.direction);
         return out;
     };
-
 // Takes two sets of geographic coordinates in decimal degrees and produces distance along the great circle line.
 // Optionally takes a fifth argument with one of the predefined units of measurements, or planet radius in custom units.
     geom.distance = function ($lat1, $lon1, $lat2, $lon2, $unit = "KM") {
@@ -1821,12 +1853,9 @@ ra.geom = (function () {
         console.log(geom.bearing(40.76, -73.984, 40.89, -74));
         console.log(geom.direction(40.76, -73.984, 40.89, -74));
     };
-
     return geom;
 }
 ());
-
-
 ra.units = (function () {
     var units = {};
     // metres to Km
@@ -1840,7 +1869,6 @@ ra.units = (function () {
     return units;
 }
 ());
-
 ra.help = function (tag, helpFunction) {
     // var targetRect = null;
     var lastHelp = null;
@@ -1851,7 +1879,6 @@ ra.help = function (tag, helpFunction) {
     this.fred = ra.help.no;
     ra.help.no += 1;
     this.helpTag = document.getElementById('ra-help-helptag');
-
     if (this.helpTag === null) {
         var body = document.getElementsByTagName("BODY")[0];
         this.helpTag = document.createElement('div');
@@ -1862,7 +1889,7 @@ ra.help = function (tag, helpFunction) {
         var _this = this;
         this.helpTag.addEventListener("click", function (e) {
             _this.helpTag.style.display = 'none';
-            var ele = e.target;
+            var ele = e.currentTarget;
             if (ele.raHelpTag === 'undefined') {
                 ra.showError('help undefined');
             }
@@ -1876,7 +1903,6 @@ ra.help = function (tag, helpFunction) {
         this.helpButton.textContent = "";
         var _this = this;
         this.tag.appendChild(this.helpButton);
-
         this.helpButton.addEventListener("click", function (e) {
             if (lastHelp !== null) {
                 if (lastHelp !== _this) {
@@ -1887,7 +1913,6 @@ ra.help = function (tag, helpFunction) {
             if (_this.open) {
                 _this.helpTag.innerHTML = "<span>Help<span class='close'>x</span></span><div class='help-border'></div>" + _this.helpFunction();
                 _this.helpTag.raHelpTag = _this;
-
                 var eleRect = ra.html.getCoords(_this.helpButton);
                 var top = eleRect.top;
                 var left = eleRect.left + 40;
@@ -1902,7 +1927,6 @@ ra.help = function (tag, helpFunction) {
                 _this.helpTag.style.left = left + 'px';
                 _this.helpTag.style.top = top + 'px';
                 _this.helpTag.style.display = 'block';
-
             } else {
                 _this.helpTag.style.display = 'none';
             }
@@ -1915,6 +1939,9 @@ ra.filter = function (eventTag, eventName) {
     this.eventTag = eventTag;
     this.eventName = eventName;
     this.initialised = false;
+    this.filterDiv = null;
+    this.filterButtonDiv = null;
+    this.displayClearFilters = null;
     this._groups = {};
     this.addGroup = function (group) {
         group.setFilter(this);
@@ -1932,6 +1959,13 @@ ra.filter = function (eventTag, eventName) {
         this.eventTag.dispatchEvent(new Event(this.eventName));
         var nodes = document.getElementsByClassName("ra-clear-filters");
         nodes[0].style.display = "";
+        if (this.isAnyFilterActive()) {
+            this.filterButtonDiv.classList.add('active');
+            this.displayClearFilters.style.visibility = "";
+        } else {
+            this.filterButtonDiv.classList.remove('active');
+            this.displayClearFilters.style.visibility = "hidden";
+        }
     };
     this.getJson = function () {
         function replacer(key, value) {
@@ -1961,10 +1995,15 @@ ra.filter = function (eventTag, eventName) {
         var tags = [
             {name: 'details', parent: 'root', tag: 'details', attrs: {class: "ra-walksfilter"}},
             {name: 'summary', parent: 'details', tag: 'summary', textContent: 'Filter'},
+            {name: 'clearFilter', parent: 'details', tag: 'div', textContent: 'Clear filters', attrs: {class: "ra-clear-filters ra-filteritem right"}},
             {name: 'filters', parent: 'details', tag: 'div', attrs: {class: 'ra-walksfilter'}}
         ];
         var elements = ra.html.generateTags(tag, tags);
         var filters = elements.filters;
+        this.filterDiv = filters;
+        this.filterButtonDiv = elements.summary;
+        this.displayClearFilters = elements.clearFilter;
+        this.displayClearFilters.style.visibility = "hidden";
         for (var propt in this._groups) {
             var div = document.createElement('div');
             div.setAttribute('class', 'ra-filtergroup');
@@ -1972,26 +2011,10 @@ ra.filter = function (eventTag, eventName) {
             var group = this._groups[propt];
             group._display(div);
         }
-
-        // clear filters
-        var displayClearFilters = document.createElement('div');
-        displayClearFilters.textContent = "Clear filters";
-        displayClearFilters.classList.add('ra-clear-filters');
-        displayClearFilters.classList.add('ra-filteritem');
-        displayClearFilters.classList.add('right');
-        displayClearFilters.style.display = "none";
-        filters.appendChild(displayClearFilters);
         var _this = this;
-        displayClearFilters.onclick = function (event) {
-            var nodes = filters.getElementsByClassName("ra-filteritem");
-            if (nodes.length > 0) {
-                for (let i = 0; i < nodes.length; i++) {
-                    nodes[i].classList.remove('active');
-                }
-            }
+        this.displayClearFilters.onclick = function (event) {
             _this.clearFilters();
             _this.signalEvent();
-            displayClearFilters.style.display = "none";
         };
         // display empty categories 
         var nodes = filters.getElementsByClassName("nilFilter");
@@ -2023,7 +2046,6 @@ ra.filter = function (eventTag, eventName) {
             group.activateFilterItem(item);
         }
     };
-
     this.shouldDisplayItem = function (valueSet) {
         var display = true;
         // var vs = JSON.stringify(valueSet);
@@ -2039,13 +2061,23 @@ ra.filter = function (eventTag, eventName) {
         }
         return display;
     };
+    this.isAnyFilterActive = function () {
+        var nodes = this.filterDiv.getElementsByClassName("ra-filteritem");
+        if (nodes.length > 0) {
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i].classList.contains('active')) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
     this.clearFilters = function () {
         for (var propt in this._groups) {
             var group = this._groups[propt];
             group._clearFilters();
         }
     };
-
 };
 ra.filter.valueSet = function () {
     this._valueGroup = {};
@@ -2054,9 +2086,7 @@ ra.filter.valueSet = function () {
             this._valueGroup[id] = [];
         }
         this._valueGroup[id].push(value);
-
     };
-
     this.getGroup = function (id) {
         var group = null;
         if (id in this._valueGroup) {
@@ -2068,7 +2098,6 @@ ra.filter.valueSet = function () {
         return this._valueGroup;
     };
 };
-
 ra.filter.groupDate = function (id, title) {
     this.id = id;
     this.title = title;
@@ -2094,24 +2123,31 @@ ra.filter.groupDate = function (id, title) {
             tag.appendChild(div);
             var label = document.createElement('label');
             label.style.marginLeft = '5px';
+            var inputId = this.id;
             if (title === "Start") {
                 label.style.marginRight = '5px';
+                inputId += "Start";
             } else {
                 label.style.marginRight = '10px';
+                inputId += "End";
             }
+            label.setAttribute('for', inputId);
             label.textContent = title;
             div.appendChild(label);
             var input = document.createElement('input');
             this.inputs.push(input);
+            input.classList.add('ra-filteritem');
             input.setAttribute('type', 'date');
             input.setAttribute('value', ra.date.YYYYMMDD(initValue));
             input.setAttribute('min', ra.date.YYYYMMDD(this.min));
             input.setAttribute('max', ra.date.YYYYMMDD(this.max));
+            input.setAttribute('id', inputId);
             div.appendChild(input);
             var _this = this;
             input.addEventListener("input", function (event) {
                 var input = event.target;
                 var value = input.value;
+                var tag = event.target;
                 if (title === "Start") {
                     if (value === "") {
                         value = input.min;
@@ -2127,11 +2163,10 @@ ra.filter.groupDate = function (id, title) {
                     _this.values.max = ra.date.getDateTime(value);
                 }
                 if (input.value !== ra.date.YYYYMMDD(input.min) && input.value !== ra.date.YYYYMMDD(input.max)) {
-                    event.target.style.backgroundColor = "rgb(240, 128, 80,1)";
+                    tag.classList.add('active');
                 } else {
-                    event.target.style.backgroundColor = "#FFFFFF";
+                    tag.classList.remove('active');
                 }
-
                 _this._filter.signalEvent();
             });
             initValue = this.max;
@@ -2150,9 +2185,9 @@ ra.filter.groupDate = function (id, title) {
         return false;
     };
     this._clearFilters = function () {
-        this.inputs[0].value = this.min;
+        this.inputs[0].value = ra.date.YYYYMMDD(this.min);
         this.inputs[0].dispatchEvent(new Event('input'));
-        this.inputs[1].value = this.max;
+        this.inputs[1].value = ra.date.YYYYMMDD(this.max);
         this.inputs[1].dispatchEvent(new Event('input'));
     };
     this._insert = function (value) {
@@ -2163,7 +2198,6 @@ ra.filter.groupDate = function (id, title) {
             values.max = value;
             this.min = value;
             this.max = value;
-
         } else {
             if (values.min > value) {
                 values.min = value;
@@ -2187,7 +2221,6 @@ ra.filter.groupLimit = function (id, title, options = null) {
     this.values = {};
     this.limit = 0;
     this.select = null;
-
     if (options !== null) {
         if ('order' in options) {
             options.order.forEach(item => { // data is an array of the titles and limit for each 
@@ -2206,9 +2239,9 @@ ra.filter.groupLimit = function (id, title, options = null) {
         tag.appendChild(h);
         var select = document.createElement('select');
         this.select = select;
+        select.classList.add('ra-filteritem');
         select.style.marginLeft = '5px';
         tag.appendChild(select);
-
         var values = this.values;
         for (var propt in values) {
             var item = values[propt];
@@ -2221,10 +2254,13 @@ ra.filter.groupLimit = function (id, title, options = null) {
         select.addEventListener("change", function (event) {
             // only works if you have one select as 'updated' is hard coded
             _this.limit = Number(event.target.value);
+            var tag = event.target;
             if (_this.limit !== 0) {
-                event.target.style.backgroundColor = "rgb(240 ,128 ,80,1)";
+                //  event.target.style.backgroundColor = "rgb(240 ,128 ,80,1)";
+                tag.classList.add('active');
             } else {
-                event.target.style.backgroundColor = "#FFFFFF";
+                //   event.target.style.backgroundColor = "#FFFFFF";
+                tag.classList.remove('active');
             }
             _this._filter.signalEvent();
         });
@@ -2278,7 +2314,6 @@ ra.filter.groupText = function (id, title, options = null) {
                     "name": item,
                     "active": false};
             });
-
         }
     }
     this.setFilter = function (filter) {
@@ -2291,7 +2326,8 @@ ra.filter.groupText = function (id, title, options = null) {
             return;
         }
         if (len === 1 && !this.displaySingle) {
-            return;
+            tag.classList.add("nilFilter");
+            tag.style.display = 'none';
         }
         var h = document.createElement('h3');
         h.textContent = this.title;
@@ -2314,21 +2350,17 @@ ra.filter.groupText = function (id, title, options = null) {
             tag.appendChild(div);
             if (item.no > 0) {
                 var _this = this;
-
                 div.ra = {option: item};
                 div.addEventListener("click", function (event) {
-                    var option = this.ra.option;
-                    option.active = !option.active;
-                    if (option.active) {
-                        this.classList.add('active');
+                    var tag = event.target;
+                    if (tag.classList.contains('active')) {
+                        tag.classList.remove('active');
                     } else {
-                        this.classList.remove('active');
+                        tag.classList.add('active');
                     }
                     _this._filter.signalEvent();
                 });
             }
-
-
         }
     };
     this._shouldDisplay = function (valueArray) {
@@ -2336,7 +2368,7 @@ ra.filter.groupText = function (id, title, options = null) {
         var items = this.values;
         for (var propt in items) {
             var item = items[propt];
-            if (item.active) {
+            if (item.div.classList.contains('active')) {
                 anyActive = true;
             }
         }
@@ -2348,7 +2380,7 @@ ra.filter.groupText = function (id, title, options = null) {
         }
         for (var propt in items) {
             var item = items[propt];
-            if (item.active) {
+            if (item.div.classList.contains('active')) {
                 if (valueArray.includes(propt)) {
                     return true;
                 }
@@ -2360,21 +2392,16 @@ ra.filter.groupText = function (id, title, options = null) {
         var items = this.values;
         for (var propt in items) {
             var item = items[propt];
-            item.active = false;
+            item.div.classList.remove('active');
         }
     };
     this._insert = function (value) {
-
         var values = this.values;
         if (!values.hasOwnProperty(value)) {
             values[value] = {};
             values[value].no = 0;
-            // values[value].name = "";
-            //   values[value].tagId = null; // tagId;
         }
         values[value].no += 1;
-        //  values[value].name = value;
-        values[value].active = false;
     };
     this.activateFilterItem = function (name) {
         var item = this.values[name];
@@ -2387,30 +2414,9 @@ ra.filter.groupText = function (id, title, options = null) {
     };
 };
 
-
-
-
 ra.jplist = function (group) {
     this.hasFilters = false;
     this.group = group;
-    this.sortButton = function (tag, varclass, type, order, text) {
-        var button = document.createElement('button');
-        tag.appendChild(button);
-        button.setAttribute('class', "jplistsortbutton" + order);
-        button.setAttribute('data-jplist-control', "sort-buttons");
-        button.setAttribute('data-path', "." + varclass);
-        button.setAttribute('data-group', this.group);
-        button.setAttribute('data-order', order);
-        button.setAttribute('data-type', type);
-        if (type === "datetime") {
-            button.setAttribute('data-datetime-format', '{day}/{month}/{year}');
-        }
-        button.setAttribute('data-name', "sortbutton");
-        button.setAttribute('data-selected', "false");
-        button.setAttribute('data-mode', "radio");
-        button.textContent = text;
-        return button;
-    };
     this.addPagination = function (no, tag, jplistName, itemsPerPage) {
         tag.innerHTML = '';
         if (!ra.isES6()) {
@@ -2441,20 +2447,19 @@ ra.jplist = function (group) {
                 {name: 'pageNumber', parent: 'xxx', tag: 'button', attrs: {type: 'button', 'data-type': 'page'}, textContent: '{pageNumber}'},
                 {name: 'next', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'next'}, textContent: '>'},
                 {name: 'last', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'last'}, textContent: '>|'},
-                {name: 'select', parent: 'div', tag: 'select', attrs: {class: 'ra nonmobile', 'data-type': 'items-per-page'}},
+                {name: 'select', parent: 'div', tag: 'select', attrs: {class: 'ra nonmobile', 'data-type': 'items-per-page', 'name': 'pagesize'}},
                 {parent: 'select', tag: 'option', attrs: {value: '10'}, textContent: '10 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '20'}, textContent: '20 per page'},
+                {parent: 'select', tag: 'option', attrs: {value: '25'}, textContent: '25 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '50'}, textContent: '50 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '100'}, textContent: '100 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '0'}, textContent: 'View all'}
             ];
-
             var elements = ra.html.generateTags(tag, tags);
             elements.select.style.width = "120px";
         }
 
         return null;
-
     };
     this.addFilter = function (varclass, name, type, min = 0, max = 999999) {
         var out = "";
@@ -2462,31 +2467,47 @@ ra.jplist = function (group) {
             this.hasFilters = true;
             out = '<input \
      data-jplist-control="textbox-filter"  data-group="' + this.group + '" \
-     data-name="my-filter-' + varclass + '" \
+     data-name="my-filter-' + varclass + '" \\n\
+     id="my-filter-' + varclass + '" \
      data-path=".' + varclass + '" type="text" \
      value="" placeholder="Filter by ' + name + '" />';
         }
         if (type === "number") {
             this.hasFilters = true;
             out = '<div class="csv-slider"><div class="ra-slider" \
-      data-jplist-control="slider-range-filter" \
-      data-path=".' + varclass + '" \
-      data-group="' + this.group + '" \
-      data-name="my-slider-' + varclass + '" \
-      data-min="' + min + '" \
-      data-from="' + min + '" \
-      data-to="' + max + '" \
-      data-max="' + max + '"> \
-      <b>' + name + ':</b> <span data-type="value-1"></span> \
-      <div class="jplist-slider" data-type="slider"></div> \
-      <span data-type="value-2"></span>  \
-      </div></div>';
+                  data-jplist-control="slider-range-filter" \
+                  data-path=".' + varclass + '" \
+                  data-group="' + this.group + '" \
+                  data-name="my-slider-' + varclass + '" \
+                  data-min="' + min + '" \
+                  data-from="' + min + '" \
+                  data-to="' + max + '" \
+                  data-max="' + max + '"> \
+                  <b>' + name + ':</b> <span data-type="value-1"></span> \
+                  <div class="jplist-slider" data-type="slider"></div> \
+                  <span data-type="value-2"></span>  \
+                  </div></div>';
         }
         var _this = this;
         window.addEventListener("resize", function () {
             _this.updateControls();
         });
         return out;
+    };
+    this.sortButton = function (tag, varclass, type, order, text) {
+        var button = document.createElement('button');
+        tag.appendChild(button);
+        button.setAttribute('class', "jplistsortbutton" + order);
+        button.setAttribute('data-jplist-control', "sort-buttons");
+        button.setAttribute('data-path', "." + varclass);
+        button.setAttribute('data-group', this.group);
+        button.setAttribute('data-order', order);
+        button.setAttribute('data-type', type);
+        button.setAttribute('data-name', "sortbutton");
+        button.setAttribute('data-selected', "false");
+        button.setAttribute('data-mode', "radio");
+        button.textContent = text;
+        return button;
     };
     this.updateControls = function () {
         var sliders = document.getElementsByClassName('ra-slider');
@@ -2515,8 +2536,6 @@ ra.jplist = function (group) {
         }
     };
 };
-
-
 if (typeof (ra.ics) === "undefined") {
     ra.ics = {};
     // https://icalendar.org/
@@ -2604,7 +2623,6 @@ if (typeof (ra.ics) === "undefined") {
             }
 
             chunks.forEach(myFunction);
-
             function myFunction(value, index, array) {
                 if (index === 0) {
                     out += value + '\r\n';
@@ -2671,7 +2689,7 @@ if (typeof (ra.ics) === "undefined") {
                 if (cp < 128)
                     ++line_length;
                 else if (cp < 2048)
-                    line_length += 2;//needs 2 UTF-8 bytes
+                    line_length += 2; //needs 2 UTF-8 bytes
                 else if (cp < 65536)
                     line_length += 3;
                 else
@@ -2686,15 +2704,11 @@ if (typeof (ra.ics) === "undefined") {
             }
             return result.substr(this.newLineChar.length + 1);
         };
-
-
         this._addRecord('BEGIN:', 'VCALENDAR');
         this._addRecord('VERSION:', '2.0');
         this._addRecord('METHOD:', 'PUBLISH');
         this._addRecord('PRODID:', 'ramblers-webs v1.2');
     };
-
-
     ra.ics.event = function () {
         this.item = {
             startDate: null,
@@ -2776,8 +2790,6 @@ if (typeof (ra.ics) === "undefined") {
             return false;
         };
     };
-
-
 }
 
 // create input field to allow uploading a file
@@ -2825,6 +2837,4 @@ ra.uploadFile = function () {
         div.appendChild(input);
         return input;
     };
-
-
 };

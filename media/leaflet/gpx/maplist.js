@@ -279,14 +279,14 @@ ra.display.gpxFolder = function (options, data) {
             }
             tags.push(
                     {name: 'title', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Title'},
-                    {name: 'distance', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Distance Km'},
-                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Miles'},
-                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'min Altitude(m)'},
-                    {parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'max Altitude(m)'},
-                    {name: 'elevation', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Elevation Gain(m)'},
+                    {name: 'distance', parent: 'headings', tag: 'th', attrs: {class: ''}, textContent: 'Distance Km'},
+                    {parent: 'headings', tag: 'th', attrs: {class: 'tablet'}, textContent: 'Miles'},
+                    {parent: 'headings', tag: 'th', attrs: {class: 'tablet'}, textContent: 'min Altitude(m)'},
+                    {parent: 'headings', tag: 'th', attrs: {class: 'tablet'}, textContent: 'max Altitude(m)'},
+                    {name: 'elevation', parent: 'headings', tag: 'th', attrs: {class: 'tablet'}, textContent: 'Elevation Gain(m)'},
                     );
             if (this.controls.download > 0) {
-                tags.push({parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'GPX'});
+                tags.push({parent: 'headings', tag: 'th', attrs: {class: ''}, textContent: 'GPX'});
             }
             tags.push({name: 'tbody', parent: 'table', tag: 'tbody'});
             var eles = ra.html.generateTags(tag, tags);
@@ -327,15 +327,15 @@ ra.display.gpxFolder = function (options, data) {
         }
         link += '<td class="wTitle alignleft">' + this.displayGPXName(route) + '</td>';
         link += '<td class="wDistance">' + (route.distance / 1000).toFixed(1) + '</td>';
-        link += '<td>' + ra.units.metresToMi(route.distance).toFixed(2) + '</td>';
+        link += '<td class="tablet">' + ra.units.metresToMi(route.distance).toFixed(2) + '</td>';
         if (route.cumulativeElevationGain === 0) {
-            link += '<td>...</td>';
-            link += '<td>...</td>';
-            link += '<td class="wElevation">...</td>';
+            link += '<td class="tablet">...</td>';
+            link += '<td class="tablet">...</td>';
+            link += '<td class="wElevation tablet">...</td>';
         } else {
-            link += '<td>' + route.minAltitude.toFixed(0) + '</td>';
-            link += '<td>' + route.maxAltitude.toFixed(0) + '</td>';
-            link += '<td class="wElevation">' + route.cumulativeElevationGain.toFixed(0) + '</td>';
+            link += '<td class="tablet">' + route.minAltitude.toFixed(0) + '</td>';
+            link += '<td class="tablet">' + route.maxAltitude.toFixed(0) + '</td>';
+            link += '<td class="wElevation tablet">' + route.cumulativeElevationGain.toFixed(0) + '</td>';
         }
         if (this.controls.download > 0) {
             link += '<td>' + this.getGPXdownloadLink(route) + '</td>';

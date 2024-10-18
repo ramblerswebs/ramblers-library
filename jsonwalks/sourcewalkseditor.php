@@ -16,9 +16,11 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
     private $groupCode;
     private $groupName;
     private $site;
+    private $srfr;
     private $feedPathJ5 = "index.php?option=com_ra_walks_editor&view=walks&format=json";
     private $feedPathJ3 = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
-   // private $feedPath = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
+
+    // private $feedPath = 'index.php?option=com_ra_walkseditor&task=walks.controller&format=json';
 
     const TIMEFORMAT = "Y-m-d\TH:i:s";
 
@@ -45,15 +47,14 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $this->srfr = new RFeedhelper($cacheLocation, $CacheTime);
         $this->srfr->setReadTimeout(15);
         $response = $this->readFeed($this->rafeedurl);
-        $id = 1;
         If ($response->version === '1.0') {
             $newwalks = $response->walks;
             If ($newwalks !== null) {
                 foreach ($newwalks as $item) {
+                    $id = $item->admin->id;
                     $walk = new RJsonwalksWalk();
                     $this->convertToInternalFormat($walk, $item, $this->groupCode . "-" . strval($id));
                     $walks->addWalk($walk);
-                    $id += 1;
                 }
             } else {
                 $app = JFactory::getApplication();
@@ -123,6 +124,9 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
         $finishDate = null;
         $title = $item->basics->title;
         $descriptionHtml = $item->basics->description;
+        if ($descriptionHtml === null) {
+            $descriptionHtml = '';
+        }
         $additionalNotes = $item->basics->notes;
         $external_url = "";
         //    $walk->checkCancelledStatus();
@@ -145,7 +149,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
             if (property_exists($loc, 'postcode')) {
                 $postcode = $loc->postcode->value;
             }
-            $osmaps = $loc->osmaps;
+            $osmaps = null;
             $meet = new RJsonwalksWalkTimelocation("Meeting", "", $time, $name,
                     $latitude, $longitude, $gridref, $w3w,
                     $postcode, 0, 0, $osmaps);
@@ -189,10 +193,7 @@ class RJsonwalksSourcewalkseditor extends RJsonwalksSourcebase {
             $postcode = $loc->postcode->value;
         }
         $osmaps = null;
-        if (property_exists($loc, 'postcode')) {
-            $osmaps = $loc->osmaps;
-        }
-
+        // do not use $osmaps as it does not have bounds    
         $tl = new RJsonwalksWalkTimelocation($type, "", $time, $name,
                 $latitude, $longitude, $gridref, $w3w,
                 $postcode, 0, 0, $osmaps);

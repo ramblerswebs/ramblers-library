@@ -7,20 +7,7 @@
  */
 class RLicense {
 
-    private static $openRoutingServicelicensekey = "undefined";
-    private static $binglicensekey = true;
-
-    public static function GoogleMapKey($value) {
-        // self::$googlelicensekey = $value;
-    }
-
-    public static function getGoogleMapKey() {
-        return "undefined";
-    }
-
-    public static function isGoogleKeyMapSet() {
-        return false;
-    }
+    private static $openRoutingServicelicensekey = null;
 
     public static function OpenRoutingServiceKey($value) {
         self::$openRoutingServicelicensekey = $value;
@@ -34,23 +21,72 @@ class RLicense {
         return self::$openRoutingServicelicensekey != "undefined";
     }
 
+    // Common licenses for all domains
+
+    public static function getOrdnanceSurveyLicenseKey() {
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            return 'OL9IpgZ7gHe35WaXPKrpTIQRkiMS9UAb';
+        }
+        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+            return 'OL9IpgZ7gHe35WaXPKrpTIQRkiMS9UAb';
+        }
+        return null;
+    }
+
+    public static function getMapBoxLicenseKey() {
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            return 'pk.eyJ1IjoiY2hyaXN2YXVnaGFuIiwiYSI6ImNrMGZkMHdmejAwZXEzY253eTV1Znd2YncifQ.kCx-9Kq-SFA0UOsHvIMDMg';
+        }
+        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+            return 'pk.eyJ1IjoiY2hyaXN2YXVnaGFuIiwiYSI6ImNrMGZkMHdmejAwZXEzY253eTV1Znd2YncifQ.kCx-9Kq-SFA0UOsHvIMDMg';
+        }
+
+        return null;
+    }
+
+    public static function getThunderForestLicenseKey() {
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            return 'bc99bda92702488ba51a8ca395da6807';
+        }
+        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+            return 'bc99bda92702488ba51a8ca395da6807';
+        }
+        return null;
+    }
+
+    public static function getESRILicenseKey() {
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            return "";
+        }
+        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+            return "";
+        } else {
+            return null;
+        }
+    }
+
+    public static function getBingMapKey() {
+        $endLicenseDate = new DateTime("2025-07-01");
+        $now = new DateTime();
+        if ($endLicenseDate < $now) {
+            return null;
+        }
+        //      if (strpos(JURI::base(), 'localhost') !== false) {
+        //          return null;
+        //      }
+        //      if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+        //          return null;
+        //  return 'AshdQBFR1UGiLO-YaL2dF9XhyWcsUM7E8-MtIaaFXgtdKKi5Po_XZDrdeSTd7ket';
+        //      } else {
+        return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
+        //      }
+    }
+
+    // deprecated
+
     public static function BingMapKey($value) {
         // deprecated
         $app = JFactory::getApplication();
         $app->enqueueMessage(JText::_("Deprecated: BingMapKey command is no longer supported"), "warning");
-    }
-
-    public static function getBingMapKey() {
-        // return self::$binglicensekey;
-        if (strpos(JURI::base(), 'localhost') !== false) {
-            //  return $key = 'AjtUzWJBHlI3Ma_Ke6Qv2fGRXEs0ua5hUQi54ECwfXTiWsitll4AkETZDihjcfeI';
-            return 'AshdQBFR1UGiLO-YaL2dF9XhyWcsUM7E8-MtIaaFXgtdKKi5Po_XZDrdeSTd7ket';
-        } else {
-            return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
-        }
-    }
-
-    public static function isBingKeyMapSet() {
-        return true;
     }
 }

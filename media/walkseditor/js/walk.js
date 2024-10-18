@@ -14,7 +14,6 @@ ra.walkseditor.preview = {};
 ra.walkseditor.preview.editButton = false;
 ra.walkseditor.preview.deleteButton = false;
 ra.walkseditor.preview.duplicateButton = false;
-
 ra.walkseditor.walks = function () {
     this._walks = [];
     this.getWalks = function () {
@@ -26,6 +25,16 @@ ra.walkseditor.walks = function () {
             walksdata.push(_walk.data);
         });
         return JSON.stringify(walksdata, null, 5);
+    };
+    this.getWalkById = function (value) {
+        var id = parseInt(value);
+        for (var i = 0; i < this._walks.length; i++) {
+            var walk = this._walks[i];
+            if (walk.id === id) {
+                return walk;
+            }
+        }
+        return null;
     };
     this.addWalk = function (walk) {
         this._walks.push(walk);
@@ -44,7 +53,6 @@ ra.walkseditor.walks = function () {
             }
         }
     };
-
     this.clearWalks = function () {
         this._walks = [];
     };
@@ -68,7 +76,6 @@ ra.walkseditor.walks = function () {
     this.sort = function () {
         this._sortWalks();
     };
-
     this._sortWalks = function () {
         this._walks.sort(function (a, b) {
             var da = a.data.basics.date;
@@ -139,8 +146,7 @@ ra.walkseditor.walks = function () {
         var issuesOptions = {displaySingle: true};
         var notesOptions = {displaySingle: false};
         var shapeOptions = {displaySingle: false};
-        var contactsOptions = {displaySingle: true, sort:true};
-
+        var contactsOptions = {displaySingle: true, sort: true};
         filter.addGroup(new ra.filter.groupText("idStatus", "Status", statusOptions));
         filter.addGroup(new ra.filter.groupText("idCategory", "Category", categoryOptions));
         filter.addGroup(new ra.filter.groupText("idIssues", "Issues", issuesOptions));
@@ -152,7 +158,6 @@ ra.walkseditor.walks = function () {
         filter.addGroup(new ra.filter.groupText("idGrade", "Grade", gradesOptions));
         filter.addGroup(new ra.filter.groupText("idShape", "Shape", shapeOptions));
         filter.addGroup(new ra.filter.groupText("idContacts", "Contact", contactsOptions));
-
         this._walks.forEach(walk => {
             walk.initialiseFilter(filter);
         });
@@ -161,7 +166,6 @@ ra.walkseditor.walks = function () {
         filter.activateFilterItem("idWhen", "Not defined");
     };
 };
-
 ra.walkseditor.walk = function () {
 
     this.notifications = new ra.walkseditor.notifications();
@@ -212,7 +216,6 @@ ra.walkseditor.walk = function () {
             this.createFromObject(data);
         }
     };
-
     this.initialiseFilter = function (filter) {
         var values = this.getFilterValues();
         filter.initialiseFilter(values);
@@ -220,7 +223,6 @@ ra.walkseditor.walk = function () {
     this.getFilterValues = function () {
 
         var valueSet = new ra.filter.valueSet();
-
         var walkDate = ra.getObjProperty(this.data, "basics.date", "");
         if (walkDate !== "") {
             valueSet.add("idDOW", ra.date.dow(walkDate));
@@ -236,9 +238,9 @@ ra.walkseditor.walk = function () {
         }
 
         valueSet.add("idStatus", ra.getObjProperty(this.data, "admin.status", ""));
-
         if (walkDate !== "") {
-            if (ra.date.getDateTime(walkDate) < new Date()) {
+            var now = ra.date.YYYYMMDD(new Date());
+            if (walkDate < now) {
                 valueSet.add("idWhen", "Past", "ID12345Past");
             } else {
                 valueSet.add("idWhen", "Future", "ID12345Future");
@@ -256,11 +258,9 @@ ra.walkseditor.walk = function () {
         walks.forEach(item => {
             valueSet.add("idDistance", this.filterDistance(item));
             valueSet.add("idGrade", ra.getObjProperty(item, 'natgrade', 'Not defined'));
-            valueSet.add("idShape", ra.getObjProperty(item, 'shape', ''));
+            valueSet.add("idShape", ra.getObjProperty(item, 'type', 'Not defined'));
         });
-
         valueSet.add("idContacts", ra.getObjProperty(this.data, "contact.displayName", "Not defined"));
-
         if (this.hasEditorNotes() > 0) {
             valueSet.add("idNotes", "Has notes");
         } else {
@@ -268,7 +268,6 @@ ra.walkseditor.walk = function () {
         }
         return  valueSet;
     };
-
     this.setDisplayFilter = function (filter) {
         var values = this.getFilterValues();
         this.displayWalk = filter.shouldDisplayItem(values);
@@ -307,7 +306,6 @@ ra.walkseditor.walk = function () {
                 return distanceOrder[7];
         }
     };
-
     this.createFromObject = function (data) {
         if (typeof data.basics !== 'undefined') {
             this.data.basics = data.basics;
@@ -337,36 +335,27 @@ ra.walkseditor.walk = function () {
             this.data.notes = data.notes;
         }
     };
-
-
     this.addDisplayClasses = function (cl) {
-        cl.add(this.getStatusClass());
-        if (this.dateStatus() === ra.walkseditor.DATETYPE.Past) {
-            cl.add('status-Past');
-        }
+        var classes = this.getStatusClasses()
+        classes.forEach(c => {
+            cl.add(c);
+        });
         return;
     };
     this.getEventClassesArray = function () {
         var out = [];
         out.push('pointer');
-        out.push(this.getStatusClass());
-
-        switch (this.dateStatus()) {
-            case ra.walkseditor.DATETYPE.Past:
-                out.push('status-Past');
-                break;
-            case ra.walkseditor.DATETYPE.Future:
-                out.push('status-Future');
-                break;
-            default:
-                out.push('status-NoDate');
-        }
+        var classes = this.getStatusClasses();
+        classes.forEach(c => {
+            out.push(c);
+        });
+       
         return out;
     };
     this.dateSet = function () {
         var basics = this.data.basics;
         if (basics.hasOwnProperty('date')) {
-            return true;
+            return basics.date !== "";
         } else {
             return false;
         }
@@ -379,15 +368,23 @@ ra.walkseditor.walk = function () {
             return null;
         }
     };
+    this.isSqlDateCorrect = function (d) {
+        var result;
+        if (this.dateSet()) {
+            var basics = this.data.basics;
+            result = ra.date.YYYYMMDD(basics.date) === ra.date.YYYYMMDD(d);
+        } else {
+            result = null === d;
+        }
+        return result;
+    };
     this.getContact = function () {
         return ra.getObjProperty(this.data, 'contact.displayName', 'Undefined');
     };
-
     this.exportToWMLine = function () {
         var distance = '';
         var units = '';
         var natgrade = '';
-
         var data = [];
         var walkdate = ra.getObjProperty(this.data, 'basics.date', null);
         if (walkdate === null) {
@@ -400,7 +397,6 @@ ra.walkseditor.walk = function () {
         data.push(ra.getObjProperty(this.data, 'basics.notes', ''));
         data.push(''); // website link
         data.push(ra.getObjProperty(this.data, 'contact.displayName', ''));
-
         var walks = ra.getObjProperty(this.data, 'walks', null);
         if (walks.length > 0) {
             if (walks.length > 1) {
@@ -434,7 +430,6 @@ ra.walkseditor.walk = function () {
         }
 
         this._exportLocation(data, ra.getObjProperty(this.data, 'finish.location', null));
-
         data.push(natgrade);
         switch (units) {
             case "miles":
@@ -449,19 +444,17 @@ ra.walkseditor.walk = function () {
                 data.push('');
                 data.push('');
         }
-        data.push('');  // ascent
+        data.push(''); // ascent
         data.push('');
         data.push(this.outFlag(this.data, 'accessibility.dog.value'));
         data.push(this.outFlag(this.data, 'accessibility.intro.value', ''));
         data.push(this.outFlag(this.data, 'accessibility.nostiles.value', ''));
         data.push(this.outFlag(this.data, 'accessibility.family.value', ''));
         data.push(this.outFlag(this.data, 'accessibility.wheelchair.value', ''));
-
         data.push(this.outFlag(this.data, 'transport.access.value', ''));
         data.push(this.outFlag(this.data, 'transport.park.value', ''));
         data.push(this.outFlag(this.data, 'transport.share.value', ''));
         data.push(this.outFlag(this.data, 'transport.coach.value', ''));
-
         data.push(this.outFlag(this.data, 'facilities.refresh.value', ''));
         data.push(this.outFlag(this.data, 'facilities.toilet.value', ''));
         var out = ra.arrayToCSV(data) + "\n\r";
@@ -492,7 +485,6 @@ ra.walkseditor.walk = function () {
         }
 
     };
-
     this.exportToGWEMLine = function () {
         var difficulty = '';
         var localgrade = '';
@@ -508,7 +500,6 @@ ra.walkseditor.walk = function () {
         data.push(ra.getObjProperty(this.data, 'basics.title', ''));
         data.push(ra.getObjProperty(this.data, 'basics.description', ''));
         var walks = ra.getObjProperty(this.data, 'walks', null);
-
         if (walks.length > 0) {
             if (walks.length > 1) {
                 var reason = "GWEM does not support led walks with more than one walk/distance";
@@ -542,12 +533,11 @@ ra.walkseditor.walk = function () {
             data.push('No');
         }
         data.push(ra.getObjProperty(this.data, 'start.location.time', ''));
-
         // meeting
         var meetloc = ra.getObjProperty(this.data, 'meeting.locations', []);
         if (meetloc.length > 0) {
             this._exportGWEMLocation(data, meetloc[0]);
-            data.push('Yes');  // exact
+            data.push('Yes'); // exact
             data.push(ra.getObjProperty(meetloc[0], 'time', ''));
         } else {
             this._exportGWEMLocation(data, null);
@@ -557,7 +547,6 @@ ra.walkseditor.walk = function () {
 
         // finish
         this._exportGWEMLocation(data, ra.getObjProperty(this.data, 'finish.location', null));
-
         data.push('Public');
         data.push(difficulty);
         data.push(localgrade);
@@ -565,7 +554,6 @@ ra.walkseditor.walk = function () {
         data.push(miles);
         var estfinish = '';
         data.push(estfinish);
-
         // contact
         data.push(ra.getObjProperty(this.data, 'contact.id', ''));
         var contactType = ra.getObjProperty(this.data, 'contact.contactType', '');
@@ -576,10 +564,9 @@ ra.walkseditor.walk = function () {
         }
         data.push(ra.getObjProperty(this.data, 'contact.displayName', ''));
         data.push(''); // Festivals
-        data.push('');  // Strands
+        data.push(''); // Strands
 
         data.push(ra.getObjProperty(this.data, 'basics.notes', ''));
-
         var out = ra.arrayToCSV(data) + "\n\r";
         return out;
     };
@@ -624,14 +611,12 @@ ra.walkseditor.walk = function () {
             details.appendChild(summary);
             var div = document.createElement('div');
             details.appendChild(div);
-            div.innerHTML = "<pre>" + JSON.stringify(this.data, undefined, 4) + "</pre>";
+            div.innerHTML = "<pre>" + ra.html.escape(JSON.stringify(this.data, undefined, 4)) + "</pre>";
         }
         document.addEventListener('preview-close-modal', function (e) {
             modal.close();
         });
     };
-
-
     this.addButtons = function (tag) {
 
         //      this.addButton(div, 'View', item.viewUrl);
@@ -666,7 +651,6 @@ ra.walkseditor.walk = function () {
             if (ok) {
                 let ev = new Event("preview-close-modal");
                 document.dispatchEvent(ev);
-
                 let event = new Event("preview-walk-" + name.toLowerCase());
                 event.ra = {};
                 event.ra.walk = _this;
@@ -675,7 +659,6 @@ ra.walkseditor.walk = function () {
         });
         div.appendChild(button);
     };
-
     this.checkFields = function () {
         this.notifications.clear();
         this.checkFieldsBasics();
@@ -785,7 +768,6 @@ ra.walkseditor.walk = function () {
                 }
                 if (ra.getObjProperty(singlewalk, 'natgrade') === null) {
                     this.notifications.addItem("Walk - No national grade has been assigned");
-
                 }
                 if (ra.getObjProperty(singlewalk, 'type') === null) {
                     this.notifications.addItem("Walk - No walk shape assigned, circular,linear");
@@ -798,7 +780,6 @@ ra.walkseditor.walk = function () {
     };
     this.checkFieldsContact = function () {
         var walk = this.data;
-
         if (ra.getObjProperty(walk, 'contact') === null) {
             this.notifications.addItem("Contact - Not defined");
         }
@@ -818,7 +799,6 @@ ra.walkseditor.walk = function () {
             this.notifications.addItem("Information:  Contact - No contact method defined (email or telephone)", false);
         }
     };
-
     this.setCategory = function (category, reason = '') {
         this.data.admin.category = category;
     };
@@ -847,19 +827,29 @@ ra.walkseditor.walk = function () {
     this.getStatus = function () {
         return this.data.admin.status;
     };
-    this.getStatusClass = function () {
-        var status = this.getStatus().replace(/ /g, "_");
+
+    this.getStatusClasses = function () {
+        var status = this.getStatus();
+        var past = this.dateStatus() === ra.walkseditor.DATETYPE.Past;
         switch (status) {
-            case 'Approved':
+            case "Draft":
+                return ['statusDraft'];
+            case "Awaiting Approval":
+                return ['statusAwaiting_Approval'];
+            case 'Published':
+                if (past) {
+                    return ['statusPast'];
+                } else {
+                    return ['statusPublished'];
+                }
             case 'Cancelled':
-                var d = ra.getObjProperty(this.data, 'basics.date');
-                var value = ra.date.getDateTime(d);
-                var today = new Date();
-                if (value < today) {
-                    return 'status-' + status; // + ' status-Past';
+                if (past) {
+                    return ['statusPast', 'statusCancelled'];
+                } else {
+                    return ['statusPublished', 'statusCancelled'];
                 }
         }
-        return 'status-' + status;
+
     };
     this.dateStatus = function () {
         var d = ra.getObjProperty(this.data, 'basics.date', null);
@@ -878,7 +868,6 @@ ra.walkseditor.walk = function () {
     this.setWalkDate = function (odate) {
         this.data.basics.date = odate;
     };
-
     this.getWalkDate = function (view) {
         var d = ra.getObjProperty(this.data, 'basics.date');
         var past = '';
@@ -894,6 +883,8 @@ ra.walkseditor.walk = function () {
                     case 'list':
                     case 'details':
                         return  "<b>" + ra.date.dowdd(d) + "</b>" + " " + ra.date.month(d) + " " + ra.date.YY(d) + past;
+                    case 'dateError':
+                        return   ra.date.dowdd(d) + " " + ra.date.month(d) + " " + ra.date.YY(d);
                 }
             }
         }
@@ -920,7 +911,11 @@ ra.walkseditor.walk = function () {
                 }
                 out += '<h4>Description: </h4>' + description;
                 out += '<h4>Notes: </h4>' + notes;
-
+                return out;
+                break;
+            case 'dateError':
+                out = "Date: " + this.getWalkDate('dateError');
+                out += " Title: " + ra.getObjProperty(this.data, 'basics.title');
                 return out;
                 break;
             default:
@@ -969,7 +964,6 @@ ra.walkseditor.walk = function () {
         var meets = ra.getObjProperty(this.data, 'meeting.locations');
         meets.forEach(element => {
             out += this.displayLocation(element, view, 'Meeting');
-
         });
         return out;
     };
@@ -1054,14 +1048,13 @@ ra.walkseditor.walk = function () {
                 out += '<li><b>Grid Ref: </b>' + gr + "</li>";
                 out += '<li><b>Postcode: </b>' + pc + "</li>";
                 out += '<li><b>W3W: </b>' + w3w + "</li>";
-                out += "<li><b>Maps</b></li>" + this.displayMaps(location);
+                out += "<li><b>Maps</b></li>" + this._displayOSMaps(location);
                 out += '</ul>';
         }
         return out;
     };
-    this.displayMaps = function (location) {
+    this._displayOSMaps = function (location) {
         var out = '';
-
         var maps = ra.getObjProperty(location, 'osmaps', null);
         if (maps === null) {
             return out;
@@ -1113,7 +1106,6 @@ ra.walkseditor.walk = function () {
                         out += " Leader: " + leader;
                     }
                     out += '</li>';
-
                     break;
             }
 
@@ -1122,9 +1114,7 @@ ra.walkseditor.walk = function () {
             out += "</ul>";
         }
         return out;
-
     };
-
     this.getWalkContact = function (view) {
         var d = ra.getObjProperty(this.data, 'contact');
         var out = '';
@@ -1179,7 +1169,6 @@ ra.walkseditor.walk = function () {
             notes += delimiter + "[" + no.toString() + " issues]";
         }
         return notes;
-
     };
     this.getWalkFacilities = function () {
         var out = "";
@@ -1190,7 +1179,6 @@ ra.walkseditor.walk = function () {
             out = "No facilities, transport, accessibility flags";
         }
         return out;
-
     };
     this.getWalkFacilitiesItem = function (title, section) {
         var out = "";
@@ -1208,7 +1196,6 @@ ra.walkseditor.walk = function () {
         }
         return out;
     };
-
     this.getNoWalkIssues = function () {
         this.checkFields();
         return this.notifications.getNumberErrors();
@@ -1216,7 +1203,6 @@ ra.walkseditor.walk = function () {
     this.getWalkMessages = function (view = 'all') {
         this.checkFields();
         return this.notifications.getHtmlMsgs();
-
     };
     this.getWalkNotes = function (view) {
         var d = ra.getObjProperty(this.data, 'notes.comments');
@@ -1236,7 +1222,6 @@ ra.walkseditor.walk = function () {
     };
     this.getAsEvent = function () {
         var meetingTime = '';
-
         var d = ra.getObjProperty(this.data, 'basics.date');
         var startTime = ra.getObjProperty(this.data, 'start.location.time');
         var meeting = ra.getObjProperty(this.data, 'meeting.locations');
@@ -1268,7 +1253,6 @@ ra.walkseditor.walk = function () {
         event.title = title;
         event.classNames = this.getEventClassesArray();
 
-
         return event;
     };
     this.getAsMarker = function (cluster) {
@@ -1282,7 +1266,8 @@ ra.walkseditor.walk = function () {
         var name = ra.getObjProperty(this.data, 'start.location.name', 'Location name not set');
         var gr = ra.getObjProperty(this.data, 'start.location.gridref8', '');
         var _this = this;
-        popup = "<b>Date: " + date + "<br/>Title: " + title + "</b><br/>";
+        popup = "<div class='popupStatus " + this.getStatusClasses().join(' ') + "'>" + this.getStatus() + "</div>";
+        popup += "<b>Date: " + date + "<br/>Title: " + title + "</b><br/>";
         switch (type) {
             case 'start':
                 lat = ra.getObjProperty(this.data, 'start.location.latitude');
@@ -1319,8 +1304,8 @@ ra.walkseditor.walk = function () {
                 lat = 53.70774;
                 lng = 0.76326;
                 icon = ra.map.icon.markerArea();
-                title = 'Start not defined, +date';
-                popup = 'Start not defined';
+                title = 'Start not defined,' + date;
+                popup += 'Start not defined';
                 popupoffset = [0, -10];
         }
         //      var marker = L.marker([lat, lng], {icon: icon, title: title, riseOnHover: true}).addTo(layer);
@@ -1333,19 +1318,14 @@ ra.walkseditor.walk = function () {
             _this.previewWalk();
         });
         var marker = cluster.addMarker(pp, lat, lng, {icon: icon, title: title, riseOnHover: true});
-
     };
-
-
     this.hasEditorNotes = function () {
         var notes = ra.getObjProperty(this.data, 'notes.comments');
         if (notes !== null) {
             return notes.length > 0;
         }
         return false;
-
     };
-
     this.displayJson = function (tag, walk, gwemWalk) {
         var hr = document.createElement('hr');
         tag.appendChild(hr);
@@ -1361,47 +1341,35 @@ ra.walkseditor.walk = function () {
         details.appendChild(div);
         div.innerHTML = "<pre>" + JSON.stringify(gwemWalk, undefined, 4) + "</pre>";
     };
-
-
     this.walkDetails = function () {
 
         var PHP_EOL = "\n";
         var $html = "";
-
         $html += "<div class='walkstdfulldetails stdfulldetails walk draft' >" + PHP_EOL;
-        $html += "<div class=\'group " + this.getStatusClass() + "'><b>Walk details/preview- " + this.getStatus() + " </b></div>" + PHP_EOL;
-
+        $html += "<div class=\'group " + this.getStatusClasses().join(' ') + "'><b>Walk details/preview- " + this.getStatus() + " </b></div>" + PHP_EOL;
         $html += "<div class='ra preview section'>" + PHP_EOL;
         $html += '<b>Basics:</b><br/>' + this.getWalkBasics('details');
         $html += "</div>" + PHP_EOL;
-
         $html += "<div class='ra preview section'>";
         $html += '<b>Meeting:</b>' + this.getWalkMeeting('details');
         $html += "</div>" + PHP_EOL;
-
         $html += "<div class='ra preview section'>";
         $html += '<b>Start:</b>' + this.getWalkStart('details');
         $html += "</div>" + PHP_EOL;
-
         $html += "<div class='ra preview section'>";
         $html += '<b>Walk(s):</b><br/>' + this.getWalkDifficulty('details');
         $html += "</div>" + PHP_EOL;
-
         $html += "<div class='ra preview section'>";
         $html += '<b>Contact:</b><br/>' + this.getWalkContact('details');
         $html += "</div>" + PHP_EOL;
-
         var mapdiv = "detailsMapDiv";
         $html += "<div class='ra preview section' id='" + mapdiv + "'></div>" + PHP_EOL;
-
         $html += "<div class='ra preview section'>" + PHP_EOL;
         $html += this.getWalkFacilities();
-
         $html += "</div>" + PHP_EOL;
         $html += "<div class='ra preview section'>" + PHP_EOL;
         $html += '<b>Issues:</b><br/>' + this.getWalkMessages();
         $html += "</div>" + PHP_EOL;
-
         var notes = this.getWalkNotes('details');
         if (notes !== '') {
             $html += "<div class='ra preview section'>" + PHP_EOL;
@@ -1409,7 +1377,6 @@ ra.walkseditor.walk = function () {
             $html += "</div>" + PHP_EOL;
         }
         $html += "</div>" + PHP_EOL;
-
         return $html;
     };
     this._addMaptoWalk = function () {
@@ -1449,7 +1416,6 @@ ra.walkseditor.walk = function () {
                     var pcLng = ra.getObjProperty(element, 'postcode.longitude');
                     if (lat !== null && long !== null) {
                         out += time + ' from ' + name + ', ' + gr;
-
                         var marker = L.marker([lat, long]).addTo(layer);
                         marker.bindPopup(out);
                         points += 1;
@@ -1508,10 +1474,8 @@ ra.walkseditor.walk = function () {
 
             var bounds = layer.getBounds();
             map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
-
         }
     };
-
     this.gradeCSS = function (nationalGrade) {
         var $class = "";
         switch (nationalGrade) {
@@ -1570,8 +1534,6 @@ ra.walkseditor.walk = function () {
         a[index] = char;
         return a.join("");
     };
-
-
 };
 ra.walkseditor.notifications = function () {
     this._notifications = [];
@@ -1589,7 +1551,6 @@ ra.walkseditor.notifications = function () {
     };
     this.getNumberErrors = function () {
         return this._noErrors;
-
     };
     this.getHtmlMsgs = function () {
         var html = "";

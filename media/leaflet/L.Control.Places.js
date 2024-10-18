@@ -131,6 +131,7 @@ L.Control.Places = L.Control.extend({
             check.setAttribute('type', "checkbox");
             check.setAttribute('checked', true);
             check.setAttribute('data-id', i);
+            check.setAttribute('id', 'idstar' + i);
             check.addEventListener("change", function (e) {
                 var state = e.target.checked;
                 var id = parseInt(e.target.getAttribute('data-id'));
@@ -144,6 +145,7 @@ L.Control.Places = L.Control.extend({
             var img = document.createElement('img');
             div.appendChild(img);
             img.setAttribute('src', ra.baseDirectory() + 'media/lib_ramblers/leaflet/images/' + i + 'star.png');
+
             var desc = document.createElement('span');
             div.appendChild(desc);
             desc.textContent = '  ' + i + ' stars';
@@ -190,7 +192,7 @@ L.Control.Places = L.Control.extend({
         var _locationOptions = {location: {lat: 52, lng: -2},
             distance: 20,
             limit: 100,
-            mouseOptions:null
+            mouseOptions: null
         };
         if (this._popupinfo) {
             this._popupinfo = false;

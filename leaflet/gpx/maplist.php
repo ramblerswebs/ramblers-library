@@ -108,5 +108,4 @@ class RLeafletGpxMaplist extends RLeafletMap {
         }
         return $state;
     }
-
 }

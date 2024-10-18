@@ -13,8 +13,12 @@ ra.display.tableList = (function () {
         this.options = options;
         this.data = data;
         this.numberOfRows = this.data.list.items[0].values.length;
-        //this.paginationDefault = 10;
-
+        this.defaultIcon = L.icon({
+            iconUrl: ra.baseDirectory() + "media/lib_ramblers/images/marker-route.png",
+            iconSize: [33, 50],
+            iconAnchor: [16, 47],
+            popupAnchor: [0, -44]
+        });
         this.load = function ( ) {
             this.dataGroup = ra.uniqueID();
             this.myjplist = new ra.jplist(this.dataGroup);
@@ -51,7 +55,6 @@ ra.display.tableList = (function () {
             this.addPagination(this.numberOfRows, this.elements.raPagination1);
             this.testForMap();
             this.displayCSVTable();
-
             if (this.displayMap) {
                 this.lmap = new ra.leafletmap(this.elements.tablemap, this.options);
                 this.map = this.lmap.map;
@@ -93,7 +96,6 @@ ra.display.tableList = (function () {
                     return;
                 }
             }
-
         };
         this.calculateLatLng = function () {
             var items = this.data.list.items;
@@ -112,7 +114,6 @@ ra.display.tableList = (function () {
                     lat.push(0);
                     long.push(0);
                 }
-
             }
             newitem = this.addNewItem("Latitude", lat);
             newitem.latitude = true;
@@ -206,18 +207,7 @@ ra.display.tableList = (function () {
                         var td = document.createElement('td');
                         tr.appendChild(td);
                         td.setAttribute('class', item.jpclass + " " + item.align);
-                        switch (item.type) {
-                            case "link":
-                                if (item.values[no] !== "") {
-                                    td.innerHTML = " <a href='" + item.values[no] + "' target='_blank'>Link</a>";
-                                }
-                                break;
-                            case "number":
-                                td.innerHTML = item.values[no];
-                                break;
-                            default:
-                                td.innerHTML = item.values[no];
-                        }
+                        td.innerHTML = this.displayItem(null, item.type, item.values[no]);
                         if (item.linkmarker) {
                             var self = this;
                             td.classList.add('pointer');
@@ -229,7 +219,6 @@ ra.display.tableList = (function () {
                         }
                     }
                 }
-                ;
             }
             return;
         };
@@ -249,10 +238,8 @@ ra.display.tableList = (function () {
             for (var index = 0; index < items.length; ++index) {
                 if (items[index].popup) {
                     if (items[index].values[no] !== "") {
-                        if (items[index].type === "link") {
-                            $popup += '<b>' + items[index].name + ': </b><a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
-                        } else {
-                            $popup += '<b>' + items[index].name + ': </b>' + items[index].values[no] + '<br/>';
+                        if (items[index].values[no] !== "") {
+                            $popup += this.displayItem(items[index].name, items[index].type, items[index].values[no]);
                         }
                     }
                 } else {
@@ -273,12 +260,7 @@ ra.display.tableList = (function () {
             $lat = items[this.data.list.latitude].values[no];
             $long = items[this.data.list.longitude].values[no];
             if ($lat !== 0 && $long !== 0) {
-                var icon = L.icon({
-                    iconUrl: ra.baseDirectory() + "media/lib_ramblers/images/marker-route.png",
-                    iconSize: [33, 50],
-                    iconAnchor: [16, 47],
-                    popupAnchor: [0, -44]
-                });
+                var icon = this.getMarkerIcon(no);
                 var marker = L.marker([$lat, $long], {icon: icon, riseOnHover: true, title: title});
                 var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
                 marker.bindPopup($pop);
@@ -294,17 +276,56 @@ ra.display.tableList = (function () {
                 this.cluster.markerList.push(marker);
             }
         };
+        this.getMarkerIcon = function (no) {
+            var icon = this.defaultIcon;
+            if (this.data.displayOptions === null) {
+                return icon;
+            }
+            var icons = this.data.displayOptions.icons;
+            if (icons) {
+                if (icons.type && icons.column) {
+                    var title = icons.column;
+                    this.data.list.items.forEach(item => {
+                        if (item.name === icons.column) {
+                            title = item.values[no];
+                        }
+                    });
+                    switch (icons.type) {
+                        case "text":
+                            xclass = icons.class;
+                            var xclass = "ra-table-text-marker";
+                            if (icons.class) {
+                                xclass = icons.class;
+                            }
+                            icon = L.divIcon({className: xclass, iconSize: null, html: title, popupAnchor: [10, 30]});
+                        case "icon":
+                            xclass = icons.class;
+                            var xclass = "ra-table-text-marker";
+                            if (icons.class) {
+                                xclass = icons.class;
+                            }
+                            if (icons.values) {
+                                if (icons.values[title]) {
+                                    icon = L.icon({
+                                        iconUrl: ra.baseDirectory() + icons.values[title],
+                                        iconSize: [33, 50],
+                                        iconAnchor: [16, 47],
+                                        popupAnchor: [0, -44]
+                                    });
+                                }
+                            }
+                    }
+                }
+            }
+            return icon;
+        };
         this.displayRecord = function (no) {
             var $details;
             $details = "<div style='font-size:120%'>";
             var items = this.data.list.items;
             for (var index = 0; index < items.length; ++index) {
                 if (items[index].values[no] !== "") {
-                    if (items[index].type === "link") {
-                        $details += '<b>' + items[index].name + ': </b><a href="' + items[index].values[no] + '" target="_blank">Link</a><br/>';
-                    } else {
-                        $details += '<b>' + items[index].name + ': </b>' + items[index].values[no] + '<br/>';
-                    }
+                    $details += this.displayItem(items[index].name, items[index].type, items[index].values[no]);
                 }
             }
             $details += "</div>";
@@ -322,6 +343,24 @@ ra.display.tableList = (function () {
                     this.cluster.markersCG.zoomToShowLayer(marker, this.openPopup(marker));
                     this.map.panTo(marker.getLatLng());
                 }
+            }
+        };
+        this.displayItem = function (name, type, value) {
+            var out = "";
+            if (name !== null)
+                out = "<b>" + name + ": </b>";
+            switch (type) {
+                case 'link':
+                    return out + '<a href="' + value + '" target="_blank">Link</a><br/>';
+                case 'textlink':
+                    return  out + '<a href="' + value + '" target="_blank">' + value + '</a><br/>';
+                case 'exturl':
+                    if (!value.includes("://")) {
+                        return  out + '<a href="https://' + value + '" target="_blank">' + value + '</a><br/>';
+                    }
+                    return  out + '<a href="' + value + '" target="_blank">' + value + '</a><br/>';
+                default:
+                    return out + value + '<br/>';
             }
         };
         this.openPopup = function (marker) {
@@ -371,4 +410,4 @@ ra.display.tableList = (function () {
     };
     return tableList;
 }
-());
+()); 
