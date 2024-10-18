@@ -2447,7 +2447,7 @@ ra.jplist = function (group) {
                 {name: 'pageNumber', parent: 'xxx', tag: 'button', attrs: {type: 'button', 'data-type': 'page'}, textContent: '{pageNumber}'},
                 {name: 'next', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'next'}, textContent: '>'},
                 {name: 'last', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'last'}, textContent: '>|'},
-                {name: 'select', parent: 'div', tag: 'select', attrs: {class: 'ra nonmobile', 'data-type': 'items-per-page'}},
+                {name: 'select', parent: 'div', tag: 'select', attrs: {class: 'ra nonmobile', 'data-type': 'items-per-page', 'name': 'pagesize'}},
                 {parent: 'select', tag: 'option', attrs: {value: '10'}, textContent: '10 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '20'}, textContent: '20 per page'},
                 {parent: 'select', tag: 'option', attrs: {value: '25'}, textContent: '25 per page'},
