@@ -4,6 +4,7 @@ if (typeof (ra) === "undefined") {
 }
 ra.leafletmap = function (tag, options) {
 
+    ra.logger.toServer(["createMap", window.location.href]);
     this.options = options;
 
     this.controls = {layers: null,
@@ -269,6 +270,7 @@ ra.leafletmap = function (tag, options) {
     var _this = this;
     this.map.on('baselayerchange', function (e) {
         _this.currentLayer = e.layer;
+        ra.logger.toServer(["changeMap", window.location.href, e.name]);
     });
 
 // bottom right controls
