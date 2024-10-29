@@ -444,7 +444,31 @@ ra.ajax = (function () {
         };
         xhr.send(data);
     };
+
     return ajax;
+}
+());
+ra.logger = (function () {
+    var logger = {};
+    logger.toServer = function (data) {
+        //  var url = "http://localhost/logData/index.php";
+        var url = "https://logger.theramblers.org.uk";
+        var formData = new FormData();
+        data.forEach(function (value, index) {
+            formData.append("item" + index, value);
+        });
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onload = function () {
+            if (xmlhttp.status === 200) {
+                console.log(xmlhttp.responseText);
+            } else {
+                console.error('Logging failed. Status:', xmlhttp.status);
+            }
+        };
+        xmlhttp.open("POST", url, true);
+        xmlhttp.send(formData);
+    };
+    return logger;
 }
 ());
 ra.cookie = (function () {

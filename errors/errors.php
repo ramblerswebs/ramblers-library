@@ -38,6 +38,7 @@ class RErrors {
         }
         $data['error'] = $errorText;
         $data['trace'] = json_encode(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 5));
+
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);

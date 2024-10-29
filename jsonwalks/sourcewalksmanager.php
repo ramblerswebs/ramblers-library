@@ -34,13 +34,13 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
     public function getWalks($walks) {
         $feed = new RJsonwalksWmFeed();
         $items = $feed->getGroupFutureItems($this->groups, $this->readwalks, $this->readevents, $this->wellbeingWalks);
-
         foreach ($items as $item) {
             $walk = new RJsonwalksWalk();
-            $this->convertToInternalFormat($walk, $item);
-            $walks->addWalk($walk);
-        }
 
+            if ($this->convertToInternalFormat($walk, $item)) {
+                $walks->addWalk($walk);
+            }
+        }
         return;
     }
 
@@ -57,17 +57,13 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
         return $json;
     }
 
-//    public function getWMUrl() {
-//        $feedurl = "";
-//        if ($this->groups !== null) {
-//            $feedurl = TESTWALKSFEED;
-////   $feedurl = $feedurl . '&groups=' . $this->groups;
-//        }
-//        return $feedurl;
-//    }
+    private function displayError($issue, $item) {
+        $walk = "<ul><li>ID: " . $item->id . "</li><li>Group: " . $item->group_name . "</li><li>Date: " . $item->start_date_time . "</li><li>Title: " . $item->title . "</li></ul>";
+        $app = JFactory::getApplication();
+        $app->enqueueMessage("<b>Error Processing walks, walk not displayed</b> - " . $issue . " for walk " . $walk, 'Error');
+    }
 
     public function convertToInternalFormat($walk, $item) {
-
         $source = SourceOfWalk::WManager;
         $id = $item->id;
         $cancellationReason = "";
@@ -84,7 +80,15 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
         $groupCode = $item->group_code;
         $groupName = $item->group_name;
         $dateUpdated = DateTime::createFromFormat(self::TIMEFORMAT, substr($item->date_updated, 0, 19));
+        if ($dateUpdated === false) {
+            $this->displayError("Invalid dateUpdated", $item);
+            return false;
+        }
         $dateCreated = DateTime::createFromFormat(self::TIMEFORMAT, substr($item->date_created, 0, 19));
+        if ($dateCreated === false) {
+            $this->displayError("Invalid dateCreated", $item);
+            return false;
+        }
         $nationalUrl = $item->url;
         switch ($item->item_type) {
             case "group-walk":
@@ -107,7 +111,15 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
 
         // Basics
         $walkDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->start_date_time);
+        if ($walkDate === false) {
+            $this->displayError("Invalid walk date", $item);
+            return false;
+        }
         $finishDate = DateTime::createFromFormat(self::TIMEFORMAT, $item->end_date_time);
+        if ($finishDate === false) {
+            $this->displayError("Invalid finish date", $item);
+            return false;
+        }
         $title = $item->title;
         $descriptionHtml = $item->description;
         $additionalNotes = "";
@@ -161,6 +173,10 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
                 // Add Meeting location
                 if ($item->meeting_location !== null) {
                     $time = DateTime::createFromFormat(self::TIMEFORMAT, $item->meeting_date_time);
+                    if ($time === false) {
+                        $this->displayError("Invalid Meeting Time", $item);
+                        return false;
+                    }
                     $loc = $item->meeting_location;
                     $name = RHtml::convertToText($loc->description);
                     $gridref = $loc->grid_reference_6;
@@ -292,5 +308,6 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
                 $walk->addMedia($newmedia);
             }
         }
+        return true;
     }
 }
