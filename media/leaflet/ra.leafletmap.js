@@ -127,7 +127,7 @@ ra.leafletmap = function (tag, options) {
                 if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
                     url = new URL(url);
                     if (!url.searchParams.has('key'))
-                        url.searchParams.append('key', options.licenseKeys.OSTestkey);
+                        url.searchParams.append('key', options.licenseKeys.OSkey);
                     if (!url.searchParams.has('srs'))
                         url.searchParams.append('srs', 3857);
                     return {
