@@ -82,24 +82,24 @@ ra.leafletmap = function (tag, options) {
             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
         });
     }
-    if (options.licenseKeys.OSkey !== null) {
+    if (options.licenseKeys.OSTestkey !== null) {
 
-//        this.mapLayers["Ordnance Survey  Walking"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
+//        this.mapLayers["Ordnance Survey  Walking"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSTestkey, {
 //            minZoom: 0,
 //            maxZoom: 9
 //        });
-//        this.mapLayers["Ordnance Survey Light"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Light_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
+//        this.mapLayers["Ordnance Survey Light"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Light_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSTestkey, {
 //            maxZoom: 20,
 //            attribution:'Map &copy; Ordnance Survey'
 //        });
-        this.mapLayers["Ordnance Survey Outdoor"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
-            maxZoom: 20,
-            attribution: 'Map &copy; Ordnance Survey'
-        });
-        this.mapLayers["Ordnance Survey Road"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Road_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
-            maxZoom: 20,
-            attribution: 'Map &copy; Ordnance Survey'
-        });
+//        this.mapLayers["Ordnance Survey Outdoor"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSTestkey, {
+//            maxZoom: 20,
+//            attribution: 'Map &copy; Ordnance Survey'
+//        });
+//        this.mapLayers["Ordnance Survey Road"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Road_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSTestkey, {
+//            maxZoom: 20,
+//            attribution: 'Map &copy; Ordnance Survey'
+//        });
         const customStyleJson = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Outdoor.json';
         this.mapLayers["Ordnance Survey Vector Outdoor"] = L.maplibreGL({
             style: customStyleJson,
@@ -108,7 +108,7 @@ ra.leafletmap = function (tag, options) {
                 if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
                     url = new URL(url);
                     if (!url.searchParams.has('key'))
-                        url.searchParams.append('key', options.licenseKeys.OSkey);
+                        url.searchParams.append('key', options.licenseKeys.OSTestkey);
                     if (!url.searchParams.has('srs'))
                         url.searchParams.append('srs', 3857);
                     return {
@@ -117,16 +117,17 @@ ra.leafletmap = function (tag, options) {
                 }
             }
         });
-
+    }
+    if (options.licenseKeys.OSkey !== null) {
         const customStyleJson2 = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Road.json';
-        this.mapLayers["Ordnance Survey Vector Road"] = L.maplibreGL({
+        this.mapLayers["Ordnance Survey Road"] = L.maplibreGL({
             style: customStyleJson2,
             attribution: 'Map &copy; Ordnance Survey',
             transformRequest: (url, resourceType) => {
                 if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
                     url = new URL(url);
                     if (!url.searchParams.has('key'))
-                        url.searchParams.append('key', options.licenseKeys.OSkey);
+                        url.searchParams.append('key', options.licenseKeys.OSTestkey);
                     if (!url.searchParams.has('srs'))
                         url.searchParams.append('srs', 3857);
                     return {

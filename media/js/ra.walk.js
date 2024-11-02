@@ -1103,6 +1103,7 @@ ra.event.walk = function () {
                 out = this.localGrade;
                 break;
             case "{type}": // deprecated
+                ra.errors.toServer("Deprecated", "type in ra.walk.js");
             case "{shape}":
                 out = this.shape;
                 break;

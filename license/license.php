@@ -23,7 +23,7 @@ class RLicense {
 
     // Common licenses for all domains
 
-    public static function getOrdnanceSurveyLicenseKey() {
+    public static function getOrdnanceSurveyLicenseTestKey() {
         if (strpos(JURI::base(), 'localhost') !== false) {
             return 'OL9IpgZ7gHe35WaXPKrpTIQRkiMS9UAb';
         }
@@ -31,6 +31,10 @@ class RLicense {
             return 'OL9IpgZ7gHe35WaXPKrpTIQRkiMS9UAb';
         }
         return null;
+    }
+
+    public static function getOrdnanceSurveyLicenseKey() {
+        return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
     }
 
     public static function getMapBoxLicenseKey() {
@@ -88,5 +92,6 @@ class RLicense {
         // deprecated
         $app = JFactory::getApplication();
         $app->enqueueMessage(JText::_("Deprecated: BingMapKey command is no longer supported"), "warning");
+        RErrors::notifyError("Deprecated", "RLicense BingMapKey", "error");
     }
 }

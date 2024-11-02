@@ -148,7 +148,7 @@ class RJsonwalksWalks {
 
     public function filterFlags($flags, $include = true) {
         foreach ($this->arrayofwalks as $key => $walk) {
-            if ($walk->filterFlags($flags, $include )) {
+            if ($walk->filterFlags($flags, $include)) {
                 unset($this->arrayofwalks[$key]);
             }
         }
@@ -181,7 +181,6 @@ class RJsonwalksWalks {
     }
 
     public function noWalks($no) {
-        // deprecated
         $this->limitNumberWalks($no);
     }
 
@@ -260,5 +259,4 @@ class RJsonwalksWalks {
     public function __destruct() {
         
     }
-
 }
