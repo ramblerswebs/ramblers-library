@@ -446,7 +446,7 @@ ra.logger = (function () {
             //  if (xmlhttp.status === 200) {
             //      console.log(xmlhttp.responseText);
             //  } else {
-            console.error('Logging status:', xmlhttp.status);
+            console.log('Logging status:', xmlhttp.status);
             //  }
         };
         xmlhttp.open("POST", url, true);
@@ -2845,5 +2845,52 @@ ra.uploadFile = function () {
         input.setAttribute('accept', this.extensions);
         div.appendChild(input);
         return input;
+    };
+};
+ra.previousNext = function (tag, items, fnc) {
+    this.items = items;
+    this.tag = tag;
+    this.fnc = fnc;
+    this.display = function (item) {
+        var all = document.createElement("div");
+        this.tag.appendChild(all);
+        var i = this.items.indexOf(item);
+        if (i > 0) {
+            this.displayPrevious(all, i);
+        }
+        var content = document.createElement("div");
+        content.style.clear = "both";
+        all.appendChild(content);
+
+        this.fnc(content, item);
+        if (i < this.items.length - 1) {
+            this.displayNext(all, i);
+        }
+    };
+    this.displayNext = function (nav, i) {
+        var self = this;
+        var div = document.createElement("span");
+        div.innerHTML = "next »";
+        div.classList.add("link-button", "tiny", "mintcake");
+        div.style.float = "right";
+        div.setAttribute("title", "View next item");
+        div.addEventListener('click', function () {
+            self.tag.innerHTML = "";
+            self.display(self.items[i + 1]);
+        });
+        nav.appendChild(div);
+    };
+    this.displayPrevious = function (nav, i) {
+        var self = this;
+        var div = document.createElement("span");
+        div.innerHTML = "« previous";
+        div.classList.add("link-button", "tiny", "mintcake");
+        div.style.float = "left";
+        div.setAttribute("title", "View previous item");
+        div.addEventListener('click', function () {
+            self.tag.innerHTML = "";
+            self.display(self.items[i - 1]);
+        });
+        nav.appendChild(div);
     };
 };

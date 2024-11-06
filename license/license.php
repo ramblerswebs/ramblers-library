@@ -34,7 +34,13 @@ class RLicense {
     }
 
     public static function getOrdnanceSurveyLicenseKey() {
-        return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
+        }
+        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+            return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
+        }
+        return null;
     }
 
     public static function getMapBoxLicenseKey() {
@@ -75,15 +81,7 @@ class RLicense {
         if ($endLicenseDate < $now) {
             return null;
         }
-        //      if (strpos(JURI::base(), 'localhost') !== false) {
-        //          return null;
-        //      }
-        //      if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
-        //          return null;
-        //  return 'AshdQBFR1UGiLO-YaL2dF9XhyWcsUM7E8-MtIaaFXgtdKKi5Po_XZDrdeSTd7ket';
-        //      } else {
         return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
-        //      }
     }
 
     // deprecated

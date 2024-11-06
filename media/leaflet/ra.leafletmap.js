@@ -101,7 +101,7 @@ ra.leafletmap = function (tag, options) {
 //            attribution: 'Map &copy; Ordnance Survey'
 //        });
         const customStyleJson = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Outdoor.json';
-        this.mapLayers["Ordnance Survey Vector Outdoor"] = L.maplibreGL({
+        this.mapLayers["Ordnance Survey Outdoor"] = L.maplibreGL({
             style: customStyleJson,
             attribution: 'Map &copy; Ordnance Survey',
             transformRequest: (url, resourceType) => {
@@ -121,6 +121,12 @@ ra.leafletmap = function (tag, options) {
     if (options.licenseKeys.OSkey !== null) {
         const customStyleJson2 = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Road.json';
         this.mapLayers["Ordnance Survey Road"] = L.maplibreGL({
+            minZoom: 7,
+            maxZoom: 19,
+            maxBounds: [
+                [-10.76418, 47],
+                [1.9134116, 61.331151]
+            ],
             style: customStyleJson2,
             attribution: 'Map &copy; Ordnance Survey',
             transformRequest: (url, resourceType) => {
