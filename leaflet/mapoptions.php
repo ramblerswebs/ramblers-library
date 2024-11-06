@@ -71,6 +71,7 @@ class RLeafletMapoptions {
             $this->licenseKeys->ORSkey = RLicense::getOpenRoutingServiceKey();
         }
 
+        $this->licenseKeys->OSTestkey = RLicense::getOrdnanceSurveyLicenseTestKey();
         $this->licenseKeys->OSkey = RLicense::getOrdnanceSurveyLicenseKey();
         $this->licenseKeys->mapBoxkey = RLicense::getMapBoxLicenseKey();
         $this->licenseKeys->thunderForestkey = RLicense::getThunderForestLicenseKey();

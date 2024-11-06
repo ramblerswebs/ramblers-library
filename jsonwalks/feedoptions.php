@@ -133,13 +133,16 @@ class RJsonwalksFeedoptions {
         $app = JFactory::getApplication();
         $app->enqueueMessage('Deprecated: Use of setLimit() function of RJsonwalksFeedoptions is no longer supported', 'information');
         $this->limit = $limit;
+        RErrors::notifyError("Deprecated", "Walk feed setLimit", "error");
     }
 
     public function getLimit() { // IS NOW DEPRECATED
+        RErrors::notifyError("Deprecated", "Walk feed getLimit", "error");
         return $this->limit;
     }
 
     public function getDistance() { // IS NOW DEPRECATED
+        RErrors::notifyError("Deprecated", "Walk feed getDistance", "error");
         if ($this->distance !== null) {
             $distance = explode('-', $this->distance);
             return $distance;
@@ -148,6 +151,7 @@ class RJsonwalksFeedoptions {
     }
 
     public function getDays() { // IS NOW DEPRECATED
+        RErrors::notifyError("Deprecated", "Walk feed getDays", "error");
         if ($this->days !== null) {
             $days = explode(',', $this->days);
             return $days;
@@ -163,6 +167,7 @@ class RJsonwalksFeedoptions {
         $msg .= "Webmaster: some code on this page needs to be updated to comply with the latest standard defined on https://ramblers-webs.org.uk/<br>";
         $msg .= "Raise a support email/ticket if you are uncertain what to do.<br><br>";
         $app->enqueueMessage($msg, 'Error');
+        RErrors::notifyError("Deprecated", "Walk feed full url", "error");
     }
 
     private function startsWith($string, $startString) {

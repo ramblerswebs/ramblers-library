@@ -23,12 +23,22 @@ class RLicense {
 
     // Common licenses for all domains
 
-    public static function getOrdnanceSurveyLicenseKey() {
+    public static function getOrdnanceSurveyLicenseTestKey() {
         if (strpos(JURI::base(), 'localhost') !== false) {
             return 'OL9IpgZ7gHe35WaXPKrpTIQRkiMS9UAb';
         }
         if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
             return 'OL9IpgZ7gHe35WaXPKrpTIQRkiMS9UAb';
+        }
+        return null;
+    }
+
+    public static function getOrdnanceSurveyLicenseKey() {
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
+        }
+        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+            return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
         }
         return null;
     }
@@ -71,15 +81,7 @@ class RLicense {
         if ($endLicenseDate < $now) {
             return null;
         }
-        //      if (strpos(JURI::base(), 'localhost') !== false) {
-        //          return null;
-        //      }
-        //      if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
-        //          return null;
-        //  return 'AshdQBFR1UGiLO-YaL2dF9XhyWcsUM7E8-MtIaaFXgtdKKi5Po_XZDrdeSTd7ket';
-        //      } else {
         return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
-        //      }
     }
 
     // deprecated
@@ -88,5 +90,6 @@ class RLicense {
         // deprecated
         $app = JFactory::getApplication();
         $app->enqueueMessage(JText::_("Deprecated: BingMapKey command is no longer supported"), "warning");
+        RErrors::notifyError("Deprecated", "RLicense BingMapKey", "error");
     }
 }

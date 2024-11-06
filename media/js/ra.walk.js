@@ -31,6 +31,15 @@ ra.events = function () {
             }
         });
     };
+    this.filteredEvents = function () {
+        var evts = [];
+        this.events.forEach(event => {
+            if (event._displayFiltered) {
+                evts.push(event);
+            }
+        });
+        return evts;
+    };
     this.setAllWalks = function () {
         this.events.forEach(event => {
             event._displayFiltered = true;
@@ -121,7 +130,7 @@ ra.event = function () {
     this.start = new ra.event.items();
     this.finish = new ra.event.items();
     this.contacts = new ra.event.items();
-    this.media = new ra.event.items();
+    this.media = new ra.event.media();
     this.flags = new ra.event.flags();
     var mapSummary = ["{dowddmm}", "{;title}", "{,distance}"];
     var mapLinks = ["{startOSMap}", "{startDirections}"];
@@ -163,10 +172,7 @@ ra.event = function () {
             this.contacts.addItem(contact.convertPHPContact(item));
         });
         // media
-        phpwalk.media.forEach(item => {
-            var newmedia = new ra.event.media();
-            this.media.addItem(newmedia.convertPHPMedia(item));
-        });
+        this.media.addPHPMedia(phpwalk.media);
         // flags
         this.flags.addFlags(phpwalk.flags);
     };
@@ -733,7 +739,7 @@ ra.event = function () {
         this.contacts.addHtmlSection(content, "contact");
         if (!this.isCancelled()) {
             this.addMapSection(content);
-            this.media.addHtmlSection(content, "media");
+            this.media.addMediaSection(content);
             this.flags.addFlagsSection(content);
             this.updatePostcodeInfo();
         }
@@ -1103,6 +1109,7 @@ ra.event.walk = function () {
                 out = this.localGrade;
                 break;
             case "{type}": // deprecated
+                ra.errors.toServer("Deprecated", "type in ra.walk.js");
             case "{shape}":
                 out = this.shape;
                 break;
@@ -1712,7 +1719,7 @@ ra.event.contact = function (id) {
             case "{emaillink}":
                 if (this.email !== "") {
                     if (this.contactForm !== "") {
-                        out = "<span><b>Contact link: </b><a target='_blank' href='" + this.contactForm + "' title='Click to send an email to leader/contact or group'>Email walk contact</a></span>";
+                        out = "<span><b>Contact link: </b><a target='_blank' href='" + this.contactForm + "' title='Click to send an email to leader/contact or group'>Email contact</a></span>";
                     } else {
                         var $gwemlink = "javascript:ra.walk.emailContact(\"" + this.id + "\")";
                         out = "<span><a href='" + $gwemlink + "' title='Click to send an email to leader/contact'>Email contact</a></span>";
@@ -1815,7 +1822,49 @@ ra.event.flags = function () {
         tag.appendChild(content);
     };
 };
+
 ra.event.media = function () {
+    this.items = [];
+    this.addPHPMedia = function (values) {
+        values.forEach(item => {
+            var newmedia = new ra.event.mediaItem();
+            newmedia.convertPHPMedia(item);
+            this.items.push(newmedia);
+        });
+    };
+    this.getValue = function ($option) {
+        var out = "";
+        if (this.items.length > 0) {
+            out = this.items[0].getValue($option);
+        }
+        return out;
+    };
+    this.addMediaSection = function (content) {
+        if (this.items.length > 0) {
+            var div = document.createElement('div');
+            div.classList.add("walkitem");
+            div.classList.add("media");
+            content.appendChild(div);
+        }
+
+        var self = this;
+        this.items.forEach(item => {
+            var tag = item.addThumbnail(div);
+            tag.addEventListener('click', function () {
+                var ele = document.createElement("div");
+                ra.modals.createModal(ele, false);
+                var ln = new ra.previousNext(ele, self.items, function (ele, item) {
+                    item.addImage(ele);
+                });
+                ln.display(item);
+            });
+        });
+    };
+
+
+
+};
+ra.event.mediaItem = function () {
     this.alt = "";
     this.thumb = "";
     this.medium = "";
@@ -1837,13 +1886,41 @@ ra.event.media = function () {
         }
         return out;
     };
-    this.getIntValue = function ($option) {
-        return "";
+
+    this.addThumbnail = function (tag) {
+        var div = document.createElement('div');
+        div.classList.add("walk-image");
+        tag.appendChild(div);
+
+        var div2 = document.createElement('div');
+        div2.classList.add("mediapopup");
+        div.appendChild(div2);
+
+        var img = document.createElement('img');
+        img.classList.add("walkmedia");
+        img.setAttribute("alt", this.alt);
+        img.setAttribute("title", this.alt);
+        img.setAttribute("src", this.medium);
+        div2.appendChild(img);
+
+        return div;
     };
-    this.getHtmlSection = function () {
-        var $html = "<div class='walk-image' onclick='javascript:ra.html.displayInModal(this)'><div class='mediapopup'><img class='walkmedia' src='" + this.medium + "' alt='" + this.alt + "' >" + "</div></div>";
-        return $html;
+    this.addImage = function (tag) {
+        var div = document.createElement('span');
+        div.classList.add("walk-image");
+        tag.appendChild(div);
+
+
+        var img = document.createElement('img');
+        img.classList.add("walkmedia");
+        img.setAttribute("alt", this.alt);
+        img.setAttribute("title", this.alt);
+        img.setAttribute("src", this.medium);
+        div.appendChild(img);
+
+        return div;
     };
+
 };
 ra.event.nationalGrade = function (grade) {
     this.gradekey = "Event";
@@ -2030,6 +2107,7 @@ ra.walk = (function () {
     // accessed by HTML links to display walk
     my.displayWalkID = function (event, id) {
         var walk = my.walks.getEvent(id);
+        var evs = my.walks.filteredEvents();
         if (walk !== null) {
             walk.displayInModal(event);
         } else {

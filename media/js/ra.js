@@ -29,6 +29,7 @@ ra.defaultMapOptions = {
     licenseKeys: {
         ORSkey: null,
         bingkey: "",
+        OSTestkey: "",
         OSkey: "",
         mapBoxkey: null,
         thunderForestkey: null},
@@ -65,21 +66,6 @@ ra.uniqueID = function () {
     return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
 };
 ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
-//    window.addEventListener("error", (event) => {
-//        var body = event.message + '\n\r' + '\n\r' + 'Filename: ' + event.filename + '\n\r' + '\n\r';
-//        body = ra.html.specialCharsToHex(body + event.error.stack).replace(/\n/g, '%0D%0A');
-//        var subject = encodeURIComponent("Unexpected error: " + window.location.href);
-//        var email = 'mailto:unexpected@ramblers-webs.org.uk?subject=' + subject + '&body=' + body;
-//        var instr = '<p>Unexpected error, this might be solved by reloading/refreshing the web page</p><ul>' +
-//                '<li>In most browsers you can reload the page by pressing Ctrl+F5. </li>';
-//        instr += "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
-//
-//        instr += "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
-//        ra.showError(instr, "Whoops - unexpected error");
-//        event.stopImmediatePropagation();
-//        ra.loading.stop();
-//
-//    });
 
     ra.loading.start();
     ra._jversion = jversion;
@@ -117,42 +103,16 @@ ra.decodeData = function (value) {
     return data;
 };
 ra.checkLoadingErrors = function () {
-    var errors = "";
+    //  var errors = "";
     var res = performance.getEntriesByType("resource");
-    var notLoaded = [];
+    //   var notLoaded = [];
     for (let item of res) {
         if ('responseStatus' in item) {
             if (item.responseStatus > 400) {
-                notLoaded.push(item);
+                ra.errors.toServer("loading error", item.name);
             }
-//            if (item.responseStatus === 0) {
-//                notLoaded.push(item);
-//            }
         }
     }
-    for (let item of notLoaded) {
-        if ('responseStatus' in item) {
-            errors += "(" + item.responseStatus + ")  " + item.name + "\n\r";
-        }
-    }
-
-    if (errors !== "") {
-        var instr = "";
-        if (!navigator.onLine) {
-            instr += "<h2>You may be off-line - check your internet connection</h2>";
-        }
-
-        var body = 'Web page loading error on web page: ' + window.location.href + '\n\r\n\rResources\n\r\n\r' + errors + "\n\r\n\r";
-        body = encodeURIComponent(body);
-        var subject = encodeURIComponent("Web page loading error: " + window.location.href);
-        var email = 'mailto:unexpected@ramblers-webs.org.uk?subject=' + subject + '&body=' + body;
-        instr += '<p>Web page failed to load correctly, this might be solved by reloading/refreshing the web page</p><ul>' +
-                '<li>In most browsers you can reload the page by pressing Ctrl+F5. </li>';
-        instr += "<li>If problem continues then please <a href='" + email + "' >Report error using email</a></li></ul>";
-        instr += "<p><b>When you click the <i>Close button</i> the web page will try and continue but may not function correctly</b></p>";
-        ra.showError("<div class='loading-error'>" + instr + "</div>", "Loading Error");
-    }
-
 };
 
 // alternatives to alert
@@ -448,10 +408,34 @@ ra.ajax = (function () {
     return ajax;
 }
 ());
+ra.errors = (function () {
+    var errors = {};
+    errors.toServer = function (action, error) {
+        var url = "https://errors.theramblers.org.uk/store_errors.php";
+        var formData = new FormData();
+        formData.append("domain", window.location.href);
+        formData.append("action", action);
+        formData.append("error", error);
+        formData.append("trace", null);
+
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.onload = function () {
+            // if (xmlhttp.status === 200) {
+            //     console.log(xmlhttp.responseText);
+            // } else {
+            console.error('Error Log status:', xmlhttp.status);
+            // }
+        };
+        xmlhttp.open("POST", url, true);
+        xmlhttp.send(formData);
+    };
+    return errors;
+}
+());
 ra.logger = (function () {
     var logger = {};
     logger.toServer = function (data) {
-        //  var url = "http://localhost/logData/index.php";
+        //   var url = "http://localhost/logData/index.php";
         var url = "https://logger.theramblers.org.uk";
         var formData = new FormData();
         data.forEach(function (value, index) {
@@ -459,11 +443,11 @@ ra.logger = (function () {
         });
         xmlhttp = new XMLHttpRequest();
         xmlhttp.onload = function () {
-            if (xmlhttp.status === 200) {
-                console.log(xmlhttp.responseText);
-            } else {
-                console.error('Logging failed. Status:', xmlhttp.status);
-            }
+            //  if (xmlhttp.status === 200) {
+            //      console.log(xmlhttp.responseText);
+            //  } else {
+            console.log('Logging status:', xmlhttp.status);
+            //  }
         };
         xmlhttp.open("POST", url, true);
         xmlhttp.send(formData);
@@ -2262,6 +2246,7 @@ ra.filter.groupLimit = function (id, title, options = null) {
         h.textContent = this.title;
         tag.appendChild(h);
         var select = document.createElement('select');
+        select.setAttribute('name', this.id);
         this.select = select;
         select.classList.add('ra-filteritem');
         select.style.marginLeft = '5px';
@@ -2860,5 +2845,52 @@ ra.uploadFile = function () {
         input.setAttribute('accept', this.extensions);
         div.appendChild(input);
         return input;
+    };
+};
+ra.previousNext = function (tag, items, fnc) {
+    this.items = items;
+    this.tag = tag;
+    this.fnc = fnc;
+    this.display = function (item) {
+        var all = document.createElement("div");
+        this.tag.appendChild(all);
+        var i = this.items.indexOf(item);
+        if (i > 0) {
+            this.displayPrevious(all, i);
+        }
+        var content = document.createElement("div");
+        content.style.clear = "both";
+        all.appendChild(content);
+
+        this.fnc(content, item);
+        if (i < this.items.length - 1) {
+            this.displayNext(all, i);
+        }
+    };
+    this.displayNext = function (nav, i) {
+        var self = this;
+        var div = document.createElement("span");
+        div.innerHTML = "next »";
+        div.classList.add("link-button", "tiny", "mintcake");
+        div.style.float = "right";
+        div.setAttribute("title", "View next item");
+        div.addEventListener('click', function () {
+            self.tag.innerHTML = "";
+            self.display(self.items[i + 1]);
+        });
+        nav.appendChild(div);
+    };
+    this.displayPrevious = function (nav, i) {
+        var self = this;
+        var div = document.createElement("span");
+        div.innerHTML = "« previous";
+        div.classList.add("link-button", "tiny", "mintcake");
+        div.style.float = "left";
+        div.setAttribute("title", "View previous item");
+        div.addEventListener('click', function () {
+            self.tag.innerHTML = "";
+            self.display(self.items[i - 1]);
+        });
+        nav.appendChild(div);
     };
 };

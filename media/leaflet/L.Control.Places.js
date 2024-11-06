@@ -131,7 +131,7 @@ L.Control.Places = L.Control.extend({
             check.setAttribute('type', "checkbox");
             check.setAttribute('checked', true);
             check.setAttribute('data-id', i);
-            check.setAttribute('id', 'idstar' + i);
+            check.setAttribute('name', 'idstar' + i);
             check.addEventListener("change", function (e) {
                 var state = e.target.checked;
                 var id = parseInt(e.target.getAttribute('data-id'));

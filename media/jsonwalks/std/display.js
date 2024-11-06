@@ -101,9 +101,6 @@ ra.display.walksTabs = function (mapOptions, data) {
             leg.innerHTML = $legend2;
             this.elements.map.appendChild(leg);
         }
-        this.lmap = new ra.leafletmap(this.elements.map, this.mapOptions);
-        this.map = this.lmap.map;
-        this.cluster = new ra.map.cluster(this.map);
         this.processOptions(this.elements.raoptions);
         this.events.setAllWalks();
         this.checkColumnNotBlank(this.settings.tableFormat);
@@ -150,7 +147,6 @@ ra.display.walksTabs = function (mapOptions, data) {
                 ra.html.setTag(this.elements.rapagination2, "");
                 ra.html.setTag(this.elements.rawalks, "");
                 this.displayMap("visible");
-                this.displayWalksMap();
                 break;
             case "Contacts":
                 this.displayMap("hidden");
@@ -165,16 +161,22 @@ ra.display.walksTabs = function (mapOptions, data) {
     };
     this.displayMap = function (which) {
         var tag = this.elements.map;
-
         if (tag) {
-//  tag.style.visibility = which;
             if (which === "hidden") {
                 tag.style.display = "none";
                 this.setPaginationMargin("on");
             } else {
                 tag.style.display = "block";
                 this.setPaginationMargin("off");
-                this.map.invalidateSize();
+                if (this.map === null) {
+                    this.displayWalksMap();  
+                    this.cluster.zoomAll();
+                }else{
+                    //  this.map.invalidateSize();
+                }
+               
+              
+             
             }
         }
     };
@@ -514,7 +516,11 @@ ra.display.walksTabs = function (mapOptions, data) {
         calendar.render();
     };
     this.displayWalksMap = function () {
-        this.cluster.removeClusterMarkers();
+        // create map at last moment
+        this.lmap = new ra.leafletmap(this.elements.map, this.mapOptions);
+        this.map = this.lmap.map;
+        this.cluster = new ra.map.cluster(this.map);
+        // this.cluster.removeClusterMarkers();
         if (this.events.length() === 0) {
             return;
         }
@@ -522,7 +528,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             $walk.addWalkMarker(this.cluster, this.settings.walkClass);
         });
         this.cluster.addClusterMarkers();
-        this.cluster.zoomAll();
+     //   this.cluster.zoomAll();
         return;
     };
     this.addPagination = function (no, tag) {
