@@ -532,6 +532,19 @@ div[leaflet-browser-print-content].sub-content {
     padding-left: 10px;
 }
 
+div.ra-map-compare.sidebyside{
+    width:48%;
+    display: inline-block;
+   
+}
+div.ra-map-compare{
+    margin-top:20px;
+}
+div.ra-map-compare.sidebyside.second{
+    margin-left:2%;
+}
+
+
 @media print {
     div[leaflet-browser-print-pages] {
         page-break-before: always;

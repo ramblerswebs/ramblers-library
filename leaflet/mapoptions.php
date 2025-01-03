@@ -21,6 +21,7 @@ class RLeafletMapoptions {
     // the following can be true of false
     public $cluster = false;
     public $fitbounds = false;
+    public $resizer = true;
     public $controlcontainer = false; // used by Walks Editor
     public $displayElevation = false;
     public $calendar = false;
@@ -49,7 +50,8 @@ class RLeafletMapoptions {
         $this->licenseKeys->ORSkey = null;
 
         $this->licenseKeys->ESRIkey = null;
-
+        $this->licenseKeys->OSTestStyle = null;
+        $this->licenseKeys->OSMVectorStyle = null;
         $this->licenseKeys->mapBoxkey = null;
         $this->licenseKeys->thunderForestkey = null;
     }
@@ -71,9 +73,12 @@ class RLeafletMapoptions {
             $this->licenseKeys->ORSkey = RLicense::getOpenRoutingServiceKey();
         }
 
-        $this->licenseKeys->OSTestkey = RLicense::getOrdnanceSurveyLicenseTestKey();
         $this->licenseKeys->OSkey = RLicense::getOrdnanceSurveyLicenseKey();
+         $this->licenseKeys->OSTestkey = RLicense::getOrdnanceSurveyLicenseTestKey();
+        $this->licenseKeys->OSTestStyle=RLicense::getOrdnanceSurveyLicenseKeyTestStyle();
+        $this->licenseKeys->OSMVectorStyle=RLicense::getOSMVectoricenseKey();
         $this->licenseKeys->mapBoxkey = RLicense::getMapBoxLicenseKey();
         $this->licenseKeys->thunderForestkey = RLicense::getThunderForestLicenseKey();
+        $this->licenseKeys->W3Wkey = RLicense::getW3WLicenseKey();
     }
 }

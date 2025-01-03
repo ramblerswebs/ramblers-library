@@ -23,6 +23,7 @@ ra.defaultMapOptions = {
     settings: true,
     mylocation: true,
     fitbounds: true,
+    resizer: true,
     draw: false,
     print: true,
     displayElevation: null,
@@ -32,12 +33,14 @@ ra.defaultMapOptions = {
         OSTestkey: "",
         OSkey: "",
         mapBoxkey: null,
-        thunderForestkey: null},
+        thunderForestkey: null,
+        W3Wkey: null},
     topoMapDefault: false,
     controlcontainer: false,
     copyright: null,
     initialview: null
 };
+ra.w3wLicenseKey = null;
 // return base directory
 ra.baseDirectory = function () {
     return ra._baseDirectory;
@@ -58,6 +61,9 @@ ra.decodeOptions = function (value) {
         ra._baseDirectory = "/" + base;
     }
     ra.defaultMapOptions.licenseKeys = options.licenseKeys;
+    if (ra.w3wLicenseKey === null) {
+        ra.w3wLicenseKey = ra.defaultMapOptions.licenseKeys.W3Wkey;
+    }
     value = "";
     return options;
 };
@@ -1509,7 +1515,7 @@ ra.w3w = (function () {
     var w3w = {};
     w3w.get = function (lat, lng, id, place) {
         var tag = ra.html.getTag(id);
-        var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
+        var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=" + ra.w3wLicenseKey + "&coordinates=";
         var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
         ra.ajax.getJSON(url, function (err, items) {
 
@@ -1541,7 +1547,7 @@ ra.w3w = (function () {
         return out;
     };
     w3w.toLocation = function (tag, words) {
-        var url = "https://api.what3words.com/v3/convert-to-coordinates?words=" + words + "&key=6AZYMY7P";
+        var url = "https://api.what3words.com/v3/convert-to-coordinates?words=" + words + "&key=" + ra.w3wLicenseKey;
         ra.ajax.getJSON(url, function (err, item) {
             let event = new Event("what3wordsfound");
             event.raData = {};
@@ -1556,7 +1562,7 @@ ra.w3w = (function () {
         });
     };
     w3w.fetch = function (tag, dataObject, lat, lng) {
-        var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=6AZYMY7P&coordinates=";
+        var w3wurl = "https://api.what3words.com/v3/convert-to-3wa?key=" + ra.w3wLicenseKey + "&coordinates=";
         var url = w3wurl + lat.toFixed(7) + ',' + lng.toFixed(7);
         ra.ajax.getJSON(url, function (err, item) {
             let event = new Event("what3wordsfound");
