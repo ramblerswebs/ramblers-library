@@ -742,7 +742,7 @@ ra.event = function () {
             this.addMapSection(content);
             this.media.addMediaSection(content);
             this.flags.addFlagsSection(content);
-            this.general.addSection(content);
+          //  this.general.addSection(content);
             this.updatePostcodeInfo();
         }
         this.addFooterSection(content);
@@ -1828,15 +1828,33 @@ ra.event.general = function () {
     this.general = [];
 
     this.addSection = function (tag) {
-        var content = document.createElement("div");
-        content.classList.add("walkitem");
-      //  content.innerHTML = "general";
+        var div = document.createElement('div');
+        div.setAttribute('class', 'walkitem transport');
+        tag.appendChild(div);
+        var content = document.createElement("details");
+        div.appendChild(content);
+        var summary = document.createElement("summary");
+        summary.setAttribute('class', 'pointer');
+
+        summary.innerHTML = "Public Transport info";
+        content.appendChild(summary);
+        var ol = document.createElement("ul");
+        content.appendChild(ol);
+        var li = document.createElement("li");
+        ol.appendChild(li);
         var bus = document.createElement("a");
         bus.setAttribute("href", "https://bustimes.org/");
         bus.setAttribute("target", "_blank");
-        bus.textContent="Bus times+";
-        content.appendChild(bus);
-        tag.appendChild(content);
+        bus.textContent = "Bustimes.org";
+        li.appendChild(bus);
+        li = document.createElement("li");
+        ol.appendChild(li);
+        bus = document.createElement("a");
+        bus.setAttribute("href", "https://www.traveline.info/");
+        bus.setAttribute("target", "_blank");
+        bus.textContent = "Traveline.info";
+        li.appendChild(bus);
+
     };
 };
 
