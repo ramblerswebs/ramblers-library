@@ -84,22 +84,6 @@ ra.leafletmap = function (tag, options) {
     }
     if (options.licenseKeys.OSTestkey !== null) {
 
-//        this.mapLayers["Ordnance Survey  Walking"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSTestkey, {
-//            minZoom: 0,
-//            maxZoom: 9
-//        });
-//        this.mapLayers["Ordnance Survey Light"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Light_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSTestkey, {
-//            maxZoom: 20,
-//            attribution:'Map &copy; Ordnance Survey'
-//        });
-//        this.mapLayers["Ordnance Survey Outdoor"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Outdoor_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSTestkey, {
-//            maxZoom: 20,
-//            attribution: 'Map &copy; Ordnance Survey'
-//        });
-//        this.mapLayers["Ordnance Survey Road"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Road_3857/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSTestkey, {
-//            maxZoom: 20,
-//            attribution: 'Map &copy; Ordnance Survey'
-//        });
         const customStyleJson = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Outdoor.json';
         this.mapLayers["Ordnance Survey Outdoor"] = L.maplibreGL({
             style: customStyleJson,
@@ -143,6 +127,31 @@ ra.leafletmap = function (tag, options) {
             }
         });
     }
+    if (options.licenseKeys.OSTestStyle !== null) {
+        // Load and display vector tile layer on the map.
+        this.mapLayers["Ordnance Survey Ramblers"] = L.maplibreGL({
+            style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osTestStyle.json',
+            minZoom: 7,
+            maxZoom: 19,
+            maxBounds: [
+                [-10.76418, 47],
+                [1.9134116, 61.331151]
+            ],
+            attribution: 'Map &copy; Ordnance Survey',
+            transformRequest: (url, resourceType) => {
+                if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
+                    url = new URL(url);
+                    if (!url.searchParams.has('key'))
+                        url.searchParams.append('key', options.licenseKeys.OSTestStyle);
+                    if (!url.searchParams.has('srs'))
+                        url.searchParams.append('srs', 3857);
+                    return {
+                        url: new Request(url).url
+                    };
+                }
+            }
+        });
+    }
 
     if (options.licenseKeys.thunderForestkey !== null) {
         this.mapLayers["Thunderforest Outdoor"] = L.tileLayer('https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=' + options.licenseKeys.thunderForestkey, {
@@ -151,7 +160,7 @@ ra.leafletmap = function (tag, options) {
     }
 
     if (options.licenseKeys.mapBoxkey !== null) {
-        this.mapLayers["Mapbox"] = basemapd = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        this.mapLayers["Mapbox"] = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
             tileSize: 512,
             maxZoom: 18,
@@ -160,6 +169,12 @@ ra.leafletmap = function (tag, options) {
             accessToken: options.licenseKeys.mapBoxkey
         });
     }
+    if (options.licenseKeys.OSMVectorStyle !== null) {
+        this.mapLayers["OSM Vector"] = L.maplibreGL({
+            style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osmliberty.json'
+        });
+    }
+
 // get my location for directions
     this.map.locate();
 
@@ -255,18 +270,17 @@ ra.leafletmap = function (tag, options) {
     if (options.helpPage !== '') {
         tools.moveMapControl(this.controls.help);
     }
+    if (this.options.resizer) {
+        this.controls.resizer = L.control.resizer({onlyOnHover: false, direction: 's'}).addTo(this.map);
+        this.controls.resizer.addEventListener('drag', function () {
+            var newHeight = self._mapDiv.clientHeight;
+            if (newHeight < self.minHeight) {
+                self._mapDiv.style.height = self.minHeight + "px";
+                //  only allow map to be larger
+            }
 
-    this.controls.resizer = L.control.resizer({onlyOnHover: false, direction: 's'}).addTo(this.map);
-
-    this.controls.resizer.addEventListener('drag', function () {
-        var newHeight = self._mapDiv.clientHeight;
-        if (newHeight < self.minHeight) {
-            self._mapDiv.style.height = self.minHeight + "px";
-            //  only allow map to be larger
-        }
-
-    });
-
+        });
+    }
 // bottom left controls 
     if (options.mouseposition !== null) {
         this.controls.mouse = L.control.mouse().addTo(this.map);
@@ -387,4 +401,5 @@ ra.leafletmap = function (tag, options) {
     this.mapDiv = function () {
         return this._mapDiv;
     };
-};
+}
+;

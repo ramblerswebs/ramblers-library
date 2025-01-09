@@ -35,7 +35,7 @@ class RJsonwalksWalkTimelocation implements JsonSerializable {
     const LOCATION_FINISH = "Finish";
 
     public function __construct(string $type, string $travel, ?DateTime $time, string $description,
-            Float $latitude, Float $longitude, string $gridref, string $w3w,
+            Float $latitude, Float $longitude, string $gridref, ?string $w3w,
             string $postcode, Float $postcodeLatitude, Float $postcodeLongitude, ?array $osmaps) {
         switch ($type) {
             case self::LOCATION_MEETING:

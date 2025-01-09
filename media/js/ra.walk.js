@@ -132,6 +132,7 @@ ra.event = function () {
     this.contacts = new ra.event.items();
     this.media = new ra.event.media();
     this.flags = new ra.event.flags();
+    this.general = new ra.event.general();
     var mapSummary = ["{dowddmm}", "{;title}", "{,distance}"];
     var mapLinks = ["{startOSMap}", "{startDirections}"];
     var mapGrade = ["{mapGrade}"];
@@ -741,6 +742,7 @@ ra.event = function () {
             this.addMapSection(content);
             this.media.addMediaSection(content);
             this.flags.addFlagsSection(content);
+          //  this.general.addSection(content);
             this.updatePostcodeInfo();
         }
         this.addFooterSection(content);
@@ -1427,7 +1429,7 @@ ra.event.timelocation = function () {
         button.classList.add("pointer");
         button.title = "Click to see/hide additional location information";
         tag.appendChild(button);
-        button.textContent = "[Extra Info+]";
+        button.textContent = "[Map Info+]";
         var extras = document.createElement('div');
         extras.style.display = "none";
         extras.classList.add("mappopup");
@@ -1436,8 +1438,8 @@ ra.event.timelocation = function () {
         this._displayExtras(extras);
         button.addEventListener("click", e => {
             var element = e.target;
-            if (element.textContent === "[Extra Info+]") {
-                element.textContent = "[Extra Info-]";
+            if (element.textContent === "[Map Info+]") {
+                element.textContent = "[Map Info-]";
                 extras.style.display = "";
                 if (this.osmaps === null) {
                     ra.map.os.getOSMapsAtLoc(this.latitude, this.longitude, result => {
@@ -1453,7 +1455,7 @@ ra.event.timelocation = function () {
                     this._displayOsMaps(contentTag, this.osmaps);
                 }
             } else {
-                element.textContent = "[Extra Info+]";
+                element.textContent = "[Map Info+]";
                 extras.style.display = "none";
                 this._displayOsMaps(contentTag, []);
             }
@@ -1820,6 +1822,39 @@ ra.event.flags = function () {
         }
         content.innerHTML = $html;
         tag.appendChild(content);
+    };
+};
+ra.event.general = function () {
+    this.general = [];
+
+    this.addSection = function (tag) {
+        var div = document.createElement('div');
+        div.setAttribute('class', 'walkitem transport');
+        tag.appendChild(div);
+        var content = document.createElement("details");
+        div.appendChild(content);
+        var summary = document.createElement("summary");
+        summary.setAttribute('class', 'pointer');
+
+        summary.innerHTML = "Public Transport info";
+        content.appendChild(summary);
+        var ol = document.createElement("ul");
+        content.appendChild(ol);
+        var li = document.createElement("li");
+        ol.appendChild(li);
+        var bus = document.createElement("a");
+        bus.setAttribute("href", "https://bustimes.org/");
+        bus.setAttribute("target", "_blank");
+        bus.textContent = "Bustimes.org";
+        li.appendChild(bus);
+        li = document.createElement("li");
+        ol.appendChild(li);
+        bus = document.createElement("a");
+        bus.setAttribute("href", "https://www.traveline.info/");
+        bus.setAttribute("target", "_blank");
+        bus.textContent = "Traveline.info";
+        li.appendChild(bus);
+
     };
 };
 

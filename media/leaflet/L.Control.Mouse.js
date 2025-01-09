@@ -46,6 +46,7 @@ L.Control.Mouse = L.Control.extend({
         });
         map.on('mouseout', function () {
             self._container.style.display = 'none';
+            self.OSGridSquareLayer.clearLayers();
         });
         return this._container;
     },

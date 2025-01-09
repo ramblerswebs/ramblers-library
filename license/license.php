@@ -43,6 +43,17 @@ class RLicense {
         return null;
     }
 
+    // key to display OS test style map
+    public static function getOrdnanceSurveyLicenseKeyTestStyle() {
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
+        }
+        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+            return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
+        }
+        return null;
+    }
+
     public static function getMapBoxLicenseKey() {
         if (strpos(JURI::base(), 'localhost') !== false) {
             return 'pk.eyJ1IjoiY2hyaXN2YXVnaGFuIiwiYSI6ImNrMGZkMHdmejAwZXEzY253eTV1Znd2YncifQ.kCx-9Kq-SFA0UOsHvIMDMg';
@@ -75,6 +86,17 @@ class RLicense {
         }
     }
 
+    public static function getOSMVectoricenseKey() {
+        if (strpos(JURI::base(), 'localhost') !== false) {
+            return "";
+        }
+        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+            return "";
+        } else {
+            return null;
+        }
+    }
+
     public static function getBingMapKey() {
         $endLicenseDate = new DateTime("2025-07-01");
         $now = new DateTime();
@@ -82,6 +104,10 @@ class RLicense {
             return null;
         }
         return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
+    }
+
+    public static function getW3WLicenseKey() {
+        return 'SRJ2YZLZ';
     }
 
     // deprecated
