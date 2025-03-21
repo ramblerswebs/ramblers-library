@@ -55,6 +55,11 @@ class RJsonwalksFeed {
             }
         }
         $this->setNewWalks(7);
+        $this->setBookings();
+    }
+
+    private function setBookings() {
+        $this->walks->setBookings();
     }
 
     public function setNewWalks($days) {
@@ -290,6 +295,5 @@ class RJsonwalksFeed {
         //   $this->filterEvents();
 // filter/remove walks
         //    $this->filterWalks();
-
     }
 }

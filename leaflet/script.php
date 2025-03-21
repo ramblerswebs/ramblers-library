@@ -6,6 +6,9 @@
  * and open the template in the editor.
  */
 
+use Joomla\CMS\Component\ComponentHelper;
+use \Ramblers\Component\Ra_eventbooking\Site\Helper\Ra_eventbookingHelper;
+
 class RLeafletScript {
 
     private $command = 'noDirectAction';
@@ -80,11 +83,11 @@ class RLeafletScript {
         }
         // clustering
         $path = "media/lib_ramblers/vendors/Leaflet.markercluster-1.5.3/dist/";
-        RLoad::addStyleSheet($path . "MarkerCluster.css");
         RLoad::addStyleSheet($path . "MarkerCluster.Default.css");
+        RLoad::addStyleSheet($path . "MarkerCluster.css");
         RLoad::addScript($path . "leaflet.markercluster.js");
         RLoad::addScript("media/lib_ramblers/vendors/Leaflet.FeatureGroup.SubGroup-1.0.2/src/subgroup.js");
-
+        // subGroup used by Places.js
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.Places.js");
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.Mouse.js");
         RLoad::addStyleSheet("media/lib_ramblers/leaflet/L.Control.Mouse.css");
@@ -119,6 +122,9 @@ class RLeafletScript {
         RLoad::addScript("media/lib_ramblers/js/ra.js");
         RLoad::addScript("media/lib_ramblers/js/ra.map.js");
         RLoad::addScript("media/lib_ramblers/js/ra.walk.js");
+        if (ComponentHelper::isEnabled('com_ra_eventbooking')) {
+            Ra_eventbookingHelper::loadScripts();
+        }
         // my location start
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.MyLocation.js");
         $document->addScript("https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js");

@@ -5,6 +5,9 @@
  *
  * @author Chris Vaughan
  */
+use Joomla\CMS\Component\ComponentHelper;
+use \Ramblers\Component\Ra_eventbooking\Site\Helper\Ra_eventbookingHelper;
+
 // no direct access
 defined("_JEXEC") or die("Restricted access");
 
@@ -64,6 +67,7 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
             
         };
         $data->walks = array_values($items);
+
 //  $data->walks = [];
         $data->displayClass = $this->displayClass;
         $data->jplistName = $this->jplistName;
@@ -75,6 +79,10 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $data->customListFormat = $this->customListFormat;
         $data->customTableFormat = $this->customTableFormat;
         $data->customTabOrder = $this->customTabOrder;
+        $data->displayBookingsTable = false;
+        if (ComponentHelper::isEnabled('com_ra_eventbooking')) {
+            $data->displayBookingsTable = Ra_eventbookingHelper::canEdit();
+        }
 
         $this->map->setDataObject($data);
         $this->map->display();
@@ -117,5 +125,4 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         }
         return $number;
     }
-
 }

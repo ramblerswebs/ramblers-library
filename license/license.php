@@ -34,13 +34,7 @@ class RLicense {
     }
 
     public static function getOrdnanceSurveyLicenseKey() {
-        if (strpos(JURI::base(), 'localhost') !== false) {
-            return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
-        }
-        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
-            return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
-        }
-        return null;
+        return '0af3JPmbRyCAkGAjns8RA5YGsv4qIATl';
     }
 
     // key to display OS test style map
@@ -55,35 +49,28 @@ class RLicense {
     }
 
     public static function getMapBoxLicenseKey() {
-        if (strpos(JURI::base(), 'localhost') !== false) {
-            return 'pk.eyJ1IjoiY2hyaXN2YXVnaGFuIiwiYSI6ImNrMGZkMHdmejAwZXEzY253eTV1Znd2YncifQ.kCx-9Kq-SFA0UOsHvIMDMg';
-        }
-        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
-            return 'pk.eyJ1IjoiY2hyaXN2YXVnaGFuIiwiYSI6ImNrMGZkMHdmejAwZXEzY253eTV1Znd2YncifQ.kCx-9Kq-SFA0UOsHvIMDMg';
-        }
+//        if (strpos(JURI::base(), 'localhost') !== false) {
+//            return 'pk.eyJ1IjoiY2hyaXN2YXVnaGFuIiwiYSI6ImNrMGZkMHdmejAwZXEzY253eTV1Znd2YncifQ.kCx-9Kq-SFA0UOsHvIMDMg';
+//        }
+//        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+//            return 'pk.eyJ1IjoiY2hyaXN2YXVnaGFuIiwiYSI6ImNrMGZkMHdmejAwZXEzY253eTV1Znd2YncifQ.kCx-9Kq-SFA0UOsHvIMDMg';
+//        }
 
         return null;
     }
 
     public static function getThunderForestLicenseKey() {
-        if (strpos(JURI::base(), 'localhost') !== false) {
-            return 'bc99bda92702488ba51a8ca395da6807';
-        }
-        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
-            return 'bc99bda92702488ba51a8ca395da6807';
-        }
+//        if (strpos(JURI::base(), 'localhost') !== false) {
+//            return 'bc99bda92702488ba51a8ca395da6807';
+//        }
+//        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
+//            return 'bc99bda92702488ba51a8ca395da6807';
+//        }
         return null;
     }
 
     public static function getESRILicenseKey() {
-        if (strpos(JURI::base(), 'localhost') !== false) {
-            return "";
-        }
-        if (strpos(JURI::base(), 'locahaberandlorn-ramblers') !== false) {
-            return "";
-        } else {
-            return null;
-        }
+        return "";
     }
 
     public static function getOSMVectoricenseKey() {

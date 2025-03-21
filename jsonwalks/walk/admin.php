@@ -113,6 +113,10 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
         return $walkadmin->id === $this->id;
     }
 
+    public function hasBooking($ids) {
+        return in_array($this->id, $ids);
+    }
+
     public function filterEvents() {
         return $this->type === TypeOfWalk::GroupEvent;
     }
@@ -146,5 +150,4 @@ class RJsonwalksWalkAdmin implements JsonSerializable {
             'dateCreated' => $this->dateCreated
         ];
     }
-
 }

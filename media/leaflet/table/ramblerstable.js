@@ -257,9 +257,9 @@ ra.display.tableList = (function () {
                     }
                 }
             }
-            $lat = items[this.data.list.latitude].values[no];
-            $long = items[this.data.list.longitude].values[no];
-            if ($lat !== 0 && $long !== 0) {
+            $lat = parseFloat(items[this.data.list.latitude].values[no]);
+            $long = parseFloat(items[this.data.list.longitude].values[no]);
+            if (ra.isNumber($lat) && ra.isNumber($long)) {
                 var icon = this.getMarkerIcon(no);
                 var marker = L.marker([$lat, $long], {icon: icon, riseOnHover: true, title: title});
                 var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text

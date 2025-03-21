@@ -113,7 +113,6 @@ div.walkstdfulldetails div.walkitem {
 div.walkstdfulldetails  div.group {
     font-size: 115%;
     padding: 7px;
-
     color: #000000;
 }
 div.walkstdfulldetails div.group.grade-t {
@@ -133,7 +132,16 @@ div.location.notes {
     line-height: 100%;
     font-style: italic;
 }
+div.walkitem.transport summary{
+    cursor: pointer;
+    font-weight: bold;
+    display:list-item;
+}
 
+div.walkitem.transport ul{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
 
 div.walkitem.flags ul,
 div.walkitem.flags ul li{
@@ -860,25 +868,8 @@ table.detailsView {
 table.detailsView tr td{
     vertical-align: top;
 }
-XXXdiv.walksFilter > div.ra_openclose{
-    width :120px;
-    float:right;
-    height: 40px;
-}
 
-XXXdiv.ra_openclose {
-    background-color:#DDDDDD;
-    border-radius: 10px;
-    font-size:115%;
-    cursor: pointer;
-    padding:10px;
-    height:40px;
-    clear:both;
-}
-XXdiv.ra_openclose:hover {
-    background-color:#CCCCCC;
-}
-details.ra-walksfilter summary{
+details.ra-detailsButton summary{
     background-color:#DDDDDD;
     border-radius: 10px;
     font-size:115%;
@@ -888,23 +879,23 @@ details.ra-walksfilter summary{
     float: right;
     list-style: none;
 }
-details.ra-walksfilter summary.active{
+details.ra-detailsButton summary.active{
     background-color: var(--sunset);
     color:white;
 }
-details.ra-walksfilter summary::-webkit-details-marker {
+details.ra-detailsButton summary::-webkit-details-marker {
     display: none; /* for safari */
 }
-details.ra-walksfilter summary::before {
+details.ra-detailsButton summary::before {
     vertical-align:middle;
     content: url(close.png);
 }
 
-details.ra-walksfilter[open] summary::before {
+details.ra-detailsButton[open] summary::before {
     vertical-align:middle;
     content: url(open.png);
 }
-details.ra-walksfilter[open] summary{
+details.ra-detailsButton[open] summary{
     margin-bottom:10px;
 }
 div.ra-filtergroup {

@@ -59,6 +59,15 @@ ra.events = function () {
         });
         return no;
     };
+    this.hasBookings = function () {
+        var has = false;
+        this.events.forEach(event => {
+            if (event.bookings.enabled) {
+                has = true;
+            }
+        });
+        return has;
+    };
     this.length = function () {
         return this.events.length;
     };
@@ -94,6 +103,7 @@ ra.events = function () {
                 '10+ to 13 miles (16-21 km)',
                 '13+ to 15 miles (21-24 km)',
                 '15+ miles (24 km)']};
+        var bookingOptions = {displaySingle: false};
         var updateOptions = {
             order: [{title: 'All walks', limit: 0},
                 {title: 'In last 3 months', limit: 93},
@@ -103,6 +113,7 @@ ra.events = function () {
             ]};
         filter.addGroup(new ra.filter.groupText("idGroup", "Group", groupOptions));
         filter.addGroup(new ra.filter.groupText("idType", "Type", typeOptions));
+        filter.addGroup(new ra.filter.groupText("idBooking", "Booking", bookingOptions));
         filter.addGroup(new ra.filter.groupText("idDOW", "Day of the week", dowOptions));
         filter.addGroup(new ra.filter.groupText("idShape", "Walk Shape/Type", shapeOptions));
         filter.addGroup(new ra.filter.groupText("idDistance", "Distance", distanceOptions));
@@ -132,6 +143,7 @@ ra.event = function () {
     this.contacts = new ra.event.items();
     this.media = new ra.event.media();
     this.flags = new ra.event.flags();
+    this.bookings = null;
     this.general = new ra.event.general();
     var mapSummary = ["{dowddmm}", "{;title}", "{,distance}"];
     var mapLinks = ["{startOSMap}", "{startDirections}"];
@@ -176,6 +188,9 @@ ra.event = function () {
         this.media.addPHPMedia(phpwalk.media);
         // flags
         this.flags.addFlags(phpwalk.flags);
+        // bookings
+        this.bookings = new ra.event.bookings(this.admin.id);
+        this.bookings.convertPHPBookings(phpwalk);
     };
     this.walkDiagnostics = function (tag) {
         var options = ["{lf}", "<b>ADMIN</b>", "{group}", "{eventType}", "<b>BASICS</b>", "{title}", "{description}", "{additionalNotes}",
@@ -478,6 +493,13 @@ ra.event = function () {
 
         var status = this.admin.status;
         valueSet.add("idStatus", status);
+        var booking = this.bookings.enabled;
+        if (booking) {
+            valueSet.add("idBooking", "Required");
+        } else {
+            valueSet.add("idBooking", "Not required");
+        }
+
 
         //   valueSet.add("idShape", null);
         this.walks.forEach(walk => {
@@ -705,7 +727,7 @@ ra.event = function () {
         $html += "</div>";
         $html += "<div>Last update: " + ra.date.dowShortddmmyyyy(this.admin.dateUpdated) + "</div>";
         $html += "</div>";
-        $html += "<div>Walk ID " + this.admin.id + "</div><hr";
+        $html += "<div>Event ID " + this.admin.id + "</div><hr";
         content.innerHTML = $html;
         tag.appendChild(content);
     };
@@ -733,6 +755,7 @@ ra.event = function () {
         // tag.appendChild(content);
         this.addTitleSection(content);
         this.addBasicSection(content);
+        this.bookings.addBookingsSection(content);
         this.meeting.addSection(content, "meeting");
         this.start.addSection(content, "start");
         this.finish.addSection(content, "finish");
@@ -1824,6 +1847,25 @@ ra.event.flags = function () {
         tag.appendChild(content);
     };
 };
+
+ra.event.bookings = function (id) {
+    this.id = id;
+    this.enabled = false;
+
+    this.convertPHPBookings = function (phpwalk) {
+        var bookings = phpwalk.bookings;
+        this.enabled = bookings.enabled;
+    };
+
+    this.addBookingsSection = function (tag) {
+        if (this.enabled === false) {
+            return;
+        }
+        var bookings = new ra.bookings(tag, this.id);
+        bookings.initialise();
+    };
+
+};
 ra.event.general = function () {
     this.general = [];
 
@@ -2138,6 +2180,9 @@ ra.walk = (function () {
                 }
             }, 1500);
         }
+    };
+    my.getEventID=function(id){
+        return my.walks.getEvent(id);
     };
     // accessed by HTML links to display walk
     my.displayWalkID = function (event, id) {

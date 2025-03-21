@@ -306,6 +306,9 @@ ra.isES6 = function () {
 ra.isRealOject = function (obj) {
     return typeof obj === "object" && obj !== null && obj !== 'undefined';
 };
+ra.isNumber = function (value) {
+    return typeof value === 'number';
+};
 ra.arrayToCSV = function (arr) {
     var item, i;
     var line = [];
@@ -810,11 +813,19 @@ ra.html = (function () {
         tag.appendChild(ele);
         return ele;
     };
-    html.addTableRow = function (tabletag, cols) {
+    html.addTableRow = function (tabletag, cols, tag = "td") {
         var tr = ra.html.createElement(tabletag, "tr");
         cols.forEach(col => {
-            var td = ra.html.createElement(tr, "td");
-            td.innerHTML = col;
+            var td = ra.html.createElement(tr, tag);
+            if (typeof col === 'string') {
+                td.innerHTML = col;
+            }
+            if (typeof col === 'number') {
+                td.innerHTML = col;
+            }
+            if (typeof col === 'object') {
+                td.appendChild(col);
+            }
         });
     };
     html.displayInModal = function (tag) {
@@ -2007,7 +2018,7 @@ ra.filter = function (eventTag, eventName) {
             return;
         }
         var tags = [
-            {name: 'details', parent: 'root', tag: 'details', attrs: {class: "ra-walksfilter"}},
+            {name: 'details', parent: 'root', tag: 'details', attrs: {class: "ra-detailsButton"}},
             {name: 'summary', parent: 'details', tag: 'summary', textContent: 'Filter'},
             {name: 'clearFilter', parent: 'details', tag: 'div', textContent: 'Clear filters', attrs: {class: "ra-clear-filters ra-filteritem right"}},
             {name: 'filters', parent: 'details', tag: 'div', attrs: {class: 'ra-walksfilter'}}

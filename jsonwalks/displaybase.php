@@ -15,7 +15,7 @@ abstract class RJsonwalksDisplaybase {
 
     protected $displayStartTime = false;
     protected $displayStartDescription = false;
- //   protected $printOn = false;
+    //   protected $printOn = false;
     public $displayGradesIcon = true;
     public $displayGradesSidebar = true;
     public $emailDisplayFormat = 1;
