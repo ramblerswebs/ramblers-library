@@ -765,7 +765,7 @@ ra.event = function () {
             this.addMapSection(content);
             this.media.addMediaSection(content);
             this.flags.addFlagsSection(content);
-          //  this.general.addSection(content);
+            //  this.general.addSection(content);
             this.updatePostcodeInfo();
         }
         this.addFooterSection(content);
@@ -1854,7 +1854,9 @@ ra.event.bookings = function (id) {
 
     this.convertPHPBookings = function (phpwalk) {
         var bookings = phpwalk.bookings;
-        this.enabled = bookings.enabled;
+        if (bookings !== null) {
+            this.enabled = bookings.enabled;
+        }
     };
 
     this.addBookingsSection = function (tag) {
@@ -2181,7 +2183,7 @@ ra.walk = (function () {
             }, 1500);
         }
     };
-    my.getEventID=function(id){
+    my.getEventID = function (id) {
         return my.walks.getEvent(id);
     };
     // accessed by HTML links to display walk
