@@ -7,6 +7,9 @@
 /* 426 400 */
 /* 364 250 */
 
+div.event-list-cal-event div.event-list-cal-day {
+    background-color: #DDDDDD;
+}
 
 div.event-list-cal-event-single-link hr {
     margin-top: 2px;
@@ -111,7 +114,7 @@ div.ra_calendar ul.dates li{
     vertical-align:middle;
     float:left;
     list-style-type:none;
-    background-color: #DDD;
+    background-color: #D0D0D0;
     border-radius: 5px;
     color:#999999;
     text-align:center;
@@ -140,7 +143,7 @@ div.ra_calendar div.event-list-cal-hover {
     text-align: left;
     font-size: 70%;
     background: #FFFFFF;
-    border: 1px solid #ddd;
+    border: 1px solid #DDDDDD;
     border-radius: 10px;
     box-shadow: 2px 2px 5px #aaa;
     display: none;

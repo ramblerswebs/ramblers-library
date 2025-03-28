@@ -6,6 +6,7 @@ ra.leafletmap = function (tag, options) {
 
     ra.logger.toServer(["createMap", window.location.href]);
     this.options = options;
+    this.baseTiles = null;
 
     this.controls = {layers: null,
         settins: null,
@@ -44,8 +45,7 @@ ra.leafletmap = function (tag, options) {
         ra.html.generateTags(elements.copyright, tagcopy);
     }
     var self = this;
-
-    this.map = new L.Map(this._mapDiv, {
+    var mapOptions = {
         center: new L.LatLng(54.221592, -3.355007),
         zoom: 5,
         zoomSnap: 0.25,
@@ -55,7 +55,9 @@ ra.leafletmap = function (tag, options) {
 //            [61.331151, 1.9134116]
 //        ],
         zoomControl: false
-    });
+    };
+
+    this.map = new L.Map(this._mapDiv, mapOptions);
     this.mapLayers = new Object();
     // map types
     this.mapLayers["Open Street Map"] = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -80,7 +82,7 @@ ra.leafletmap = function (tag, options) {
 
         });
     }
-         if (options.licenseKeys.OSkey !== null) {
+    if (options.licenseKeys.OSkey !== null) {
         // Load and display vector tile layer on the map.
         this.mapLayers["Ordnance Survey"] = L.maplibreGL({
             style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osRamblersStyle.json',
@@ -105,10 +107,10 @@ ra.leafletmap = function (tag, options) {
         this.mapLayers["Ordnance Survey Road test"] = L.maplibreGL({
             minZoom: 7,
             maxZoom: 19,
-            maxBounds: [
-                [-10.76418, 47],
-                [1.9134116, 61.331151]
-            ],
+//            maxBounds: [
+//                [-10.76418, 47],
+//                [1.9134116, 61.331151]
+//            ],
             style: customStyleJson2,
             attribution: 'Map &copy; Ordnance Survey',
             transformRequest: (url, resourceType) => {
@@ -145,7 +147,7 @@ ra.leafletmap = function (tag, options) {
             }
         });
     }
- 
+
     if (options.licenseKeys.OSTestStyle !== null) {
         // Load and display vector tile layer on the map.
         this.mapLayers["Ordnance Survey Ramblers Test"] = L.maplibreGL({
