@@ -522,22 +522,7 @@ ra.walkseditor.walkeditor = function ( ) {
             }
         };
     };
-    this.addBooking = function (tag) {
-
-
-        if (tag === null) {
-            throw new Error("raWalkType container is null");
-        }
-        if (!this.walk.hasOwnProperty('booking')) {
-            this.walk.booking = {};
-        }
-        var booking = this.walk.booking;
-        var itemDiv = this.input.itemsItemDivs(tag);
-        var comment = document.createElement('p');
-        comment.textContent = 'Change this secition to whatever options we agree upon';
-        itemDiv.appendChild(comment);
-        return;
-    };
+  
 //  
     this.addFacilities = function (tag) {
 

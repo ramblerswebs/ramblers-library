@@ -1,4 +1,6 @@
 <?php
+use Joomla\CMS\Component\ComponentHelper;
+use \Ramblers\Component\Ra_eventbooking\Site\Helper\Ra_eventbookingHelper;
 
 class RJsonwalksWalks {
 
@@ -44,6 +46,17 @@ class RJsonwalksWalks {
         $items = $this->allWalks();
         foreach ($items as $walk) {
             $walk->setNewWalk($date);
+        }
+    }
+
+    public function setBookings() {
+        if (!ComponentHelper::isEnabled('com_ra_eventbooking')) {
+            return;
+        }
+        $ids=Ra_eventbookingHelper::getEventsWithBooking();
+        $items = $this->allWalks();
+        foreach ($items as $walk) {
+            $walk->setBookings($ids);
         }
     }
 

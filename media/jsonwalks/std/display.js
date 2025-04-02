@@ -33,7 +33,8 @@ ra.display.walksTabs = function (mapOptions, data) {
         jplistName: "name1",
         itemsPerPage: 20,
         currentView: "Grades",
-        options: null
+        options: null,
+        displayBookingsTable: false
     };
     this.myjplist = new ra.jplist(this.settings.jplistGroup);
     this.optionTag = {};
@@ -58,6 +59,7 @@ ra.display.walksTabs = function (mapOptions, data) {
     if (data.displayClass !== "") {
         this.settings.displayClass = data.displayClass;
     }
+    this.settings.displayBookingsTable = data.displayBookingsTable;
 
     data.walks.forEach(phpwalk => {
         var newEvent = new ra.event();
@@ -77,6 +79,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             {name: 'rapagination1', parent: 'inner', tag: 'div'},
             {name: 'rawalks', parent: 'inner', tag: 'div', textContent: 'Processing data - this should be replaced shortly.'},
             {name: 'rapagination2', parent: 'inner', tag: 'div'},
+            {name: 'bookings', parent: 'root', tag: 'div'},
             {name: 'map', parent: 'inner', tag: 'div'}
         ];
         this.masterdiv = document.getElementById(this.mapOptions.divId);
@@ -109,12 +112,18 @@ ra.display.walksTabs = function (mapOptions, data) {
             // lets the map/list tabs be displayed straight away
             _this.displayWalks();
         }, 0);
+        if (this.settings.displayBookingsTable) {
+            var book = new ra.bookings.display();
+            book.displayBookingsTable(this.elements.bookings);
+        }
+
         var _this = this;
         document.addEventListener("reDisplayWalks", function () {
             _this.events.setDisplayFilter();
             _this.displayWalks();
         });
     };
+
     this.displayWalks = function () {
         var no = this.events.getNoEventsToDisplay();
         switch (this.settings.currentView) {
@@ -169,14 +178,13 @@ ra.display.walksTabs = function (mapOptions, data) {
                 tag.style.display = "block";
                 this.setPaginationMargin("off");
                 if (this.map === null) {
-                    this.displayWalksMap();  
-                    this.cluster.zoomAll();
-                }else{
-                    //  this.map.invalidateSize();
+                    // create map at last moment
+                    this.lmap = new ra.leafletmap(this.elements.map, this.mapOptions);
+                    this.map = this.lmap.map;
+                    this.cluster = new ra.map.cluster(this.map);
                 }
-               
-              
-             
+                this.displayWalksMap();
+                this.cluster.zoomAll();
             }
         }
     };
@@ -516,11 +524,8 @@ ra.display.walksTabs = function (mapOptions, data) {
         calendar.render();
     };
     this.displayWalksMap = function () {
-        // create map at last moment
-        this.lmap = new ra.leafletmap(this.elements.map, this.mapOptions);
-        this.map = this.lmap.map;
-        this.cluster = new ra.map.cluster(this.map);
-        // this.cluster.removeClusterMarkers();
+
+        this.cluster.removeClusterMarkers();
         if (this.events.length() === 0) {
             return;
         }
@@ -528,7 +533,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             $walk.addWalkMarker(this.cluster, this.settings.walkClass);
         });
         this.cluster.addClusterMarkers();
-     //   this.cluster.zoomAll();
+        //   this.cluster.zoomAll();
         return;
     };
     this.addPagination = function (no, tag) {

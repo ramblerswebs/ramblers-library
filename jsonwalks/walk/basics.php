@@ -17,8 +17,8 @@ class RJsonwalksWalkBasics implements JsonSerializable {
     private $description = "";       // description of walk with html tags removed
     private $descriptionHtml = "";   // description of walk with html tags
     private $additionalNotes = "";   // the additional notes field as text
-    private $title = "";               // Title of the walk
-    private $external_url;           // external url for booking form
+    private $title = "";             // Title of the walk
+    private $external_url;           // external url for ???
 
     public function __construct($admin, DateTime $walkDate, ?DateTime $finishDate, string $title, string $descriptionHtml,
             string $additionalNotes, ?string $external_url) {
@@ -178,6 +178,7 @@ class RJsonwalksWalkBasics implements JsonSerializable {
         }
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed {
         return [
             'walkDate' => $this->walkDate,

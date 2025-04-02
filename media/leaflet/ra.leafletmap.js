@@ -6,6 +6,7 @@ ra.leafletmap = function (tag, options) {
 
     ra.logger.toServer(["createMap", window.location.href]);
     this.options = options;
+    this.baseTiles = null;
 
     this.controls = {layers: null,
         settins: null,
@@ -44,14 +45,19 @@ ra.leafletmap = function (tag, options) {
         ra.html.generateTags(elements.copyright, tagcopy);
     }
     var self = this;
-
-    this.map = new L.Map(this._mapDiv, {
+    var mapOptions = {
         center: new L.LatLng(54.221592, -3.355007),
         zoom: 5,
         zoomSnap: 0.25,
         maxZoom: 18,
+//        maxBounds: [
+//            [47, -10.76418],
+//            [61.331151, 1.9134116]
+//        ],
         zoomControl: false
-    });
+    };
+
+    this.map = new L.Map(this._mapDiv, mapOptions);
     this.mapLayers = new Object();
     // map types
     this.mapLayers["Open Street Map"] = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -61,12 +67,9 @@ ra.leafletmap = function (tag, options) {
         attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org" target=\"_blank\">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
     if (options.licenseKeys.bingkey !== null) {
         try {
-            this.mapLayers["Bing Aerial"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'Aerial'});
-            this.mapLayers["Bing Aerial (Labels)"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'AerialWithLabels'});
-            this.mapLayers["Bing Ordnance Survey"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'ordnanceSurvey',
-                //    minZoom: 11.5,
-                //   minNativeZoom: 11.5,
-                //   maxZoom: 18,
+            this.mapLayers["<i>Bing Aerial</i>"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'Aerial'});
+            this.mapLayers["<i>Bing Aerial (Labels)</i>"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'AerialWithLabels'});
+            this.mapLayers["<i>Bing Ordnance Survey</i>"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'ordnanceSurvey',
                 attribution: 'Bing/OS Crown Copyright'});
         } catch (err) {
 
@@ -74,18 +77,60 @@ ra.leafletmap = function (tag, options) {
 
     }
     if (options.licenseKeys.ESRIkey !== null) {
-        this.mapLayers["Esri_WorldImagery"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        this.mapLayers["Aerial View, Esri"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 
         });
-        this.mapLayers["Esri_WorldTopoMap"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+    }
+    if (options.licenseKeys.OSkey !== null && L.maplibreGL) {
+        // Load and display vector tile layer on the map.
+        this.mapLayers["Ordnance Survey"] = L.maplibreGL({
+            style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osRamblersStyle.json',
+            attribution: 'Map &copy; Ordnance Survey',
+            transformRequest: (url, resourceType) => {
+                if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
+                    url = new URL(url);
+                    if (!url.searchParams.has('key'))
+                        url.searchParams.append('key', options.licenseKeys.OSkey);
+                    if (!url.searchParams.has('srs'))
+                        url.searchParams.append('srs', 3857);
+                    return {
+                        url: new Request(url).url
+                    };
+                }
+            }
         });
     }
-    if (options.licenseKeys.OSTestkey !== null) {
+
+    if (options.licenseKeys.OSTestkey !== null && L.maplibreGL) {
+        const customStyleJson2 = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Road.json';
+        this.mapLayers["Ordnance Survey Road test"] = L.maplibreGL({
+            minZoom: 7,
+            maxZoom: 19,
+//            maxBounds: [
+//                [-10.76418, 47],
+//                [1.9134116, 61.331151]
+//            ],
+            style: customStyleJson2,
+            attribution: 'Map &copy; Ordnance Survey',
+            transformRequest: (url, resourceType) => {
+                if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
+                    url = new URL(url);
+                    if (!url.searchParams.has('key'))
+                        url.searchParams.append('key', options.licenseKeys.OSTestkey);
+                    if (!url.searchParams.has('srs'))
+                        url.searchParams.append('srs', 3857);
+                    return {
+                        url: new Request(url).url
+                    };
+                }
+            }
+        });
+    }
+    if (options.licenseKeys.OSTestkey !== null && L.maplibreGL) {
 
         const customStyleJson = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Outdoor.json';
-        this.mapLayers["Ordnance Survey Outdoor"] = L.maplibreGL({
+        this.mapLayers["Ordnance Survey Outdoor Test"] = L.maplibreGL({
             style: customStyleJson,
             attribution: 'Map &copy; Ordnance Survey',
             transformRequest: (url, resourceType) => {
@@ -102,41 +147,11 @@ ra.leafletmap = function (tag, options) {
             }
         });
     }
-    if (options.licenseKeys.OSkey !== null) {
-        const customStyleJson2 = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Road.json';
-        this.mapLayers["Ordnance Survey Road"] = L.maplibreGL({
-            minZoom: 7,
-            maxZoom: 19,
-            maxBounds: [
-                [-10.76418, 47],
-                [1.9134116, 61.331151]
-            ],
-            style: customStyleJson2,
-            attribution: 'Map &copy; Ordnance Survey',
-            transformRequest: (url, resourceType) => {
-                if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
-                    url = new URL(url);
-                    if (!url.searchParams.has('key'))
-                        url.searchParams.append('key', options.licenseKeys.OSkey);
-                    if (!url.searchParams.has('srs'))
-                        url.searchParams.append('srs', 3857);
-                    return {
-                        url: new Request(url).url
-                    };
-                }
-            }
-        });
-    }
-    if (options.licenseKeys.OSTestStyle !== null) {
+
+    if (options.licenseKeys.OSTestStyle !== null && L.maplibreGL) {
         // Load and display vector tile layer on the map.
-        this.mapLayers["Ordnance Survey Ramblers"] = L.maplibreGL({
+        this.mapLayers["Ordnance Survey Ramblers Test"] = L.maplibreGL({
             style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osTestStyle.json',
-            minZoom: 7,
-            maxZoom: 19,
-            maxBounds: [
-                [-10.76418, 47],
-                [1.9134116, 61.331151]
-            ],
             attribution: 'Map &copy; Ordnance Survey',
             transformRequest: (url, resourceType) => {
                 if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
@@ -169,8 +184,8 @@ ra.leafletmap = function (tag, options) {
             accessToken: options.licenseKeys.mapBoxkey
         });
     }
-    if (options.licenseKeys.OSMVectorStyle !== null) {
-        this.mapLayers["OSM Vector"] = L.maplibreGL({
+    if (options.licenseKeys.OSMVectorStyle !== null && L.maplibreGL) {
+        this.mapLayers["OSM Vector - Test"] = L.maplibreGL({
             style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osmliberty.json'
         });
     }

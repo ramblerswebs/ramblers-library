@@ -14,13 +14,17 @@
 class RJsonwalksAddschema {
 
     function display($walks) {
+        $no = 0;
         $schemawalks = array();
         $walks->sort(RJsonwalksWalk::SORT_DATE, RJsonwalksWalk::SORT_TIME, RJsonwalksWalk::SORT_DISTANCE);
         $items = $walks->allWalks();
         foreach ($items as $walk) {
             if (!$walk->isCancelled()) {
-               
+                $no += 1;
                 $schemawalks[] = $walk->_getWalkSchema();
+            }
+            if ($no > 7) {
+                break;
             }
         }
 
@@ -31,5 +35,4 @@ class RJsonwalksAddschema {
         $doc = JFactory::getDocument();
         $doc->addScriptDeclaration($script, "application/ld+json");
     }
-
 }

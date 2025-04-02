@@ -40,5 +40,4 @@ class RLeafletMap {
         }
         $this->script->add($options);
     }
-
 }

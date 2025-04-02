@@ -7,6 +7,7 @@ class RJsonwalksWalk implements JsonSerializable {
 
     private $admin = null;
     private $basics = null;
+    private $bookings = null;
     private $walks = null;
     private $meeting = null;
     private $start = null;
@@ -45,6 +46,10 @@ class RJsonwalksWalk implements JsonSerializable {
 
     public function addBasics($basics) {
         $this->basics = $basics;
+    }
+
+    private function addBookings($bookings) {
+        $this->bookings = $bookings;
     }
 
     public function addWalk($walk) {
@@ -134,6 +139,11 @@ class RJsonwalksWalk implements JsonSerializable {
 
     public function setNewWalk(DateTime $date) {
         $this->admin->setNewWalk($date);
+    }
+
+    public function setBookings($ids) {
+        $enabled = $this->admin->hasBooking($ids);
+        $this->addBookings(new RJsonwalksWalkBookings($enabled));
     }
 
     public function notInGroup($groups) {
@@ -672,6 +682,7 @@ class RJsonwalksWalk implements JsonSerializable {
         return $this->basics->getIntValue("walkDate")->format('Y-m-d');
     }
 
+    #[\Override]
     public function jsonSerialize(): mixed {
 
         return [
@@ -683,7 +694,8 @@ class RJsonwalksWalk implements JsonSerializable {
             'finish' => $this->finish,
             'contact' => $this->contacts,
             'flags' => $this->flags,
-            'media' => $this->media
+            'media' => $this->media,
+            'bookings' => $this->bookings
         ];
     }
 }
