@@ -336,7 +336,7 @@ ra.walkseditor.walk = function () {
         }
     };
     this.addDisplayClasses = function (cl) {
-        var classes = this.getStatusClasses()
+        var classes = this.getStatusClasses();
         classes.forEach(c => {
             cl.add(c);
         });
@@ -849,7 +849,6 @@ ra.walkseditor.walk = function () {
                     return ['statusPublished', 'statusCancelled'];
                 }
         }
-
     };
     this.dateStatus = function () {
         var d = ra.getObjProperty(this.data, 'basics.date', null);

@@ -48,7 +48,6 @@ class RLeafletMapoptions {
         $this->licenseKeys = new stdClass();
         $this->licenseKeys->bingkey = null;
         $this->licenseKeys->ORSkey = null;
-
         $this->licenseKeys->ESRIkey = null;
         $this->licenseKeys->OSTestStyle = null;
         $this->licenseKeys->OSMVectorStyle = null;

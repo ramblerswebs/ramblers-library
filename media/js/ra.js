@@ -1,4 +1,4 @@
-var ra, jplist, document, performance;
+var ra, document, performance;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -69,7 +69,7 @@ ra.decodeOptions = function (value) {
 };
 ra.uniqueID = function () {
     ra.uniquenumber += 1;
-    return 'uniqueid' + ra.uniquenumber; // lowercase because of jplist issue
+    return 'uid' + ra.uniquenumber; // lowercase 
 };
 ra.bootstrapper = function (jversion, displayClass, mapOptions, _data) {
 
@@ -307,7 +307,7 @@ ra.isRealOject = function (obj) {
     return typeof obj === "object" && obj !== null && obj !== 'undefined';
 };
 ra.isNumber = function (value) {
-    return typeof value === 'number';
+    return typeof value === 'number' && !Number.isNaN(value);
 };
 ra.arrayToCSV = function (arr) {
     var item, i;
@@ -429,11 +429,11 @@ ra.errors = (function () {
 
         xmlhttp = new XMLHttpRequest();
         xmlhttp.onload = function () {
-            // if (xmlhttp.status === 200) {
-            //     console.log(xmlhttp.responseText);
-            // } else {
-            console.error('Error Log status:', xmlhttp.status);
-            // }
+            if (xmlhttp.status === 200) {
+                console.log(xmlhttp.responseText);
+            } else {
+                console.error('Error Log status: ' + xmlhttp.status);
+            }
         };
         xmlhttp.open("POST", url, true);
         xmlhttp.send(formData);
@@ -948,6 +948,28 @@ ra.html = (function () {
     html.insertAfter = function (referenceNode, newNode) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     };
+    html.createImageWithPopup = function (image, popupImage, title, subTitle) {
+        var a = document.createElement('a');
+        a.setAttribute('class', 'pointer');
+        a.setAttribute('title', 'Click to expand/view');
+        var img = document.createElement('img');
+        img.setAttribute('src', image);
+        a.appendChild(img);
+        a.addEventListener('click', function (e) {
+            var div = document.createElement('div');
+            var img = document.createElement('img');
+            img.setAttribute('src', popupImage);
+            div.appendChild(img);
+            var h1 = document.createElement('h2');
+            h1.innerHTML = title;
+            div.appendChild(h1);
+            var h2 = document.createElement('h3');
+            h2.innerHTML = subTitle;
+            div.appendChild(h2);
+            ra.modals.createModal(div, false, true);
+        });
+        return {a: a, img: img};
+    };
     html.triggerEvent = function (element, eventName) {
         var event = document.createEvent("HTMLEvents");
         event.initEvent(eventName, false, true);
@@ -985,14 +1007,19 @@ ra.html = (function () {
                 mywindow.document.write(noprint);
             }
         }
-        mywindow.document.write('</head><body><div id="js-document"><input type="button" value="Print" onclick="javascript:window.print(); return false;"><div class="div.component-content">');
-        mywindow.document.write(html);
+        mywindow.document.write('</head><body><div id="js-document"><input type="button" value="Print" onclick="javascript:window.print(); return false;"><div id="js-content">');
         mywindow.document.write('</div></div></body></html>');
         var span = mywindow.document.getElementById("js-document");
 // When the user clicks on <span> (x), close the modal
         span.onclick = function () {
             mywindow.close();
         };
+        var content = mywindow.document.getElementById("js-content");
+        if (typeof html === 'string') {
+            content.innerHTML = html;
+        } else {
+            content.appendChild(html);
+        }
         mywindow.document.close();
         mywindow.focus();
         return true;
@@ -1134,6 +1161,7 @@ if (typeof (ra.html.input) === "undefined") {
         _label.style.display = "inline";
         var inputTag = document.createElement('button');
         inputTag.setAttribute('class', 'small link-button granite');
+        inputTag.setAttribute('title', 'Click to change value');
         inputTag.style.display = "inline";
         inputTag.style.marginLeft = "10px";
         if (raobject[property]) {
@@ -1281,14 +1309,15 @@ if (typeof (ra.html.input) === "undefined") {
         tag.appendChild(itemDiv);
         var inputColor = document.createElement('input');
         inputColor.setAttribute('type', 'color');
-        inputColor.setAttribute('class', 'pointer');
+        inputColor.setAttribute('class', 'pointer ra colourselector');
+        inputColor.setAttribute('title', 'Click to change colour');
         inputColor.setAttribute('value', raobject[property]);
         itemDiv.appendChild(inputColor);
         inputColor.ra = {};
         inputColor.ra.object = raobject;
         inputColor.ra.property = property;
-        inputColor.style.height = "30px";
-        inputColor.style.width = "50px";
+        inputColor.style.height = "35px";
+        inputColor.style.width = "60px";
         inputColor.style.backgroundColor = "#DDDDDD";
         inputColor.addEventListener("input", function (e) {
             e.target.ra.object[e.target.ra.property] = e.target.value;
@@ -1315,8 +1344,8 @@ if (typeof (ra.html.input) === "undefined") {
         var titlestyle = document.createElement('h5');
         titlestyle.textContent = labeltext;
         itemDiv.appendChild(titlestyle);
-        var color = ra.html.input.colour(itemDiv, 'inlineBlock', 'Colour', raobject, 'color');
         var example = ra.html.input._addExampleLine(itemDiv, "150px", "Example: ");
+        var color = ra.html.input.colour(itemDiv, '', 'Line Colour:', raobject, 'color');
         var weight = ra.html.input.number(itemDiv, '', 'Weight %n pixels', raobject, 'weight', 1, 10, 0.5);
         var opacity = ra.html.input.number(itemDiv, '', 'Opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
         itemDiv.ra = {};
@@ -1363,7 +1392,7 @@ if (typeof (ra.html.input) === "undefined") {
         com.style.display = 'inline-block';
         com.textContent = comment;
         com.style.marginRight = '10px';
-        com.style.marginTop = '20px';
+        com.style.marginTop = '0px';
         com.style.marginLeft = "10px";
         tag.appendChild(com);
         var itemDiv = document.createElement('div');
@@ -2440,128 +2469,7 @@ ra.filter.groupText = function (id, title, options = null) {
     };
 };
 
-ra.jplist = function (group) {
-    this.hasFilters = false;
-    this.group = group;
-    this.addPagination = function (no, tag, jplistName, itemsPerPage) {
-        tag.innerHTML = '';
-        if (!ra.isES6()) {
-            var h3 = document.createElement('h3');
-            h3.setAttribute('class', 'oldBrowser');
-            h3.textContent = 'You are using an old Web Browser!';
-            var p = document.createElement('p');
-            p.setAttribute('class', 'oldBrowser');
-            h3.textContent = 'We suggest you upgrade to a more modern Web browser, Chrome, Firefox, Safari,...';
-            h3.appendChild(p);
-            tag.appendChild(h3);
-            return null;
-        }
-        if (no < 21) {
 
-        } else {
-            var tags = [
-                {name: 'div', parent: 'root', tag: 'div', attrs: {'data-jplist-control': 'pagination',
-                        'data-group': this.group, 'data-items-per-page': itemsPerPage,
-                        'data-current-page': '0', 'data-id': 'no-items',
-                        'data-name': jplistName, class: 'ra pagination'}},
-                {name: 'spanitems', parent: 'div', tag: 'span'},
-                {name: 'span', parent: 'spanitems', tag: 'span', attrs: {class: 'ra nonmobile', 'data-type': 'info'}, textContent: '{startItem} - {endItem} of {itemsNumber}'},
-                {name: 'buttons', parent: 'div', tag: 'span', attrs: {class: 'center '}},
-                {name: 'first', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'first'}, textContent: '|<'},
-                {name: 'previous', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'prev'}, textContent: '<'},
-                {name: 'xxx', parent: 'buttons', tag: 'span', attrs: {class: 'jplist-holder', 'data-type': 'pages'}},
-                {name: 'pageNumber', parent: 'xxx', tag: 'button', attrs: {type: 'button', 'data-type': 'page'}, textContent: '{pageNumber}'},
-                {name: 'next', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'next'}, textContent: '>'},
-                {name: 'last', parent: 'buttons', tag: 'button', attrs: {type: 'button', 'data-type': 'last'}, textContent: '>|'},
-                {name: 'select', parent: 'div', tag: 'select', attrs: {class: 'ra nonmobile', 'data-type': 'items-per-page', 'name': 'pagesize'}},
-                {parent: 'select', tag: 'option', attrs: {value: '10'}, textContent: '10 per page'},
-                {parent: 'select', tag: 'option', attrs: {value: '20'}, textContent: '20 per page'},
-                {parent: 'select', tag: 'option', attrs: {value: '25'}, textContent: '25 per page'},
-                {parent: 'select', tag: 'option', attrs: {value: '50'}, textContent: '50 per page'},
-                {parent: 'select', tag: 'option', attrs: {value: '100'}, textContent: '100 per page'},
-                {parent: 'select', tag: 'option', attrs: {value: '0'}, textContent: 'View all'}
-            ];
-            var elements = ra.html.generateTags(tag, tags);
-            elements.select.style.width = "120px";
-        }
-
-        return null;
-    };
-    this.addFilter = function (varclass, name, type, min = 0, max = 999999) {
-        var out = "";
-        if (type === "text") {
-            this.hasFilters = true;
-            out = '<input \
-     data-jplist-control="textbox-filter"  data-group="' + this.group + '" \
-     data-name="my-filter-' + varclass + '" \\n\
-     id="my-filter-' + varclass + '" \
-     data-path=".' + varclass + '" type="text" \
-     value="" placeholder="Filter by ' + name + '" />';
-        }
-        if (type === "number") {
-            this.hasFilters = true;
-            out = '<div class="csv-slider"><div class="ra-slider" \
-                  data-jplist-control="slider-range-filter" \
-                  data-path=".' + varclass + '" \
-                  data-group="' + this.group + '" \
-                  data-name="my-slider-' + varclass + '" \
-                  data-min="' + min + '" \
-                  data-from="' + min + '" \
-                  data-to="' + max + '" \
-                  data-max="' + max + '"> \
-                  <b>' + name + ':</b> <span data-type="value-1"></span> \
-                  <div class="jplist-slider" data-type="slider"></div> \
-                  <span data-type="value-2"></span>  \
-                  </div></div>';
-        }
-        var _this = this;
-        window.addEventListener("resize", function () {
-            _this.updateControls();
-        });
-        return out;
-    };
-    this.sortButton = function (tag, varclass, type, order, text) {
-        var button = document.createElement('button');
-        tag.appendChild(button);
-        button.setAttribute('class', "jplistsortbutton" + order);
-        button.setAttribute('data-jplist-control', "sort-buttons");
-        button.setAttribute('data-path', "." + varclass);
-        button.setAttribute('data-group', this.group);
-        button.setAttribute('data-order', order);
-        button.setAttribute('data-type', type);
-        button.setAttribute('data-name', "sortbutton");
-        button.setAttribute('data-selected', "false");
-        button.setAttribute('data-mode', "radio");
-        button.textContent = text;
-        return button;
-    };
-    this.updateControls = function () {
-        var sliders = document.getElementsByClassName('ra-slider');
-        for (let slider of sliders) {
-            jplist.resetControl(slider);
-        }
-    };
-    this.init = function (name) {
-        var hasPagination = false;
-        var elements = document.querySelectorAll("[data-jplist-control='pagination']");
-        for (let i = 0; i < elements.length; i++) {
-            let element = elements[i];
-            if (element.hasAttribute('data-group')) {
-                if (element.getAttribute('data-group') === this.group) {
-                    hasPagination = true;
-                }
-            }
-        }
-        if (ra.isES6()) {
-            if (this.hasFilters || hasPagination) {
-                jplist.init({
-                    storage: 'sessionStorage', //'localStorage', 'sessionStorage' or 'cookies'
-                    storageName: name //the same storage name can be used to share storage between multiple pages
-                });
-            }
-        }
-    };
-};
 if (typeof (ra.ics) === "undefined") {
     ra.ics = {};
     // https://icalendar.org/
@@ -2594,9 +2502,12 @@ if (typeof (ra.ics) === "undefined") {
             this._addRecord('CLASS:', 'PUBLIC');
             this._addRecord('END:', 'VEVENT');
         };
-        this.download = function () {
+        this.getFile = function () {
             this._addRecord('END:', 'VCALENDAR');
-            var data = this.file;
+            return this.file;
+        };
+        this.download = function () {
+            var data = this.getFile();
             try {
                 var blob = new Blob([data], {type: "text/calendar"});
                 var name = "ramblerswalks.ics";

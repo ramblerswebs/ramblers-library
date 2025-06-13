@@ -66,7 +66,6 @@ class RWalkseditorProgramme extends RLeafletMap {
         $path = "media/lib_ramblers/walkseditor/";
         RLoad::addScript($path . "js/form/programme.js", "text/javascript");
         RLoad::addScript($path . "js/viewWalks.js", "text/javascript");
-        RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
    
         
        

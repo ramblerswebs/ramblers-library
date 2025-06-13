@@ -22,7 +22,7 @@ div.leaflet-container{
 div#rt-header {
     z-index: 1000;
 }
-divREMOVE.leaflet-container{
+XXXdivREMOVE.leaflet-container{
     z-index:0;
 }
 
@@ -65,7 +65,22 @@ div.inlineBlock{
     left: 50%;
     z-index:2000;
 }
-.gpxlist {
+div.event-list-cal-hover > div.odd,
+div.walks >div.odd{
+background-color: #EEEEEE !important;
+}
+div.event-list-cal-hover > div.even,
+div.walks >div.even{
+background-color: #FFFFFF !important;
+}
+div.event-list-cal-hover > div.odd:hover,
+div.event-list-cal-hover > div.even:hover,
+div.walks >div.odd:hover,
+div.walks >div.even:hover{
+background-color: #DDDDDD !important;
+}
+
+XXXX.gpxlist {
     background-color: #EEEEEE;
     border-width: 0.5px;
     border-style: solid;
@@ -81,7 +96,7 @@ div.inlineBlock{
     column-width: 100px;
 }
 @media only screen and (min-width: 1024px) and (max-width: 1320px) {
-    .gpxlist {
+    XXX.gpxlist {
         -webkit-column-count: 2; /* Chrome, Safari, Opera */
         -moz-column-count: 2; /* Firefox */
         column-count: 2;
@@ -91,7 +106,7 @@ div.inlineBlock{
     }
 }
 @media only screen and (max-width: 1023px) {
-    .gpxlist {
+    XXX.gpxlist {
         -webkit-column-count: 1; /* Chrome, Safari, Opera */
         -moz-column-count: 1; /* Firefox */
         column-count: 1;
@@ -101,19 +116,22 @@ div.inlineBlock{
     }
 }
 
-div.gpxlist  ul li{
+XXXdiv.gpxlist  ul li{
     list-style-type:circle;
+}
+div.ra.routeinfo {
+    margin:5px;
 }
 
 /* Style the tab */
-.tab {
+xxxx.tab {
     overflow: hidden;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
 }
 
 /* Style the buttons that are used to open the tab content */
-.tab button.tablinks {
+xxxx.tab button.tablinks {
     background-color: inherit;
     float: left;
     border: none;
@@ -125,70 +143,73 @@ div.gpxlist  ul li{
 }
 
 /* Change background color of buttons on hover */
-.tab button.tablinks:hover {
+xxxx.tab button.tablinks:hover {
     background-color: #ddd;
 }
 
 /* Create an active/current tablink class */
-.tab button.active {
+xxxx.tab button.active {
     background-color: #8BA69C;
 }
 
 /* Style the tab content */
-.tabcontent {
+xxxx.tabcontent {
     display: none;
     padding: 6px 12px;
     border: 1px solid #ccc;
     border-top: none;
 }
-#gpxdetails {
+XXX#gpxdetails {
     width:100%;
 }
-#gpxdetails tr:nth-child(even){
+XXX#gpxdetails tr:nth-child(even){
     background-color: #f0f0f0;
 }
-#gpxdetails tr:hover{
+XXX#gpxdetails tr:hover{
     background-color: #c6c3c3;
 }
 
-#gpxdetails  th,
-#gpxdetails  td{
+XXX#gpxdetails  th,
+XXX#gpxdetails  td{
     text-align:right;
 }
-#gpxdetails  th.alignleft,
-#gpxdetails td.alignleft{
+XXX#gpxdetails  th.alignleft,
+XXX#gpxdetails td.alignleft{
     text-align:left;
 }
-#gpxdetails  th[onclick]{
+XXX#gpxdetails  th[onclick]{
     color: #782327;
     cursor:pointer;
 }
-#gpxdetails th[onclick]:hover{
+XXX#gpxdetails th[onclick]:hover{
     font-style: italic;
     color:#000000;
 
 }
-#gpxdetails th[onclick]::before {
+XXX#gpxdetails th[onclick]::before {
     padding-right:5px;
     content: url('images/updown.png') ;
 }
 @media only screen and (max-width: 1200px) {
-    table#gpxdetails  th.tablet,
-    table#gpxdetails  td.tablet{
+    XXXtable#gpxdetails  th.tablet,
+    XXXtable#gpxdetails  td.tablet{
         display:none;
     }
-    table#gpxdetails{
+    XXXtable#gpxdetails{
         overflow-wrap: anywhere;
     }
 }
 
-form input#gpxtitlesearch{
+XXXform input#gpxtitlesearch{
     float:right;
     margin-top:10px;
     margin-right:10px;
 }
 div.leaflet-marker-icon.leaflet-div-icon.leaflet-editing-icon{
     background: rgba(0, 0, 255, 0.3);
+}
+input.ra.colourselector{
+    padding:2px;
 }
 
 /*.XXXleaflet-div-icon.leaflet-editing-icon.leaflet-touch-iconXXX {
@@ -316,6 +337,7 @@ div#search >  div > button {
 }
 div.ra-map-container{
     background-color: #bbbbbb;
+    border-width:  10px;
     border-radius: 10px;
     padding: 5px;
     break-inside: avoid-column;
@@ -359,22 +381,6 @@ div.ra-inline label{
 }
 .area-icon a {
     color:white;
-}
-
-button.jplistsortbuttonasc,
-button.jplistsortbuttondesc {
-    font-size:12px;
-    line-height:10px;
-    border: none;
-    background-color: inherit;
-    padding: 0px 0px;
-    margin-left: 5px;
-    cursor: pointer;
-    display: inline;
-    float:right;
-}
-button.jplistsortbuttondesc {
-    clear:both;
 }
 
 table th {
@@ -535,7 +541,7 @@ div[leaflet-browser-print-content].sub-content {
 div.ra-map-compare.sidebyside{
     width:48%;
     display: inline-block;
-   
+
 }
 div.ra-map-compare{
     margin-top:20px;
@@ -543,7 +549,13 @@ div.ra-map-compare{
 div.ra-map-compare.sidebyside.second{
     margin-left:2%;
 }
-
+XXXdiv[data-container="info"],
+XXXXdiv[data-container="settings"]{
+    margin:12px;
+}
+div.ra.tabs.walksDisplay span.walkdetail{
+    padding:2px;
+}
 
 @media print {
     div[leaflet-browser-print-pages] {

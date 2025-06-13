@@ -21,16 +21,11 @@ class RLeafletTableColumn implements JsonSerializable {
     private $linkmarker = false;
     private $align = 'right';
     private $type = "text";
-    private $jpclass = "";
     private $values = [];
     public $columnName = null; // used by sql option
 
     public function __construct($name) {
         $this->name = $name;
-    }
-
-    public function setJpClass($value) {
-        $this->jpclass = $value;
     }
 
     public function addValue($value) {
@@ -89,7 +84,7 @@ class RLeafletTableColumn implements JsonSerializable {
                 case "link":
                     $this->type = "link";
                     break;
-               case "exturl":
+                case "exturl":
                     $this->type = "exturl";
                     break;
                 case "linkmarker":
@@ -129,7 +124,6 @@ class RLeafletTableColumn implements JsonSerializable {
             'linkmarker' => $this->linkmarker,
             'align' => $this->align,
             'type' => $this->type,
-            'jpclass' => $this->jpclass,
             'values' => $this->values
         ];
     }

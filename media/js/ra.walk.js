@@ -149,8 +149,8 @@ ra.event = function () {
     var mapLinks = ["{startOSMap}", "{startDirections}"];
     var mapGrade = ["{mapGrade}"];
     var mapTitle = ["{mapDowShortddmm}", "{,distance}"];
-    this.map = null;
-    let maplayer = null;
+
+    let mapLayer = null;
     this.isCancelled = function () {
         return this.admin.isCancelled();
     };
@@ -189,7 +189,7 @@ ra.event = function () {
         // flags
         this.flags.addFlags(phpwalk.flags);
         // bookings
-        this.bookings = new ra.event.bookings(this.admin.id);
+        this.bookings = new ra.event.bookings(this.admin.id, this);
         this.bookings.convertPHPBookings(phpwalk);
     };
     this.walkDiagnostics = function (tag) {
@@ -678,7 +678,7 @@ ra.event = function () {
         tag.appendChild(mapdiv);
         var lmap = new ra.leafletmap(mapdiv, ra.defaultMapOptions);
         map = lmap.map;
-        maplayer = L.featureGroup().addTo(map);
+        mapLayer = L.featureGroup().addTo(map);
         osMapLayer = L.featureGroup().addTo(map);
         tag.addEventListener("display-os-map", function (e) {
             var items = e.items;
@@ -689,15 +689,15 @@ ra.event = function () {
             map.fitBounds(osMapLayer.getBounds());
         });
         this.meeting.forEach(loc => {
-            loc._addLocationMarker(maplayer, map);
+            loc._addLocationMarker(mapLayer, map);
         });
         this.start.forEach(loc => {
-            loc._addLocationMarker(maplayer, map);
+            loc._addLocationMarker(mapLayer, map);
         });
         this.finish.forEach(loc => {
-            loc._addLocationMarker(maplayer, map);
+            loc._addLocationMarker(mapLayer, map);
         });
-        var bounds = maplayer.getBounds();
+        var bounds = mapLayer.getBounds();
         map.fitBounds(bounds, {maxZoom: 15, padding: [20, 20]});
         return;
 //        fix contact link does not work if popup is underneath it and it is in coloumn two
@@ -715,12 +715,7 @@ ra.event = function () {
             $html += "<div><img src=\"" + ra.baseDirectory() + "media/lib_ramblers/images/ralogo.png\" alt=\"Ramblers\" width=\"17\" height=\"17\"> ";
             $html += "<a href='" + this.admin.nationalUrl + "' target='_blank' >View " + this.admin.eventType + " on Ramblers national web site</a></div>";
         }
-        var url = new URL(window.location.href);
-        var params = new URLSearchParams(url.search);
-        params.delete("walkid");
-        params.append("walkid", this.admin.id);
-        var link = new URL(`${url.origin}${url.pathname}?${params}`);
-        var text = escape(link.href);
+        var text = escape(this.admin.localPopupUrl);
         $html += "<div>";
         $html += "<img src=\"" + ra.baseDirectory() + "media/lib_ramblers/leaflet/images/share.png\" alt=\"Share\" width=\"17\" height=\"17\"> ";
         $html += "<a href=\"javascript:ra.clipboard.set(\'" + text + "')\" >Copy url of this popup to clipboard</a>";
@@ -773,13 +768,13 @@ ra.event = function () {
     };
     this.updatePostcodeInfo = function () {
         this.meeting.forEach(loc => {
-            loc._addPostcodeMarker(maplayer);
+            loc._addPostcodeMarker(mapLayer);
         });
         this.start.forEach(loc => {
-            loc._addPostcodeMarker(maplayer);
+            loc._addPostcodeMarker(mapLayer);
         });
         this.finish.forEach(loc => {
-            loc._addPostcodeMarker(maplayer);
+            loc._addPostcodeMarker(mapLayer);
         });
     };
     this.addWalkMarker = function (cluster, walkClass) {
@@ -884,7 +879,8 @@ ra.event.admin = function () {
     this.dateUpdated = null;
     this.dateCreated = null;
     this.cancellationReason = null;
-    this.nationalUrl = "";
+    this.nationalUrl = '';
+    this.localPopupUrl = '';
     this.convertPHPAdmin = function (phpwalk) {
         var admin = phpwalk.admin;
         this.source = admin.source;
@@ -899,6 +895,13 @@ ra.event.admin = function () {
         this.dateUpdated = ra.date.getDateTime(admin.dateUpdated.date);
         this.dateCreated = ra.date.getDateTime(admin.dateCreated.date);
         this.nationalUrl = admin.nationalUrl;
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.search);
+        params.delete("walkid");
+        params.append("walkid", this.id);
+        var link = new URL(`${url.origin}${url.pathname}?${params}`);
+        this.localPopupUrl = link.href;
+
     };
     this.isCancelled = function () {
         return this.status.toLowerCase() === "cancelled";
@@ -1848,8 +1851,9 @@ ra.event.flags = function () {
     };
 };
 
-ra.event.bookings = function (id) {
+ra.event.bookings = function (id, event) {
     this.id = id;
+    let myEvent = event; // not this.event to stop circular reference
     this.enabled = false;
 
     this.convertPHPBookings = function (phpwalk) {
@@ -1863,7 +1867,10 @@ ra.event.bookings = function (id) {
         if (this.enabled === false) {
             return;
         }
-        var bookings = new ra.bookings(tag, this.id);
+        var file = new ra.ics.file();
+        myEvent.addWalktoIcs(file);
+        var ics = file.getFile();
+        var bookings = new ra.bookings(tag, this.id, myEvent, ics);
         bookings.initialise();
     };
 

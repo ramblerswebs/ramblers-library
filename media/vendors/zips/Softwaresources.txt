@@ -35,11 +35,15 @@ Download saveas option
 Bing/OS maps
 https://github.com/shramov/leaflet-plugins
 
-JPList pagination 
-https://www.jplist.org/
+List pagination 
+cvList Chris Vaughan
 
 Arrow pointer
 // not used now https://github.com/coyotesqrl/Leaflet.ArrowCircle
 
 Location
 https://github.com/domoritz/leaflet-locatecontrol
+
+OS Vector tile apis
+https://github.com/maplibre/maplibre-gl-js
+https://github.com/maplibre/maplibre-gl-leaflet

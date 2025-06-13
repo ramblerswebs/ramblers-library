@@ -32,9 +32,6 @@ L.Control.SmartRoute = L.Control.extend({
     drawControl: function (value) {
         this._drawControl = value;
     },
-//    routingOption: function (value) {
-//        this._routingOption = value;
-//    },
     disable: function () {
         this.containerAll.style.display = "none";
     },
@@ -97,7 +94,7 @@ L.Control.SmartRoute = L.Control.extend({
                 // check for '' response
 
                 if (this.status === 200) {
-                    //console.log('Data retrieved');
+                    console.log('Smart route retrieved');
                     var headers = this.getAllResponseHeaders();
                     if (!self.checkLimits(headers)) {
                         return;

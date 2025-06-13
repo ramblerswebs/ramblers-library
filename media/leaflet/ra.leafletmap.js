@@ -49,11 +49,6 @@ ra.leafletmap = function (tag, options) {
         center: new L.LatLng(54.221592, -3.355007),
         zoom: 5,
         zoomSnap: 0.25,
-        maxZoom: 18,
-//        maxBounds: [
-//            [47, -10.76418],
-//            [61.331151, 1.9134116]
-//        ],
         zoomControl: false
     };
 
@@ -105,12 +100,6 @@ ra.leafletmap = function (tag, options) {
     if (options.licenseKeys.OSTestkey !== null && L.maplibreGL) {
         const customStyleJson2 = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Road.json';
         this.mapLayers["Ordnance Survey Road test"] = L.maplibreGL({
-            minZoom: 7,
-            maxZoom: 19,
-//            maxBounds: [
-//                [-10.76418, 47],
-//                [1.9134116, 61.331151]
-//            ],
             style: customStyleJson2,
             attribution: 'Map &copy; Ordnance Survey',
             transformRequest: (url, resourceType) => {
@@ -148,7 +137,7 @@ ra.leafletmap = function (tag, options) {
         });
     }
 
-    if (options.licenseKeys.OSTestStyle !== null && L.maplibreGL) {
+    if (options.licenseKeys.OSTestkey !== null && L.maplibreGL) {
         // Load and display vector tile layer on the map.
         this.mapLayers["Ordnance Survey Ramblers Test"] = L.maplibreGL({
             style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osTestStyle.json',

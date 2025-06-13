@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var ra, jplist, FullCalendar, displayGradesRowClass, displayTableRowClass, displayListRowClass;
+var ra, FullCalendar, displayGradesRowClass, displayTableRowClass, displayListRowClass;
 
 if (typeof (ra) === "undefined") {
     ra = {};
@@ -29,17 +29,24 @@ ra.display.walksTabs = function (mapOptions, data) {
         gradesFormat: ["{gradeimg}", "{dowddmm}", "{,title}", "{,distance}", "{,contactname}"],
         calendarFormat: ["{gradeimgMiddle}", "{title}", "{,distance}", ",", " ", "{meetTime}", "{< or >startTime}"],
         withMonth: ["{dowShortddmm}", "{dowddmm}", "{dowddmmyyyy}"],
-        jplistGroup: ra.uniqueID(),
-        jplistName: "name1",
         itemsPerPage: 20,
-        currentView: "Grades",
         options: null,
         displayBookingsTable: false
     };
-    this.myjplist = new ra.jplist(this.settings.jplistGroup);
+    this.paginationOptions = {pagination: {
+            "10 per page": 10,
+            "20 per page": 20,
+            "25 per page": 25,
+            "50 per page": 50,
+            "100 per page": 100,
+            "View all": 0
+        },
+        itemsPerPage: 25,
+        currentPage: 1
+    };
     this.optionTag = {};
+    this.printContent = null;
     this.mapOptions = mapOptions;
-    this.settings.jplistName = 'jpl' + mapOptions.divId;
     if (data.customTabOrder !== null) {
         this.settings.tabOrder = data.customTabOrder;
     }
@@ -72,395 +79,174 @@ ra.display.walksTabs = function (mapOptions, data) {
     this.load = function () {
 
         var tags = [
-            {name: 'outer', parent: 'root', tag: 'div'},
-            {name: 'walksFilter', parent: 'outer', tag: 'div', attrs: {class: 'walksFilter'}},
-            {name: 'raoptions', parent: 'outer', tag: 'div'},
-            {name: 'inner', parent: 'outer', tag: 'div', attrs: {id: 'rainner'}},
-            {name: 'rapagination1', parent: 'inner', tag: 'div'},
-            {name: 'rawalks', parent: 'inner', tag: 'div', textContent: 'Processing data - this should be replaced shortly.'},
-            {name: 'rapagination2', parent: 'inner', tag: 'div'},
-            {name: 'bookings', parent: 'root', tag: 'div'},
-            {name: 'map', parent: 'inner', tag: 'div'}
+            {name: 'walksFilter', parent: 'root', tag: 'div', attrs: {class: 'walksFilter'}},
+            {name: 'clear', parent: 'root', tag: 'div', attrs: {class: 'clear'}},
+            {name: 'tabs', parent: 'root', tag: 'div'},
+            {name: 'bookings', parent: 'root', tag: 'div'}
         ];
         this.masterdiv = document.getElementById(this.mapOptions.divId);
         this.elements = ra.html.generateTags(this.masterdiv, tags);
-        if (!this.mapOptions.paginationTop) {
-            this.elements.rapagination1.style.diaplay = 'none';
-        }
-        if (!this.mapOptions.paginationBottom) {
-            this.elements.rapagination2.style.diaplay = 'none';
-        }
-        var b = ra.baseDirectory();
-        var sImg = b + "media/lib_ramblers/images/marker-start.png";
-        var cImg = b + "media/lib_ramblers/images/marker-cancelled.png";
-        var aImg = b + "media/lib_ramblers/images/marker-area.png";
-        var $legend1 = '<strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.';
-        var $legend2 = '<img src="' + sImg + '" alt="Walk start" height="26" width="26">&nbsp; Start locations&nbsp; <img src="' + cImg + '" alt="Cancelled walk" height="26" width="26"> Cancelled walk&nbsp; <img src="' + aImg + '" alt="Walking area" height="26" width="26"> Walk in that area.';
-        if (this.legendposition === 'top') {
-            var leg = document.createElement('p');
-            leg.innerHTML = $legend1;
-            this.elements.map.appendChild(leg);
-            leg = document.createElement('p');
-            leg.innerHTML = $legend2;
-            this.elements.map.appendChild(leg);
-        }
-        this.processOptions(this.elements.raoptions);
         this.events.setAllWalks();
-        this.checkColumnNotBlank(this.settings.tableFormat);
         this.events.setFilters(this.elements.walksFilter);
-        setTimeout(function () {
-            // lets the map/list tabs be displayed straight away
-            _this.displayWalks();
-        }, 0);
-        if (this.settings.displayBookingsTable) {
-            var book = new ra.bookings.display();
-            book.displayBookingsTable(this.elements.bookings);
-        }
-
         var _this = this;
+//        setTimeout(function () {
+//            // lets the map/list tabs be displayed straight away
+//            _this.displayWalks();
+//        }, 0);
+        this.addTabs();
+        if (this.settings.displayBookingsTable) {
+            var book = new ra.bookings.displayEvents();
+            book.display(this.elements.bookings);
+        }
         document.addEventListener("reDisplayWalks", function () {
             _this.events.setDisplayFilter();
             _this.displayWalks();
         });
+
+    };
+    this.addTabs = function () {
+        var _this = this;
+        var options = {tabClass: 'walksDisplay',
+            tabs: {}};
+        this.settings.tabOrder.forEach(function (value, index, array) {
+            options.tabs[value] = {title: value};
+        });
+        this.elements.tabs.addEventListener("displayTabContents", function (e) {
+            _this.option = e.tabDisplay.tab;
+            _this.displayTag = e.tabDisplay.displayInElement;
+            _this.displayWalks();
+        });
+        var tabs = new ra.tabs(this.elements.tabs, options);
+        tabs.display();
     };
 
     this.displayWalks = function () {
-        var no = this.events.getNoEventsToDisplay();
-        switch (this.settings.currentView) {
+        var tag = this.displayTag;
+        tag.innerHTML = '';
+        this.printContent = null;
+        if (this.events.length() === 0) {
+            tag.innerHTML = '<h3>Sorry there are no walks at the moment.</h3>';
+            return;
+        }
+        if (this.events.getNoEventsToDisplay() === 0) {
+            tag.innerHTML = "<h3>Sorry, but no walks meet your filter search.</h3>";
+            return;
+        }
+        switch (this.option) {
             case "Grades":
+                this.displayWalksGrades(tag);
+                break;
             case "List":
+                this.displayWalksList(tag);
+                break;
             case "Table":
-                this.displayMap("hidden");
-                if (this.events.length() === 0) {
-                    ra.html.setTag(this.elements.rawalks, '<h3>Sorry there are no walks at the moment.</h3>');
-                    return;
-                }
-                this.addPagination(no, this.elements.rapagination1);
-                this.addPagination(no, this.elements.rapagination2);
-                ra.html.setTag(this.elements.rawalks, this.displayWalksText(false));
-                if (!this.settings.noPagination) {
-                    this.myjplist.init('ra-display');
-                }
-
+                this.displayWalksTable(tag);
                 break;
             case "Calendar":
-                this.displayMap("hidden");
-                ra.html.setTag(this.elements.rapagination1, "");
-                ra.html.setTag(this.elements.rapagination2, "");
-                //   this.addToDiaryButton(this.elements.rapagination2);
-                ra.html.setTag(this.elements.rawalks, "");
-                this.displayWalksCalendar();
+                this.displayWalksCalendar(tag);
                 break;
             case "Map":
-                ra.html.setTag(this.elements.rapagination1, "");
-                ra.html.setTag(this.elements.rapagination2, "");
-                ra.html.setTag(this.elements.rawalks, "");
-                this.displayMap("visible");
+                this.displayMap(tag);
                 break;
             case "Contacts":
-                this.displayMap("hidden");
-                this.addPagination(no, this.elements.rapagination1);
-                this.addPagination(no, this.elements.rapagination2);
-                ra.html.setTag(this.elements.rawalks, this.displayContacts());
-                if (!this.settings.noPagination) {
-                    this.myjplist.init('ra-display');
-                }
+                this.displayContacts(tag);
                 break;
         }
     };
-    this.displayMap = function (which) {
-        var tag = this.elements.map;
-        if (tag) {
-            if (which === "hidden") {
-                tag.style.display = "none";
-                this.setPaginationMargin("on");
-            } else {
-                tag.style.display = "block";
-                this.setPaginationMargin("off");
-                if (this.map === null) {
-                    // create map at last moment
-                    this.lmap = new ra.leafletmap(this.elements.map, this.mapOptions);
-                    this.map = this.lmap.map;
-                    this.cluster = new ra.map.cluster(this.map);
-                }
-                this.displayWalksMap();
-                this.cluster.zoomAll();
-            }
-        }
-    };
-    this.setPaginationMargin = function (which) {
-        var tag1 = this.elements.rapagination1;
-        var tag2 = this.elements.rapagination2;
-        if (tag1 && tag2) {
-            if (which === "on") {
-                tag1.style.paddingBottom = "5px";
-                tag2.style.paddingTop = "5px";
-            } else {
-                tag1.style.paddingBottom = "0px";
-                tag2.style.paddingTop = "0px";
-            }
-        }
-    };
-    this.displayWalksText = function (printing) {
 
-        var $out = "";
-        var header = "";
-        var footer = "";
-        var odd = true;
+
+    this.displayWalksGrades = function (tag) {
+        var tags = [
+            {name: 'legend', parent: 'root', tag: 'div'},
+            {name: 'content', parent: 'root', tag: 'div'}
+        ];
+        var self = this;
+        var elements = ra.html.generateTags(tag, tags);
+        elements.legend.innerHTML = "<p class='noprint'>Click on item to display full details of walk</p>";
+        elements.content.addEventListener('reportPagination', function (e) {
+            self.paginationOptions.itemsPerPage = e.cvList.itemsPerPage;
+            self.paginationOptions.currentPage = e.cvList.currentPage;
+        });
+        this.addPrintButton(elements.legend);
+        this.addToDiaryButton(elements.legend);
         var month = "";
-        var $class = "";
-        var no = 0;
-        var should = this.shouldDisplayMonth();
+        var div;
+        var should = this.shouldDisplayMonth('Grades');
+        var list = new ra.paginatedList(elements.content, this.paginationOptions);
         this.events.forEachFiltered($walk => {
-            no += 1;
-            if (odd) {
-                $class = "odd";
-            } else {
-                $class = "even";
-            }
             var displayMonth = month !== $walk.getIntValue("basics", "displayMonth") && should;
-            switch (this.settings.currentView) {
-                case "Grades":
-                    $out += this.displayWalk_Grades($walk, $class, displayMonth);
-                    break;
-                case "List":
-                    $out += this.displayWalk_List($walk, $class, displayMonth);
-                    break;
-                case "Table":
-                    $out += this.displayWalk_Table($walk, $class, displayMonth);
-                    break;
-            }
+            div = this.displayWalk_Grades($walk, displayMonth);
+            list.listItem(div);
             month = $walk.getIntValue("basics", "displayMonth");
-            odd = !odd;
         });
-        if (no === 0) {
-            $out = "<h3>Sorry, but no walks meet your filter search</h3>";
-            ra.html.setTag(this.elements.rapagination1, "");
-            ra.html.setTag(this.elements.rapagination2, "");
-        } else {
-            header = this.displayWalksHeader(printing);
-            footer = this.displayWalksFooter();
-        }
-        return  header + $out + footer;
+        list.listEnd();
+        this.printContent = list;
     };
-    this.checkColumnNotBlank = function (tableformat) {
-        var content;
-        // check if any columns are blank
-        tableformat.forEach($col => {
-            $col.blank = true;
-            this.events.forEachFiltered($walk => {
-                if ($col.blank) {
-                    content = $walk.getEventValues($col.items);
-                    if (content !== '') {
-                        $col.blank = false;
-                    }
-                }
-            });
+    this.displayWalksList = function (tag) {
+        var div;
+        var self = this;
+        var month = "";
+        var should = this.shouldDisplayMonth('List');
+        var tags = [
+            {name: 'legend', parent: 'root', tag: 'div'},
+            {name: 'content', parent: 'root', tag: 'div'}
+        ];
+        var elements = ra.html.generateTags(tag, tags);
+        elements.legend.innerHTML = "<p class='noprint'>Click on item to display full details of walk</p>";
+        elements.content.addEventListener('reportPagination', function (e) {
+            self.paginationOptions.itemsPerPage = e.cvList.itemsPerPage;
+                       self.paginationOptions.currentPage = e.cvList.currentPage;
+ 
         });
-    };
-    this.shouldDisplayMonth = function () {
-        var $result = true;
-        switch (this.settings.currentView) {
-            case "Grades":
-                this.settings.gradesFormat.forEach($item => {
-                    if (this.settings.withMonth.includes($item)) {
-                        $result = false;
-                    }
-                });
-                break;
-            case "List":
-                this.settings.listFormat.forEach($item => {
-                    if (this.settings.withMonth.includes($item)) {
-                        $result = false;
-                    }
-                });
-                break;
-            case "Table":
-                this.settings.tableFormat.forEach($col => {
-                    $col.items.forEach($item => {
-                        if (this.settings.withMonth.includes($item)) {
-                            $result = false;
-                        }
-                    });
-                });
-                break;
-        }
-        return  $result;
-    };
-    this.displayWalksHeader = function (printing = false) {
-        var $out = "";
-        switch (this.settings.currentView) {
-            case "Grades":
-            case "List":
-            case "Table":
-                if (printing) {
-                    $out += "<h3>Walks programme</h3>";
-                }
-                break;
-        }
-        switch (this.settings.currentView) {
-            case "Grades":
-                if (this.settings.displayDetailsPrompt & !printing) {
-                    $out += "<p class='noprint'>Click on item to display full details of walk</p>";
-                }
-                $out += "<div data-jplist-group=\"" + this.settings.jplistGroup + "\">";
-                break;
-            case "List":
-                if (this.settings.displayDetailsPrompt & !printing) {
-                    $out += "<p class='noprint'>Click on item to display full details of walk</p>";
-                }
-                $out += "<div data-jplist-group=\"" + this.settings.jplistGroup + "\">";
-                break;
-            case "Table":
-                if (this.settings.displayDetailsPrompt & !printing) {
-                    $out += "<p class='noprint'>Click on item to display full details of walk</p>";
-                }
-                $out += "<table class='" + this.settings.displayClass + "'>\n";
-                var should = this.shouldDisplayMonth();
-                if (!should) {
-                    $out += this.displayTableHeader();
-                }
-                $out += "<tbody data-jplist-group=\"" + this.settings.jplistGroup + "\">";
-                break;
-        }
-        return $out;
-    };
-    this.displayWalksFooter = function () {
-        var $out = "";
-        switch (this.settings.currentView) {
-            case "Grades":
-                $out += "</div>";
-                $out += "<div style='height:5px;'>  </div>";
-                break;
-            case "List":
-                $out += "</div>";
-                $out += "<div style='height:5px;'>  </div>";
-                break;
-            case "Table":
-                $out += "</tbody></table>\n";
-                break;
-        }
-        return $out;
-    };
-    this.displayWalk_Grades = function ($walk, $class, $displayMonth) {
-        var $text, $image;
-        var $out = "", $out1 = "";
-        var $customClass = $class;
-        if (typeof displayGradesRowClass === 'function') {
-            $customClass = displayGradesRowClass($walk);
-        }
-        $out1 += "<div data-jplist-item >";
-        if ($displayMonth) {
-
-            $out1 += "<h3>" + $walk.getIntValue("basics", "displayMonth") + "</h3>";
-        }
-        $out1 += "<div  class='" + $customClass + " walk" + $walk.admin.status + "' >";
-        $image = '<span class="walkdetail" >';
-        $out += $walk.getEventValues(this.settings.gradesFormat);
-        $text = $out1 + $image + $walk.addTooltip($out) + "\n</span></div>\n";
-        $text += "</div>\n";
-        return $text;
-    };
-    this.displayWalk_List = function ($walk, $class, $displayMonth) {
-        var $items = this.settings.listFormat;
-        var $out = "";
-        var $customClass = $class;
-        if (typeof displayListRowClass === 'function') {
-            $customClass = displayListRowClass($walk);
-        }
-        $out += "<div data-jplist-item >";
-        if ($displayMonth) {
-            $out += "<h3>" + $walk.getIntValue("basics", "displayMonth") + "</h3>";
-        }
-        $out += "<div class='" + $customClass + " walk" + $walk.admin.status + "' >";
-        $out += $walk.addTooltip($walk.getEventValues($items));
-        return  $out + "</div>\n";
-    };
-    this.displayTableHeader = function () {
-        var $out = "<tr>";
-        this.settings.tableFormat.forEach($col => {
-            if (!$col.blank) {
-                $out += "<th>" + $col.title + "</th>";
-            }
-        });
-        return $out + "</tr>";
-    };
-    this.displayWalk_Table = function ($walk, $class, $displayMonth) {
-        //  var $out = "<tr data-jplist-item class='" + $class + " walk" + $walk.admin.status + "' >"
-        var $out = "";
-        var $customClass = "";
-        if ($displayMonth) {
-            $out += "<tr data-jplist-item ><td>";
-            $out += "<h3>" + $walk.getIntValue("basics", "displayMonth") + "</h3>";
-            $out += "</td></tr>";
-        }
-        if (typeof displayTableRowClass === 'function') {
-            $customClass = displayTableRowClass($walk);
-            $out += "<tr data-jplist-item class='" + $customClass + " walk" + $walk.admin.status + "' >";
-        } else {
-            $out += "<tr data-jplist-item class='" + $class + " walk" + $walk.admin.status + "' >";
-        }
-        this.settings.tableFormat.forEach($col => {
-            if (!$col.blank) {
-                $out += "<td>" + $walk.addTooltip($walk.getEventValues($col.items)) + "</td>";
-            }
-        });
-        $out += "</tr>";
-        return $out;
-    };
-    this.displayContacts = function () {
-        var $contacts = [];
-        var out;
+        this.addPrintButton(elements.legend);
+        this.addToDiaryButton(elements.legend);
+        var list = new ra.paginatedList(elements.content, this.paginationOptions);
         this.events.forEachFiltered($walk => {
-            var contactName = $walk.getEventValue("{contactperson}");
-            var telephone1 = $walk.getEventValue("{telephone1}");
-            var telephone2 = $walk.getEventValue("{telephone2}");
-            var $contact = {name: contactName, telephone1: telephone1, telephone2: telephone2};
-            if (!ra.contains($contacts, $contact)) {
-                $contacts.push($contact);
-            }
+            var displayMonth = month !== $walk.getIntValue("basics", "displayMonth") && should;
+            div = this.displayWalk_List($walk, displayMonth);
+            list.listItem(div);
+            month = $walk.getIntValue("basics", "displayMonth");
         });
-        $contacts.sort(function (a, b) {
-            if (a.name.toLowerCase() > b.name.toLowerCase()) {
-                return 1;
-            }
-            return -1;
-        });
-        var dispTel1, dispTel2;
-        dispTel1 = $contacts.find(function (contact) {
-            return contact.telephone1 !== "";
-        });
-        dispTel2 = $contacts.find(function (contact) {
-            return contact.telephone2 !== "";
-        });
-        out = "<table class='" + this.settings.displayClass + " contacts'>\n";
-        out += "<tr><th>Name";
-        if (dispTel1) {
-            out += "</th><th>Telephone";
-        }
-        if (dispTel2) {
-            out += "</th><th>Alt Telephone";
-        }
-        out += "</th></tr><tbody data-jplist-group=\"" + this.settings.jplistGroup + "\">";
-        $contacts.forEach($contact => {
-            out += "<tr data-jplist-item><td>" + $contact.name;
-            if (dispTel1) {
-                out += "</td><td>" + $contact.telephone1;
-            }
-            if (dispTel2) {
-                out += "</td><td>" + $contact.telephone2;
-            }
-            out += "</td></tr>";
-        });
-        out += "</tbody></table>";
-        return out;
+        list.listEnd();
+        this.printContent = list;
     };
-    this.displayWalksCalendar = function () {
-        if (this.events.length() === 0) {
-            ra.html.setTag(this.elements.rawalks, '<h3>Sorry there are no walks at the moment.</h3>');
-        }
+    this.displayWalksTable = function (tag) {
+        var month = "";
+        var self = this;
+        var should = this.shouldDisplayMonth('Table');
+        var tags = [
+            {name: 'legend', parent: 'root', tag: 'div'},
+            {name: 'content', parent: 'root', tag: 'div'}
+        ];
+        var elements = ra.html.generateTags(tag, tags);
+        elements.legend.innerHTML = "<p class='noprint'>Click on item to display full details of walk</p>";
+        elements.content.addEventListener('reportPagination', function (e) {
+            self.paginationOptions.itemsPerPage = e.cvList.itemsPerPage;
+                       self.paginationOptions.currentPage = e.cvList.currentPage;
+ 
+        });
+        this.addPrintButton(elements.legend);
+        this.addToDiaryButton(elements.legend);
+        var table = new ra.paginatedTable(elements.content, this.paginationOptions);
+        table.tableHeading(this.settings.tableFormat);
+        this.events.forEachFiltered($walk => {
+            var displayMonth = month !== $walk.getIntValue("basics", "displayMonth") && should;
+            this.displayWalk_Table(table, $walk, displayMonth);
+            month = $walk.getIntValue("basics", "displayMonth");
+        });
+        table.tableEnd();
+        this.printContent = table;
+    };
+    this.displayWalksCalendar = function (tag) {
         var events = [];
         var $items = this.settings.calendarFormat;
+        var tags = [
+            {name: 'legend', parent: 'root', tag: 'div'},
+            {name: 'content', parent: 'root', tag: 'div'}
+        ];
+        var elements = ra.html.generateTags(tag, tags);
+        elements.legend.innerHTML = "<p class='noprint'>Click on item to display full details of walk</p>";
+
         this.events.forEachFiltered($walk => {
             var event = {};
             event.id = $walk.admin.id;
@@ -468,7 +254,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             if ($walk.basics.multiDate) {
                 event.end = $walk.basics.finishDate;
             }
-            event.raContent = '<div><span class="ra wrap">' + $walk.getEventValues($items, false) + '</span></div>';
+            event.raContent = '<div class="ra calendar event">' + $walk.getEventValues($items, false) + '</div>';
             event.textColor = '#111111';
             if ($walk.admin.status === 'Cancelled') {
                 event.textColor = 'red';
@@ -485,8 +271,8 @@ ra.display.walksTabs = function (mapOptions, data) {
             event.eventContent = {html: ''};
             events.push(event);
         });
-        var calendarTab = this.elements.rawalks;
-        var calendar = new FullCalendar.Calendar(calendarTab, {
+
+        var calendar = new FullCalendar.Calendar(elements.content, {
             height: 'auto',
             selectable: true,
             displayEventTime: false,
@@ -523,25 +309,158 @@ ra.display.walksTabs = function (mapOptions, data) {
         });
         calendar.render();
     };
-    this.displayWalksMap = function () {
+    this.displayMap = function (tag) {
+        var tags = [
+            {name: 'legend', parent: 'root', tag: 'div'},
+            {name: 'content', parent: 'root', tag: 'div'}
+        ];
+        var elements = ra.html.generateTags(tag, tags);
 
-        this.cluster.removeClusterMarkers();
-        if (this.events.length() === 0) {
-            return;
+        var b = ra.baseDirectory();
+        var sImg = b + "media/lib_ramblers/images/marker-start.png";
+        var cImg = b + "media/lib_ramblers/images/marker-cancelled.png";
+        var aImg = b + "media/lib_ramblers/images/marker-area.png";
+        if (this.legendposition === 'top') {
+            var leg = document.createElement('p');
+            leg.innerHTML = '<strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.';
+            elements.legend.appendChild(leg);
+            leg = document.createElement('p');
+            leg.innerHTML = '<img src="' + sImg + '" alt="Walk start" height="26" width="26">&nbsp; Start locations&nbsp; <img src="' + cImg + '" alt="Cancelled walk" height="26" width="26"> Cancelled walk&nbsp; <img src="' + aImg + '" alt="Walking area" height="26" width="26"> Walk in that area.';
+            elements.legend.appendChild(leg);
         }
+        this.lmap = new ra.leafletmap(elements.content, this.mapOptions);
+        this.map = this.lmap.map;
+        this.cluster = new ra.map.cluster(this.map);
         this.events.forEachFiltered($walk => {
             $walk.addWalkMarker(this.cluster, this.settings.walkClass);
         });
         this.cluster.addClusterMarkers();
-        //   this.cluster.zoomAll();
-        return;
+        this.cluster.zoomAll();
+        this.map.invalidateSize();
     };
-    this.addPagination = function (no, tag) {
-        this.myjplist.addPagination(no, tag, this.settings.jplistName, this.settings.itemsPerPage);
-        this.addPrintButton(tag);
-        this.addToDiaryButton(tag);
-        return;
+    this.displayContacts = function (tag) {
+        var $contacts = [];
+        this.events.forEachFiltered($walk => {
+            var contactName = $walk.getEventValue("{contactperson}");
+            var telephone1 = $walk.getEventValue("{telephone1}");
+            var telephone2 = $walk.getEventValue("{telephone2}");
+            var $contact = {name: contactName, telephone1: telephone1, telephone2: telephone2};
+            if (!ra.contains($contacts, $contact)) {
+                $contacts.push($contact);
+            }
+        });
+        $contacts.sort(function (a, b) {
+            if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                return 1;
+            }
+            return -1;
+        });
+        var contactsFormat = [{"title": "Contact Name", "options": {align: "left"}, field: {type: 'text', filter: true, sort: false}},
+            {"title": "Telephone", "options": {align: "left"}},
+            {"title": "Alt Telephone", "options": {align: "left"}}];
+        var table = new ra.paginatedTable(tag);
+        table.tableHeading(contactsFormat);
+        $contacts.forEach($contact => {
+            table.tableRowStart();
+            table.tableRowItem($contact.name, contactsFormat[0]);
+            table.tableRowItem($contact.telephone1);
+            table.tableRowItem($contact.telephone2);
+            table.tableRowEnd();
+        });
+        table.tableEnd();
     };
+
+    this.shouldDisplayMonth = function (view) {
+        var result = true;
+        switch (view) {
+            case "Grades":
+                this.settings.gradesFormat.forEach($item => {
+                    if (this.settings.withMonth.includes($item)) {
+                        result = false;
+                    }
+                });
+                break;
+            case "List":
+                this.settings.listFormat.forEach($item => {
+                    if (this.settings.withMonth.includes($item)) {
+                        result = false;
+                    }
+                });
+                break;
+            case "Table":
+                this.settings.tableFormat.forEach($col => {
+                    $col.items.forEach($item => {
+                        if (this.settings.withMonth.includes($item)) {
+                            result = false;
+                        }
+                    });
+                });
+                break;
+        }
+        return  result;
+    };
+
+    this.displayWalk_Grades = function (walk, displayMonth) {
+        var out, div, span;
+
+        div = document.createElement('div');
+        if (displayMonth) {
+            var month = document.createElement('h3');
+            month.innerHTML = walk.getIntValue("basics", "displayMonth");
+            month.classList.add('ra','walk','month');
+            div.appendChild(month);
+        }
+
+        div.classList.add("walk" + walk.admin.status);
+        span = document.createElement('span');
+        span.classList.add('walkdetail');
+        if (typeof displayGradesRowClass === 'function') {
+            span.classList.add(displayGradesRowClass(walk));
+        }
+        out = walk.getEventValues(this.settings.gradesFormat);
+        span.innerHTML = walk.addTooltip(out);
+        div.appendChild(span);
+        return div;
+    };
+    this.displayWalk_List = function (walk, displayMonth) {
+        var items = this.settings.listFormat;
+        var div = document.createElement('div');
+        if (displayMonth) {
+            var month = document.createElement('h3');
+            month.innerHTML = walk.getIntValue("basics", "displayMonth");
+            month.setAttribute('class', 'ra walk month');
+            div.appendChild(month);
+        }
+        var span = document.createElement('span');
+        span.innerHTML = walk.addTooltip(walk.getEventValues(items));
+        span.classList.add("walk" + walk.admin.status);
+        span.classList.add("walkdetail");
+        if (typeof displayListRowClass === 'function') {
+            span.classList.add(displayListRowClass(walk));
+        }
+        div.appendChild(span);
+        return div;
+    };
+
+    this.displayWalk_Table = function (table, walk, displayMonth) {
+
+        var tr = table.tableRowStart();
+        tr.classList.add("walk" + walk.admin.status);
+        if (typeof displayTableRowClass === 'function') {
+            tr.classList.add(displayTableRowClass(walk));
+        }
+        this.settings.tableFormat.forEach($col => {
+            table.tableRowItem(walk.addTooltip(walk.getEventValues($col.items)));
+        });
+        var monthDisplay = null;
+        if (displayMonth) {
+            monthDisplay = document.createElement('h3');
+            monthDisplay.innerHTML = walk.getIntValue("basics", "displayMonth");
+        }
+        table.tableRowEnd(monthDisplay, 'ra walk month');
+        return tr;
+    };
+
     this.addPrintButton = function (tag) {
         var printButton = document.createElement('button');
         printButton.setAttribute('class', 'link-button tiny button mintcake right');
@@ -549,10 +468,19 @@ ra.display.walksTabs = function (mapOptions, data) {
         tag.appendChild(printButton);
         var _this = this;
         printButton.addEventListener('click', function () {
-            _this.events.setDisplayFilter();
-            var content = _this.displayWalksText(true);
-            ra.html.printHTML(content);
+            if (this.printContent !== null) {
+                _this._print();
+            }
         });
+    };
+    this._print = function () {
+        var content = document.createElement('div');
+        var heading = document.createElement('h2');
+        heading.innerHTML = "Walking Programme";
+        content.appendChild(heading);
+        var node = this.printContent.getPrintAll();
+        content.appendChild(node);
+        ra.html.printHTML(content);
     };
     this.addToDiaryButton = function (tag) {
         var diary = document.createElement('button');
@@ -568,55 +496,6 @@ ra.display.walksTabs = function (mapOptions, data) {
                 $walk.addWalktoIcs(file);
             });
             file.download();
-        });
-    };
-    this.processOptions = function (optionsDiv) {
-        var table = document.createElement('table');
-        table.setAttribute('class', 'ra-tab-options');
-        optionsDiv.appendChild(table);
-        var row = document.createElement('tr');
-        table.appendChild(row);
-        var first = true;
-        var _this = this;
-        this.settings.tabOrder.forEach(function (value, index, array) {
-            switch (value) {
-                case "List":
-                case "Table":
-                case "Calendar":
-                case "Map":
-                case "Grades":
-                case "Contacts":
-                    if (first) {
-                        _this.settings.currentView = value;
-                    }
-                    _this.addDisplayOption(value, first, row);
-                    first = false;
-                    break;
-                default:
-                    ra.showError("Invalid tab option " + value);
-            }
-        });
-        this.settings.defaultOptions += "</tr></table>";
-    };
-    this.addDisplayOption = function (name, active, row) {
-        var col = document.createElement('td');
-        row.appendChild(col);
-        col.setAttribute('class', 'ra-tab');
-        col.setAttribute('data-display-option', name);
-        col.textContent = name;
-        this.optionTag[name] = col;
-        if (active) {
-            col.classList.add('active');
-        }
-        var _this = this;
-        col.addEventListener("click", function () {
-            var option = this.getAttribute('data-display-option');
-            var oldOption = _this.settings.currentView;
-            _this.optionTag[oldOption].classList.remove('active');
-            _this.settings.currentView = option;
-            _this.optionTag[option].classList.add('active');
-            let e = new Event("reDisplayWalks", {bubbles: true});
-            document.dispatchEvent(e);
         });
     };
 };

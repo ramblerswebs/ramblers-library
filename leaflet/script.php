@@ -78,8 +78,14 @@ class RLeafletScript {
 
         if ($options->licenseKeys->OSkey !== null) {
             RLoad::addScript("https://cdn.jsdelivr.net/gh/OrdnanceSurvey/os-api-branding@0.3.1/os-api-branding.js");
-            RLoad::addScript("https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js");
-            RLoad::addScript("https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js");
+            RLoad::addStyleSheet("https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.css");
+            RLoad::addScript("https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.js");
+            RLoad::addScript("https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.1/leaflet-maplibre-gl.js");
+        }
+        if ($options->licenseKeys->OSMVectorStyle !== null) {
+            RLoad::addStyleSheet("https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.css");
+            RLoad::addScript("https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.js");
+            RLoad::addScript("https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.1/leaflet-maplibre-gl.js");
         }
         // clustering
         $path = "media/lib_ramblers/vendors/Leaflet.markercluster-1.5.3/dist/";
@@ -122,6 +128,8 @@ class RLeafletScript {
         RLoad::addScript("media/lib_ramblers/js/ra.js");
         RLoad::addScript("media/lib_ramblers/js/ra.map.js");
         RLoad::addScript("media/lib_ramblers/js/ra.walk.js");
+        RLoad::addScript("media/lib_ramblers/js/ra.paginatedDataList.js");
+        RLoad::addStyleSheet("media/lib_ramblers/css/ra.paginatedDataList.css");
         if (ComponentHelper::isEnabled('com_ra_eventbooking')) {
             Ra_eventbookingHelper::loadScripts();
         }

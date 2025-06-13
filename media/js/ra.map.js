@@ -541,17 +541,22 @@ ra.map.cluster = function (map) {
     this.removeClusterMarkers = function () {
         this.markersCG.removeLayers(this.markerList);
         this.markerList = [];
-        //     ramblersMap.markersCG.addLayers(ramblersMap.markerList);
     };
     this.addClusterMarkers = function () {
         this.markersCG.addLayers(this.markerList);
-
     };
     this.zoomAll = function (options = {padding: [20, 20]}) {
         if (this.markerList.length > 0) {
             var bounds = this._getBounds(this.markerList);
             this._map.fitBounds(bounds, options);
     }
+    };
+    this.zoomMarker = function (marker) {
+        this._map.panTo(marker.getLatLng());
+        this.markersCG.zoomToShowLayer(marker, () => {
+            marker.openPopup();
+        });
+
     };
     this._getBounds = function (list) {
         var bounds = new L.LatLngBounds();
