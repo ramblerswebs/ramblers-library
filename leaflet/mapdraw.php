@@ -7,13 +7,11 @@
  */
 class RLeafletMapdraw extends RLeafletMap {
 
-    private $zoom = 10;
-    private $lat = 52.89;
-    private $long = -1.48;
     public $displayDescription = true;
 
     public function __construct() {
         parent::__construct();
+        $this->options->setinitialviewView(52.89, -1.48, 10);
     }
 
     public function setCenter($lat, $long, $zoom) {
@@ -33,9 +31,6 @@ class RLeafletMapdraw extends RLeafletMap {
         $this->options->mylocation = true;
         $this->options->settings = true;
         $this->options->print = true;
-        $this->options->latitude = $this->lat;
-        $this->options->longitude = $this->long;
-        $this->options->zoom = $this->zoom;
 
         parent::display();
 
