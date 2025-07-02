@@ -22,23 +22,27 @@ if (typeof (ra) === "undefined") {
 }
 
 ra.tabs = function (tag, options) {
-//  this.options = {tabClass: 'myclass'
-//        tabs: {id0: {title: "one"},
-//            id10: {title: "two"},
-//            id20: {title: "three"}, staticContainer: true,
-//            id30: {title: "extras", enabled: false}}
-//            };
 
-    this.options = options;
+    var defaultOptions = {tabClass: 'myclass',
+        style: {side: 'left', // left or right
+            size: 'normal'}, // normal, medium or small
+        tabs: {id0: {title: "one"},
+            id10: {title: "two"},
+            id20: {title: "three"}, staticContainer: true,
+            id30: {title: "extras", enabled: false}}
+    };
+    this.options = {...defaultOptions, ...options};
     this.buttons = [];
+    this.containers = [];
     var tags = [
         {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra tabs'}},
-        {name: 'tabContainer', parent: 'container', tag: 'div', attrs: {class: 'ra tabContainer'}},
-        {name: 'contentContainer', parent: 'container', tag: 'div', attrs: {class: 'ra contentContainer'}},
+        {name: 'tabContainer', parent: 'container', tag: 'div', attrs: {class: 'ra tabContainer ' + this.options.style.size + ' ' + this.options.style.side}},
+        {name: 'contentContainer', parent: 'container', tag: 'div', attrs: {class: 'ra contentContainer ' + this.options.style.size + ' ' + this.options.style.side}},
         {name: 'dynamicContainer', parent: 'contentContainer', tag: 'div', attrs: {'data-container': 'dynamicContainer'}}
     ];
     this.tabsContainer = tag;
     this.elements = ra.html.generateTags(tag, tags);
+    this.containers.push(this.elements.dynamicContainer);
     if ('tabClass' in options) {
         this.elements.container.classList.add(options.tabClass);
     }
@@ -52,7 +56,7 @@ ra.tabs = function (tag, options) {
         }
         if (enabled) {
             var button = document.createElement('button');
-            button.textContent = title;
+            button.innerHTML = title;
             button.setAttribute("data-id", id);
             this.elements.tabContainer.appendChild(button);
             this.buttons.push(button);
@@ -65,6 +69,7 @@ ra.tabs = function (tag, options) {
                     staticContainer.style.display = 'none';
                     staticContainer.setAttribute("data-container", id);
                     this.elements.contentContainer.appendChild(staticContainer);
+                    this.containers.push(staticContainer);
                     button.raTabs = {static: true,
                         'dataID': id,
                         staticContainer: staticContainer};
@@ -85,13 +90,14 @@ ra.tabs = function (tag, options) {
         this._displayContent(this.buttons[0]);
     };
     this.getStaticContainer = function (id) {
-        var container = this.elements.contentContainer.querySelectorAll('[data-container="' + id + '"]');
-        if (container.length > 0) {
-            return container[0];
+        for (var cont of this.containers) {
+            if (cont.getAttribute('data-container') === id) {
+                return cont;
+            }
         }
         return null;
     };
-    this.getDynamicContainer = function (id) {
+    this.getDynamicContainer = function () {
         return this.elements.dynamicContainer;
     };
     this.clickToTab = function (tabId) {
@@ -105,25 +111,25 @@ ra.tabs = function (tag, options) {
         var id = button.getAttribute("data-id");
         button.classList.add("active");
         // find static container?
-        var tags = this.elements.contentContainer.querySelectorAll('[data-container]');
-        for (var tag of tags) {
+        // var tags = this.elements.contentContainer.querySelectorAll('[data-container]');
+        for (var tag of this.containers) {
             tag.style.display = 'none';
         }
-        var container = this.elements.contentContainer.querySelectorAll('[data-container="' + id + '"]');
-        if (container.length > 0) {
-            container[0].style.display = '';
+        var container = this.getStaticContainer(id);
+        //  var container = this.elements.contentContainer.querySelectorAll('[data-container="' + id + '"]');
+        if (container !== null) {
+            container.style.display = '';
             const displayEvent = new Event("displayTabContents");
             displayEvent.tabDisplay = {tab: id,
-                displayInElement: container[0]};
-            tabType:'static',
-                    this.tabsContainer.dispatchEvent(displayEvent);
+                displayInElement: container, tabType: 'static'};
+            this.tabsContainer.dispatchEvent(displayEvent);
         } else {
             // set attribute to allow different styling for each content
             this.elements.dynamicContainer.setAttribute('data-tab', id);
             this.elements.dynamicContainer.textContent = "";
             this.elements.dynamicContainer.style.display = '';
             const displayEvent = new Event("displayTabContents");
-            displayEvent.tabDisplay = {tab: id, 
+            displayEvent.tabDisplay = {tab: id,
                 tabType: 'dynamic',
                 displayInElement: this.elements.dynamicContainer};
             this.tabsContainer.dispatchEvent(displayEvent);

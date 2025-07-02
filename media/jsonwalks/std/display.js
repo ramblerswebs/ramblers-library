@@ -329,7 +329,7 @@ ra.display.walksTabs = function (mapOptions, data) {
             elements.legend.appendChild(leg);
         }
         this.lmap = new ra.leafletmap(elements.content, this.mapOptions);
-        this.map = this.lmap.map;
+        this.map = this.lmap.map();
         this.cluster = new ra.map.cluster(this.map);
         this.events.forEachFiltered($walk => {
             $walk.addWalkMarker(this.cluster, this.settings.walkClass);

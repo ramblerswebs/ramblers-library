@@ -3,11 +3,115 @@ if (typeof (ra) === "undefined") {
     ra = {};
 }
 ra.leafletmap = function (tag, options) {
+    this.options = options;
+    var tabOptions = {
+        style: {side: 'right', // left or right
+            size: 'small'}, // normal or small
+        tabs: {map: {title: 'Map', staticContainer: true, first: true},
+            help: {title: 'Help', staticContainer: true, first: true},
+            settings: {title: 'Settings', staticContainer: true, first: true}}
+    };
+    this.tabs = new ra.tabs(tag, tabOptions);
+    this.tabs.display();
+    this._mapTab = this.tabs.getStaticContainer('map');
+    var tags = [
+        {name: 'preMapDiv', parent: 'root', tag: 'div'},
+        {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra-map-container'}},
+        {name: 'map', parent: 'container', tag: 'div', style: {height: options.mapHeight, width: options.mapWidth}},
+        {name: 'copyright', parent: 'container', tag: 'div'}
+    ];
+    this.elements = ra.html.generateTags(this._mapTab, tags);
+    this.lmap = new ra._leafletmap(this.elements.map, this.elements.copyright, this.options);
+    var _this = this;
+
+    tag.addEventListener("displayTabContents", function (e) {
+        if (e.tabDisplay.tab === 'map') {
+            _this.lmap.map.invalidateSize();
+        }
+        var tag = e.tabDisplay.displayInElement;
+        if (e.tabDisplay.tab === 'help') {
+            if (tabOptions.tabs.help.first) {
+                tabOptions.tabs.help.first = false;
+                _this._displayHelp(tag);
+            }
+        }
+        if (e.tabDisplay.tab === 'settings') {
+            if (tabOptions.tabs.settings.first) {
+                tabOptions.tabs.settings.first = false;
+                _this._displaySettings(tag);
+            }
+        }
+    });
+
+    this._displayHelp = function (tag) {
+        var iframe = document.createElement('iframe');
+        var page = this.options.helpPage;
+        page = ra.map.helpBase + page;
+        iframe.setAttribute('src', page);
+        iframe.innerHTML = "Loading";
+        tag.appendChild(iframe);
+    };
+    this._displaySettings = function (tag) {
+        var setting = new ra.map.Settings();
+        setting.add(tag, this);
+    };
+    this.map = function () {
+        return this.lmap.map;
+    };
+    this.SetPlotUserControl = function (value) {
+        this.lmap.controls.plotroute = value;
+    };
+    this.plotControl = function () {
+        return this.lmap.controls.plotroute;
+    };
+    this.layersControl = function () {
+        return this.lmap.controls.layers;
+    };
+    this.zoomControl = function () {
+        return this.lmap.controls.zoom;
+    };
+    this.mylocationControl = function () {
+        return this.lmap.controls.mylocation;
+    };
+    this.elevationControl = function () {
+        return this.lmap.controls.elevation;
+    };
+    this.fullscreenControl = function () {
+        return this.lmap.controls.fullscreen;
+    };
+    this.printControl = function () {
+        return this.lmap.controls.print;
+    };
+    this.mouseControl = function () {
+        return this.lmap.controls.mouse;
+    };
+    this.scaleControl = function () {
+        return this.lmap.controls.scale;
+    };
+    this.rightclickControl = function () {
+        return this.lmap.controls.rightclick;
+    };
+    this.osInfoControl = function () {
+        return this.lmap.controls.osinfo;
+    };
+    this.errorDivControl = function () {
+        return this.lmap.controls.errorDiv;
+    };
+    this.preMapDiv = function () {
+        return this.elements.preMapDiv;
+    };
+
+};
+
+
+
+
+
+
+ra._leafletmap = function (tag, copyrightTag, options) {
 
     ra.logger.toServer(["createMap", window.location.href]);
     this.options = options;
-    this.baseTiles = null;
-
     this.controls = {layers: null,
         settins: null,
         zoom: null,
@@ -21,67 +125,68 @@ ra.leafletmap = function (tag, options) {
         rightclick: null,
         search: null,
         plotroute: null,
-        zoomlevelOSMsg: null,
         osinfo: null};
+    this._mapDiv = tag;
+    this.baseLayerChanging = false;
+    var _this = this;
 
-    this._mapDiv = null;
-
-    var tags = [
-        {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra-map-container'}},
-        {name: 'map', parent: 'container', tag: 'div', style: {height: options.mapHeight, width: options.mapWidth}},
-        {name: 'copyright', parent: 'container', tag: 'div'}
-    ];
-    var tagcopy = [
-        {parent: 'root', tag: 'p', attrs: {class: 'mapcopyright'}, textContent: 'OS data © Crown copyright and database 2021;   Royal Mail data © Royal Mail copyright and Database 2021'},
-        {parent: 'root', tag: 'p', attrs: {class: 'mapcopyright'}, textContent: '© openrouteservice.org by HeiGIT | Map data © OpenStreetMap contributors'},
-        {parent: 'root', tag: 'p', attrs: {class: 'mapcopyright'}, textContent: 'Maps Icons Collection https://mapicons.mapsmarker.com'}
-    ];
-
-    var elements = ra.html.generateTags(tag, tags);
-    this._mapDiv = elements.map;
-
-    this.minHeight = this._mapDiv.clientHeight; // save initial map height
-    if (options.copyright) {
-        ra.html.generateTags(elements.copyright, tagcopy);
-    }
     var self = this;
     var mapOptions = {
         center: new L.LatLng(54.221592, -3.355007),
         zoom: 5,
-        zoomSnap: 0.25,
+        zoomSnap: 0.1,
         zoomControl: false
     };
-
+    var ukBounds = L.latLngBounds(L.latLng(49.5, -10.7), L.latLng(61.33, 1.91));
+    this.minHeight = this._mapDiv.clientHeight; // save initial map height
+    if (options.copyright) {
+        var tagcopy = [{parent: 'root', tag: 'p', attrs: {class: 'mapcopyright'}, textContent: '© openrouteservice.org by HeiGIT | Map data © OpenStreetMap contributors'},
+            {parent: 'root', tag: 'p', attrs: {class: 'mapcopyright'}, textContent: 'OS data © Crown copyright and database 2021;   Royal Mail data © Royal Mail copyright and Database 2021'},
+            {parent: 'root', tag: 'p', attrs: {class: 'mapcopyright'}, textContent: 'Maps Icons Collection https://mapicons.mapsmarker.com'}
+        ];
+        ra.html.generateTags(copyrightTag, tagcopy);
+    }
     this.map = new L.Map(this._mapDiv, mapOptions);
     this.mapLayers = new Object();
     // map types
     this.mapLayers["Open Street Map"] = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "Map data &copy; <a href=\"https://openstreetmap.org\" target=\"_blank\">OpenStreetMap</a>"}).addTo(this.map);
+        attribution: "Map data &copy; <a href=\"https://openstreetmap.org\" target=\"_blank\">OpenStreetMap</a>"
+    }).addTo(this.map);
     this.mapLayers["Open Topo Map"] = new L.TileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
         maxNativeZoom: 15,
-        attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org" target=\"_blank\">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'});
-    if (options.licenseKeys.bingkey !== null) {
-        try {
-            this.mapLayers["<i>Bing Aerial</i>"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'Aerial'});
-            this.mapLayers["<i>Bing Aerial (Labels)</i>"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'AerialWithLabels'});
-            this.mapLayers["<i>Bing Ordnance Survey</i>"] = new L.BingLayer(options.licenseKeys.bingkey, {type: 'ordnanceSurvey',
-                attribution: 'Bing/OS Crown Copyright'});
-        } catch (err) {
-
-        }
-
-    }
+        attribution: 'Kartendaten: &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende, <a href="http://viewfinderpanoramas.org">SRTM</a> | Kartendarstellung: &copy; <a href="https://opentopomap.org" target=\"_blank\">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    });
     if (options.licenseKeys.ESRIkey !== null) {
         this.mapLayers["Aerial View, Esri"] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-
         });
     }
+    const   crs27700 = new L.Proj.CRS('EPSG:27700', '+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs', {
+// resolutions: [ 896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75 ],
+        resolutions: [114688.0, 57344.0, 28672.0, 14336.0, 7168.0, 3584.0, 1792.0, 896.0, 448.0, 224.0, 112.0, 56.0, 28.0, 14.0, 7.0, 3.5, 1.75],
+        origin: [-238375.0, 1376256.0]
+    });
+    if (options.licenseKeys.OSkey !== null) {
+        this.mapLayers["OS Explorer/Landranger"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
+            attribution: 'Map &copy; Ordnance Survey',
+            zoomOffset: -7,
+            minZoom: 7,
+            maxZoom: 16,
+            crs: crs27700,
+            bounds: ukBounds,
+            ukBounds: ukBounds
+        });
+    }
+
+
     if (options.licenseKeys.OSkey !== null && L.maplibreGL) {
-        // Load and display vector tile layer on the map.
+// Load and display vector tile layer on the map.
         this.mapLayers["Ordnance Survey"] = L.maplibreGL({
             style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osRamblersStyle.json',
             attribution: 'Map &copy; Ordnance Survey',
+            maxZoom: 18,
+            ukBounds: ukBounds,
+            //  bounds: ukBounds, // cause code to fail!
             transformRequest: (url, resourceType) => {
                 if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
                     url = new URL(url);
@@ -98,30 +203,12 @@ ra.leafletmap = function (tag, options) {
     }
 
     if (options.licenseKeys.OSTestkey !== null && L.maplibreGL) {
-        const customStyleJson2 = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Road.json';
-        this.mapLayers["Ordnance Survey Road test"] = L.maplibreGL({
-            style: customStyleJson2,
-            attribution: 'Map &copy; Ordnance Survey',
-            transformRequest: (url, resourceType) => {
-                if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
-                    url = new URL(url);
-                    if (!url.searchParams.has('key'))
-                        url.searchParams.append('key', options.licenseKeys.OSTestkey);
-                    if (!url.searchParams.has('srs'))
-                        url.searchParams.append('srs', 3857);
-                    return {
-                        url: new Request(url).url
-                    };
-                }
-            }
-        });
-    }
-    if (options.licenseKeys.OSTestkey !== null && L.maplibreGL) {
-
         const customStyleJson = 'https://raw.githubusercontent.com/OrdnanceSurvey/OS-Vector-Tile-API-Stylesheets/master/OS_VTS_3857_Outdoor.json';
         this.mapLayers["Ordnance Survey Outdoor Test"] = L.maplibreGL({
             style: customStyleJson,
             attribution: 'Map &copy; Ordnance Survey',
+            maxZoom: 18,
+            ukBounds: ukBounds,
             transformRequest: (url, resourceType) => {
                 if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
                     url = new URL(url);
@@ -138,10 +225,12 @@ ra.leafletmap = function (tag, options) {
     }
 
     if (options.licenseKeys.OSTestkey !== null && L.maplibreGL) {
-        // Load and display vector tile layer on the map.
+// Load and display vector tile layer on the map.
         this.mapLayers["Ordnance Survey Ramblers Test"] = L.maplibreGL({
             style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osTestStyle.json',
             attribution: 'Map &copy; Ordnance Survey',
+            maxZoom: 18,
+            ukBounds: ukBounds,
             transformRequest: (url, resourceType) => {
                 if (resourceType !== 'Style' && url.startsWith('https://api.os.uk')) {
                     url = new URL(url);
@@ -157,43 +246,24 @@ ra.leafletmap = function (tag, options) {
         });
     }
 
-    if (options.licenseKeys.thunderForestkey !== null) {
-        this.mapLayers["Thunderforest Outdoor"] = L.tileLayer('https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=' + options.licenseKeys.thunderForestkey, {
-            maxZoom: 20
-        });
-    }
-
-    if (options.licenseKeys.mapBoxkey !== null) {
-        this.mapLayers["Mapbox"] = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-            attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>',
-            tileSize: 512,
-            maxZoom: 18,
-            zoomOffset: -1,
-            id: 'mapbox/streets-v12',
-            accessToken: options.licenseKeys.mapBoxkey
-        });
-    }
     if (options.licenseKeys.OSMVectorStyle !== null && L.maplibreGL) {
         this.mapLayers["OSM Vector - Test"] = L.maplibreGL({
-            style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osmliberty.json'
+            style: ra.baseDirectory() + 'media/lib_ramblers/leaflet/mapStyles/osmliberty.json',
+            maxZoom: 18,
+            ukBounds: ukBounds
         });
     }
 
 // get my location for directions
     this.map.locate();
-
     this.map.on('locationerror', function () {
         ra.loc.setPositionError();
     });
     this.map.on('locationfound', function (e) {
         ra.loc.setPosition(e);
     });
-
 // top right control for error messages
     this.controls.errorDiv = L.control.racontainer({position: 'topright'}).addTo(this.map);
-//this.controls.errorDiv.setText(ra.html.getBrowserStatus());
-    this.controls.zoomlevelOSMsg = L.control.racontainer({position: 'topright'}).addTo(this.map);
-    this.controls.zoomlevelOSMsg.getContainer().style.backgroundColor = "#eeeeee";
 // top left controls
     if (options.displayElevation) {
         this.controls.elevation = L.control.elevation({
@@ -234,33 +304,11 @@ ra.leafletmap = function (tag, options) {
         manualMode: false,
         closePopupsOnPrint: false
     }).addTo(this.map);
-
-    if (options.licenseKeys.bingkey) {
-        L.Control.BrowserPrint.Utils.registerLayer(
-                L.BingLayer,
-                "L.BingLayer",
-                function (layer) {
-                    var bing = L.bingLayer(layer.key, layer.options);
-                    // fix as above object fails to set url
-                    bing._url = self.currentLayer._url;
-                    return bing;
-                }
-        );
-    }
-    if (options.helpPage !== '') {
-        this.controls.help = L.control.help({helpPageUrl: options.helpPage}).addTo(this.map);
-    }
-
     this.controls.search = L.control.search({position: 'topleft'}).addTo(this.map);
     this.controls.mylocation = L.control.mylocation({position: 'topleft'}).addTo(this.map);
     this.controls.zoomAll = L.control.zoomall().addTo(this.map);
     this.controls.osinfo = L.control.osinfo().addTo(this.map);
     this.controls.rightclick = L.control.rightclick().addTo(this.map);
-    this.controls.settings = L.control.settings();
-// this.controls.settings.setHelpPage(options.helpPage);
-    this.controls.settings.addTo(this.map);
-    this.controls.settings.setLeafletMap(this);
-
     var tools = L.control.tools().addTo(this.map);
     tools.moveMapControl(this.controls.zoom);
     tools.moveMapControl(this.controls.zoomAll);
@@ -270,10 +318,6 @@ ra.leafletmap = function (tag, options) {
     tools.moveMapControl(this.controls.fullscreen);
     tools.moveMapControl(this.controls.rightclick);
     tools.moveMapControl(this.controls.osinfo);
-    tools.moveMapControl(this.controls.settings);
-    if (options.helpPage !== '') {
-        tools.moveMapControl(this.controls.help);
-    }
     if (this.options.resizer) {
         this.controls.resizer = L.control.resizer({onlyOnHover: false, direction: 's'}).addTo(this.map);
         this.controls.resizer.addEventListener('drag', function () {
@@ -282,7 +326,6 @@ ra.leafletmap = function (tag, options) {
                 self._mapDiv.style.height = self.minHeight + "px";
                 //  only allow map to be larger
             }
-
         });
     }
 // bottom left controls 
@@ -291,13 +334,26 @@ ra.leafletmap = function (tag, options) {
     }
 
     this.controls.scale = L.control.scale().addTo(this.map);
-
-    var _this = this;
     this.map.on('baselayerchange', function (e) {
-        _this.currentLayer = e.layer;
-        ra.logger.toServer(["changeMap", window.location.href, e.name]);
+        var options = e.layer.options;
+        var map = _this.map;
+        var bounds = _this.map.getBounds();
+        if (options.ukBounds) {
+            if (!bounds.intersects(ukBounds)) {
+                bounds = options.ukBounds;
+            }
+        }
+        if (options.crs) {
+            map.options.crs = options.crs;
+        } else {
+            delete _this.map.options.crs;
+        }
+        if (options.maxZoom) {
+            map.fitBounds(bounds, {maxZoom: options.maxZoom});
+        } else {
+            map.fitBounds(bounds);
+        }
     });
-
 // bottom right controls
     if (options.controlcontainer) {
         // used by walks editor
@@ -315,95 +371,18 @@ ra.leafletmap = function (tag, options) {
         this.map.addLayer(this.mapLayers["Open Topo Map"]);
     } else {
         this.map.addLayer(this.mapLayers["Open Street Map"]);
+        //    this.map.addLayer(this.mapLayers["OS Explorer/Landranger"]);
     }
-//   this.mapLayers["Ordnance Survey  Walking"].addTo(this.map);
-    var _this = this;
 
-// this.controls.settings.setErrorDiv(this.errorDivControl());
-    this.map.on('zoomend', function () {
-        _this.osZoomLevel();
-    });
-    this.map.on('baselayerchange', function (e) {
-        _this.baseTiles = e.name;
-        _this.baseTiles = e.layer.options.type;
-        _this.osZoomLevel();
-    });
+    var _this = this;
     if (options.rightclick !== null) {
         this.controls.rightclick.mapControl(this.controls.layers);
     }
 
-    this.osZoomLevel = function () {
-        this.controls.zoomlevelOSMsg.setText("");
-        if (this.baseTiles === 'ordnanceSurvey') {
-            var zoom = this.map.getZoom();
-            if (zoom === 17) {
-                this.controls.zoomlevelOSMsg.setErrorText("Ordnance Survey Maps: Cannot zoom in any further");
-            }
-            if (zoom > 17) {
-                this.map.setZoom(17);
-            }
-            if (zoom === 11.5) {
-                this.controls.zoomlevelOSMsg.setErrorText("Ordnance Survey Maps: Cannot zoom out any further");
-            }
-            if (zoom < 11.5) {
-                this.map.setZoom(11.5);
-            }
-            // console.log("zoom:" + zoom);
-        }
-    };
     this.map.on('browser-print-end', function (e) {
         tag.scrollIntoView();
     });
     this.map.on('browser-print-end', function (e) {
         tag.scrollIntoView();
     });
-
-
-    this.SetPlotUserControl = function (value) {
-        this.controls.plotroute = value;
-    };
-    this.plotControl = function () {
-        return this.controls.plotroute;
-    };
-    this.layersControl = function () {
-        return this.controls.layers;
-    };
-    this.settingsControl = function () {
-        return this.controls.settings;
-    };
-    this.zoomControl = function () {
-        return this.controls.zoom;
-    };
-    this.mylocationControl = function () {
-        return this.controls.mylocation;
-    };
-    this.elevationControl = function () {
-        return this.controls.elevation;
-    };
-    this.fullscreenControl = function () {
-        return this.controls.fullscreen;
-    };
-    this.printControl = function () {
-        return this.controls.print;
-    };
-    this.mouseControl = function () {
-        return this.controls.mouse;
-    };
-    this.scaleControl = function () {
-        return this.controls.scale;
-    };
-    this.rightclickControl = function () {
-        return this.controls.rightclick;
-    };
-    this.osInfoControl = function () {
-        return this.controls.osinfo;
-    };
-
-    this.errorDivControl = function () {
-        return this.controls.errorDiv;
-    };
-    this.mapDiv = function () {
-        return this._mapDiv;
-    };
-}
-;
+};

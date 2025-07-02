@@ -17,36 +17,20 @@ ra.display.plotRoute = function (options, data) {
             weight: 3,
             opacity: 1
         }};
-    var _this = this;
     this.options = options;  //public
     this.masterdiv = document.getElementById(options.divId);
-    var tabOptions = {tabClass: 'routeDisplay',
-        tabs: {map: {title: 'Map', staticContainer: true},
-            info: {title: 'Info', staticContainer: true},
-            settings: {title: 'Settings', staticContainer: true}}
-    };
-    this.tabs = new ra.tabs(this.masterdiv, tabOptions);
-    this.tabs.display();
-    var mapDiv = this.tabs.getStaticContainer('map');
-    var lmap = new ra.leafletmap(mapDiv, options);
-    this._map = lmap.map;
-
-    this.masterdiv.addEventListener("displayTabContents", function (e) {
-        if (e.tabDisplay.tab === 'map') {
-            _this._map.invalidateSize();
-        }
-    });
+    var lmap = new ra.leafletmap(this.masterdiv, options);
+    this._map = lmap.map();
     this.controls = {
         rightclick: lmap.rightclickControl(),
         mouse: lmap.mouseControl(),
-        settingsControl: lmap.settingsControl(),
+        //  settingsControl: lmap.settingsControl(),
         elevation: lmap.elevationControl()};
     this.pan = null;
     this.join = null;
     lmap.SetPlotUserControl(this);
-    this.mapDiv = lmap.mapDiv();
-    this.detailsDiv = document.createElement('div');
-    this.mapDiv.parentNode.insertBefore(this.detailsDiv, this.mapDiv);
+    this.preMapDiv = lmap.preMapDiv();
+
     this.SmartRouteControl = null;
     this.drawnItems = new L.FeatureGroup();
     this._map.addLayer(this.drawnItems);
@@ -54,16 +38,10 @@ ra.display.plotRoute = function (options, data) {
 // code for drawing route/track
     this.load = function () {
         var self = this;
-        var infoDiv = this.tabs.getStaticContainer('info');
-        this.displayInfoTab(infoDiv);
 
 
-
-
-
-
-        var settingsDiv = this.tabs.getStaticContainer('settings');
-        this.settingsForm(settingsDiv);
+        //    var settingsDiv = this.tabs.getStaticContainer('settings');
+        //   this.settingsForm(settingsDiv);
 
 
 
@@ -381,6 +359,12 @@ ra.display.plotRoute = function (options, data) {
         });
         this.listDrawnItems();
         this._readSettings();
+        this.displayInfoTab(this.masterdiv);
+
+       
+        window.addEventListener("beforeunload", function (event) {
+            event.returnValue = "Write something clever here..";
+        });
     };
 
     this.setGpxToolStatus = function (status) {
@@ -448,7 +432,7 @@ ra.display.plotRoute = function (options, data) {
             text += '<p>If you need help to get started please visit our <b><a href="' + ra.map.helpBase + this.options.helpPage + '" target="_blank">Mapping Help Site</a></b></p>';
 
         }
-        this.detailsDiv.innerHTML = text;
+        this.preMapDiv.innerHTML = text;
     };
     this.getElementValue = function (id) {
         var node = document.getElementById(id);
@@ -627,7 +611,7 @@ ra.display.plotRoute = function (options, data) {
         return  elevationGain;
     };
     this.addElevations = function (force) {
-        this.detailsDiv.innerHTML = "<br/><h4>Fetching elevations - please wait...</h4>";
+        this.preMapDiv.innerHTML = "<br/><h4>Fetching elevations - please wait...</h4>";
         var hasItems = this.drawnItems.getLayers().length !== 0;
         if (hasItems) {
             var _this = this;
@@ -725,12 +709,19 @@ ra.display.plotRoute = function (options, data) {
         var titleoptions = document.createElement('h4');
         titleoptions.textContent = 'Options';
         tag.appendChild(titleoptions);
+        var panHelp = 'If set (recommended), while plotting a route, the map automatically recentres on each new point as it is added.';
         this.pan = ra.html.input.yesNo(tag, '', "Pan: Centre map on last point added to route", this._userOptions.draw, 'panToNewPoint');
+        ra.html.input.helpComment(this.pan, panHelp);
         this.join = ra.html.input.yesNo(tag, '', "Join: Join new route to nearest existing route", this._userOptions.draw, 'joinSegments');
+        var joinHelp = 'If set, then if a new route is created while an existing one is displayed, the two routes are automatically joined together. The join is made between the nearest pair of start / end points on the two route segments.';
+        ra.html.input.helpComment(this.join, joinHelp);
         tag.appendChild(document.createElement('hr'));
         var titlestyle = document.createElement('h5');
         titlestyle.textContent = 'Display: Style of route';
         tag.appendChild(titlestyle);
+        var h = document.createElement('p');
+        h.innerHTML = 'The colour, line thickness and line opacity of plotted routes can all be changed.';
+        tag.appendChild(h);
         this.line = ra.html.input.lineStyle(tag, '', 'Track style', this._userOptions.style);
         tag.appendChild(document.createElement('hr'));
 

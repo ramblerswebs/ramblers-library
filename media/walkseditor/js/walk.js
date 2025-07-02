@@ -1382,7 +1382,7 @@ ra.walkseditor.walk = function () {
 
         var tag = document.getElementById("detailsMapDiv");
         var lmap = new ra.leafletmap(tag, ra.defaultMapOptions);
-        var map = lmap.map;
+        var map = lmap.map();
         var points = 0;
         var layer = L.featureGroup().addTo(map);
         var type = ra.getObjProperty(this.data, 'meeting.type');

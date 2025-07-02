@@ -30,6 +30,25 @@ div.ra.tabContainer{
     position: relative;
     bottom: -2px;
 }
+div.ra.tabContainer.left {
+  
+}
+div.ra.tabContainer.right {
+    display: flex;
+    justify-content: flex-end;
+   
+}
+div.ra.contentContainer {
+    border: 2px solid #D8D8D8;
+    background-color:#f1f1f1;
+    border-radius: 10px;
+}
+div.ra.contentContainer.left {
+    border-top-left-radius: 0px
+}
+div.ra.contentContainer.right {
+    border-top-right-radius: 0px
+}
 /* Style the buttons that are used to open the tab content */
 div.ra.tabContainer button {
     cursor: pointer;
@@ -42,26 +61,41 @@ div.ra.tabContainer button {
     background-color: #DDDDDD;
     border: 2px solid #ccc;
     border-bottom: 0px;
+   }
+div.ra.tabContainer.left button{
+    margin-right: 3px;
+}
+div.ra.tabContainer.right button{
+     margin-left: 3px;
+}
+div.ra.tabs div.ra.tabContainer.small button{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 100%;
+       border-radius: 5px 5px 0px 0px;
+}
+div.ra.tabs div.ra.tabContainer.medium button{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 115%;
+        border-radius: 5px 5px 0px 0px;
 }
 
-/* Change background color of buttons on hover */
 div.ra.tabContainer button:hover {
     background-color: #9BC8AB;
 }
 
-/* Create an active/current tablink class */
 div.ra.tabContainer button.active {
     background-color: #f1f1f1;
     font-weight: bold;
 }
 
-
 /* Style the tab content */
-div.ra.contentContainer {
-    border: 2px solid #D8D8D8;
-    background-color:#f1f1f1;
-    border-radius: 0px 10px 10px 10px;
-}
+
 div.ra.contentContainer > div {
     padding:5px;
 }

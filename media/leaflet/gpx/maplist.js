@@ -17,7 +17,7 @@ ra.display.gpxSingle = function (options, data) {
         var imperial = data.imperial;
         var detailsDivId = data.detailsDivId;
         /////////////////////////
-        var _map = this.lmap.map;
+        var _map = this.lmap.map();
         var el = this.lmap.elevationControl();
         var g = new L.GPX(ra.baseDirectory() + file, {async: true,
             polyline_options: {color: linecolour},
@@ -204,7 +204,7 @@ ra.display.gpxFolder = function (options, data) {
 
         this.elements.routeDiv.innerHTML = 'Click on any walk to see summary, click on title to display route';
         this.lmap = new ra.leafletmap(this.elements.mapDiv, this.options);
-        this._map = this.lmap.map;
+        this._map = this.lmap.map();
         this.el = this.lmap.elevationControl();
         this.gpx = null;
         this.cluster = new ra.map.cluster(this._map);

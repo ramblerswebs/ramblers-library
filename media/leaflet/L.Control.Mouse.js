@@ -14,6 +14,7 @@ L.Control.Mouse = L.Control.extend({
     },
     _userOptions: {
         displayMouseGridSquare: true,
+        _displayMouseGridSquare: '100m',
         displayGridRef: true,
         displayLatLong: true,
         displayLatLongFormat: true,
@@ -33,7 +34,8 @@ L.Control.Mouse = L.Control.extend({
         this._container = L.DomUtil.create('div', 'leaflet-control-mouseposition');
         L.DomEvent.disableClickPropagation(this._container);
         map.on('mousemove', this._updateLocation, this);
-        map.on('zoom', this._updateZoom, this);
+        map.on('zoomstart', this._updateZoomStart, this);
+        map.on('zoomend', this._updateZoomEnd, this);
         this._container.innerHTML = this.options.emptyString;
         this.OSGridSquareLayer = L.featureGroup([]).addTo(map);
         this.OSGridSquareLayer.options.ignore = true;
@@ -65,7 +67,10 @@ L.Control.Mouse = L.Control.extend({
     gridSquareResume: function () {
         this._userOptions.displayMouseGridSquare = this.SAVEdisplayMouseGridSquares;
     },
-    _updateZoom: function () {
+    _updateZoomStart: function () {
+        this.OSGridSquareLayer.clearLayers();
+    },
+    _updateZoomEnd: function () {
         this._mapState.zoom = this._map.getZoom();
         this._updateLocationPanel();
     },
@@ -84,7 +89,7 @@ L.Control.Mouse = L.Control.extend({
             this._mapState.firstLine = '6 figure grid reference [100m<sup>2</sup>]<br/>';
 
         }
-        this.OSGridSquareLayer.clearLayers();
+        // this.OSGridSquareLayer.clearLayers();
         if (gr === "") {
             this._mapState.firstLine = "Outside OS Grid<br/>";
             this._mapState.gridref = "";
@@ -114,7 +119,7 @@ L.Control.Mouse = L.Control.extend({
     },
     _updateLocationPanel: function () {
         if (this._userOptions.displayZoom) {
-            this._mapState.middleLine = this._mapState.gridref + "   Zoom[" + this._mapState.zoom + "]<br/>";
+            this._mapState.middleLine = this._mapState.gridref + "   Zoom[" + this._mapState.zoom.toFixed(2) + "]<br/>";
         } else {
             this._mapState.middleLine = this._mapState.gridref + "<br/>";
         }
@@ -128,22 +133,54 @@ L.Control.Mouse = L.Control.extend({
     },
     _displayMouseGrid: function (gr, zoom, grid) {
         this.OSGridSquareLayer.clearLayers();
-        if (gr !== "") {
-            if (this._userOptions.displayMouseGridSquare) {
-                if (zoom > 12) {
-                    var bounds = this._osGridToLatLongSquare(grid, 100);
-                    this.gridsquare100 = L.polygon(bounds, {color: "#ff7800", weight: 1, ignore: true});
-                    // ignore property is for Zoom All
-                    this.OSGridSquareLayer.addLayer(this.gridsquare100); // change rectangle
-                }
-                if (zoom > 16) {
-                    var bounds2 = this._osGridToLatLongSquare(grid, 10);
-                    this.gridsquare10 = L.polygon(bounds2, {color: "#884000", weight: 1, ignore: true});
-                    // ignore property is for Zoom All
-                    this.OSGridSquareLayer.addLayer(this.gridsquare10); // change rectangle
-                }
-            }
+        var map = this._map,
+                y = map.getSize().y / 2,
+                maxWidth = 100;
+
+        var maxMeters = map.distance(
+                map.containerPointToLatLng([0, y]),
+                map.containerPointToLatLng([maxWidth, y]));
+        //   console.log(maxMeters);
+        if (!this._userOptions.displayMouseGridSquare) {
+            return;
         }
+        if (gr === "") {
+            return;
+        }
+        var gridsquare;
+
+        if (maxMeters < 310000) {
+            var bounds = this._osGridToLatLongSquare(grid, 100000);
+            gridsquare = L.polygon(bounds, {color: "#ff7800", weight: 1, fill: false, ignore: true});
+            // ignore property is for Zoom All
+            this.OSGridSquareLayer.addLayer(gridsquare); // change rectangle
+        }
+        if (maxMeters < 31000) {
+            var bounds = this._osGridToLatLongSquare(grid, 10000);
+            gridsquare = L.polygon(bounds, {color: "#ff7800", weight: 1, fill: false, ignore: true});
+            // ignore property is for Zoom All
+            this.OSGridSquareLayer.addLayer(gridsquare); // change rectangle
+        }
+        if (maxMeters < 3100) {
+            var bounds = this._osGridToLatLongSquare(grid, 1000);
+            gridsquare = L.polygon(bounds, {color: "#ff7800", weight: 1, fill: false, ignore: true});
+            // ignore property is for Zoom All
+            this.OSGridSquareLayer.addLayer(gridsquare); // change rectangle
+        }
+        if (maxMeters < 310) {
+            var bounds = this._osGridToLatLongSquare(grid, 100);
+            gridsquare = L.polygon(bounds, {color: "#ff7800", weight: 1, fill: false, ignore: true});
+            // ignore property is for Zoom All
+            this.OSGridSquareLayer.addLayer(gridsquare); // change rectangle
+        }
+        if (maxMeters < 31) {
+            var bounds2 = this._osGridToLatLongSquare(grid, 10);
+            var gridsquare10 = L.polygon(bounds2, {color: "#884000", weight: 1, fill: false, ignore: true});
+            // ignore property is for Zoom All
+            this.OSGridSquareLayer.addLayer(gridsquare10); // change rectangle
+        }
+
+
     },
     _osGridToLatLongSquare: function (gridref, size) {
 //  if (!(gridref instanceof OsGridRef))
@@ -170,6 +207,12 @@ L.Control.Mouse = L.Control.extend({
     settingsForm: function (tag) {
         try {
             if (!L.Browser.mobile) {
+                var options = [{name: 'None', value: false},
+                    {name: '100m squares', value: '100m'},
+                    {name: '1km squares', value: '1km'},
+                    {name: '10km squares', value: '10km'},
+                    {name: '100km squares', value: '100km'},
+                    {name: 'All levels', value: 'all'}];
                 var title = document.createElement('h3');
                 title.textContent = 'Mouse Position';
                 tag.appendChild(title);
@@ -177,10 +220,12 @@ L.Control.Mouse = L.Control.extend({
                 title.textContent = 'As you zoom in, the mouse can display a 100m and a 10m square showing the area covered by a 6 or 8 figure grid reference.';
                 tag.appendChild(title);
                 var osMouse = ra.html.input.yesNo(tag, 'divClass', "Display 10m/100m grid reference squares", this._userOptions, 'displayMouseGridSquare');
+                var _displayMouseGridSquare = ra.html.input.combo(tag, '', "Display Grid Reference squares of this size and smaller", this._userOptions, '_displayMouseGridSquare', options);
                 title = document.createElement('h4');
                 title.textContent = 'Bottom left display';
                 tag.appendChild(title);
                 var displayGR = ra.html.input.yesNo(tag, 'divClass', "Display Grid Reference", this._userOptions, 'displayGridRef');
+
                 var displayLatLong = ra.html.input.yesNo(tag, 'divClass', "Display Latitude/Longitude", this._userOptions, 'displayLatLong');
                 var displayLatLongFormat = ra.html.input.yesNo(tag, 'divClass', "Latitude/Longitude format", this._userOptions, 'displayLatLongFormat', ['Decimal', 'Degrees Minutes Seconds']);
                 var displayZoom = ra.html.input.yesNo(tag, 'divClass', "Display Zoom level", this._userOptions, 'displayZoom');
@@ -255,12 +300,12 @@ L.Control.OSInfo = L.Control.extend({
             }
         }, this);
         this._readSettings();
-        map.on('zoomend', function () {
-            self.displayOSGrid();
-        });
-        map.on('moveend', function () {
-            self.displayOSGrid();
-        });
+//        map.on('zoomend', function () {
+//            self.displayOSGrid();
+//        });
+//        map.on('moveend', function () {
+//            self.displayOSGrid();
+//        });
         this.displayOSGrid();
         return this._containerAll;
     },
@@ -319,7 +364,7 @@ L.Control.OSInfo = L.Control.extend({
         title.textContent = 'Ordnance Survey Landranger and Explorer Maps';
         container.appendChild(title);
         var comment = document.createElement('div');
-        comment.innerHTML = 'Please note that our information showing the area covered be OS maps is unofficial and may be incorrect.<br/>Please check before buying a map.';
+        comment.innerHTML = 'Please note that our information showing the area covered by OS maps is unofficial and may be incorrect.<br/>Please check before buying a map.';
         comment.innerHTML += '<br/>If you notice any errors then do contact us via the help option.';
         container.appendChild(comment);
         ra.modals.createModal(container, false, true);
@@ -422,7 +467,10 @@ L.Control.OSInfo = L.Control.extend({
             var title = document.createElement('h3');
             title.textContent = 'Ordnance Survey Grid';
             tag.appendChild(title);
-            var comment = document.createElement('div');
+            var h = document.createElement('p');
+            h.innerHTML = 'Use the <b>OS Grid</b> option under Tools to display a 100km, 10 km or 1 km grid overlay on the map.';
+            tag.appendChild(h);
+            var comment = document.createElement('p');
             comment.innerHTML = 'You can change the style of how the OS Grid is displayed';
             tag.appendChild(comment);
             var line = ra.html.input.lineStyle(tag, '', 'OS Grid line style', this._userOptions.osgridline);
@@ -730,6 +778,7 @@ L.Control.Rightclick = L.Control.extend({
         var marker;
         var desc = " ";
         var self = this;
+        var point;
         var marker = new L.Control.RightclickMarker(e.latlng, this._mouseLayer, this._containerAll);
         if (gr !== "") {
             marker.setContent("<b>Searching for postcodes ...</b>");

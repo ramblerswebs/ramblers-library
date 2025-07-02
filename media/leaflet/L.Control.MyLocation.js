@@ -8,8 +8,8 @@ L.Control.MyLocation = L.Control.extend({
             title: "My Location - Show me where I am"
         },
         showPopup: true,
-        setView: 'untilPanOrZoom', 
-        flyTo: false,// have to set this to false because we have to do setView manually
+        setView: 'untilPanOrZoom',
+        flyTo: false, // have to set this to false because we have to do setView manually
         keepCurrentZoomLevel: false,
         returnToPrevBounds: false,
         showCompass: true,
@@ -61,7 +61,10 @@ L.Control.MyLocation = L.Control.extend({
         var hdg1 = document.createElement('h3');
         hdg1.textContent = 'My Location Options';
         tag.appendChild(hdg1);
-
+        var text = `These options work in conjunction with the <b>My Location</b> button, and control how your current location is presented on the map. The <b>My Location</b> tool is most useful when you are using the map in the field, for example, when walking a route.`;
+        var comment = document.createElement('p');
+        comment.innerHTML = text;
+        tag.appendChild(comment);
         this._controls.showCompass = ra.html.input.yesNo(tag, '', "Show Compass: Show the compass bearing on top of the location marker", this.options, 'showCompass');
         this._controls.enableHighAccuracy = ra.html.input.yesNo(tag, '', "Enable High Accuracy: To enable high accuracy (GPS) mode", this.options.locateOptions, 'enableHighAccuracy');
         this._controls.flyTo = ra.html.input.yesNo(tag, '', "Fly to location: Smooth pan and zoom to the location of the marker", this.options, 'flyTo');

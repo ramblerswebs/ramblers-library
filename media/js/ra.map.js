@@ -10,8 +10,8 @@ ra.map = (function () {
         $code = $code.replace("[long]", longitude, $code);
         return   "<span class='mappopup' onClick=\"javascript:window.open('" + $code + "', '_blank','toolbar=yes,scrollbars=yes,left=50,top=50,width=800,height=600');\">[" + $text + "]</span>";
     };
-    my.helpBase = "https://maphelp.ramblers-webs.org.uk/";
-    my.helpNaismith = "https://maphelp.ramblers-webs.org.uk/naismith.html";
+    my.helpBase = "https://maphelp7.ramblers-webs.org.uk/";
+    my.helpNaismith = "https://maphelp7.ramblers-webs.org.uk/naismith.html";
     my.icon = (function () {
         var icon = {};
 
@@ -513,14 +513,13 @@ ra.latlongDecToDms = function (lat, long) {
 };
 
 ra.map.cluster = function (map) {
-
     var body = document.getElementsByTagName("BODY")[0];
     this.progressBar = document.createElement('div');
     this.progressBar.setAttribute('class', 'ra-cluster-progress-bar');
     body.appendChild(this.progressBar);
 
     this._map = map;
-    this.markersCG = L.markerClusterGroup({chunkedLoading: true,
+    this.markersCG = new L.MarkerClusterGroup({chunkedLoading: true,
         chunkProgress: this.updateClusterProgressBar,
         maxClusterRadius: 50});
     this.markerList = [];
@@ -569,7 +568,6 @@ ra.map.cluster = function (map) {
     };
     this.addMarker = function ($popup, $lat, $long, markeroptions = {}) {
         var marker = L.marker([$lat, $long], markeroptions);
-        //  var $pop = $popup.replace(/&quot;/g, '"'); // replace quots in popup text
         marker.bindPopup($popup, {offset: new L.Point(0, -20)});
         this.markerList.push(marker);
         return marker;

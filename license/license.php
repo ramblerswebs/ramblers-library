@@ -84,14 +84,14 @@ class RLicense {
         }
     }
 
-    public static function getBingMapKey() {
-        $endLicenseDate = new DateTime("2025-07-01");
-        $now = new DateTime();
-        if ($endLicenseDate < $now) {
-            return null;
-        }
-        return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
-    }
+//    public static function getBingMapKey() {
+//        $endLicenseDate = new DateTime("2025-07-01");
+//        $now = new DateTime();
+//        if ($endLicenseDate < $now) {
+//            return null;
+//        }
+//        return 'AslaaoNJXOTEF-i8IS4cWAWnsxOuTqna5IZXJSNh-H45Nlmt5YF5olfmv-AiGg97';
+//    }
 
     public static function getW3WLicenseKey() {
         return 'SRJ2YZLZ';
@@ -99,10 +99,10 @@ class RLicense {
 
     // deprecated
 
-    public static function BingMapKey($value) {
-        // deprecated
-        $app = JFactory::getApplication();
-        $app->enqueueMessage(JText::_("Deprecated: BingMapKey command is no longer supported"), "warning");
-        RErrors::notifyError("Deprecated", "RLicense BingMapKey", "error");
-    }
+//    public static function BingMapKey($value) {
+//        // deprecated
+//        $app = JFactory::getApplication();
+//        $app->enqueueMessage(JText::_("Deprecated: BingMapKey command is no longer supported"), "warning");
+//        RErrors::notifyError("Deprecated", "RLicense BingMapKey", "error");
+//    }
 }

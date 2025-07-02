@@ -1146,6 +1146,14 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.classList.add("button-p0555");
         inputTag.classList.remove("button-p5565");
     };
+    ra.html.input.helpComment = function (tag, text) {
+        if (text === null) {
+            return;
+        }
+        var p = document.createElement('p');
+        p.innerHTML = text;
+        tag.parentNode.appendChild(p);
+    };
     ra.html.input.yesNo = function (tag, divClass, label, raobject, property, options = ['Yes', 'No']) {
         var colours = ["button-p0555", "button-p0186"];
         if (options[0] !== 'Yes' || options[1] !== 'No') {
