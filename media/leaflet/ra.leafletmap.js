@@ -105,9 +105,6 @@ ra.leafletmap = function (tag, options) {
 
 
 
-
-
-
 ra._leafletmap = function (tag, copyrightTag, options) {
 
     ra.logger.toServer(["createMap", window.location.href]);
@@ -170,7 +167,7 @@ ra._leafletmap = function (tag, copyrightTag, options) {
         this.mapLayers["OS Explorer/Landranger"] = L.tileLayer('https://api.os.uk/maps/raster/v1/zxy/Leisure_27700/{z}/{x}/{y}.png?key=' + options.licenseKeys.OSkey, {
             attribution: 'Map &copy; Ordnance Survey',
             zoomOffset: -7,
-            minZoom: 7,
+            minZoom: 6.5,
             maxZoom: 16,
             crs: crs27700,
             bounds: ukBounds,
@@ -329,7 +326,7 @@ ra._leafletmap = function (tag, copyrightTag, options) {
         });
     }
 // bottom left controls 
-    if (options.mouseposition !== null) {
+    if (options.mouseposition !== null && ra.hasMouse()) {
         this.controls.mouse = L.control.mouse().addTo(this.map);
     }
 

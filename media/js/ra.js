@@ -303,6 +303,9 @@ ra.isES6 = function () {
         return ra._isES6;
     }
 };
+ra.hasMouse = function () {
+   return matchMedia('(pointer:fine)').matches;
+};
 ra.isRealOject = function (obj) {
     return typeof obj === "object" && obj !== null && obj !== 'undefined';
 };
@@ -1165,7 +1168,7 @@ if (typeof (ra.html.input) === "undefined") {
         }
         tag.appendChild(itemDiv);
         var _label = document.createElement('label');
-        _label.textContent = label;
+        _label.innerHTML = label;
         _label.style.display = "inline";
         var inputTag = document.createElement('button');
         inputTag.setAttribute('class', 'small link-button granite');
@@ -1223,7 +1226,7 @@ if (typeof (ra.html.input) === "undefined") {
         inputTag.setAttribute('class', '');
         inputTag.style.display = "inline";
         inputTag.style.marginLeft = "10px";
-        inputTag.style.width = "250px";
+        inputTag.style.width = "fit-content;";
         var which = '';
         Object.keys(options).forEach(function (key) {
             var item = options[key];
@@ -1354,7 +1357,7 @@ if (typeof (ra.html.input) === "undefined") {
         itemDiv.appendChild(titlestyle);
         var example = ra.html.input._addExampleLine(itemDiv, "150px", "Example: ");
         var color = ra.html.input.colour(itemDiv, '', 'Line Colour:', raobject, 'color');
-        var weight = ra.html.input.number(itemDiv, '', 'Weight %n pixels', raobject, 'weight', 1, 10, 0.5);
+        var weight = ra.html.input.number(itemDiv, '', 'Weight/width %n pixels', raobject, 'weight', 1, 10, 0.5);
         var opacity = ra.html.input.number(itemDiv, '', 'Opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
         itemDiv.ra = {};
         itemDiv.ra.color = color;
@@ -1432,7 +1435,7 @@ if (typeof (ra.html.input) === "undefined") {
         itemDiv.appendChild(titlestyle);
         var color = ra.html.input.colour(itemDiv, 'inlineBlock', 'Colour', raobject, 'color');
         var example = ra.html.input._addExampleFill(itemDiv, "Example: ");
-        var opacity = ra.html.input.number(itemDiv, '', 'Opacity %n (0-1)', raobject, 'opacity', .1, 1, .01);
+        var opacity = ra.html.input.number(itemDiv, '', 'Opacity %n (0-1)', raobject, 'opacity', 0, 1, .01);
         itemDiv.ra = {};
         itemDiv.ra.color = color;
         itemDiv.ra.opacity = opacity;

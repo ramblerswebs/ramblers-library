@@ -32,8 +32,6 @@ Blurt popup removed
 Download saveas option
     https://github.com/eligrey/FileSaver.js
 
-Bing/OS maps
-https://github.com/shramov/leaflet-plugins
 
 List pagination 
 cvList Chris Vaughan

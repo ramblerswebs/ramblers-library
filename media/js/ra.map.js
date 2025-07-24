@@ -14,7 +14,6 @@ ra.map = (function () {
     my.helpNaismith = "https://maphelp7.ramblers-webs.org.uk/naismith.html";
     my.icon = (function () {
         var icon = {};
-
         icon.postcode = function () {
             if (typeof (icon._postcode) === "undefined") {
                 icon._postcode = L.icon({
@@ -190,7 +189,6 @@ ra.map = (function () {
             }
             return icon._walkingspecial;
         };
-
         icon.grade = function (nationalGrade) {
             var icon = null;
             switch (nationalGrade) {
@@ -271,7 +269,6 @@ ra.map = (function () {
                 }
                 marker.setIcon(icon1);
             });
-
         };
         icon._setIcon = function (marker, response) {
             var url = marker.file;
@@ -340,6 +337,33 @@ ra.map = (function () {
             value.gr = os.toString(6);
             return value;
         };
+        os.getSquarePixelSize = function (map, meters) {
+            var zoom = map.getZoom();
+            var centre = map.getCenter();
+            var metersPerPixel = 156543.03392 * Math.cos(centre.lat * Math.PI / 180) / Math.pow(2, zoom);
+            var pixelSize = meters / metersPerPixel; // 10,000 meters = 10km
+            return pixelSize; // Returns width/height in pixels for 10km at this zoom/latitude
+        };
+        os.gridLevel = function (map, size) {
+            var sq1km = os.getSquarePixelSize(map, 1000);
+            if (sq1km / 100 > size) {
+                return 8;
+            }
+            if (sq1km / 10 > size) {
+                return 6;
+            }
+            if (sq1km > size) {
+                return 4;
+            }
+            if (sq1km * 10 > size) {
+                return 2;
+            }
+            if (sq1km * 100 > size) {
+                return 0;
+            }
+            return 0;
+        };
+
         os.getOSMapsAtLoc = function (lat, lng, callback) {
             var p = new LatLon(lat, lng);
             var grid = OsGridRef.latLonToOsGrid(p);
@@ -373,7 +397,6 @@ ra.map = (function () {
         return os;
     }
     ());
-
     my.getGPXDistance = function (distance) { // distance in metres
         var dist, miles;
         dist = ra.units.metresTokm(distance);
@@ -424,11 +447,9 @@ ra.map = (function () {
         marker.bindPopup(pc);
         return marker;
     };
-
     return my;
 }
 ());
-
 if (typeof (ra.data) === "undefined") {
     ra.data = {};
 }
@@ -437,7 +458,6 @@ if (typeof (ra.data.location) === "undefined") {
     ra.data.location.found = false;
     ra.data.location.latitude = 0;
     ra.data.location.longitude = 0;
-
     ra.data.location.accuracy = 99999;
 }
 
@@ -445,7 +465,6 @@ ra.loc = (function () {
     var loc = {};
     loc.directionsSpan = function ($lat, $long) {
         return "<a class='mappopup' href='javascript:ra.loc.directions(" + $lat + "," + $long + ")' >[Directions]</a>";
-
     };
     loc.directions = function ($lat, $long) {
         var page = -'';
@@ -474,11 +493,9 @@ ra.loc = (function () {
         ra.data.location.longitude = 0;
         ra.data.location.accuracy = 999999;
     };
-
     return loc;
 }
 ());
-
 /**
  * Convert lat/long to string
  * @param  {Number} lat value of latutude
@@ -499,7 +516,6 @@ ra.latlongDecToDms = function (lat, long) {
         var dir = dd < 0
                 ? isLng ? 'W' : 'S'
                 : isLng ? 'E' : 'N';
-
         var absDd = Math.abs(dd);
         var deg = absDd | 0;
         var frac = absDd - deg;
@@ -511,13 +527,11 @@ ra.latlongDecToDms = function (lat, long) {
     }
 
 };
-
 ra.map.cluster = function (map) {
     var body = document.getElementsByTagName("BODY")[0];
     this.progressBar = document.createElement('div');
     this.progressBar.setAttribute('class', 'ra-cluster-progress-bar');
     body.appendChild(this.progressBar);
-
     this._map = map;
     this.markersCG = new L.MarkerClusterGroup({chunkedLoading: true,
         chunkProgress: this.updateClusterProgressBar,
@@ -526,7 +540,6 @@ ra.map.cluster = function (map) {
     this.progressBar.style.display = "none";
     this.markersCG.addLayers(this.markerList);
     this._map.addLayer(this.markersCG);
-
     this.updateClusterProgressBar = function (processed, total, elapsed) {
         if (elapsed > 1000) {
 // if it takes more than a second to load, display the progress bar:
@@ -534,7 +547,7 @@ ra.map.cluster = function (map) {
             this.progressBar.style.display = "block";
         }
         if (processed === total) {
-            this.progressBar.style.display = "none";// all markers processed - hide the progress bar:
+            this.progressBar.style.display = "none"; // all markers processed - hide the progress bar:
         }
     };
     this.removeClusterMarkers = function () {
@@ -555,7 +568,6 @@ ra.map.cluster = function (map) {
         this.markersCG.zoomToShowLayer(marker, () => {
             marker.openPopup();
         });
-
     };
     this._getBounds = function (list) {
         var bounds = new L.LatLngBounds();
@@ -572,5 +584,4 @@ ra.map.cluster = function (map) {
         this.markerList.push(marker);
         return marker;
     };
-
 };

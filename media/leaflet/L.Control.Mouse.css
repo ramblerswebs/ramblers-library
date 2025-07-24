@@ -3,7 +3,7 @@
     --xoptionHover:#757570;
 }
 .leaflet-container .leaflet-control-mouseposition {
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 0 5px #bbb;
     padding: 0 5px;
     margin:0;
@@ -124,4 +124,41 @@ button.rightClick.clearItems.active{
 
 div.leaflet-popup-content ul {
     margin-top: 0.5rem;
+}
+div.leaflet-control-mouseposition.leaflet-control div.icon.grid{
+    background-size: cover;
+    height:25px;
+    width:25px;
+    float:right;
+    margin: 10px;
+    border: 2px solid #777;
+    border-radius: 5px;
+    padding: 3px;
+    cursor:pointer;
+}
+
+div.leaflet-control-mouseposition.leaflet-control div.latlng{
+    text-wrap: nowrap;
+}
+span.ra.setting.grid{
+    background-size: cover;
+    height:35px;
+    width:35px;
+    display:inline-block;
+    border: 2px solid #777;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+span.ra.setting.grid.mouse,
+div.icon.grid.mouse{
+    background-image:url('./images/gridmouse.png');
+}
+span.ra.setting.grid.full,
+div.icon.grid.full{
+    background-image:url('./images/gridfull.png');
+}
+span.ra.setting.grid.none,
+div.icon.grid.none{
+    background-image:url('./images/gridnone.png');
 }

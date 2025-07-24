@@ -60,9 +60,6 @@ ra.tabs = function (tag, options) {
             button.setAttribute("data-id", id);
             this.elements.tabContainer.appendChild(button);
             this.buttons.push(button);
-            button.raTabs = {static: false,
-                'dataID': id,
-                staticContainer: null};
             if ('staticContainer' in item) {
                 if (item.staticContainer) {
                     var staticContainer = document.createElement('div');
@@ -70,9 +67,6 @@ ra.tabs = function (tag, options) {
                     staticContainer.setAttribute("data-container", id);
                     this.elements.contentContainer.appendChild(staticContainer);
                     this.containers.push(staticContainer);
-                    button.raTabs = {static: true,
-                        'dataID': id,
-                        staticContainer: staticContainer};
                 }
             }
         }
@@ -99,6 +93,13 @@ ra.tabs = function (tag, options) {
     };
     this.getDynamicContainer = function () {
         return this.elements.dynamicContainer;
+    };
+    this.changeTabTitle = function (tabId, newTitle) {
+        var selector = '[data-id="' + tabId + '"]';
+        var tag = this.elements.tabContainer.querySelectorAll(selector);
+        if (tag.length > 0) {
+            tag[0].innerHTML = newTitle;
+        }
     };
     this.clickToTab = function (tabId) {
         var tabs = this.tabsContainer.querySelectorAll('[data-id="' + tabId + '"]');

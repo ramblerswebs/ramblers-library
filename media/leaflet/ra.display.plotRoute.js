@@ -359,9 +359,6 @@ ra.display.plotRoute = function (options, data) {
         });
         this.listDrawnItems();
         this._readSettings();
-        this.displayInfoTab(this.masterdiv);
-
-       
         window.addEventListener("beforeunload", function (event) {
             event.returnValue = "Write something clever here..";
         });
@@ -753,57 +750,5 @@ ra.display.plotRoute = function (options, data) {
     };
     this.saveSettings = function (save) {
         ra.settings.save(save, '__raDraw', this._userOptions);
-    };
-    this.displayInfoTab = function (tag) {
-        var items = [
-            'create a new route',
-            'edit the route',
-            'download/save the route as a GPX route',
-            'upload a route using a GPX file',
-            'see the elevation profile',
-            'delete points in the route',
-            'simplify the route (reduce number of points)',
-            'reverse the route',
-            'choose between Open Street Map or Ordnance Survey mapping',
-            'use right click to view location details(Grid Reference etc), postcodes in the area, Ramblers meeting and starting places etc'
-        ];
-        var title = document.createElement('h3');
-        title.innerHTML = 'This page allows you to plot your own walking route';
-        tag.appendChild(title);
-        var page, caption, comment;
-        if (options.licenseKeys.ORSkey) {
-            page = this.options.base + "media/lib_ramblers/leaflet/images/smartplot.png";
-            title = 'Plot a walking route using Smart routing';
-            caption = 'Follows the paths by defining three points';
-            comment = 'You have the option of defining a walking route by either straight lines between points, or smart routing which follows paths as defined in OpenStreetMap';
-        } else {
-            page = this.options.base + "media/lib_ramblers/leaflet/images/smartnot.png";
-            title = 'Plot a walking route';
-            caption = 'Route is defined by a straight line between each point you define';
-            comment = '<h3>You define a walking route by straight lines between points</h3><p>Smart routing, following the footpath, is not supported on this site.</p>';
-        }
-        var div = document.createElement('div');
-        tag.appendChild(div);
-        var link = ra.html.createImageWithPopup(page, page, title, caption);
-        link.img.setAttribute('width', '272');
-        link.img.setAttribute('height', '200');
-        div.style.margin = "20px";
-        div.appendChild(link.a);
-        var com = document.createElement('div');
-        com.innerHTML = comment;
-        tag.appendChild(com);
-        var a = document.createElement('h4');
-        a.innerHTML = 'You can:-';
-        tag.appendChild(a);
-        var ul = document.createElement('ul');
-        tag.appendChild(ul);
-        for (var item of items) {
-            var li = document.createElement('li');
-            li.innerHTML = item;
-            ul.appendChild(li);
-        }
-        var li = document.createElement('li');
-        li.innerHTML = 'If you need help to get started please visit our <button class="link-button mintcake"><a href="' + ra.map.helpBase + this.options.helpPage + '" target="_blank">Mapping Help Site</a></button></p>';
-        ul.appendChild(li);
     };
 };

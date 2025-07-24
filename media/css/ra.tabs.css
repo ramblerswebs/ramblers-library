@@ -31,12 +31,12 @@ div.ra.tabContainer{
     bottom: -2px;
 }
 div.ra.tabContainer.left {
-  
+
 }
 div.ra.tabContainer.right {
     display: flex;
     justify-content: flex-end;
-   
+
 }
 div.ra.contentContainer {
     border: 2px solid #D8D8D8;
@@ -61,20 +61,21 @@ div.ra.tabContainer button {
     background-color: #DDDDDD;
     border: 2px solid #ccc;
     border-bottom: 0px;
-   }
+}
 div.ra.tabContainer.left button{
     margin-right: 3px;
 }
 div.ra.tabContainer.right button{
-     margin-left: 3px;
+    margin-left: 3px;
 }
 div.ra.tabs div.ra.tabContainer.small button{
     padding-top: 2px;
     padding-bottom: 2px;
     padding-left: 5px;
     padding-right: 5px;
-    font-size: 100%;
-       border-radius: 5px 5px 0px 0px;
+    font-size: 14px;
+    line-height: 100%;
+    border-radius: 5px 5px 0px 0px;
 }
 div.ra.tabs div.ra.tabContainer.medium button{
     padding-top: 2px;
@@ -82,7 +83,7 @@ div.ra.tabs div.ra.tabContainer.medium button{
     padding-left: 5px;
     padding-right: 5px;
     font-size: 115%;
-        border-radius: 5px 5px 0px 0px;
+    border-radius: 5px 5px 0px 0px;
 }
 
 div.ra.tabContainer button:hover {

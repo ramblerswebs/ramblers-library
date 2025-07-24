@@ -17,6 +17,7 @@ ra.map.Settings = function () {
     this.controlsWithSettings = [];
     this.cookieName = '__settingsSave';
     this.add = function (tag, leafletMap) {
+        var _this = this;
         ra.settings.read(this.cookieName, this.saveOptions);
         var settingsDiv = document.createElement('div');
         settingsDiv.setAttribute('class', 'settings');
@@ -28,11 +29,10 @@ ra.map.Settings = function () {
         var tabOptions = {
             style: {side: 'left', // left or right
                 size: 'medium'}, // normal, medium or small
-            tabs: {route: {title: 'Plot Walking Route', staticContainer: false, enabled: true},
-                mouse: {title: 'Mouse position', staticContainer: false, enabled: true},
-                rightmouse: {title: 'Mouse Right Click', staticContainer: false, enabled: true},
-                mylocation: {title: 'My Location', staticContainer: false, enabled: true},
-                osinfo: {title: 'Ordnance Survey', staticContainer: false, enabled: true},
+            tabs: {route: {title: 'Plot Walking Route', staticContainer: true, enabled: true},
+                mouse: {title: 'Mouse position', staticContainer: true, enabled: true},
+                rightmouse: {title: 'Mouse Right Click', staticContainer: true, enabled: true},
+                mylocation: {title: 'My Location', staticContainer: true, enabled: true},
                 save: {title: 'Save<sup>ON</sup>/Reset Settings', staticContainer: true, enabled: true}}
         };
 
@@ -40,40 +40,34 @@ ra.map.Settings = function () {
         tabOptions.tabs.mouse.enabled = leafletMap.mouseControl() !== null;
         tabOptions.tabs.rightmouse.enabled = leafletMap.rightclickControl() !== null;
         tabOptions.tabs.mylocation.enabled = leafletMap.mylocationControl() !== null;
-        tabOptions.tabs.osinfo.enabled = leafletMap.osInfoControl() !== null;
         tabOptions.tabs.save.enabled = true;
+        this.tabs = new ra.tabs(settingsDiv, tabOptions);
+        this.tabs.display();
 
-        settingsDiv.addEventListener("displayTabContents", function (e) {
-            var tag = e.tabDisplay.displayInElement;
-            var tab = e.tabDisplay.tab;
-            switch (tab) {
-                case 'route':
-                    leafletMap.plotControl().settingsForm(tag);
-                    break;
-                case 'mouse':
-                    leafletMap.mouseControl().settingsForm(tag);
-                    break;
-                case 'rightmouse':
-                    leafletMap.rightclickControl().settingsForm(tag);
-                    break;
-                case 'mylocation':
-                    leafletMap.mylocationControl().settingsForm(tag);
-                    break;
-                case 'osinfo':
-                    leafletMap.osInfoControl().settingsForm(tag);
-                    break;
-                case 'save':
-                    break;
-                default:
-                    alert('Program error');
-            }
-        });
-        var tabs = new ra.tabs(settingsDiv, tabOptions);
-        tabs.display();
-        this._addSave(tabs.getStaticContainer('save'));
+        if (tabOptions.tabs.route.enabled) {
+            var tag = this.tabs.getStaticContainer('route');
+            leafletMap.plotControl().settingsForm(tag);
+            _this.controlsWithSettings.push(leafletMap.plotControl());
+        }
+        if (tabOptions.tabs.mouse.enabled) {
+            var tag = this.tabs.getStaticContainer('mouse');
+            leafletMap.mouseControl().settingsForm(tag);
+            _this.controlsWithSettings.push(leafletMap.mouseControl());
+        }
+        if (tabOptions.tabs.rightmouse.enabled) {
+            var tag = this.tabs.getStaticContainer('rightmouse');
+            leafletMap.rightclickControl().settingsForm(tag);
+            _this.controlsWithSettings.push(leafletMap.rightclickControl());
+        }
+        if (tabOptions.tabs.mylocation.enabled) {
+            var tag = this.tabs.getStaticContainer('mylocation');
+            leafletMap.mylocationControl().settingsForm(tag);
+            _this.controlsWithSettings.push(leafletMap.mylocationControl());
+        }
 
+        this._addSave(this.tabs.getStaticContainer('save'));
         document.addEventListener("ra-setting-changed", function (e) {
-            this._saveSettings();
+            _this._saveSettings();
         });
     };
 
@@ -85,12 +79,15 @@ ra.map.Settings = function () {
         var reset = ra.html.input.action(tag, '', "Reset all settings to default values", 'Reset');
         var _this = this;
         reset.addEventListener("action", function (e) {
-            _this.controlsWithSettings.forEach(function (control) {
+            // _this.controlsWithSettings.forEach(function (control) {
+
+            // });
+            for (var control of _this.controlsWithSettings) {
                 control.resetSettings();
-            });
+            }
             setTimeout(function () {
                 ra.html.input.actionReset(reset);
-            }, 300);
+            }, 500);
         });
         save.addEventListener("click", function (e) {
             _this._saveSettings();
@@ -100,11 +97,14 @@ ra.map.Settings = function () {
 
     this._saveSettings = function () {
         var saveValues = this.saveOptions.saveSettings;
+        var title = '';
         if (saveValues) {
-            this.saveTab.innerHTML = 'Save<sup>ON</sup>/Reset Settings';
+            title = 'Save<sup>ON</sup>/Reset Settings';
         } else {
-            this.saveTab.innerHTML = 'Save<sup>OFF</sup>/Reset Settings';
+            title = 'Save<sup>OFF</sup>/Reset Settings';
         }
+        this.tabs.changeTabTitle('save', title);
+
         ra.settings.save(saveValues, this.cookieName, this.saveOptions);
         this.controlsWithSettings.forEach(function (control) {
             control.saveSettings(saveValues);
