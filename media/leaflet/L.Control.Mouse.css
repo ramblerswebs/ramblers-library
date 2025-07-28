@@ -13,6 +13,9 @@
     border-style: solid;
     color: #333;
 }
+.racontainer {
+    min-width:120px;
+}
 
 div.leaflet-control-container div.leaflet-control-resizer-corner-s{
     width:50px;

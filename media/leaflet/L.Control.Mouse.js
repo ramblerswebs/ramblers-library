@@ -55,9 +55,10 @@ L.Control.Mouse = L.Control.extend({
         this._map = map;
         this._controls = {};
         this._container = L.DomUtil.create('div', 'leaflet-control-mouseposition');
-        this._containerCont = L.DomUtil.create('div', 'clear', this._container);
+        this._containerCont = L.DomUtil.create('div', 'racontainer', this._container);
         this._containerIcon = L.DomUtil.create('div', 'icon grid mouse', this._containerCont);
         this._containerGR = L.DomUtil.create('div', 'gr', this._containerCont);
+        this._containerCont = L.DomUtil.create('div', 'clear', this._container);
         this._containerLL = L.DomUtil.create('div', 'latlng', this._container);
         L.DomEvent.disableClickPropagation(this._container);
         this._container.style.display = 'none';
@@ -203,8 +204,8 @@ L.Control.Mouse = L.Control.extend({
                 break;
 
         }
-        if (gr === "") {
-            out = "Outside OS Grid<br/>";
+        if (this._mapState.gridRef0 === "") {
+            out = "Outside OS Grid";
         } else {
             switch (this._mapState.majorGridLevel) {
                 case 0:
@@ -252,7 +253,6 @@ L.Control.Mouse = L.Control.extend({
         if (this._userOptions.displayZoom) {
             out += "   Zoom[" + this._mapState.zoom.toFixed(2) + "]";
         }
-        out += "<br/>";
         this._containerGR.innerHTML = out;
         this._containerLL.innerHTML = '';
         if (this._userOptions.displayLatLong && this._map.getSize().y > 300) {
@@ -435,12 +435,12 @@ L.Control.Mouse = L.Control.extend({
         tag.appendChild(this._controls.divMouse);
         this._controls.osMouseGridStyle = ra.html.input.lineStyle(this._controls.divMouse, '', 'OS Mouse grid options', this._userOptions.osMouseGridStyle);
         this._controls.displayMouseMinorGrid = ra.html.input.yesNo(this._controls.divMouse, 'divClass', "Display minor squares", this._userOptions, 'displayMouseMinorGrid');
-  
+
         this._controls.divFull = document.createElement('div');
         tag.appendChild(this._controls.divFull);
         this._controls.osFullGridStyle = ra.html.input.lineStyle(this._controls.divFull, '', 'OS Full grid options', this._userOptions.osFullGridStyle);
-    this._controls.displayFullMinorGrid = ra.html.input.yesNo(this._controls.divFull, 'divClass', "Display minor squares", this._userOptions, 'displayFullMinorGrid');
-    
+        this._controls.displayFullMinorGrid = ra.html.input.yesNo(this._controls.divFull, 'divClass', "Display minor squares", this._userOptions, 'displayFullMinorGrid');
+
         this._controls.displayGridRef.addEventListener("ra-input-change", function (e) {
             ra.settings.changed();
         });

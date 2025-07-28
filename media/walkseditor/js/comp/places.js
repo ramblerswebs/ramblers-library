@@ -22,9 +22,9 @@ ra.walkseditor.comp.places = function () {
         this._places.push(place);
     };
 
-    this.displayMap = function (map, options) {
-        this.lmap = new ra.leafletmap(map, options);
-        this.cluster = new ra.map.cluster(this.lmap.map);
+    this.displayMap = function (tag, options) {
+        this.lmap = new ra.leafletmap(tag, options);
+        this.cluster = new ra.map.cluster(this.lmap.map());
         this._places.forEach(place => {
             place.addMapMarker(this.cluster);
         });
