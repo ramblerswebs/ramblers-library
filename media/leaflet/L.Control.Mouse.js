@@ -27,11 +27,12 @@ L.Control.Mouse = L.Control.extend({
             bubblingMouseEvents: true,
             fill: true,
             fillOpacity: 0.075},
+        ignore: true,
         osFullGridStyle: {
-            //  color: '#0080C0', // #8CCBF7
             color: '#5DB8F9', // #8CCBF7
             weight: 3,
-            opacity: 0.5}
+            opacity: 0.5,
+            ignore: true}
     },
     _mapState: {
         zoom: 0,
@@ -66,7 +67,7 @@ L.Control.Mouse = L.Control.extend({
         map.on('mousemove', this._updateMouseMove, this);
         map.on('zoomend', this._updateZoom, this);
         map.on('moveend', this._moveEnd, this);
-        this.OSGridSquareLayer = L.featureGroup([], {interactive: false}).addTo(map);
+        this.OSGridSquareLayer = L.featureGroup([], {interactive: false, ignore: true}).addTo(map);
         if (L.Browser.mobile) {
             this._container.style.display = 'none';
         }
