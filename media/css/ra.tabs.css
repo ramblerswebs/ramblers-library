@@ -86,17 +86,26 @@ div.ra.tabs div.ra.tabContainer.medium button{
     border-radius: 5px 5px 0px 0px;
 }
 
-div.ra.tabContainer button:hover {
+div.ra.tabs div.ra.tabContainer button:hover {
     background-color: #9BC8AB;
 }
 
-div.ra.tabContainer button.active {
+div.ra.tabs div.ra.tabContainer button.active {
     background-color: #f1f1f1;
     font-weight: bold;
 }
+/* small right below */
 
+div.ra.tabs div.ra.small.middle button{
+    position: relative;
+    top: 10px;
+    z-index: 1000;
+    border: 2px solid #888;
+    border-radius: 5px;
+}
 /* Style the tab content */
 
-div.ra.contentContainer > div {
+div.ra.tabs div.ra.contentContainer > div {
     padding:5px;
 }
+

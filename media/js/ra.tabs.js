@@ -25,6 +25,7 @@ ra.tabs = function (tag, options) {
 
     var defaultOptions = {tabClass: 'myclass',
         style: {side: 'left', // left or right
+            vert: 'above',
             size: 'normal'}, // normal, medium or small
         tabs: {id0: {title: "one"},
             id10: {title: "two"},
@@ -36,8 +37,8 @@ ra.tabs = function (tag, options) {
     this.containers = [];
     var tags = [
         {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra tabs'}},
-        {name: 'tabContainer', parent: 'container', tag: 'div', attrs: {class: 'ra tabContainer ' + this.options.style.size + ' ' + this.options.style.side}},
-        {name: 'contentContainer', parent: 'container', tag: 'div', attrs: {class: 'ra contentContainer ' + this.options.style.size + ' ' + this.options.style.side}},
+        {name: 'tabContainer', parent: 'container', tag: 'div', attrs: {class: 'ra tabContainer ' + this.options.style.size + ' ' + this.options.style.side+ ' ' + this.options.style.vert}},
+        {name: 'contentContainer', parent: 'container', tag: 'div', attrs: {class: 'ra contentContainer ' + this.options.style.size + ' ' + this.options.style.side+ ' ' + this.options.style.vert}},
         {name: 'dynamicContainer', parent: 'contentContainer', tag: 'div', attrs: {'data-container': 'dynamicContainer'}}
     ];
     this.tabsContainer = tag;

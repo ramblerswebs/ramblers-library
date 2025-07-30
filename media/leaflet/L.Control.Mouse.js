@@ -19,6 +19,7 @@ L.Control.Mouse = L.Control.extend({
         displayZoom: false,
         displayMouseMinorGrid: false,
         displayFullMinorGrid: false,
+        ignore: true,
         osMouseGridStyle: {
             color: '#ff7800', // #8CCBF7
             weight: 1.5,
@@ -27,7 +28,7 @@ L.Control.Mouse = L.Control.extend({
             bubblingMouseEvents: true,
             fill: true,
             fillOpacity: 0.075},
-        ignore: true,
+
         osFullGridStyle: {
             color: '#5DB8F9', // #8CCBF7
             weight: 3,

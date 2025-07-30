@@ -6,6 +6,7 @@ ra.leafletmap = function (tag, options) {
     this.options = options;
     var tabOptions = {
         style: {side: 'right', // left or right
+            vert: 'middle',
             size: 'small'}, // normal or small
         tabs: {map: {title: 'Map', staticContainer: true, first: true},
             help: {title: 'Help', staticContainer: true, first: true},
