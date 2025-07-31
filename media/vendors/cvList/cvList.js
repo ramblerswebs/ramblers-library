@@ -73,10 +73,6 @@ class cvList {
         return this._pagination;
     }
 
-// static functions
-
-
-
 // internal functions
 
     _calcKeys() {

@@ -186,7 +186,7 @@ ra.display.gpxFolder = function (options, data) {
         this.loadMap(mapDiv);
         var listDiv = this.tabs.getStaticContainer('list');
         this.loadTable(listDiv);
-        this.addRouteEvents();
+    
         this.masterdiv.addEventListener("displayTabContents", function (e) {
             if (e.tabDisplay.tab === 'map') {
                 _this._map.invalidateSize();
@@ -234,17 +234,6 @@ ra.display.gpxFolder = function (options, data) {
         var link = '<b><div data-route-id="' + route.id + '" class="pointer">' + route.title + '</div></b>';
         return link;
     };
-    this.addRouteEvents = function () {
-        var i;
-        var _this = this;
-        var tabs = document.querySelectorAll('div[data-route-id]');
-        for (var i = 0; i < tabs.length; ++i) {
-            tabs[i].addEventListener("click", function () {
-                var id = this.getAttribute('data-route-id');
-                _this.updateGPXid(id);
-            });
-        }
-    };
     this.loadTable = function (tag) {
         var format = [{"title": "Date", "options": {"align": "right"}, "field": {"type": "text", "filter": false, "sort": true}},
             {"title": "Leader", "options": {"align": "right"}, "field": {"type": "text", "filter": false, "sort": true}},
@@ -281,6 +270,7 @@ ra.display.gpxFolder = function (options, data) {
         }
     };
     this.addTableRow = function (table, route, format) {
+        var _this = this;
         table.tableRowStart();
         var i = 0;
         if (this.controls.displayAsPreviousWalks) {
@@ -289,7 +279,12 @@ ra.display.gpxFolder = function (options, data) {
             table.tableRowItem(route.author, format[i]);
             i += 1;
         }
-        table.tableRowItem(this.displayGPXName(route), format[i]);
+        var td = table.tableRowItem(this.displayGPXName(route), format[i]);
+        td.addEventListener("click", function (e) {
+            var tag=e.target;
+            var id = tag.getAttribute('data-route-id');
+            _this.updateGPXid(id);
+        });
         i += 1;
         table.tableRowItem((route.distance / 1000).toFixed(1), format[i]);
         i += 1;
