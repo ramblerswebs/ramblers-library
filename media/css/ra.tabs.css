@@ -50,7 +50,7 @@ div.ra.contentContainer.right {
     border-top-right-radius: 0px
 }
 /* Style the buttons that are used to open the tab content */
-div.ra.tabContainer button {
+div.ra.tabContainer > button {
     cursor: pointer;
     padding-top:5px;
     padding-bottom: 5px;
@@ -62,13 +62,13 @@ div.ra.tabContainer button {
     border: 2px solid #ccc;
     border-bottom: 0px;
 }
-div.ra.tabContainer.left button{
+div.ra.tabContainer.left > button{
     margin-right: 3px;
 }
-div.ra.tabContainer.right button{
+div.ra.tabContainer.right > button{
     margin-left: 3px;
 }
-div.ra.tabs div.ra.tabContainer.small button{
+div.ra.tabs > div.ra.tabContainer.small > button{
     padding-top: 2px;
     padding-bottom: 2px;
     padding-left: 5px;
@@ -77,7 +77,7 @@ div.ra.tabs div.ra.tabContainer.small button{
     line-height: 100%;
     border-radius: 5px 5px 0px 0px;
 }
-div.ra.tabs div.ra.tabContainer.medium button{
+div.ra.tabs > div.ra.tabContainer.medium > button{
     padding-top: 2px;
     padding-bottom: 2px;
     padding-left: 5px;
@@ -86,17 +86,17 @@ div.ra.tabs div.ra.tabContainer.medium button{
     border-radius: 5px 5px 0px 0px;
 }
 
-div.ra.tabs div.ra.tabContainer button:hover {
+div.ra.tabs > div.ra.tabContainer > button:hover {
     background-color: #9BC8AB;
 }
 
-div.ra.tabs div.ra.tabContainer button.active {
+div.ra.tabs > div.ra.tabContainer > button.active {
     background-color: #f1f1f1;
     font-weight: bold;
 }
 /* small right below */
 
-div.ra.tabs div.ra.small.middle button{
+div.ra.tabs > div.ra.tabContainer.small button{
     position: relative;
     top: 10px;
     z-index: 1000;
@@ -105,7 +105,7 @@ div.ra.tabs div.ra.small.middle button{
 }
 /* Style the tab content */
 
-div.ra.tabs div.ra.contentContainer > div {
+div.ra.tabs > div.ra.contentContainer > div {
     padding:5px;
 }
 
