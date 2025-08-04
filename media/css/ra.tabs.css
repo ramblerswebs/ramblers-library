@@ -97,9 +97,6 @@ div.ra.tabs > div.ra.tabContainer > button.active {
 /* small right below */
 
 div.ra.tabs > div.ra.tabContainer.small button{
-    position: relative;
-    top: 10px;
-    z-index: 1000;
     border: 2px solid #888;
     border-radius: 5px;
 }
@@ -108,4 +105,8 @@ div.ra.tabs > div.ra.tabContainer.small button{
 div.ra.tabs > div.ra.contentContainer > div {
     padding:5px;
 }
-
+div.ra.tabs > div.ra.tabContainer.middle.small{
+    position: relative;
+    top: 10px;
+    z-index: 1000;
+}

@@ -12,10 +12,10 @@ L.Control.Tools = L.Control.extend({
         this._toolsDiv = L.DomUtil.create('div', 'leaflet-tools-container', this._container);
         this._toolsDiv.title = 'Mapping tools';
         this._toolsDiv.style.display = 'none';
-        this._container.addEventListener("click", function (e) {
+      //  this._container.addEventListener("click", function (e) {
             // consume event so map does not get clicked
-            e.stopPropagation();
-        });
+            //     e.stopPropagation();
+      //  });
         this._container.addEventListener("mouseenter", function (e) {
             _this._openTools();
         });

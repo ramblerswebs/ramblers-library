@@ -27,8 +27,9 @@ L.Control.Mouse = L.Control.extend({
             interactive: false,
             bubblingMouseEvents: true,
             fill: true,
-            fillOpacity: 0.075},
-
+            fillOpacity: 0.075,
+            ignore: true},
+// ignore to stop zoomAll picking up on item
         osFullGridStyle: {
             color: '#5DB8F9', // #8CCBF7
             weight: 3,
@@ -64,7 +65,7 @@ L.Control.Mouse = L.Control.extend({
         this._containerLL = L.DomUtil.create('div', 'latlng', this._container);
         L.DomEvent.disableClickPropagation(this._container);
         this._container.style.display = 'none';
-        this._containerIcon.title = 'Change display of SO grid';
+        this._containerIcon.title = 'Change display of OS grid';
         map.on('mousemove', this._updateMouseMove, this);
         map.on('zoomend', this._updateZoom, this);
         map.on('moveend', this._moveEnd, this);
@@ -536,7 +537,6 @@ L.Control.OSInfo = L.Control.extend({
                 self.removeDiv.style.display = "none";
             }
         }, this);
-        //       this._readSettings();
 
         return this._containerAll;
     },

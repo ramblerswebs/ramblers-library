@@ -3,47 +3,56 @@ if (typeof (ra) === "undefined") {
     ra = {};
 }
 ra.leafletmap = function (tag, options) {
+    this.tag = tag;
     this.options = options;
     var tabOptions = {
         style: {side: 'right', // left or right
             vert: 'middle',
             size: 'small'}, // normal or small
-        tabs: {map: {title: 'Map', staticContainer: true, first: true},
-            help: {title: 'Help', staticContainer: true, first: true},
-            settings: {title: 'Settings', staticContainer: true, first: true}}
+        tabs: {map: {title: 'Map', staticContainer: true},
+            help: {title: 'Help', staticContainer: true},
+            settings: {title: 'Settings', staticContainer: true}}
     };
+    var tags = [
+        {name: 'preMapDiv', parent: 'root', tag: 'div', attribs: {class: 'preMapDiv'}},
+    ];
+    var maptags = [
+        {name: 'map', parent: 'root', tag: 'div', style: {height: options.mapHeight, width: options.mapWidth}},
+        {name: 'copyright', parent: 'root', tag: 'div'}
+    ];
+    this.elements = ra.html.generateTags(tag, tags);
+
     this.tabs = new ra.tabs(tag, tabOptions);
     this.tabs.display();
     this._mapTab = this.tabs.getStaticContainer('map');
-    var tags = [
-        {name: 'preMapDiv', parent: 'root', tag: 'div'},
-        {name: 'container', parent: 'root', tag: 'div', attrs: {class: 'ra-map-container'}},
-        {name: 'map', parent: 'container', tag: 'div', style: {height: options.mapHeight, width: options.mapWidth}},
-        {name: 'copyright', parent: 'container', tag: 'div'}
-    ];
-    this.elements = ra.html.generateTags(this._mapTab, tags);
-    this.lmap = new ra._leafletmap(this.elements.map, this.elements.copyright, this.options);
-    var _this = this;
+    this._mapTab.classList.add('ra-map-container');
+    this.elements2 = ra.html.generateTags(this._mapTab, maptags);
+    this.lmap = new ra._leafletmap(this.elements2.map, this.elements2.copyright, this.options);
 
-    tag.addEventListener("displayTabContents", function (e) {
-        if (e.tabDisplay.tab === 'map') {
-            _this.lmap.map.invalidateSize();
-        }
-        var tag = e.tabDisplay.displayInElement;
-        if (e.tabDisplay.tab === 'help') {
-            if (tabOptions.tabs.help.first) {
-                tabOptions.tabs.help.first = false;
-                _this._displayHelp(tag);
-            }
-        }
-        if (e.tabDisplay.tab === 'settings') {
-            if (tabOptions.tabs.settings.first) {
-                tabOptions.tabs.settings.first = false;
-                _this._displaySettings(tag);
-            }
-        }
-    });
+    this.display = function () {
+        var first = {help: true,
+            settings: true
+        };
+        var _this = this;
 
+       this.tag.addEventListener("displayTabContents", function (e) {
+            if (e.tabDisplay.tab === 'map') {
+                _this.lmap.map.invalidateSize();
+            }
+            if (e.tabDisplay.tab === 'help') {
+                if (first.help) {
+                    first.help = false;
+                    _this._displayHelp(_this.tabs.getStaticContainer('help'));
+                }
+            }
+            if (e.tabDisplay.tab === 'settings') {
+                if (first.settings) {
+                    first.settings = false;
+                    _this._displaySettings(_this.tabs.getStaticContainer('settings'));
+                }
+            }
+        });
+    };
     this._displayHelp = function (tag) {
         var iframe = document.createElement('iframe');
         var page = this.options.helpPage;
@@ -303,7 +312,7 @@ ra._leafletmap = function (tag, copyrightTag, options) {
         closePopupsOnPrint: false
     }).addTo(this.map);
     this.controls.search = L.control.search({position: 'topleft'}).addTo(this.map);
-    this.controls.mylocation = L.control.mylocation({position: 'topleft'}).addTo(this.map);
+    this.controls.mylocation = L.control.mylocation().addTo(this.map);
     this.controls.zoomAll = L.control.zoomall().addTo(this.map);
     this.controls.osinfo = L.control.osinfo().addTo(this.map);
     this.controls.rightclick = L.control.rightclick().addTo(this.map);

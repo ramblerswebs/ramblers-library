@@ -677,6 +677,7 @@ ra.event = function () {
         mapdiv.setAttribute('class', 'walkitem map');
         tag.appendChild(mapdiv);
         var lmap = new ra.leafletmap(mapdiv, ra.defaultMapOptions);
+        lmap.display();
         map = lmap.map();
         mapLayer = L.featureGroup().addTo(map);
         osMapLayer = L.featureGroup().addTo(map);

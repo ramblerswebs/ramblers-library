@@ -17,6 +17,9 @@ p.mapcopyright {
 div.leaflet-container{
     border-radius: 5px;
 }
+div.ra.tabs > div.ra.contentContainer > div[data-container="map"] {
+    padding: 0px;
+}
 
 /* fix to menu with leaflet */
 div#rt-header {

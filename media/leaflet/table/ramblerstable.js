@@ -133,6 +133,7 @@ ra.display.tableList = (function () {
             var elements = ra.html.generateTags(tag, tags);
             this.recordDiv = elements.table;
             this.lmap = new ra.leafletmap(elements.map, this.options);
+            this.lmap.display();
             this.map = this.lmap.map();
             this.cluster = new ra.map.cluster(this.map);
             this.addMarkers();

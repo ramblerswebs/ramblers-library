@@ -89,10 +89,6 @@ ra.display.walksTabs = function (mapOptions, data) {
         this.events.setAllWalks();
         this.events.setFilters(this.elements.walksFilter);
         var _this = this;
-//        setTimeout(function () {
-//            // lets the map/list tabs be displayed straight away
-//            _this.displayWalks();
-//        }, 0);
         this.addTabs();
         if (this.settings.displayBookingsTable) {
             var book = new ra.bookings.displayEvents();
@@ -195,8 +191,8 @@ ra.display.walksTabs = function (mapOptions, data) {
         elements.legend.innerHTML = "<p class='noprint'>Click on item to display full details of walk</p>";
         elements.content.addEventListener('reportPagination', function (e) {
             self.paginationOptions.itemsPerPage = e.cvList.itemsPerPage;
-                       self.paginationOptions.currentPage = e.cvList.currentPage;
- 
+            self.paginationOptions.currentPage = e.cvList.currentPage;
+
         });
         this.addPrintButton(elements.legend);
         this.addToDiaryButton(elements.legend);
@@ -222,8 +218,8 @@ ra.display.walksTabs = function (mapOptions, data) {
         elements.legend.innerHTML = "<p class='noprint'>Click on item to display full details of walk</p>";
         elements.content.addEventListener('reportPagination', function (e) {
             self.paginationOptions.itemsPerPage = e.cvList.itemsPerPage;
-                       self.paginationOptions.currentPage = e.cvList.currentPage;
- 
+            self.paginationOptions.currentPage = e.cvList.currentPage;
+
         });
         this.addPrintButton(elements.legend);
         this.addToDiaryButton(elements.legend);
@@ -310,27 +306,22 @@ ra.display.walksTabs = function (mapOptions, data) {
         calendar.render();
     };
     this.displayMap = function (tag) {
-        var tags = [
-            {name: 'legend', parent: 'root', tag: 'div'},
-            {name: 'content', parent: 'root', tag: 'div'}
-        ];
-        var elements = ra.html.generateTags(tag, tags);
-
         var b = ra.baseDirectory();
+        this.lmap = new ra.leafletmap(tag, this.mapOptions);
+        this.lmap.display();
+        this.map = this.lmap.map();
+        this.cluster = new ra.map.cluster(this.map);
         var sImg = b + "media/lib_ramblers/images/marker-start.png";
         var cImg = b + "media/lib_ramblers/images/marker-cancelled.png";
         var aImg = b + "media/lib_ramblers/images/marker-area.png";
-        if (this.legendposition === 'top') {
-            var leg = document.createElement('p');
-            leg.innerHTML = '<strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.';
-            elements.legend.appendChild(leg);
-            leg = document.createElement('p');
-            leg.innerHTML = '<img src="' + sImg + '" alt="Walk start" height="26" width="26">&nbsp; Start locations&nbsp; <img src="' + cImg + '" alt="Cancelled walk" height="26" width="26"> Cancelled walk&nbsp; <img src="' + aImg + '" alt="Walking area" height="26" width="26"> Walk in that area.';
-            elements.legend.appendChild(leg);
-        }
-        this.lmap = new ra.leafletmap(elements.content, this.mapOptions);
-        this.map = this.lmap.map();
-        this.cluster = new ra.map.cluster(this.map);
+
+        var leg = document.createElement('p');
+        leg.innerHTML = '<strong>Zoom</strong> in to see where our walks are going to be. <strong>Click</strong> on a walk to see details.';
+        this.lmap.preMapDiv().appendChild(leg);
+        leg = document.createElement('div');
+        leg.innerHTML += '<img src="' + sImg + '" alt="Walk start" height="26" width="26">&nbsp; Start locations&nbsp; <img src="' + cImg + '" alt="Cancelled walk" height="26" width="26"> Cancelled walk&nbsp; <img src="' + aImg + '" alt="Walking area" height="26" width="26"> Walk in that area.';
+        this.lmap.preMapDiv().appendChild(leg);
+
         this.events.forEachFiltered($walk => {
             $walk.addWalkMarker(this.cluster, this.settings.walkClass);
         });
@@ -407,7 +398,7 @@ ra.display.walksTabs = function (mapOptions, data) {
         if (displayMonth) {
             var month = document.createElement('h3');
             month.innerHTML = walk.getIntValue("basics", "displayMonth");
-            month.classList.add('ra','walk','month');
+            month.classList.add('ra', 'walk', 'month');
             div.appendChild(month);
         }
 

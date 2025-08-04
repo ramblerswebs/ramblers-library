@@ -28,6 +28,7 @@ ra.map.Settings = function () {
 
         var tabOptions = {
             style: {side: 'left', // left or right
+                vert:'above',
                 size: 'medium'}, // normal, medium or small
             tabs: {route: {title: 'Plot Walking Route', staticContainer: true, enabled: true},
                 mouse: {title: 'Mouse position', staticContainer: true, enabled: true},
@@ -111,5 +112,3 @@ ra.map.Settings = function () {
         });
     };
 };
-
-

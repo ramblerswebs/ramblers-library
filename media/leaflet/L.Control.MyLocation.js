@@ -25,13 +25,13 @@ L.Control.MyLocation = L.Control.extend({
     },
     initialize(options) {
         // set default options if nothing is set (merge one step deep)
-        for (const i in options) {
-            if (typeof this.options[i] === 'object') {
-                L.extend(this.options[i], options[i]);
-            } else {
-                this.options[i] = options[i];
-            }
-        }
+//        for (const i in options) {
+//            if (typeof this.options[i] === 'object') {
+//                L.extend(this.options[i], options[i]);
+//            } else {
+//                this.options[i] = options[i];
+//            }
+//        }
 
     },
     onAdd: function (map) {
@@ -120,15 +120,35 @@ L.Control.MyLocation = L.Control.extend({
         ra.html.input.yesNoReset(this._controls.showCompass, true);
         ra.html.input.yesNoReset(this._controls.enableHighAccuracy, true);
         ra.html.input.yesNoReset(this._controls.flyTo, false);
-        ra.html.input.comboReset(this._controls.setView, 'untilPanOrZoom');
         ra.html.input.yesNoReset(this._controls.keepCurrentZoomLevel, false);
         ra.html.input.yesNoReset(this._controls.returnToPrevBounds, false);
+        ra.html.input.comboReset(this._controls.setView, 'untilPanOrZoom');
     },
     _readSettings: function () {
-        ra.settings.read('__mylocation', this.options);
+        var options = {compass: true,
+            high: true,
+            fly: false,
+            zoom: false,
+            return: false,
+            view: 'untilPanOrZoom'};
+        ra.settings.read('__mylocation', options);
+        this.options.showCompass = options.compass;
+        this.options.locateOptions.enableHighAccuracy = options.high;
+        this.options.flyTo = options.fly;
+        this.options.keepCurrentZoomLevel = options.zoom;
+        this.options.returnToPrevBounds = options.return;
+        this.options.setView = options.view;
     },
     saveSettings: function (save) {
-        ra.settings.save(save, '__mylocation', this.options);
+        var saveOptions = {
+            compass: this.options.showCompass,
+            high: this.options.locateOptions.enableHighAccuracy,
+            fly: this.options.flyTo,
+            zoom: this.options.keepCurrentZoomLevel,
+            return: this.options.returnToPrevBounds,
+            view: this.options.setView
+        };
+        ra.settings.save(save, '__mylocation', saveOptions);
     }
 });
 L.control.mylocation = function (opts) {

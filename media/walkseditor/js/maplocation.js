@@ -121,6 +121,7 @@ ra.walkseditor.mapLocationInput = function (tag, raobject, location) {
         mapoptions.maptools = true;
         mapoptions.mapHeight = "400px";
         this.lmap = new ra.leafletmap(this.elements.map, mapoptions);
+        this.lmap.display();
         this.map = this.lmap.map();
         this.layer = L.featureGroup().addTo(this.map);
         this.postcodeLayer = L.featureGroup().addTo(this.map);

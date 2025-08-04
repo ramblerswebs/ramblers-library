@@ -20,6 +20,7 @@ ra.display.plotRoute = function (options, data) {
     this.options = options;  //public
     this.masterdiv = document.getElementById(options.divId);
     var lmap = new ra.leafletmap(this.masterdiv, options);
+    lmap.display();
     this._map = lmap.map();
     this.controls = {
         rightclick: lmap.rightclickControl(),
@@ -39,11 +40,11 @@ ra.display.plotRoute = function (options, data) {
     this.load = function () {
         var self = this;
 
-
-        //    var settingsDiv = this.tabs.getStaticContainer('settings');
-        //   this.settingsForm(settingsDiv);
-
-
+        this.comment1 = '<p><b>Plot a walking Route:</b> No routes or markers defined ';
+        this.comment1 += '<br/>If you need help to get started please see the Help, top right of map</p>';
+        this.comment1 += '<p><b>NOTE: </b>If you leave this web page, without saving your data, you will lose any routes you have created.</p>';
+        this.comment2 = '<br/>If you need help please see the Help, top right of map</p>';
+        this.comment2 += '<p><b>NOTE: </b>If you leave this web page, without saving your data, you will lose any routes you have created.</p>';
 
         L.drawLocal.draw.toolbar.buttons.polyline = 'Plot a walking route(s)';
         L.drawLocal.draw.toolbar.buttons.marker = 'Add a marker';
@@ -412,8 +413,7 @@ ra.display.plotRoute = function (options, data) {
         this.controls.elevation.clear();
         var text = "";
         if (!hasItems) {
-            text = '<p><b>Plot a walking Route:</b> No routes or markers defined ';
-            text += '<br/>If you need help to get started please visit our <b><a href="' + ra.map.helpBase + this.options.helpPage + '" target="_blank">Mapping Help Site</a></b></p>';
+            text = this.comment1;
         } else {
             text += "<table>";
             text += "<tr><th>Segment</th><th>Length</th><th>Elevation Gain</th><th>Est Time</th><th>Number of points</th></tr>";
@@ -426,7 +426,7 @@ ra.display.plotRoute = function (options, data) {
                 }
             });
             text += "</table>";
-            text += '<p>If you need help to get started please visit our <b><a href="' + ra.map.helpBase + this.options.helpPage + '" target="_blank">Mapping Help Site</a></b></p>';
+            text += this.comment2;
 
         }
         this.preMapDiv.innerHTML = text;

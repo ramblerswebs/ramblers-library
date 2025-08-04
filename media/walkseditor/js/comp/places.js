@@ -24,6 +24,7 @@ ra.walkseditor.comp.places = function () {
 
     this.displayMap = function (tag, options) {
         this.lmap = new ra.leafletmap(tag, options);
+        this.lmap.display();;
         this.cluster = new ra.map.cluster(this.lmap.map());
         this._places.forEach(place => {
             place.addMapMarker(this.cluster);

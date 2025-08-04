@@ -1382,6 +1382,7 @@ ra.walkseditor.walk = function () {
 
         var tag = document.getElementById("detailsMapDiv");
         var lmap = new ra.leafletmap(tag, ra.defaultMapOptions);
+        lmap.display();
         var map = lmap.map();
         var points = 0;
         var layer = L.featureGroup().addTo(map);

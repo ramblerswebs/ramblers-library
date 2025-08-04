@@ -10,6 +10,7 @@ ra.display.gpxSingle = function (options, data) {
     this.data = data;
     var masterdiv = document.getElementById(options.divId);
     this.lmap = new ra.leafletmap(masterdiv, options);
+    this.lmap.display();
     this.load = function () {
         var data = this.data;
         var file = data.gpxfile;
@@ -204,6 +205,7 @@ ra.display.gpxFolder = function (options, data) {
 
         this.elements.routeDiv.innerHTML = 'Click on any walk to see summary, click on title to display route';
         this.lmap = new ra.leafletmap(this.elements.mapDiv, this.options);
+        this.lmap.display();
         this._map = this.lmap.map();
         this.el = this.lmap.elevationControl();
         this.gpx = null;

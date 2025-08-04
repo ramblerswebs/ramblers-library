@@ -151,6 +151,7 @@ ra.walkseditor.viewWalks = function (tag, mapOptions, programme, loggedOn = fals
         comment.innerHTML = "Walks without a start or a walking area are plotted in the North Sea";
         mapTags.comments.appendChild(comment);
         var lmap = new ra.leafletmap(mapTags.mapped, this.mapOptions);
+        lmap.display();
         var map = lmap.map();
         var mycluster = new ra.map.cluster(map);
         var walks = this.programme.getWalks();
