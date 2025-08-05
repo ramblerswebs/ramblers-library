@@ -74,9 +74,10 @@ class RLeafletGpxMaplist extends RLeafletMap {
 
         RLoad::addScript("media/lib_ramblers/leaflet/gpx/maplist.js", "text/javascript");
         RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
-
-        $document = JFactory::getDocument();
-        RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/js/ra.tabs.js");
+        RLoad::addStyleSheet("media/lib_ramblers/css/ra.tabs.css");
+        RLoad::addStyleSheet('media/lib_ramblers/vendors/cvList/cvList.css');
+        RLoad::addScript("media/lib_ramblers/vendors/cvList/cvList.js");
         //   <!-- IE 10+ / Edge support via babel-polyfill: https://babeljs.io/docs/en/babel-polyfill/ --> 
         RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js", "text/javascript");
     }

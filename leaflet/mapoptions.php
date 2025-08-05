@@ -46,9 +46,8 @@ class RLeafletMapoptions {
         $this->divId = uniqid(rand());
         $this->base = JURI::base();
         $this->licenseKeys = new stdClass();
-        $this->licenseKeys->bingkey = null;
+     //   $this->licenseKeys->bingkey = null;
         $this->licenseKeys->ORSkey = null;
-
         $this->licenseKeys->ESRIkey = null;
         $this->licenseKeys->OSTestStyle = null;
         $this->licenseKeys->OSMVectorStyle = null;
@@ -66,7 +65,7 @@ class RLeafletMapoptions {
 
     public function setLicenses() {
 
-        $this->licenseKeys->bingkey = RLicense::getBingMapKey();
+    //    $this->licenseKeys->bingkey = RLicense::getBingMapKey();
         $this->licenseKeys->ESRIkey = RLicense::getESRILicenseKey();
 
         if (RLicense::isOpenRoutingServiceKeySet()) {

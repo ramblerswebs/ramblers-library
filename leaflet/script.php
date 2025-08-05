@@ -62,6 +62,8 @@ class RLeafletScript {
         // RLoad::addScript("media/lib_ramblers/vendors/leaflet/leaflet.js", array("type" => "text/javascript"));
         RLoad::addScript("media/lib_ramblers/leaflet/ra.leafletmap.js");
         RLoad::addStyleSheet("media/lib_ramblers/leaflet/ramblersleaflet.css");
+        RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.15.0/proj4.js");
+        RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.2/proj4leaflet.min.js");
 
         $path = "media/lib_ramblers/vendors/Leaflet.fullscreen-1.0.2/dist/";
         RLoad::addScript($path . "Leaflet.fullscreen.min.js");
@@ -78,8 +80,14 @@ class RLeafletScript {
 
         if ($options->licenseKeys->OSkey !== null) {
             RLoad::addScript("https://cdn.jsdelivr.net/gh/OrdnanceSurvey/os-api-branding@0.3.1/os-api-branding.js");
-            RLoad::addScript("https://unpkg.com/maplibre-gl@4.5.0/dist/maplibre-gl.js");
-            RLoad::addScript("https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.20/leaflet-maplibre-gl.js");
+            RLoad::addStyleSheet("https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.css");
+            RLoad::addScript("https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.js");
+            RLoad::addScript("https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.1/leaflet-maplibre-gl.js");
+        }
+        if ($options->licenseKeys->OSMVectorStyle !== null) {
+            RLoad::addStyleSheet("https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.css");
+            RLoad::addScript("https://unpkg.com/maplibre-gl@5.3.0/dist/maplibre-gl.js");
+            RLoad::addScript("https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.1/leaflet-maplibre-gl.js");
         }
         // clustering
         $path = "media/lib_ramblers/vendors/Leaflet.markercluster-1.5.3/dist/";
@@ -102,11 +110,6 @@ class RLeafletScript {
             RLoad::addScript("media/lib_ramblers/vendors/geodesy/osgridref.js");
         }
 
-        if ($options->licenseKeys->bingkey !== null) {
-            // Bing maps
-            RLoad::addScript("media/lib_ramblers/vendors/bing/bing.js", array("type" => "text/javascript"));
-        }
-
 
         $path = "media/lib_ramblers/vendors/leaflet.browser.print-1/dist/";
         RLoad::addScript($path . "leaflet.browser.print.js");
@@ -122,6 +125,11 @@ class RLeafletScript {
         RLoad::addScript("media/lib_ramblers/js/ra.js");
         RLoad::addScript("media/lib_ramblers/js/ra.map.js");
         RLoad::addScript("media/lib_ramblers/js/ra.walk.js");
+        RLoad::addScript("media/lib_ramblers/js/ra.tabs.js");
+        RLoad::addScript("media/lib_ramblers/js/ra.paginatedDataList.js");
+        RLoad::addStyleSheet("media/lib_ramblers/css/ra.paginatedDataList.css");
+        RLoad::addStyleSheet("media/lib_ramblers/css/ra.tabs.css");
+
         if (ComponentHelper::isEnabled('com_ra_eventbooking')) {
             Ra_eventbookingHelper::loadScripts();
         }
@@ -136,8 +144,8 @@ class RLeafletScript {
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.Search.js");
 
         // settings
-        RLoad::addStyleSheet("media/lib_ramblers/leaflet/L.Control.Settings.css");
-        RLoad::addScript("media/lib_ramblers/leaflet/L.Control.Settings.js");
+        //  RLoad::addStyleSheet("media/lib_ramblers/leaflet/L.Control.Settings.css");
+        RLoad::addScript("media/lib_ramblers/leaflet/ra.map.settings.js");
         RLoad::addScript("media/lib_ramblers/js/ra.feedhandler.js");
         RLoad::addScript("media/lib_ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js");
     }

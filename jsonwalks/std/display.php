@@ -27,7 +27,6 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
     public $displayDetailsPrompt = true;
     public $filterCancelled = true;
     private $map = null;
-    public $jplistName = "display";
     private $id;
     private $customListFormat = null;
     private $customTableFormat = null;
@@ -70,7 +69,6 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
 
 //  $data->walks = [];
         $data->displayClass = $this->displayClass;
-        $data->jplistName = $this->jplistName;
         $data->noPagination = $this->noPagination;
         $data->displayDetailsPrompt = $this->displayDetailsPrompt;
         $data->legendposition = $this->legendposition;
@@ -87,9 +85,16 @@ class RJsonwalksStdDisplay extends RJsonwalksDisplaybase {
         $this->map->setDataObject($data);
         $this->map->display();
         RLoad::addScript("media/lib_ramblers/jsonwalks/std/display.js");
-        RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js");
+        RLoad::addScript("media/lib_ramblers/vendors/cvList/cvList.js");
+        RLoad::addStyleSheet("media/lib_ramblers/vendors/cvList/cvList.css");
+        RLoad::addScript("media/lib_ramblers/js/ra.tabs.js");
+        RLoad::addStyleSheet("media/lib_ramblers/css/ra.tabs.css");
         $schema = new RJsonwalksAddschema();
         $schema->display($walks);
+    }
+
+    public function setWalksClass($value) {
+        $this->displayClass = $value;
     }
 
     public function setTabOrder($value) {

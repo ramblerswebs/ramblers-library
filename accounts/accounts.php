@@ -202,7 +202,7 @@ class RAccounts {
 
         $db->setQuery($query);
 
-        $result = $db->execute();
+        $db->execute();
     }
 
     private function defaultDatabaseRecord($id, $uppCode, $domain) {
@@ -226,7 +226,7 @@ class RAccounts {
 
         $db->setQuery($query);
 
-        $result = $db->execute();
+        $db->execute();
     }
 
 }

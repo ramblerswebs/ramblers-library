@@ -8,8 +8,8 @@ L.Control.MyLocation = L.Control.extend({
             title: "My Location - Show me where I am"
         },
         showPopup: true,
-        setView: 'untilPanOrZoom', 
-        flyTo: false,// have to set this to false because we have to do setView manually
+        setView: 'untilPanOrZoom',
+        flyTo: false, // have to set this to false because we have to do setView manually
         keepCurrentZoomLevel: false,
         returnToPrevBounds: false,
         showCompass: true,
@@ -25,13 +25,13 @@ L.Control.MyLocation = L.Control.extend({
     },
     initialize(options) {
         // set default options if nothing is set (merge one step deep)
-        for (const i in options) {
-            if (typeof this.options[i] === 'object') {
-                L.extend(this.options[i], options[i]);
-            } else {
-                this.options[i] = options[i];
-            }
-        }
+//        for (const i in options) {
+//            if (typeof this.options[i] === 'object') {
+//                L.extend(this.options[i], options[i]);
+//            } else {
+//                this.options[i] = options[i];
+//            }
+//        }
 
     },
     onAdd: function (map) {
@@ -61,7 +61,10 @@ L.Control.MyLocation = L.Control.extend({
         var hdg1 = document.createElement('h3');
         hdg1.textContent = 'My Location Options';
         tag.appendChild(hdg1);
-
+        var text = `These options work in conjunction with the <b>My Location</b> button, and control how your current location is presented on the map. The <b>My Location</b> tool is most useful when you are using the map in the field, for example, when walking a route.`;
+        var comment = document.createElement('p');
+        comment.innerHTML = text;
+        tag.appendChild(comment);
         this._controls.showCompass = ra.html.input.yesNo(tag, '', "Show Compass: Show the compass bearing on top of the location marker", this.options, 'showCompass');
         this._controls.enableHighAccuracy = ra.html.input.yesNo(tag, '', "Enable High Accuracy: To enable high accuracy (GPS) mode", this.options.locateOptions, 'enableHighAccuracy');
         this._controls.flyTo = ra.html.input.yesNo(tag, '', "Fly to location: Smooth pan and zoom to the location of the marker", this.options, 'flyTo');
@@ -117,15 +120,35 @@ L.Control.MyLocation = L.Control.extend({
         ra.html.input.yesNoReset(this._controls.showCompass, true);
         ra.html.input.yesNoReset(this._controls.enableHighAccuracy, true);
         ra.html.input.yesNoReset(this._controls.flyTo, false);
-        ra.html.input.comboReset(this._controls.setView, 'untilPanOrZoom');
         ra.html.input.yesNoReset(this._controls.keepCurrentZoomLevel, false);
         ra.html.input.yesNoReset(this._controls.returnToPrevBounds, false);
+        ra.html.input.comboReset(this._controls.setView, 'untilPanOrZoom');
     },
     _readSettings: function () {
-        ra.settings.read('__mylocation', this.options);
+        var options = {compass: true,
+            high: true,
+            fly: false,
+            zoom: false,
+            return: false,
+            view: 'untilPanOrZoom'};
+        ra.settings.read('__mylocation', options);
+        this.options.showCompass = options.compass;
+        this.options.locateOptions.enableHighAccuracy = options.high;
+        this.options.flyTo = options.fly;
+        this.options.keepCurrentZoomLevel = options.zoom;
+        this.options.returnToPrevBounds = options.return;
+        this.options.setView = options.view;
     },
     saveSettings: function (save) {
-        ra.settings.save(save, '__mylocation', this.options);
+        var saveOptions = {
+            compass: this.options.showCompass,
+            high: this.options.locateOptions.enableHighAccuracy,
+            fly: this.options.flyTo,
+            zoom: this.options.keepCurrentZoomLevel,
+            return: this.options.returnToPrevBounds,
+            view: this.options.setView
+        };
+        ra.settings.save(save, '__mylocation', saveOptions);
     }
 });
 L.control.mylocation = function (opts) {

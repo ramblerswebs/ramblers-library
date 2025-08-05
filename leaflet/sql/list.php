@@ -18,7 +18,7 @@ class RLeafletSqlList extends RLeafletMap {
     public function __construct($sql) {
         parent::__construct();
         $this->sql = $sql;
-        $this->displayOptions =null;
+        $this->displayOptions = null;
     }
 
     public function setDisplayOptions($displayOptions) {
@@ -99,12 +99,15 @@ class RLeafletSqlList extends RLeafletMap {
         parent::setCommand('ra.display.tableList.display');
         parent::setDataObject($data);
         parent::display();
-        RLoad::addScript("media/lib_ramblers/leaflet/table/ramblerstable.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/leaflet/table/ramblerstable.js");
         RLoad::addStyleSheet("media/lib_ramblers/leaflet/table/style.css", "text/css");
         RLoad::addStyleSheet('media/lib_ramblers/css/ramblerslibrary.css');
-
-        RLoad::addScript("media/lib_ramblers/vendors/jplist-es6-master/dist/1.2.0/jplist.min.js", "text/javascript");
-        RLoad::addScript("https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js", "text/javascript");
+        RLoad::addScript("media/lib_ramblers/js/ra.tabs.js");
+        RLoad::addStyleSheet("media/lib_ramblers/css/ra.tabs.css");
+        RLoad::addStyleSheet("media/lib_ramblers/leaflet/table/style.css");
+        RLoad::addStyleSheet('media/lib_ramblers/vendors/cvList/cvList.css');
+        RLoad::addScript("media/lib_ramblers/vendors/cvList/cvList.js");
+        
     }
 
     private function readSqlOLD() {

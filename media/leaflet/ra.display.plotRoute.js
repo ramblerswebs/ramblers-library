@@ -20,26 +20,32 @@ ra.display.plotRoute = function (options, data) {
     this.options = options;  //public
     this.masterdiv = document.getElementById(options.divId);
     var lmap = new ra.leafletmap(this.masterdiv, options);
-    this._map = lmap.map;
+    lmap.display();
+    this._map = lmap.map();
     this.controls = {
         rightclick: lmap.rightclickControl(),
         mouse: lmap.mouseControl(),
-        settingsControl: lmap.settingsControl(),
+        //  settingsControl: lmap.settingsControl(),
         elevation: lmap.elevationControl()};
     this.pan = null;
     this.join = null;
     lmap.SetPlotUserControl(this);
-    this.mapDiv = lmap.mapDiv();
-    this.detailsDiv = document.createElement('div');
-    this.mapDiv.parentNode.insertBefore(this.detailsDiv, this.mapDiv);
+    this.preMapDiv = lmap.preMapDiv();
+
     this.SmartRouteControl = null;
     this.drawnItems = new L.FeatureGroup();
     this._map.addLayer(this.drawnItems);
 
 // code for drawing route/track
     this.load = function () {
-
         var self = this;
+
+        this.comment1 = '<p><b>Plot a walking Route:</b> No routes or markers defined ';
+        this.comment1 += '<br/>If you need help to get started please see the Help, top right of map</p>';
+        this.comment1 += '<p><b>NOTE: </b>If you leave this web page, without saving your data, you will lose any routes you have created.</p>';
+        this.comment2 = '<br/>If you need help please see the Help, top right of map</p>';
+        this.comment2 += '<p><b>NOTE: </b>If you leave this web page, without saving your data, you will lose any routes you have created.</p>';
+
         L.drawLocal.draw.toolbar.buttons.polyline = 'Plot a walking route(s)';
         L.drawLocal.draw.toolbar.buttons.marker = 'Add a marker';
         L.drawLocal.edit.toolbar.buttons.edit = 'Edit walking route(s) and markers';
@@ -182,7 +188,7 @@ ra.display.plotRoute = function (options, data) {
 
         });
         this._map.on(L.Draw.Event.DRAWSTART, function (e) {
-            // console.log('DRAW START');
+            console.log('DRAW START');
             if (self.SmartRouteControl !== null) {
                 self.SmartRouteControl.disable();
             }
@@ -202,7 +208,7 @@ ra.display.plotRoute = function (options, data) {
         this._map.on(L.Draw.Event.DRAWVERTEX, function (e) {
             var layer = e.layers._layers;
             if (self.SmartRoute.enabled) {
-                // console.log('DRAW VERTEX');
+                console.log('DRAW VERTEX');
                 self.SmartRouteControl.displaySmartPoints(layer);
             }
             if (self._userOptions.draw.panToNewPoint) {
@@ -220,7 +226,7 @@ ra.display.plotRoute = function (options, data) {
 
         this._map.on(L.Draw.Event.DRAWSTOP, function (e) {
             if (self.SmartRoute.enabled) {
-                //  console.log('DRAW STOP');
+                console.log('DRAW STOP');
                 if (self.SmartRoute.pending) {
                     // Let displaySmartPoints save route
                     self.SmartRoute.saveRoute(true);
@@ -242,24 +248,19 @@ ra.display.plotRoute = function (options, data) {
             }
             self.addElevations(false);
             self.setGpxToolStatus('auto');
-            //  console.log('DRAW EXIT');
+            console.log('DRAW EXIT');
         });
         this._map.on('join:attach', function () {
             self.joinLastSegment();
         });
         this._map.on(L.Draw.Event.EDITSTART, function (e) {
             self._map.setMaxZoom(22);
-            //ramblersMap.displayMouseGridSquare = false;
-            //    self._displayMouseGridSquare = self.displayMouseGridSquare;
-            //    self.displayMouseGridSquare = false;
-            //   useGridSquare = false;
             self.gridSquarePause();
             self.enableMapMoveDrawing();
             self.setGpxToolStatus('off');
         });
         this._map.on(L.Draw.Event.EDITED, function (e) {
             self._map.setMaxZoom(18);
-            // self.displayMouseGridSquare = self._displayMouseGridSquare;
             self.gridSquareResume();
             self.disableMapMoveDrawing();
             self.addElevations(true);
@@ -267,7 +268,6 @@ ra.display.plotRoute = function (options, data) {
         });
         this._map.on(L.Draw.Event.EDITSTOP, function (e) {
             self._map.setMaxZoom(18);
-            // self.displayMouseGridSquare = self._displayMouseGridSquare;
             self.gridSquareResume();
             self.disableMapMoveDrawing();
             self.addElevations(true);
@@ -278,8 +278,6 @@ ra.display.plotRoute = function (options, data) {
         this._map.on(L.Draw.Event.EDITVERTEX, function (e) {
         });
         this._map.on(L.Draw.Event.DELETESTART, function (e) {
-            //  self._displayMouseGridSquare = self.displayMouseGridSquare;
-            //   self.displayMouseGridSquare = false;
             self.gridSquarePause();
             self.enableMapMoveDrawing();
             self.setGpxToolStatus('off');
@@ -288,7 +286,6 @@ ra.display.plotRoute = function (options, data) {
             }
         });
         this._map.on(L.Draw.Event.DELETESTOP, function (e) {
-            //   self.displayMouseGridSquare = self._displayMouseGridSquare;
             self.gridSquareResume();
             self.disableMapMoveDrawing();
             self.listDrawnItems();
@@ -299,7 +296,6 @@ ra.display.plotRoute = function (options, data) {
             }
         });
         this._map.on(L.Draw.Event.DELETED, function (e) {
-            // self.displayMouseGridSquare = self._displayMouseGridSquare;
             self.gridSquareResume();
             self.disableMapMoveDrawing();
             self.listDrawnItems();
@@ -364,10 +360,11 @@ ra.display.plotRoute = function (options, data) {
         });
         this.listDrawnItems();
         this._readSettings();
+        window.addEventListener("beforeunload", function (event) {
+            event.returnValue = "Write something clever here..";
+        });
     };
-//    this._map.on('popupclose', function (e) {
-//        download._popupclose(e);
-//    });
+
     this.setGpxToolStatus = function (status) {
         this.processPopups = status;
         this.reverse.setStatus(status);
@@ -416,8 +413,7 @@ ra.display.plotRoute = function (options, data) {
         this.controls.elevation.clear();
         var text = "";
         if (!hasItems) {
-            text = '<p><b>Plot a walking Route:</b> No routes or markers defined ';
-            text += '<br/>If you need help to get started please visit our <b><a href="' + ra.map.helpBase + this.options.helpPage + '" target="_blank">Mapping Help Site</a></b></p>';
+            text = this.comment1;
         } else {
             text += "<table>";
             text += "<tr><th>Segment</th><th>Length</th><th>Elevation Gain</th><th>Est Time</th><th>Number of points</th></tr>";
@@ -430,12 +426,11 @@ ra.display.plotRoute = function (options, data) {
                 }
             });
             text += "</table>";
-            text += '<p>If you need help to get started please visit our <b><a href="' + ra.map.helpBase + this.options.helpPage + '" target="_blank">Mapping Help Site</a></b></p>';
+            text += this.comment2;
 
         }
-        this.detailsDiv.innerHTML = text;
-    }
-    ;
+        this.preMapDiv.innerHTML = text;
+    };
     this.getElementValue = function (id) {
         var node = document.getElementById(id);
         if (node !== null) {
@@ -613,7 +608,7 @@ ra.display.plotRoute = function (options, data) {
         return  elevationGain;
     };
     this.addElevations = function (force) {
-        this.detailsDiv.innerHTML = "<br/><h4>Fetching elevations - please wait...</h4>";
+        this.preMapDiv.innerHTML = "<br/><h4>Fetching elevations - please wait...</h4>";
         var hasItems = this.drawnItems.getLayers().length !== 0;
         if (hasItems) {
             var _this = this;
@@ -706,17 +701,24 @@ ra.display.plotRoute = function (options, data) {
     this.settingsForm = function (tag) {
         var _this = this;
         var title = document.createElement('h3');
-        title.textContent = 'Plot Walking Route';
+        title.textContent = 'Plot walking route settings';
         tag.appendChild(title);
         var titleoptions = document.createElement('h4');
         titleoptions.textContent = 'Options';
         tag.appendChild(titleoptions);
-        this.pan = ra.html.input.yesNo(tag, 'divClass', "Pan: Centre map on last point added to route", this._userOptions.draw, 'panToNewPoint');
-        this.join = ra.html.input.yesNo(tag, 'divClass', "Join: Join new route to nearest existing route", this._userOptions.draw, 'joinSegments');
+        var panHelp = 'If set (recommended), while plotting a route, the map automatically recentres on each new point as it is added.';
+        this.pan = ra.html.input.yesNo(tag, '', "Pan: Centre map on last point added to route", this._userOptions.draw, 'panToNewPoint');
+        ra.html.input.helpComment(this.pan, panHelp);
+        this.join = ra.html.input.yesNo(tag, '', "Join: Join new route to nearest existing route", this._userOptions.draw, 'joinSegments');
+        var joinHelp = 'If set, then if a new route is created while an existing one is displayed, the two routes are automatically joined together. The join is made between the nearest pair of start / end points on the two route segments.';
+        ra.html.input.helpComment(this.join, joinHelp);
         tag.appendChild(document.createElement('hr'));
         var titlestyle = document.createElement('h5');
         titlestyle.textContent = 'Display: Style of route';
         tag.appendChild(titlestyle);
+        var h = document.createElement('p');
+        h.innerHTML = 'The colour, line thickness and line opacity of plotted routes can all be changed.';
+        tag.appendChild(h);
         this.line = ra.html.input.lineStyle(tag, '', 'Track style', this._userOptions.style);
         tag.appendChild(document.createElement('hr'));
 
@@ -730,9 +732,6 @@ ra.display.plotRoute = function (options, data) {
             ra.settings.changed();
             _this._map.fire("draw:color-change", null);
         });
-
-
-
     };
 
     this.resetSettings = function () {
@@ -752,5 +751,4 @@ ra.display.plotRoute = function (options, data) {
     this.saveSettings = function (save) {
         ra.settings.save(save, '__raDraw', this._userOptions);
     };
-
 };

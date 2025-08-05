@@ -47,7 +47,8 @@ ra.display.walksMap = function (mapOptions, data) {
         }
 
         this.lmap = new ra.leafletmap(this.elements.map, this.options);
-        this.map = this.lmap.map;
+        this.lmap.display();
+        this.map = this.lmap.map();
         this.cluster = new ra.map.cluster(this.map);
         var walks = new ra.events();
         this.data.walks.forEach(phpwalk => {

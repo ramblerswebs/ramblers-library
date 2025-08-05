@@ -336,7 +336,7 @@ ra.walkseditor.walk = function () {
         }
     };
     this.addDisplayClasses = function (cl) {
-        var classes = this.getStatusClasses()
+        var classes = this.getStatusClasses();
         classes.forEach(c => {
             cl.add(c);
         });
@@ -849,7 +849,6 @@ ra.walkseditor.walk = function () {
                     return ['statusPublished', 'statusCancelled'];
                 }
         }
-
     };
     this.dateStatus = function () {
         var d = ra.getObjProperty(this.data, 'basics.date', null);
@@ -1383,7 +1382,8 @@ ra.walkseditor.walk = function () {
 
         var tag = document.getElementById("detailsMapDiv");
         var lmap = new ra.leafletmap(tag, ra.defaultMapOptions);
-        var map = lmap.map;
+        lmap.display();
+        var map = lmap.map();
         var points = 0;
         var layer = L.featureGroup().addTo(map);
         var type = ra.getObjProperty(this.data, 'meeting.type');

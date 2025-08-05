@@ -1,4 +1,4 @@
-var L, ra, jplist, OsGridRef;
+var L, ra, OsGridRef;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -12,67 +12,137 @@ ra.display.tableList = (function () {
         this.list = null;
         this.options = options;
         this.data = data;
-        this.numberOfRows = this.data.list.items[0].values.length;
+        this.items = this.data.list.items;
+        this.numberOfRows = this.items[0].values.length;
+        this.recordDiv;
+        this.masterdiv = document.getElementById(options.divId);
         this.defaultIcon = L.icon({
             iconUrl: ra.baseDirectory() + "media/lib_ramblers/images/marker-route.png",
             iconSize: [33, 50],
             iconAnchor: [16, 47],
             popupAnchor: [0, -44]
         });
+
         this.load = function ( ) {
-            this.dataGroup = ra.uniqueID();
-            this.myjplist = new ra.jplist(this.dataGroup);
+            var _this=this;
+            var mapping = this.canDisplayMap();
+            var options = {tabClass: 'tableDisplay',
+                tabs: {map: {title: 'Map', enabled: mapping, staticContainer: true},
+                    list: {title: 'List', staticContainer: true}}};
+
+
+            this.tabs = new ra.tabs(this.masterdiv, options);
+
+            this.tabs.display();
+
+            var mapDiv = this.tabs.getStaticContainer('map');
+            this._displayMap(mapDiv);
+            var listDiv = this.tabs.getStaticContainer('list');
+            this._createTable(listDiv, this.items);
+//            setTimeout(function () {
+//                self.displayCsvData(); // lets the map/list tabs be displayed straight away
+//            }, 0);
+            this.masterdiv.addEventListener("displayTabContents", function (e) {
+                if (e.tabDisplay.tab === 'map') {
+                    _this.map.invalidateSize();
+                }
+            });
+        };
+        this.addTabs = function (mapping) {
+
+            var options = {div: this.masterdiv,
+                tabClass: 'tableDisplay',
+                tabs: {map: {title: 'Map', enabled: mapping, staticContainer: true},
+                    list: {title: 'List', staticContainer: true}}};
+
+
+            this.tabs = new ra.tabs(options);
+            this.tabs.display();
+        };
+        this._createTable = function (tag, items) {
             var tags = [
-                {name: 'table', parent: 'root', tag: 'table', attrs: {class: 'ra-tab-options'}},
-                {name: 'row', parent: 'table', tag: 'tr'},
-                {name: 'map', parent: 'row', tag: 'td', attrs: {class: 'ra-tab'}, textContent: 'Map'},
-                {name: 'list', parent: 'row', tag: 'td', attrs: {class: 'ra-tab active'}, textContent: 'List'},
-                {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {class: 'gpxouter'}},
-                {name: 'tablemap', parent: 'gpxouter', tag: 'div', style: {display: 'none'}},
-                {name: 'tablerecord', parent: 'gpxouter', tag: 'div'},
-                {name: 'tablelist', parent: 'gpxouter', tag: 'div'},
-                {name: 'tableFilter', parent: 'tablelist', tag: 'div', attrs: {class: 'tableFilter'}, textContent: 'Program loading: please give this a minute or so.If this does not vanish then please contact the web master!'},
-                {name: 'raPagination1', parent: 'tablelist', tag: 'div'},
-                {name: 'dataTab', parent: 'tablelist', tag: 'div'}
+                {name: 'legend', parent: 'root', tag: 'div'},
+                {name: 'content', parent: 'root', tag: 'div'}
             ];
-            this.masterdiv = document.getElementById(options.divId);
+            var elements = ra.html.generateTags(tag, tags);
+            elements.legend.innerHTML = "<p class='noprint'>Click on item to display full details of walk</p>";
 
-            this.elements = ra.html.generateTags(this.masterdiv, tags);
-            var self = this;
-            this.elements.map.addEventListener("click", function () {
-                self.ra_format("Map");
-            });
-            this.elements.list.addEventListener("click", function () {
-                self.removeRecordDisplay();
-                self.ra_format("List");
-            });
-            setTimeout(function () {
-                self.displayCsvData(); // lets the map/list tabs be displayed straight away
-            }, 0);
+            var table = new ra.paginatedTable(elements.content);
+            this._setTableHeading(table, items);
+            this._addTableRows(table, items);
+            table.tableEnd();
         };
-
-        this.displayCsvData = function () {
-            this.addPagination(this.numberOfRows, this.elements.raPagination1);
-            this.testForMap();
-            this.displayCSVTable();
-            if (this.displayMap) {
-                this.lmap = new ra.leafletmap(this.elements.tablemap, this.options);
-                this.map = this.lmap.map;
-                this.cluster = new ra.map.cluster(this.map);
-                this.ra_format("Map");
-                this.map.invalidateSize();
-                this.addCSVMarkers();
+        this._setTableHeading = function (table, items) {
+            var format = [];
+            items.forEach((item) => {
+                if ('table' in item) {
+                    var formatItem = null;
+                    if (item.table) {
+                        formatItem = {title: item.name,
+                            options: {align: item.align},
+                            field: {type: item.type,
+                                filter: item.filter,
+                                sort: item.sort}};
+                        format.push(formatItem);
+                        switch (item.type) {
+                            case 'link':
+                            case 'textlink':
+                            case 'exturl':
+                                formatItem.field.type = 'text';
+                                break;
+                            case 'datetime':
+                                formatItem.field.type = 'date';
+                        }
+                    }
+                    item.format = formatItem;
+                }
+            });
+            table.tableHeading(format);
+        };
+        this._addTableRows = function (table, items) {
+            var no, index;
+            var item;
+            for (no = 0; no < this.numberOfRows; ++no) {
+                table.tableRowStart();
+                for (index = 0; index < items.length; ++index) {
+                    item = items[index];
+                    if (item.table) {
+                        var value = this.displayItem(null, item.type, item.values[no]);
+                        var td = table.tableRowItem(value, item.format);
+                        if (item.linkmarker) {
+                            var self = this;
+                            td.classList.add('pointer');
+                            td.classList.add('link');
+                            td.setAttribute('title', 'Click to view item on map');
+                            td.setAttribute('data-marker-number', no);
+                            td.addEventListener("click", function (event) {
+                                self.selectMarker(event);
+                            });
+                        }
+                    }
+                }
+                table.tableRowEnd();
             }
-
-            this.myjplist.init('ra-table-list');
-            this.myjplist.updateControls();
-
         };
-        this.testForMap = function () {
+
+        this._displayMap = function (tag) {
+            var tags = [
+                {name: 'map', parent: 'root', tag: 'div'},
+                {name: 'table', parent: 'root', tag: 'div'}
+            ];
+            var elements = ra.html.generateTags(tag, tags);
+            this.recordDiv = elements.table;
+            this.lmap = new ra.leafletmap(elements.map, this.options);
+            this.lmap.display();
+            this.map = this.lmap.map();
+            this.cluster = new ra.map.cluster(this.map);
+            this.addMarkers();
+            this.cluster.zoomAll({padding: [30, 30]});
+        };
+        this.canDisplayMap = function () {
             this.data.list.longitude = -1;
             this.data.list.latitude = -1;
             for (var index = 0; index < this.data.list.items.length; ++index) {
-
                 var item = this.data.list.items[index];
                 if (item.longitude) {
                     this.data.list.longitude = index;
@@ -82,20 +152,19 @@ ra.display.tableList = (function () {
                 }
             }
             if (this.data.list.longitude > -1 && this.data.list.latitude > -1) {
-                this.displayMap = true;
-                return;
+                return true;
             }
-// search for gridref
+            // search for gridref
             this.data.list.gridref = -1;
             for (var index = 0; index < this.data.list.items.length; ++index) {
-
                 var item = this.data.list.items[index];
                 if (item.gridref) {
                     this.data.list.gridref = index;
                     this.calculateLatLng();
-                    return;
+                    return true;
                 }
             }
+            return false;
         };
         this.calculateLatLng = function () {
             var items = this.data.list.items;
@@ -138,99 +207,16 @@ ra.display.tableList = (function () {
             newitem.linkmarker = false;
             newitem.type = "text";
             this.data.list.items.push(newitem);
-            newitem.jpclass = "var" + this.data.list.items.length;
+
             return newitem;
         };
-        this.displayCSVTable = function () {
-            //  var out, index;
-            var tag;
-            tag = this.elements.dataTab;
-            if (tag !== null) {
-                var table = this.displayCSVHeader(tag);
-                var tbody = document.createElement('tbody');
-                tbody.setAttribute('data-jplist-group', this.dataGroup);
-                table.appendChild(tbody);
-                this.displayCSVRows(tbody);
-                this.displayCSVFilter();
-            }
-        };
-        this.displayCSVHeader = function (tag) {
-            var items = this.data.list.items;
-            var table = document.createElement('table');
-            table.setAttribute('class', "tabledetails");
-            tag.appendChild(table);
-            var thead = document.createElement('thead');
-            table.appendChild(thead);
-            var tr = document.createElement('tr');
-            thead.appendChild(tr);
-            var item;
-            for (var index = 0; index < items.length; ++index) {
-                item = items[index];
-                if (item.table) {
-                    var th = document.createElement('th');
-                    tr.appendChild(th);
-                    th.setAttribute('class', item.align);
-                    th.textContent = item.name;
-                    if (item.sort || item.linkmarker) {
-                        this.myjplist.sortButton(th, item.jpclass, item.type, "asc", "▲");
-                        this.myjplist.sortButton(th, item.jpclass, item.type, "desc", "▼");
-                    }
-                }
-            }
-            return table;
-        };
-        this.displayCSVFilter = function () {
-            var items = this.data.list.items;
-            var item, filter = "";
-            for (var index = 0; index < items.length; ++index) {
-                item = items[index];
-                if (item.table) {
-                    if (item.filter) {
-                        filter += this.jplistFilter(item);
-                    }
-                }
-            }
-            this.elements.tableFilter.innerHTML = filter;
-        };
-
-        this.displayCSVRows = function (tag) {
-            var no, index;
-            var item;
-            for (no = 0; no < this.numberOfRows; ++no) {
-                var items = this.data.list.items;
-                var tr = document.createElement('tr');
-                tag.appendChild(tr);
-                tr.setAttribute('data-jplist-item', "");
-                for (index = 0; index < items.length; ++index) {
-                    item = items[index];
-                    if (item.table) {
-                        var td = document.createElement('td');
-                        tr.appendChild(td);
-                        td.setAttribute('class', item.jpclass + " " + item.align);
-                        td.innerHTML = this.displayItem(null, item.type, item.values[no]);
-                        if (item.linkmarker) {
-                            var self = this;
-                            td.classList.add('pointer');
-                            td.classList.add('link');
-                            td.setAttribute('data-marker-number', no);
-                            td.addEventListener("click", function (event) {
-                                self.selectMarker(event);
-                            });
-                        }
-                    }
-                }
-            }
-            return;
-        };
-
-        this.addCSVMarkers = function () {
+        this.addMarkers = function () {
             for (var index = 0; index < this.numberOfRows; ++index) {
-                this.addCSVMarker(index);
+                this.addMarker(index);
             }
             this.cluster.addClusterMarkers();
-            this.cluster.zoomAll({padding: [30, 30]});
         };
-        this.addCSVMarker = function (no) {
+        this.addMarker = function (no) {
             var $popup, $lat, $long, title = "";
             var $all = true;
             $popup = "<div style='font-size:120%'>";
@@ -271,7 +257,7 @@ ra.display.tableList = (function () {
                     self.displayRecord(id);
                 });
                 marker.on('popupclose', function (popup) {
-                    self.removeRecordDisplay();
+                    self.recordDiv.innerHTML = "";
                 });
                 this.cluster.markerList.push(marker);
             }
@@ -329,21 +315,24 @@ ra.display.tableList = (function () {
                 }
             }
             $details += "</div>";
-            this.elements.tablerecord.innerHTML = $details;
-        };
-        this.removeRecordDisplay = function () {
-            this.elements.tablerecord.innerHTML = "";
+            this.recordDiv.innerHTML = $details;
         };
         this.selectMarker = function (event) {
             var no = parseInt(event.target.getAttribute('data-marker-number'));
-            this.ra_format('Map');
+            this.tabs.clickToTab('map');
             for (var index = 0; index < this.cluster.markerList.length; ++index) {
                 var marker = this.cluster.markerList[index];
                 if (marker.ramblers_id === no) {
                     this.cluster.markersCG.zoomToShowLayer(marker, this.openPopup(marker));
                     this.map.panTo(marker.getLatLng());
+                    break;
                 }
             }
+        };
+        this.openPopup = function (marker) {
+            setTimeout(function () {
+                marker.openPopup();
+            }, 500);
         };
         this.displayItem = function (name, type, value) {
             var out = "";
@@ -363,50 +352,6 @@ ra.display.tableList = (function () {
                     return out + value + '<br/>';
             }
         };
-        this.openPopup = function (marker) {
-            setTimeout(function () {
-                marker.openPopup();
-            }, 500);
-        };
-
-        this.ra_format = function (option) {
-            this.elements.map.classList.remove('active');
-            this.elements.list.classList.remove('active');
-            switch (option) {
-                case 'List':
-                    this.elements.list.classList.add('active');
-                    this.elements.tablemap.style.display = "none";
-                    this.elements.tablelist.style.display = "inline";
-                    this.myjplist.updateControls();
-                    break;
-                case 'Map':
-                    this.elements.map.classList.add('active');
-                    this.elements.tablelist.style.display = "none";
-                    this.elements.tablemap.style.display = "inline";
-                    this.map.invalidateSize();
-                    break;
-            }
-        };
-        this.addPagination = function (no, tag) {
-
-            this.myjplist.addPagination(no, tag, "pagination1", 20);
-
-        };
-        this.jplistFilter = function (item) {
-            var min, max;
-            if (item.type === "number") {
-
-                var result = item.values.map(Number);
-                min = result.reduce(function (a, b) {
-                    return Math.min(a, b);
-                }, 99999);
-                max = result.reduce(function (a, b) {
-                    return Math.max(a, b);
-                }, -99999);
-            }
-            return this.myjplist.addFilter(item.jpclass, item.name, item.type, min, max);
-        };
-
     };
     return tableList;
 }

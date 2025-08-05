@@ -1,4 +1,4 @@
-var L, ra, jplist, OsGridRef;
+var L, ra, OsGridRef;
 if (typeof (ra) === "undefined") {
     ra = {};
 }
@@ -10,6 +10,7 @@ ra.display.gpxSingle = function (options, data) {
     this.data = data;
     var masterdiv = document.getElementById(options.divId);
     this.lmap = new ra.leafletmap(masterdiv, options);
+    this.lmap.display();
     this.load = function () {
         var data = this.data;
         var file = data.gpxfile;
@@ -17,7 +18,7 @@ ra.display.gpxSingle = function (options, data) {
         var imperial = data.imperial;
         var detailsDivId = data.detailsDivId;
         /////////////////////////
-        var _map = this.lmap.map;
+        var _map = this.lmap.map();
         var el = this.lmap.elevationControl();
         var g = new L.GPX(ra.baseDirectory() + file, {async: true,
             polyline_options: {color: linecolour},
@@ -151,8 +152,6 @@ ra.display.gpxFolder = function (options, data) {
     this._map = null;
     this.options = options;
     this.base = ra.baseDirectory();
-    this.jplistgroup = ra.uniqueID();
-    this.myjplist = new ra.jplist(this.jplistgroup);
     this.controls = {
         folder: null,
         linecolour: "#782327",
@@ -168,57 +167,62 @@ ra.display.gpxFolder = function (options, data) {
         gpx: null,
         searchtext: ''
     };
-    var tags1 = [
-        {name: 'table', parent: 'root', tag: 'table', attrs: {class: 'ra-tab-options'}},
-        {name: 'row', parent: 'table', tag: 'tr'},
-        {name: 'map', parent: 'row', tag: 'td', attrs: {class: 'ra-tab active'}, textContent: 'Map'},
-        {name: 'list', parent: 'row', tag: 'td', attrs: {class: 'ra-tab'}, textContent: 'List'},
-        {name: 'gpxouter', parent: 'root', tag: 'div', attrs: {class: 'gpxouter'}},
-        {name: 'gpxmap', parent: 'gpxouter', tag: 'div'},
-        {parent: 'gpxmap', tag: 'p'},
-        {name: 'gpxheader', parent: 'gpxmap', tag: 'div'},
-        {parent: 'gpxmap', tag: 'h4', textContent: 'Click on any walk to see summary, click on title to display route'},
-        {name: 'gpxlist', parent: 'gpxouter', tag: 'div', style: {display: 'none'}},
-        {name: 'filters', parent: 'gpxlist', tag: 'div'},
-        {name: 'pagination', parent: 'gpxlist', tag: 'div'},
-        {name: 'tableDiv', parent: 'gpxlist', tag: 'div', textContent: 'Program loading: please give this a minute or so. If this does not vanish then please contact the web master!'}
-    ];
     this.routes = null;
     this.masterdiv = document.getElementById(options.divId);
-    this.elements = ra.html.generateTags(this.masterdiv, tags1);
-    var _this = this;
-    this.elements.map.addEventListener("click", function () {
-        _this.ra_format('Map');
-    });
-    this.elements.list.addEventListener("click", function () {
-        _this.ra_format('List');
-    });
-    this.lmap = new ra.leafletmap(this.elements.gpxmap, options);
-    this._map = this.lmap.map;
-    this.el = this.lmap.elevationControl();
-    this.gpx = null;
-    this.cluster = new ra.map.cluster(this._map);
-    this._map.on('popupopen', function () {
-        var tabs = document.querySelectorAll('.leaflet-popup-content div[data-route-id]');
-        for (var i = 0; i < tabs.length; ++i) {
-            tabs[i].addEventListener("click", function () {
-                var id = this.getAttribute('data-route-id');
-                _this.updateGPXid(id);
-            });
-        }
-    });
+    var tabOptions = {tabClass: 'tableDisplay',
+        tabs: {map: {title: 'Map', staticContainer: true},
+            list: {title: 'List', staticContainer: true}}};
+
+
+    this.tabs = new ra.tabs(this.masterdiv, tabOptions);
+
+    this.tabs.display();
     this.data = data;
+    this.elements = {};
 
     this.load = function () {
+        var _this = this;
         this.setData(this.data);
-        this.addFilters(this.elements.filters);
-        this.addPagination(this.routes.length, this.elements.pagination);
-        this.displayGPXTable();
-        this.addGPXMarkers();
-        this.addRouteEvents();
+        var mapDiv = this.tabs.getStaticContainer('map');
+        this.loadMap(mapDiv);
+        var listDiv = this.tabs.getStaticContainer('list');
+        this.loadTable(listDiv);
+    
+        this.masterdiv.addEventListener("displayTabContents", function (e) {
+            if (e.tabDisplay.tab === 'map') {
+                _this._map.invalidateSize();
+            }
+        });
 
-        this.myjplist.init('ra-gpx-list');
-        this.myjplist.updateControls();
+    };
+    this.loadMap = function (tag) {
+        var _this = this;
+        var tags = [
+            {name: 'routeDiv', parent: 'root', tag: 'div', attrs: {class: 'ra routeinfo'}},
+            {name: 'mapDiv', parent: 'root', tag: 'div'}
+        ];
+        this.elements = ra.html.generateTags(tag, tags);
+
+        this.elements.routeDiv.innerHTML = 'Click on any walk to see summary, click on title to display route';
+        this.lmap = new ra.leafletmap(this.elements.mapDiv, this.options);
+        this.lmap.display();
+        this._map = this.lmap.map();
+        this.el = this.lmap.elevationControl();
+        this.gpx = null;
+        this.cluster = new ra.map.cluster(this._map);
+        this._map.on('popupopen', function () {
+            var tabs = document.querySelectorAll('.leaflet-popup-content div[data-route-id]');
+            for (var i = 0; i < tabs.length; ++i) {
+                tabs[i].addEventListener("click", function () {
+                    var id = this.getAttribute('data-route-id');
+                    _this.updateGPXid(id);
+                });
+            }
+        });
+        this.addGPXMarkers();
+
+    };
+    this.loadList = function () {
 
     };
     this.setData = function (data) {
@@ -228,128 +232,90 @@ ra.display.gpxFolder = function (options, data) {
         this.controls.displayAsPreviousWalks = data.displayAsPreviousWalks;
         this.controls.download = data.download;
     };
-    this.ra_format = function (option) {
-        this.elements.map.classList.remove('active');
-        this.elements.list.classList.remove('active');
-
-        switch (option) {
-            case 'List':
-                this.elements.list.classList.add('active');
-                this.elements.gpxmap.style.display = "none";
-                this.elements.gpxlist.style.display = "inline";
-                this.myjplist.updateControls();
-                break;
-            case 'Map':
-                this.elements.map.classList.add('active');
-                this.elements.gpxlist.style.display = "none";
-                this.elements.gpxmap.style.display = "inline";
-                this._map.invalidateSize();
-                break;
-        }
-    };
     this.displayGPXName = function (route) {
         var link = '<b><div data-route-id="' + route.id + '" class="pointer">' + route.title + '</div></b>';
         return link;
     };
-    this.addRouteEvents = function () {
-        var i;
-        var _this = this;
-        var tabs = document.querySelectorAll('div[data-route-id]');
-        for (var i = 0; i < tabs.length; ++i) {
-            tabs[i].addEventListener("click", function () {
-                var id = this.getAttribute('data-route-id');
-                _this.updateGPXid(id);
-            });
+    this.loadTable = function (tag) {
+        var format = [{"title": "Date", "options": {"align": "right"}, "field": {"type": "text", "filter": false, "sort": true}},
+            {"title": "Leader", "options": {"align": "right"}, "field": {"type": "text", "filter": false, "sort": true}},
+            {"title": "Title", "options": {"align": "right"}, "field": {"type": "text", "filter": true, "sort": true}},
+            {"title": "Distance Km", "options": {"align": "right"}, "field": {"type": "number", "filter": true, "sort": true}},
+            {"title": "Miles", "options": {"align": "right"}, "field": {"type": "number", "filter": false, "sort": false}},
+            {"title": "min Altitude(m)", "options": {"align": "right"}, "field": {"type": "number", "filter": false, "sort": true}},
+            {"title": "max Altitude(m)", "options": {"align": "right"}, "field": {"type": "number", "filter": false, "sort": false}},
+            {"title": "Elevation Gain(m)", "options": {"align": "right"}, "field": {"type": "number", "filter": false, "sort": true}},
+            {"title": "GPX", "options": {"align": "right"}, "field": {"type": "text", "filter": false, "sort": false}}
+        ];
+        if (!this.controls.displayAsPreviousWalks) {
+            format.shift();
+            format.shift();
         }
-    };
-    this.displayGPXTable = function () {
-        var out, index;
-        var tag;
-        //  var extra = "";
-        tag = this.elements.tableDiv;
-        tag.innerHTML = '';
-        if (tag !== null) {
-            var tags = [
-                {name: 'table', parent: 'root', tag: 'table', attrs: {id: 'gpxdetails'}},
-                {name: 'thead', parent: 'table', tag: 'thead'},
-                {name: 'headings', parent: 'thead', tag: 'tr'}];
-            if (this.controls.displayAsPreviousWalks) {
-                tags.push({name: 'date', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Date'});
-                tags.push({name: 'leader', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Leader'});
-            }
-            tags.push(
-                    {name: 'title', parent: 'headings', tag: 'th', attrs: {class: 'alignleft'}, textContent: 'Title'},
-                    {name: 'distance', parent: 'headings', tag: 'th', attrs: {class: ''}, textContent: 'Distance Km'},
-                    {parent: 'headings', tag: 'th', attrs: {class: 'tablet'}, textContent: 'Miles'},
-                    {parent: 'headings', tag: 'th', attrs: {class: 'tablet'}, textContent: 'min Altitude(m)'},
-                    {parent: 'headings', tag: 'th', attrs: {class: 'tablet'}, textContent: 'max Altitude(m)'},
-                    {name: 'elevation', parent: 'headings', tag: 'th', attrs: {class: 'tablet'}, textContent: 'Elevation Gain(m)'},
-                    );
-            if (this.controls.download > 0) {
-                tags.push({parent: 'headings', tag: 'th', attrs: {class: ''}, textContent: 'GPX'});
-            }
-            tags.push({name: 'tbody', parent: 'table', tag: 'tbody'});
-            var eles = ra.html.generateTags(tag, tags);
-            if (this.controls.displayAsPreviousWalks) {
-                this.myjplist.sortButton(eles.date, 'wDate', 'date', "asc", "▲");
-                this.myjplist.sortButton(eles.date, 'wDate', 'date', "desc", "▼");
-                this.myjplist.sortButton(eles.leader, 'wAuthor', 'text', "asc", "▲");
-                this.myjplist.sortButton(eles.leader, 'wAuthor', 'text', "desc", "▼");
-            }
-            this.myjplist.sortButton(eles.title, 'wTitle', 'text', "asc", "▲");
-            this.myjplist.sortButton(eles.title, 'wTitle', 'text', "desc", "▼");
-            this.myjplist.sortButton(eles.distance, 'wDistance', 'number', "asc", "▲");
-            this.myjplist.sortButton(eles.distance, 'wDistance', 'number', "desc", "▼");
-            this.myjplist.sortButton(eles.elevation, 'wElevation', 'number', "asc", "▲");
-            this.myjplist.sortButton(eles.elevation, 'wElevation', 'number', "desc", "▼");
-            out = "";
-            eles.tbody.setAttribute('data-jplist-group', this.jplistgroup);
-            for (index = 0; index < this.routes.length; ++index) {
-                var route = this.routes[index];
-                if (this.displayRoute(route)) {
-                    out += this.displayGPXRow(route);
-                }
-            }
+        var table = new ra.paginatedTable(tag);
+        table.tableHeading(format);
+        this._addTableRows(table, format);
+        table.tableEnd();
+        if (this.controls.download === 1) {
+            var ele = document.createElement('p');
+            tag.appendChild(ele);
+            ele.textContent = "* To be able to download GPX Routes, you need to log on to our web site.";
+        }
 
-            if (this.controls.download === 1) {
-                var ele = document.createElement('p');
-                tag.appendChild(ele);
-                ele.textContent = "* To be able to download GPX Routes, you need to log on to our web site.";
+
+    };
+    this._addTableRows = function (table, format) {
+        for (var index = 0; index < this.routes.length; ++index) {
+            var route = this.routes[index];
+            if (this.displayRoute(route)) {
+                this.addTableRow(table, route, format);
             }
-            eles.tbody.innerHTML = out;
         }
     };
-    this.displayGPXRow = function (route) {
-        var link = '<tr data-jplist-item>';
+    this.addTableRow = function (table, route, format) {
+        var _this = this;
+        table.tableRowStart();
+        var i = 0;
         if (this.controls.displayAsPreviousWalks) {
-            link += '<td class="wDate"><b>' + route.date + '</b></td>';
-            link += '<td class="wAuthor alignleft">' + route.author + '</td>';
+            table.tableRowItem('<b>' + route.date + '</b>', format[i]);
+            i += 1;
+            table.tableRowItem(route.author, format[i]);
+            i += 1;
         }
-        link += '<td class="wTitle alignleft">' + this.displayGPXName(route) + '</td>';
-        link += '<td class="wDistance">' + (route.distance / 1000).toFixed(1) + '</td>';
-        link += '<td class="tablet">' + ra.units.metresToMi(route.distance).toFixed(2) + '</td>';
-        if (route.cumulativeElevationGain === 0) {
-            link += '<td class="tablet">...</td>';
-            link += '<td class="tablet">...</td>';
-            link += '<td class="wElevation tablet">...</td>';
-        } else {
-            link += '<td class="tablet">' + route.minAltitude.toFixed(0) + '</td>';
-            link += '<td class="tablet">' + route.maxAltitude.toFixed(0) + '</td>';
-            link += '<td class="wElevation tablet">' + route.cumulativeElevationGain.toFixed(0) + '</td>';
-        }
+        var td = table.tableRowItem(this.displayGPXName(route), format[i]);
+        td.addEventListener("click", function (e) {
+            var tag=e.target;
+            var id = tag.getAttribute('data-route-id');
+            _this.updateGPXid(id);
+        });
+        i += 1;
+        table.tableRowItem((route.distance / 1000).toFixed(1), format[i]);
+        i += 1;
+        table.tableRowItem(ra.units.metresToMi(route.distance).toFixed(2), format[i]);
+        i += 1;
+        table.tableRowItem(route.minAltitude.toFixed(0), format[i]);
+        i += 1;
+        table.tableRowItem(route.maxAltitude.toFixed(0), format[i]);
+        i += 1;
+        table.tableRowItem(route.cumulativeElevationGain.toFixed(0), format[i]);
+        i += 1;
+
         if (this.controls.download > 0) {
-            link += '<td>' + this.getGPXdownloadLink(route) + '</td>';
+            table.tableRowItem(this.getGPXdownloadLink(route), format[i]);
         }
-        link += '</tr>';
-        return link;
+        table.tableRowEnd();
+
     };
     this.updateGPXid = function (sid) {
         var id = parseInt(sid);
-        this.ra_format("Map");
+        this.tabs.clickToTab('map');
         var header, path;
         var route = this.getRoutefromID(id);
         header = "<h2>" + route.title + "</h2>";
-        header += "<button style='float:right' class=\"link-button sunset small white\" onclick=\"javascript:ra.html.showhide(event, 'gpxDetails')\">Show/Hide Details</button><div id='gpxDetails'><span>";
+        header += "<button style='float:right' class=\"link-button sunset small white\" onclick=\"javascript:ra.html.showhide(event, 'gpxDetails')\">Show/Hide Details</button>";
+        header += "<div class='clear'></div>";
+        header += "<div id='gpxDetails'><span>";
+
+
         if (this.controls.displayAsPreviousWalks) {
             header += '<b>Date:</b> ' + route.date + '<br/>';
             header += '<b>Leader:</b> ' + route.author + '<br/>';
@@ -404,19 +370,17 @@ ra.display.gpxFolder = function (options, data) {
         }
         header += "</div>";
         path = this.controls.folder + "/" + route.filename;
-        this.elements.gpxheader.innerHTML = header;
+        this.elements.routeDiv.innerHTML = header;
         var data = {};
         data.gpxfile = path;
         data.linecolour = this.controls.linecolour;
         data.imperial = 0;
         this.displayGPX(data);
-        this.elements.gpxheader.scrollIntoView();
+        this.elements.routeDiv.scrollIntoView();
     };
     this.displayGPX = function (data) {
         var file = data.gpxfile;
         var linecolour = data.linecolour;
-        var imperial = data.imperial;
-        var detailsDivId = data.detailsDivId;
         var _this = this;
         // remove old gpx route and elevation
         this.el.clear();
@@ -527,42 +491,6 @@ ra.display.gpxFolder = function (options, data) {
             return true;
         }
         return false;
-    };
-    this.gpxsearch = function () {
-        var x = document.getElementById("searchform");
-        var text = "";
-        var i, y;
-        for (i = 0; i < x.length; i++) {
-            text += x.elements[i].value;
-            y = x.elements[i];
-        }
-        this.controls.searchtext = text.toLowerCase();
-        this.displayTabs();
-        this.cluster.removeClusterMarkers();
-        this.addGPXMarkers();
-        this.cluster.addClusterMarkers();
-        return false;
-    };
-    this.addFilters = function (tag) {
-        var out = '';
-        out += this.myjplist.addFilter('wTitle', 'Title', 'text');
-        var min, max;
-        var result = this.routes;
-        min = result.reduce(function (a, b) {
-            var km = Math.floor(b.distance / 1000);
-            return Math.min(a, km);
-        }, 99999);
-        max = result.reduce(function (a, b) {
-            var km = Math.ceil(b.distance / 1000);
-            return Math.max(a, km);
-        }, -99999);
-        out += this.myjplist.addFilter('wDistance', 'Distance Km', 'number', min, max);
-        tag.innerHTML = out;
-
-    };
-    this.addPagination = function (no, tag) {
-        this.myjplist.addPagination(no, tag, "pagination1", 20);
-        return;
     };
 
 };

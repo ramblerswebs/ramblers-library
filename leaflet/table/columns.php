@@ -17,7 +17,6 @@ class RLeafletTableColumns implements JsonSerializable {
 
     public function addColumn($column) {
         $this->columns[] = $column;
-        $column->setJpClass("var" . count($this->columns));
     }
 
     public function getColumn($no) {

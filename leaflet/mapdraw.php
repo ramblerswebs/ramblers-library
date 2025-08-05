@@ -7,13 +7,11 @@
  */
 class RLeafletMapdraw extends RLeafletMap {
 
-    private $zoom = 10;
-    private $lat = 52.89;
-    private $long = -1.48;
     public $displayDescription = true;
 
     public function __construct() {
         parent::__construct();
+        $this->options->setinitialviewView(52.89, -1.48, 10);
     }
 
     public function setCenter($lat, $long, $zoom) {
@@ -22,16 +20,6 @@ class RLeafletMapdraw extends RLeafletMap {
 
     public function display() {
         parent::setCommand('ra.display.plotRoute');
-        if ($this->displayDescription) {
-            echo "<div id='ra-description' class='clearfix'>";
-            if (RLicense::isOpenRoutingServiceKeySet()) {
-                echo $intro = file_get_contents(JURI::base() . "media/lib_ramblers/leaflet/drawintrosmart.html");
-            } else {
-                echo $intro = file_get_contents(JURI::base() . "media/lib_ramblers/leaflet/drawintro.html");
-            }
-            echo "</div>";
-        }
-
         $this->help_page = "plot-walking-route.html";
         $this->options->fullscreen = true;
 
@@ -43,9 +31,6 @@ class RLeafletMapdraw extends RLeafletMap {
         $this->options->mylocation = true;
         $this->options->settings = true;
         $this->options->print = true;
-        $this->options->latitude = $this->lat;
-        $this->options->longitude = $this->long;
-        $this->options->zoom = $this->zoom;
 
         parent::display();
 
@@ -57,6 +42,8 @@ class RLeafletMapdraw extends RLeafletMap {
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.ReverseRoute.js", "text/javascript");
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.SmartRoute.js", "text/javascript");
         RLoad::addScript("media/lib_ramblers/leaflet/L.Control.GpxSimplify.js", "text/javascript");
+        RLoad::addStyleSheet('media/lib_ramblers/css/ra.tabs.css');
+        RLoad::addScript("media/lib_ramblers/js/ra.tabs.js");
 
         $document = JFactory::getDocument();
         $path = "media/lib_ramblers/vendors/Leaflet.draw-1.0.4/dist/";
@@ -65,5 +52,4 @@ class RLeafletMapdraw extends RLeafletMap {
         RLoad::addScript("media/lib_ramblers/vendors/simplify-js-1.2.3/simplify.js", "text/javascript");
         RLoad::addScript("media/lib_ramblers/vendors/FileSaver-js-1.3.8/src/FileSaver.js", "text/javascript");
     }
-
 }

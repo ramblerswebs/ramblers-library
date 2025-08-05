@@ -259,7 +259,7 @@ class RJsonwalksSourcewalksmanager extends RJsonwalksSourcebase {
                 $walk->addWalk($singleWalk);
 
                 // Add contact details
-
+//   $item->event_organiser=[];
                 if (property_exists($item, "event_organiser")) {
                     $contactName = $item->event_organiser->name;                                    // walk_leaders
                     $contactForm = $item->event_organiser->email_form;

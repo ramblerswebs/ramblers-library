@@ -37,9 +37,11 @@ ra.display.mapCompare = function (options, data) {
 
     this.load = function () {
         var lmap = new ra.leafletmap(this.mapDiv1, options);
-        this._map1 = lmap.map;
+        lmap.display();
+        this._map1 = lmap.map();
         lmap = new ra.leafletmap(this.mapDiv2, options);
-        this._map2 = lmap.map;
+        lmap.display();
+        this._map2 = lmap.map();
 
         var self = this;
         self.noEvents = 0;
