@@ -65,7 +65,7 @@ L.Control.Mouse = L.Control.extend({
         this._containerLL = L.DomUtil.create('div', 'latlng', this._container);
         L.DomEvent.disableClickPropagation(this._container);
         this._container.style.display = 'none';
-        this._containerIcon.title = 'Change display of OS grid';
+        this._containerIcon.title = 'Change display of UK OS grid';
         map.on('mousemove', this._updateMouseMove, this);
         map.on('zoomend', this._updateZoom, this);
         map.on('moveend', this._moveEnd, this);
@@ -207,9 +207,12 @@ L.Control.Mouse = L.Control.extend({
                 break;
 
         }
+
         if (this._mapState.gridRef0 === "") {
-            out = "Outside OS Grid";
+            out = "Outside UK OS Grid";
+            this._containerIcon.style.display = 'none';
         } else {
+            this._containerIcon.style.display = 'inherit';
             switch (this._mapState.majorGridLevel) {
                 case 0:
                     gr = this._mapState.gridRef0;
@@ -271,9 +274,11 @@ L.Control.Mouse = L.Control.extend({
         if (this._userOptions.OSgridOption !== 'mouse') {
             return;
         }
+
         if (this._mapState.gridRef4 === "") {
             return;
         }
+
         var grid = this._mapState.grid;
         var minor = this._mapState.minorGridLevel > this._mapState.majorGridLevel;
         var gs = this._gsValues[this._mapState.majorGridLevel];
@@ -427,9 +432,9 @@ L.Control.Mouse = L.Control.extend({
         //    comment.innerHTML = '<label><input type="radio" name="color" value="red">Red <img src="icon.png" alt="Icon description" width="32" height="32"></label><label><input type="radio" name="color" value="blue">Blue</label><label><input type="radio" name="color" value="green">Green</label>';     
         tag.appendChild(comment);
 
-        var options = [{name: 'Off - do not display OS grid', value: 'none', 'data-image': '/media/lib_ramblers/leaflet/images/gridnone.png'},
+        var options = [{name: 'Off - do not display UK OS grid', value: 'none', 'data-image': '/media/lib_ramblers/leaflet/images/gridnone.png'},
             {name: 'Display Grid square of mouse position', value: 'mouse', 'data-image': '/media/lib_ramblers/leaflet/images/gridmouse.png'},
-            {name: 'Display full OS grid', value: 'full', 'data-image': '/media/lib_ramblers/leaflet/images/gridfull.png'}];
+            {name: 'Display full UK OS grid', value: 'full', 'data-image': '/media/lib_ramblers/leaflet/images/gridfull.png'}];
         this._controls.OSgridOption = ra.html.input.combo(tag, 'ms-dropdown', "How to display Ordnance Survey Grid", this._userOptions, 'OSgridOption', options);
         this._controls.icon = document.createElement('span');
         this._controls.icon.classList.add('ra', 'setting', 'grid');
@@ -860,7 +865,7 @@ L.Control.Rightclick = L.Control.extend({
             links += '<a href="javascript:ra.link.photos(\'' + gr10 + '\')">[Photos]</a>';
             links += '<a href="javascript:ra.link.streetmap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[OS Map]</a>';
         } else {
-            desc += "<br/>Outside OS Grid";
+            desc += "<br/>Outside UK OS Grid";
         }
         links += '<a href="javascript:ra.link.googlemap(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Google Map]</a>';
         links += '<a href="javascript:ra.loc.directions(' + e.latlng.lat.toFixed(7) + ',' + e.latlng.lng.toFixed(7) + ')">[Directions]</a>';
@@ -934,7 +939,7 @@ L.Control.Rightclick = L.Control.extend({
                 }, 3000, point);
             });
         } else {
-            desc += "<br/>Outside OS Grid";
+            desc += "<br/>Outside UK OS Grid";
             point.getPopup().setContent(desc);
             point.openPopup();
         }
@@ -976,7 +981,7 @@ L.Control.Rightclick = L.Control.extend({
                 }
             });
         } else {
-            marker.setContent("<br/>Outside OS Grid");
+            marker.setContent("<br/>Outside UK OS Grid");
         }
 
     },
