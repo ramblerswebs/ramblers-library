@@ -91,9 +91,6 @@ class cvList {
             keys = this._pagination.setPagination(keys);
         }
         this._displayPagination();
-        if (this._pagination !== null) {
-            this._pagination._addEventListeners(this._displayTag);
-        }
         for (var key in keys) {
             var itemKey = keys[key];
             var item = this._items[itemKey];
@@ -657,8 +654,12 @@ class cvListPagination {
         });
     }
 
-    addPaginationDisplay(tag, format) {
-        var item = new cvListPaginationDisplayItem(this.displayTag, tag, format, this.paginationOptions);
+    addPaginationDisplayText(tag, format) {
+        var item = new cvListPaginationDisplayTextItem(tag, format);
+        this._displayItems.push(item);
+    }
+    addPaginationDisplayButton(tag, type) {
+        var item = new cvListPaginationDisplayButtonItem(this.displayTag, tag, type, this.paginationOptions);
         this._displayItems.push(item);
     }
     setPagination(keys) {
@@ -702,12 +703,6 @@ class cvListPagination {
             totalItems: this.totalItems};
         this.displayTag.dispatchEvent(ev);
     }
-
-    _addEventListeners() {
-        for (let item of this._displayItems) {
-            item._addEventListeners();
-        }
-    }
     _displayPagination() {
         var data = {
             currentPage: this.currentPage,
@@ -722,31 +717,45 @@ class cvListPagination {
         });
     }
 }
-class cvListPaginationDisplayItem {
-    constructor(displayTag, tag, format, paginationOptions) {
-        this.displayTag = displayTag;
+class cvListPaginationDisplayTextItem {
+    constructor(tag, format) {
         this.tag = tag;
         this.format = format;
-        this.paginationOptions = paginationOptions;
-        this.itemsPerPageSelects = [];
-        this.pageNumberButtons = [];
     }
     _displayInfo(data) {
         // replace the following strings with approriate values
         //  {pageNumber}, {numberPages}, {startItem}, {endItem}, {itemsNumber}
-        //  {paginationButtons}, {itemsPerPage}
+        var content = this.format;
+        content = content.replaceAll("{pageNumber}", data.currentPage);
+        content = content.replaceAll("{numberPages}", data.numberPages);
+        content = content.replaceAll("{startItem}", data.firstItem);
+        content = content.replaceAll("{endItem}", data.lastItem);
+        content = content.replaceAll("{itemsNumber}", data.totalItems);
+        this.tag.innerHTML = content;
+    }
+}
+
+class cvListPaginationDisplayButtonItem {
+    constructor(displayTag, tag, type, paginationOptions) {
+        this.displayTag = displayTag;
+        this.tag = tag;
+        this.type = type; //  paginationButtons or itemsPerPage
+        this.paginationOptions = paginationOptions;
+    }
+    _displayInfo(data) {
 
         var tag = this.tag;
         tag.innerHTML = '';
-        var content = this.format;
-        var parts = content.split('{paginationButtons}');
-        for (let i in parts) {
-            this._addSelect(tag, parts[i], data);
-            // add PAG
-            var disp = parts.length - i;
-            if (disp > 1) {
+        switch (this.type) {
+            case 'paginationButtons':
                 this._createPaginationButtons(tag, data);
-            }
+                break;
+            case 'itemsPerPage':
+                this._createItemsPerPageSelect(tag, data);
+                break;
+            default:
+                tag.innerHTML = 'Invalid pagination button specified: ' + this.type;
+                break;
         }
     }
     _createPaginationButtons(tag, data) {
@@ -779,10 +788,10 @@ class cvListPaginationDisplayItem {
         }
     }
     _addPageButton(tag, page, text, enabled, active) {
+        var self = this;
         var button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.setAttribute('data-page', page);
-        this.pageNumberButtons.push(button);
         button.innerHTML = text;
         button.classList.add('cvList');
         button.classList.add('pagination');
@@ -793,27 +802,21 @@ class cvListPaginationDisplayItem {
             button.classList.add('active');
         }
         tag.appendChild(button);
+        button.addEventListener("click", function (e) {
+            let ev = new Event("cvList-resetPage");
+            ev.cvList = {pageNumber: parseInt(e.currentTarget.getAttribute("data-page"))};
+            self.displayTag.dispatchEvent(ev);
+            let event = new Event("cvList-redisplay");
+            self.displayTag.dispatchEvent(event);
+        });
     }
-    _addSelect(tag, text, data) {
-        var parts = text.split('{itemsPerPage}');
-        for (let i in parts) {
-            var _part = this._addPageItemInfo(parts[i], data);
-            var span = document.createElement('span');
-            span.innerHTML = _part;
-            tag.appendChild(span);
-            // add ISelect
-            var disp = parts.length - i;
-            if (disp > 1) {
-                this._createItemsPerPage(tag, data);
-            }
-        }
-    }
-    _createItemsPerPage(tag, data) {
+
+    _createItemsPerPageSelect(tag, data) {
+        var self = this;
         var select = document.createElement('select');
         select.setAttribute('class', 'cvList itemsPerPage nonmobile');
         select.setAttribute('name', 'itemsSelect');
         tag.appendChild(select);
-        this.itemsPerPageSelects.push(select); // save select so we can catch events
         for (var key in this.paginationOptions) {
             var option = document.createElement('option');
             option.textContent = key;
@@ -823,35 +826,13 @@ class cvListPaginationDisplayItem {
             }
             select.appendChild(option);
         }
-    }
-    _addPageItemInfo(content, data) {
-        content = content.replaceAll("{pageNumber}", data.currentPage);
-        content = content.replaceAll("{numberPages}", data.numberPages);
-        content = content.replaceAll("{startItem}", data.firstItem);
-        content = content.replaceAll("{endItem}", data.lastItem);
-        content = content.replaceAll("{itemsNumber}", data.totalItems);
-        return content;
-    }
-    _addEventListeners() {
-        var self = this;
-        for (var tag of this.itemsPerPageSelects) {
-            tag.addEventListener("change", function (e) {
-                let ev = new Event("cvList-resetItems");
-                ev.cvList = {itemsPerPage: parseInt(e.currentTarget.value)};
-                self.displayTag.dispatchEvent(ev);
-                let event = new Event("cvList-reCalcKeys");
-                self.displayTag.dispatchEvent(event);
-            });
-        }
-        for (var tag of this.pageNumberButtons) {
-            tag.addEventListener("click", function (e) {
-                let ev = new Event("cvList-resetPage");
-                ev.cvList = {pageNumber: parseInt(e.currentTarget.getAttribute("data-page"))};
-                self.displayTag.dispatchEvent(ev);
-                let event = new Event("cvList-redisplay");
-                self.displayTag.dispatchEvent(event);
-            });
-        }
+        select.addEventListener("change", function (e) {
+            let ev = new Event("cvList-resetItems");
+            ev.cvList = {itemsPerPage: parseInt(e.currentTarget.value)};
+            self.displayTag.dispatchEvent(ev);
+            let event = new Event("cvList-reCalcKeys");
+            self.displayTag.dispatchEvent(event);
+        });
     }
 }
 

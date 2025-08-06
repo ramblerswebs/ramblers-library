@@ -61,12 +61,12 @@ ra.paginatedTable = function (tag, userOptions = null) {
     this.list = new cvList(this.elements.tbody);
 
     var pag = this.list.createPagination(this.cvListOptions);
-    pag.addPaginationDisplay(this.elements.items1, 'Item {startItem} to {endItem} of {itemsNumber}');
-    pag.addPaginationDisplay(this.elements.pagination1, '{paginationButtons}');
-    pag.addPaginationDisplay(this.elements.itemsSelect1, '{itemsPerPage}');
-    pag.addPaginationDisplay(this.elements.items2, 'Item {startItem} to {endItem} of {itemsNumber}');
-    pag.addPaginationDisplay(this.elements.pagination2, '{paginationButtons}');
-    pag.addPaginationDisplay(this.elements.itemsSelect2, '{itemsPerPage}');
+    pag.addPaginationDisplayText(this.elements.items1, 'Item {startItem} to {endItem} of {itemsNumber}');
+    pag.addPaginationDisplayButton(this.elements.pagination1, 'paginationButtons');
+    pag.addPaginationDisplayButton(this.elements.itemsSelect1, 'itemsPerPage');
+    pag.addPaginationDisplayText(this.elements.items2, 'Item {startItem} to {endItem} of {itemsNumber}');
+    pag.addPaginationDisplayButton(this.elements.pagination2, 'paginationButtons');
+    pag.addPaginationDisplayButton(this.elements.itemsSelect2, 'itemsPerPage');
     var self = this;
     this.elements.tbody.addEventListener("cvList-after-display", function (e) {
         self._hideBlankColumns(self.elements.table);
@@ -285,12 +285,12 @@ ra.paginatedList = function (tag, userOptions = null) {
 
     this.list = new cvList(this.elements.content);
     var pag = this.list.createPagination(this.cvListOptions);
-    pag.addPaginationDisplay(this.elements.items1, 'Items {startItem} to {endItem} of {itemsNumber}');
-    pag.addPaginationDisplay(this.elements.pagination1, '{paginationButtons}');
-    pag.addPaginationDisplay(this.elements.itemsSelect1, '{itemsPerPage}');
-    pag.addPaginationDisplay(this.elements.items2, 'Items {startItem} to {endItem} of {itemsNumber}');
-    pag.addPaginationDisplay(this.elements.pagination2, '{paginationButtons}');
-    pag.addPaginationDisplay(this.elements.itemsSelect2, '{itemsPerPage}');
+    pag.addPaginationDisplayText(this.elements.items1, 'Items {startItem} to {endItem} of {itemsNumber}');
+    pag.addPaginationDisplayButton(this.elements.pagination1, 'paginationButtons');
+    pag.addPaginationDisplayButton(this.elements.itemsSelect1, 'itemsPerPage');
+    pag.addPaginationDisplayText(this.elements.items2, 'Items {startItem} to {endItem} of {itemsNumber}');
+    pag.addPaginationDisplayButton(this.elements.pagination2, 'paginationButtons');
+    pag.addPaginationDisplayButton(this.elements.itemsSelect2, 'itemsPerPage');
     this.elements.content.addEventListener('cvList-reportPagination', function (e) {
         let ev = new Event("reportPagination");
         ev.cvList = e.cvList;
