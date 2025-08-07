@@ -1,21 +1,17 @@
-var document, ra, FullCalendar;
-if (typeof (ra) === "undefined") {
-    cvList = {};
-}
-cvList = function (displayTag) {
-
-    this._displayTag = displayTag;
-    this._items = [];
-    this.keys = [];
-    this._fields = new cvListFields(this._displayTag);
-    this._pagination = null;
-
-    this.addItem = function (element, nonPaginatedItem = null) {
+class cvList {
+    constructor(displayTag) {
+        this._displayTag = displayTag;
+        this._items = [];
+        this.keys = [];
+        this._fields = new cvListFields(this._displayTag);
+        this._pagination = null;
+    }
+    addItem(element, nonPaginatedItem = null) {
         var item = {element: element,
             nonPaginatedItem: nonPaginatedItem};
         this._items.push(item);
-    };
-    this.appendPrintItems = function (tag) {
+    }
+    appendPrintItems(tag) {
         var oddRow = true;
         var keys = this.keys;
         for (var key in keys) {
@@ -40,11 +36,11 @@ cvList = function (displayTag) {
             none.innerHTML = "<b>No information found</b>";
             tag.appendChild(none);
         }
-    };
-    this.getNumberItems = function () {
+    }
+    getNumberItems() {
         return this._items.length;
-    };
-    this.display = function () {
+    }
+    display() {
         var self = this;
         this._fields._display();
         this._calcKeys();
@@ -59,11 +55,11 @@ cvList = function (displayTag) {
             //  console.log('Done');
             self._display(self);
         });
-    };
-    this.createField = function (title, type) {
+    }
+    createField(title, type) {
         return this._fields._addField(title, type);
-    };
-    this.createPagination = function (userOptions) {
+    }
+    createPagination(userOptions) {
         var options = {pagination: {
                 "10 per page": 10,
                 "20 per page": 20,
@@ -75,15 +71,15 @@ cvList = function (displayTag) {
         const merged = {...options, ...userOptions};
         this._pagination = new cvListPagination(this._displayTag, merged);
         return this._pagination;
-    };
+    }
 
 // internal functions
 
-    this._calcKeys = function () {
+    _calcKeys() {
         var keys = Object.keys(this._items);
         this.keys = this._fields._setKeys(keys, this._items);
-    };
-    this._display = function () {
+    }
+    _display() {
         var oddRow = true;
         this._displayTag.innerHTML = '';
         var keys = this.keys;
@@ -115,39 +111,39 @@ cvList = function (displayTag) {
         let event = new Event("cvList-after-display");
         this._displayTag.dispatchEvent(event);
 
-    };
-    this._displayPagination = function () {
+    }
+    _displayPagination() {
         this._pagination._displayPagination();
-    };
-};
+    }
+}
 cvList.uniquenumber = 0;
 cvList.uniqueID = function () {
     cvList.uniquenumber += 1;
     return 'cvlistuid' + cvList.uniquenumber; // lowercase 
 };
 
-this.cvListFields = function (displayTag) {
-
-    this._displayTag = displayTag;
-    this._fields = [];
-    this.no = 0;
-    this.activeSort = null; // field that is active for sorting
-    this.sortOrder = 1; // direction 1: asc -1: desc
-    var self = this;
-    this._displayTag.addEventListener("cvList-setActiveSort", function (e) {
-        self.activeSort = e.cvList.activeSort;
-        self.sortOrder = e.cvList.sortOrder;
-        let event = new Event("cvList-reCalcKeys");
-        self._displayTag.dispatchEvent(event);
-    });
-
-    this._display = function () {
+class cvListFields {
+    constructor(displayTag) {
+        this._displayTag = displayTag;
+        this._fields = [];
+        this.no = 0;
+        this.activeSort = null; // field that is active for sorting
+        this.sortOrder = 1; // direction 1: asc -1: desc
+        var self = this;
+        this._displayTag.addEventListener("cvList-setActiveSort", function (e) {
+            self.activeSort = e.cvList.activeSort;
+            self.sortOrder = e.cvList.sortOrder;
+            let event = new Event("cvList-reCalcKeys");
+            self._displayTag.dispatchEvent(event);
+        });
+    }
+    _display() {
         // display filters after the min / max has been calculated
         this._fields.forEach((field) => {
             field._display();
         });
-    };
-    this._addField = function (title, type) {
+    }
+    _addField(title, type) {
         var no = this._fields.length + 1;
         var field = null;
         switch (type.toLowerCase()) {
@@ -167,13 +163,13 @@ this.cvListFields = function (displayTag) {
         }
         this._fields.push(field);
         return field;
-    };
-    this._setKeys = function (keys, items) {
+    }
+    _setKeys(keys, items) {
         keys = this._setKeysFilters(keys, items);
         this._setKeysSort(keys, items);
         return keys;
-    };
-    this._setKeysFilters = function (keys, items) {
+    }
+    _setKeysFilters(keys, items) {
         // get list of keys that are set
         var activeFields = [];
         for (var field of this._fields) {
@@ -201,22 +197,23 @@ this.cvListFields = function (displayTag) {
             }
         }
         return keys;
-    };
-    this._setKeysSort = function (keys, items) {
+    }
+    _setKeysSort(keys, items) {
         if (this.activeSort === null) {
             return keys;
         }
         // retrieve data for that active filter/sort
         this.activeSort._sortKeys(keys, items, this.sortOrder);
-    };
-};
-cvListField = function (displayTag, title, no) {
-    this._displayTag = displayTag;
-    this.title = title;
-    this.no = no;
-    this.type = 'Invalid';
-
-    this.addSort = function (tag, direction) {
+    }
+}
+class cvListField {
+    constructor(displayTag, title, no) {
+        this._displayTag = displayTag;
+        this.title = title;
+        this.no = no;
+        this.type = 'Invalid';
+    }
+    addSort(tag, direction) {
         var sort = {order: 1,
             tag: tag
         };
@@ -241,47 +238,47 @@ cvListField = function (displayTag, title, no) {
             event.cvList = {activeSort: self, sortOrder: sort.order};
             self._displayTag.dispatchEvent(event);
         });
-    };
-    this.addSortArrows = function (tag) {
+    }
+    addSortArrows(tag) {
         var div = this._addElement(tag, 'div', 'cvList sortArrows');
         var up = this._addElement(div, 'img', 'asc');
         this.addSort(up, 'asc');
         var down = this._addElement(div, 'img', 'desc');
         this.addSort(down, 'desc');
-    };
-    this.getType = function () {
+    }
+    getType() {
         return this.type;
-    };
+    }
 
-    this._getItemValue = function (attrib, item) {
+    _getItemValue(attrib, item) {
         var search = '[' + attrib + '="' + this.no + '"]';
         const matches = item.element.querySelectorAll(search);
         if (matches.length > 0) {
             return matches[0].innerText;
         }
         return null;
-    };
-    this._addElement = function (target, tagType, classes) {
+    }
+    _addElement(target, tagType, classes) {
         var tag = document.createElement(tagType);
         if (classes !== '') {
             tag.setAttribute('class', classes);
         }
         target.appendChild(tag);
         return tag;
-    };
-};
-cvListFieldText = function (displayTag, title, no) {
-    //   super(displayTag, title, no);
-    cvListField.call(this, displayTag, title, no);  // Call constructor 
-    this.filterValue = {text: '',
-        caseSensitive: false};
-    this.type = 'text';
-
-    this.setValue = function (tag, value) {
+    }
+}
+class cvListFieldText extends cvListField {
+    constructor(displayTag, title, no) {
+        super(displayTag, title, no);
+        this.filterValue = {text: '',
+            caseSensitive: false};
+        this.type = 'text';
+    }
+    setValue(tag, value) {
         tag.setAttribute('data-cvListTextField', this.no);
         tag.innerHTML = value;
-    };
-    this.setFilter = function (tag) {
+    }
+    setFilter(tag) {
         var self = this;
         const idleTime = 200; // milliseconds 
         var mouseStopTimer;
@@ -315,17 +312,15 @@ cvListFieldText = function (displayTag, title, no) {
 
             input.dispatchEvent(event);
         });
-    };
-    this._display = function () {
-    };
-    this._isSet = function () {
+    }
+    _display() {
+    }
+    _isSet() {
         return this.filterValue.text !== '';
-    };
-    this._shouldDisplayItem = function (item) {
+    }
+    _shouldDisplayItem(item) {
         var result;
-        var value = 0;
-        //parent
-        this._getItemValue('data-cvListTextField', item);
+        var value = super._getItemValue('data-cvListTextField', item);
         if (value === null) {
             return false;
         }
@@ -338,13 +333,12 @@ cvListFieldText = function (displayTag, title, no) {
             result = value.toLowerCase().includes(this.filterValue.text.toLowerCase());
         }
         return result;
-    };
-    this._sortKeys = function (keys, items, order) {
+    }
+    _sortKeys(keys, items, order) {
         var values = [];
         for (var key of keys) {
             var item = items[key];
-            // parent
-            var text = this._getItemValue('data-cvListTextField', item);
+            var text = super._getItemValue('data-cvListTextField', item);
             if (text === null) {
                 values.push({key: key, value: text});
             } else {
@@ -368,21 +362,18 @@ cvListFieldText = function (displayTag, title, no) {
             keys[i] = val.key;
             i += 1;
         }
-    };
-};
-cvListFieldText.prototype = Object.create(cvListField.prototype);
-cvListFieldText.prototype.constructor = cvListFieldText;
-
-cvListFieldNumber = function (displayTag, title, no) {
-    //   super(displayTag, title, no);
-    cvListField.call(this, displayTag, title, no);  // Call constructor 
-    this.filterValue = null;
-    this.type = 'number';
-    this.minValue = null;
-    this.maxValue = null;
-    this.filterTag = null;
-
-    this.setValue = function (tag, value) {
+    }
+}
+class cvListFieldNumber extends cvListField {
+    constructor(displayTag, title, no) {
+        super(displayTag, title, no);
+        this.filterValue = null;
+        this.type = 'number';
+        this.minValue = null;
+        this.maxValue = null;
+        this.filterTag = null;
+    }
+    setValue(tag, value) {
         var no;
         tag.setAttribute('data-cvListNumberField', this.no);
         tag.innerHTML = value;
@@ -404,11 +395,11 @@ cvListFieldNumber = function (displayTag, title, no) {
             }
 
         }
-    };
-    this.setFilter = function (tag) {
+    }
+    setFilter(tag) {
         this.filterTag = tag;
-    };
-    this._display = function () {
+    }
+    _display() {
         var self = this;
         if (this.filterTag === null) {
             return;
@@ -462,8 +453,8 @@ cvListFieldNumber = function (displayTag, title, no) {
             }
             return value;
         }
-    };
-    this._isSet = function () {
+    }
+    _isSet() {
         if (this.filterValue === null) {
             return false;
         }
@@ -474,11 +465,9 @@ cvListFieldNumber = function (displayTag, title, no) {
             return true;
         }
         return false;
-    };
-    this._shouldDisplayItem = function (item) {
-        var value = 0;
-        // parent
-        this._getItemValue('data-cvListNumberField', item);
+    }
+    _shouldDisplayItem(item) {
+        var value = super._getItemValue('data-cvListNumberField', item);
         if (value === null) {
             return false;
         }
@@ -493,13 +482,12 @@ cvListFieldNumber = function (displayTag, title, no) {
             return false;
         }
         return true;
-    };
-    this._sortKeys = function (keys, items, order) {
+    }
+    _sortKeys(keys, items, order) {
         var values = [];
         for (var key of keys) {
             var item = items[key];
-            // parent
-            var no = this._getItemValue('data-cvListNumberField', item);
+            var no = super._getItemValue('data-cvListNumberField', item);
             no = parseFloat(no.replaceAll(",", ""));
             if (no === null) {
                 values.push({key: key, value: no});
@@ -524,25 +512,22 @@ cvListFieldNumber = function (displayTag, title, no) {
             keys[i] = val.key;
             i += 1;
         }
-    };
-};
-cvListFieldNumber.prototype = Object.create(cvListField.prototype);
-cvListFieldNumber.prototype.constructor = cvListFieldNumber;
-
-cvListFieldDate = function (displayTag, title, no) {
-    //    super(displayTag, title, no);
-    cvListField.call(this, displayTag, title, no);  // Call constructor 
-    this.filterValue = null;
-    this.type = 'date';
-    this.filterTag = null;
-
-    this.setValue = function (tag) {
+    }
+}
+class cvListFieldDate extends cvListField {
+    constructor(displayTag, title, no) {
+        super(displayTag, title, no);
+        this.filterValue = null;
+        this.type = 'date';
+        this.filterTag = null;
+    }
+    setValue(tag) {
         tag.setAttribute('data-cvListDateField', this.no);
-    };
-    this.setFilter = function (tag) {
+    }
+    setFilter(tag) {
         this.filterTag = tag;
-    };
-    this._display = function () {
+    }
+    _display() {
         if (this.filterTag === null) {
             return;
         }
@@ -559,27 +544,24 @@ cvListFieldDate = function (displayTag, title, no) {
             let event = new Event("cvList-reCalcKeys");
             self._displayTag.dispatchEvent(event);
         });
-    };
-    this._isSet = function () {
+    }
+    _isSet() {
         return this.filterValue !== null;
-    };
-    this._shouldDisplayItem = function (item) {
-        var value = 0;
-        // parent
-        this._getItemValue('data-cvListDateField', item);
+    }
+    _shouldDisplayItem(item) {
+        var value = super._getItemValue('data-cvListDateField', item);
         if (value === null) {
             return false;
         }
         var result = value.includes(this.filterValue);
         return result;
-    };
-    this._sortKeys = function (keys, items, order) {
+    }
+    _sortKeys(keys, items, order) {
         var values = [];
         for (var key of keys) {
             var item = items[key];
             var d;
-            // parent
-            var txt = this._getItemValue('data-cvListDateField', item);
+            var txt = super._getItemValue('data-cvListDateField', item);
             txt = txt.replace("st", "");
             txt = txt.replace("rd", "");
             txt = txt.replace("nd", "");
@@ -613,8 +595,8 @@ cvListFieldDate = function (displayTag, title, no) {
             keys[i] = val.key;
             i += 1;
         }
-    };
-    this.parseDateFromFormat = function (dateString, format) {
+    }
+    parseDateFromFormat(dateString, format) {
         const formatParts = format.split(/[-\/]/); // supports '-' or '/' as separators
         const dateParts = dateString.split(/[-\/]/);
 
@@ -630,53 +612,53 @@ cvListFieldDate = function (displayTag, title, no) {
         });
 
         return new Date(year, month, day);
-    };
-    this.isValidDate = function (date) {
+    }
+    isValidDate(date) {
         return date instanceof Date && !isNaN(date.getTime());
-    };
-};
-cvListFieldDate.prototype = Object.create(cvListField.prototype);
-cvListFieldDate.prototype.constructor = cvListFieldDate;
-
-cvListPagination = function (displayTag, userOptions) {
-    var defaultOptions = {pagination: {
-            "20 per page": 20,
-            "View all": 0
-        },
-        itemsPerPage: 10,
-        currentPage: 1
-    };
-    const options = {...defaultOptions, ...userOptions};
-    this.displayTag = displayTag;
-    this.paginationOptions = options.pagination;
-    this.itemsPerPage = options.itemsPerPage;
-    this.currentPage = options.currentPage;
-    this.numberPages = 0;
-    this.firstItem = 0;
-    this.lastItem = 0;
-    this.totalItems = 0;
-    this._displayItems = [];
-    var self = this;
-    this.displayTag.addEventListener("cvList-resetItems", function (e) {
-        self.itemsPerPage = e.cvList.itemsPerPage;
-        self.currentPage = 1;
-        self._reportPagination();
-    });
-    this.displayTag.addEventListener("cvList-resetPage", function (e) {
-        self.currentPage = e.cvList.pageNumber;
-        self._reportPagination();
-    });
+    }
+}
 
 
-    this.addPaginationDisplayText = function (tag, format) {
+class cvListPagination {
+    constructor(displayTag, userOptions) {
+        var defaultOptions = {pagination: {
+                "20 per page": 20,
+                "View all": 0
+            },
+            itemsPerPage: 10,
+            currentPage: 1
+        };
+        const options = {...defaultOptions, ...userOptions};
+        this.displayTag = displayTag;
+        this.paginationOptions = options.pagination;
+        this.itemsPerPage = options.itemsPerPage;
+        this.currentPage = options.currentPage;
+        this.numberPages = 0;
+        this.firstItem = 0;
+        this.lastItem = 0;
+        this.totalItems = 0;
+        this._displayItems = [];
+        var self = this;
+        this.displayTag.addEventListener("cvList-resetItems", function (e) {
+            self.itemsPerPage = e.cvList.itemsPerPage;
+            self.currentPage = 1;
+            self._reportPagination();
+        });
+        this.displayTag.addEventListener("cvList-resetPage", function (e) {
+            self.currentPage = e.cvList.pageNumber;
+            self._reportPagination();
+        });
+    }
+
+    addPaginationDisplayText(tag, format) {
         var item = new cvListPaginationDisplayTextItem(tag, format);
         this._displayItems.push(item);
-    };
-    this.addPaginationDisplayButton = function (tag, type) {
+    }
+    addPaginationDisplayButton(tag, type) {
         var item = new cvListPaginationDisplayButtonItem(this.displayTag, tag, type, this.paginationOptions);
         this._displayItems.push(item);
-    };
-    this.setPagination = function (keys) {
+    }
+    setPagination(keys) {
         this.totalItems = keys.length;
         if (this.totalItems === 0) {
             this.firstItem = 0;
@@ -705,10 +687,10 @@ cvListPagination = function (displayTag, userOptions) {
             this.lastItem = this.totalItems;
         }
         return keys.slice(this.firstItem - 1, this.lastItem);
-    };
+    }
 
 // internal functions
-    this._reportPagination = function () {
+    _reportPagination() {
         let ev = new Event("cvList-reportPagination");
         ev.cvList = {
             itemsPerPage: this.itemsPerPage,
@@ -716,8 +698,8 @@ cvListPagination = function (displayTag, userOptions) {
             numberPages: this.numberPages,
             totalItems: this.totalItems};
         this.displayTag.dispatchEvent(ev);
-    };
-    this._displayPagination = function () {
+    }
+    _displayPagination() {
         var data = {
             currentPage: this.currentPage,
             numberPages: this.numberPages,
@@ -729,13 +711,14 @@ cvListPagination = function (displayTag, userOptions) {
         this._displayItems.forEach((item) => {
             item._displayInfo(data);
         });
-    };
-};
-cvListPaginationDisplayTextItem = function (tag, format) {
-    this.tag = tag;
-    this.format = format;
-
-    this._displayInfo = function (data) {
+    }
+}
+class cvListPaginationDisplayTextItem {
+    constructor(tag, format) {
+        this.tag = tag;
+        this.format = format;
+    }
+    _displayInfo(data) {
         // replace the following strings with approriate values
         //  {pageNumber}, {numberPages}, {startItem}, {endItem}, {itemsNumber}
         var content = this.format;
@@ -745,16 +728,17 @@ cvListPaginationDisplayTextItem = function (tag, format) {
         content = content.replaceAll("{endItem}", data.lastItem);
         content = content.replaceAll("{itemsNumber}", data.totalItems);
         this.tag.innerHTML = content;
-    };
-};
+    }
+}
 
-cvListPaginationDisplayButtonItem = function (displayTag, tag, type, paginationOptions) {
-    this.displayTag = displayTag;
-    this.tag = tag;
-    this.type = type; //  paginationButtons or itemsPerPage
-    this.paginationOptions = paginationOptions;
-
-    this._displayInfo = function (data) {
+class cvListPaginationDisplayButtonItem {
+    constructor(displayTag, tag, type, paginationOptions) {
+        this.displayTag = displayTag;
+        this.tag = tag;
+        this.type = type; //  paginationButtons or itemsPerPage
+        this.paginationOptions = paginationOptions;
+    }
+    _displayInfo(data) {
 
         var tag = this.tag;
         tag.innerHTML = '';
@@ -769,8 +753,8 @@ cvListPaginationDisplayButtonItem = function (displayTag, tag, type, paginationO
                 tag.innerHTML = 'Invalid pagination button specified: ' + this.type;
                 break;
         }
-    };
-    this._createPaginationButtons = function (tag, data) {
+    }
+    _createPaginationButtons(tag, data) {
         var current = data.currentPage;
         var start, last, previous, next;
         start = current - 4;
@@ -798,8 +782,8 @@ cvListPaginationDisplayButtonItem = function (displayTag, tag, type, paginationO
             this._addPageButton(tag, next, '&gt;', data.numberPages !== current, false);
             this._addPageButton(tag, data.numberPages, '&gt;|', data.numberPages !== current, false);
         }
-    };
-    this._addPageButton = function (tag, page, text, enabled, active) {
+    }
+    _addPageButton(tag, page, text, enabled, active) {
         var self = this;
         var button = document.createElement('button');
         button.setAttribute('type', 'button');
@@ -821,9 +805,9 @@ cvListPaginationDisplayButtonItem = function (displayTag, tag, type, paginationO
             let event = new Event("cvList-redisplay");
             self.displayTag.dispatchEvent(event);
         });
-    };
+    }
 
-    this._createItemsPerPageSelect = function (tag, data) {
+    _createItemsPerPageSelect(tag, data) {
         var self = this;
         var select = document.createElement('select');
         select.setAttribute('class', 'cvList itemsPerPage nonmobile');
@@ -845,8 +829,8 @@ cvListPaginationDisplayButtonItem = function (displayTag, tag, type, paginationO
             let event = new Event("cvList-reCalcKeys");
             self.displayTag.dispatchEvent(event);
         });
-    };
-};
+    }
+}
 
 createRangeSlider = function (minValue, maxValue) {
     // input range's work on 0 to 1000 and result is then scalled to data values

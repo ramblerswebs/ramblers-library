@@ -110,3 +110,8 @@ div.ra.tabs > div.ra.tabContainer.middle.small{
     top: 10px;
     z-index: 1000;
 }
+div.ra.tabs > div.ra.tabContainer.below.small{
+    position: relative;
+    top: 22px;
+    z-index: 1000;
+}
