@@ -220,7 +220,7 @@ cvListField = function (displayTag, title, no) {
         var sort = {order: 1,
             tag: tag
         };
-        var which = 'Invalid';
+        var which;
         var self = this;
         switch (direction.toLowerCase()) {
             case 'asc':
@@ -241,6 +241,16 @@ cvListField = function (displayTag, title, no) {
             event.cvList = {activeSort: self, sortOrder: sort.order};
             self._displayTag.dispatchEvent(event);
         });
+    };
+    this.sort = function (order) {
+        switch (order) {
+            case 1:
+            case - 1:
+                var event = new Event("cvList-setActiveSort");
+                event.cvList = {activeSort: this, sortOrder: order};
+                this._displayTag.dispatchEvent(event);
+                break;
+        }
     };
     this.addSortArrows = function (tag) {
         var div = this._addElement(tag, 'div', 'cvList sortArrows');
@@ -325,7 +335,7 @@ cvListFieldText = function (displayTag, title, no) {
         var result;
         var value = 0;
         //parent
-        this._getItemValue('data-cvListTextField', item);
+        value = this._getItemValue('data-cvListTextField', item);
         if (value === null) {
             return false;
         }
@@ -478,7 +488,7 @@ cvListFieldNumber = function (displayTag, title, no) {
     this._shouldDisplayItem = function (item) {
         var value = 0;
         // parent
-        this._getItemValue('data-cvListNumberField', item);
+       value =  this._getItemValue('data-cvListNumberField', item);
         if (value === null) {
             return false;
         }
@@ -566,7 +576,7 @@ cvListFieldDate = function (displayTag, title, no) {
     this._shouldDisplayItem = function (item) {
         var value = 0;
         // parent
-        this._getItemValue('data-cvListDateField', item);
+       value =  this._getItemValue('data-cvListDateField', item);
         if (value === null) {
             return false;
         }

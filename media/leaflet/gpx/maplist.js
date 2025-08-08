@@ -187,7 +187,7 @@ ra.display.gpxFolder = function (options, data) {
         this.loadMap(mapDiv);
         var listDiv = this.tabs.getStaticContainer('list');
         this.loadTable(listDiv);
-    
+
         this.masterdiv.addEventListener("displayTabContents", function (e) {
             if (e.tabDisplay.tab === 'map') {
                 _this._map.invalidateSize();
@@ -222,9 +222,9 @@ ra.display.gpxFolder = function (options, data) {
         this.addGPXMarkers();
 
     };
-    this.loadList = function () {
-
-    };
+//    this.loadList = function () {
+//
+//    };
     this.setData = function (data) {
         this.routes = data.items;
         this.controls.folder = data.folder;
@@ -238,14 +238,14 @@ ra.display.gpxFolder = function (options, data) {
     };
     this.loadTable = function (tag) {
         var format = [{"title": "Date", "options": {"align": "right"}, "field": {"type": "text", "filter": false, "sort": true}},
-            {"title": "Leader", "options": {"align": "right"}, "field": {"type": "text", "filter": false, "sort": true}},
+            {"title": "Leader", "options": {"align": "right", view: 'notMobile'}, "field": {"type": "text", "filter": false, "sort": true}},
             {"title": "Title", "options": {"align": "right"}, "field": {"type": "text", "filter": true, "sort": true}},
             {"title": "Distance Km", "options": {"align": "right"}, "field": {"type": "number", "filter": true, "sort": true}},
-            {"title": "Miles", "options": {"align": "right"}, "field": {"type": "number", "filter": false, "sort": false}},
-            {"title": "min Altitude(m)", "options": {"align": "right"}, "field": {"type": "number", "filter": false, "sort": true}},
-            {"title": "max Altitude(m)", "options": {"align": "right"}, "field": {"type": "number", "filter": false, "sort": false}},
-            {"title": "Elevation Gain(m)", "options": {"align": "right"}, "field": {"type": "number", "filter": false, "sort": true}},
-            {"title": "GPX", "options": {"align": "right"}, "field": {"type": "text", "filter": false, "sort": false}}
+            {"title": "Miles", "options": {"align": "right", view: 'notTablet'}, "field": {"type": "number", "filter": false, "sort": false}},
+            {"title": "min Altitude(m)", "options": {"align": "right", view: 'notTablet'}, "field": {"type": "number", "filter": false, "sort": true}},
+            {"title": "max Altitude(m)", "options": {"align": "right", view: 'notTablet'}, "field": {"type": "number", "filter": false, "sort": false}},
+            {"title": "Elevation Gain(m)", "options": {"align": "right", view: 'notMobile'}, "field": {"type": "number", "filter": false, "sort": true}},
+            {"title": "GPX", "options": {"align": "right", view: 'notTablet'}, "field": {"type": "text", "filter": false, "sort": false}}
         ];
         if (!this.controls.displayAsPreviousWalks) {
             format.shift();
@@ -255,13 +255,12 @@ ra.display.gpxFolder = function (options, data) {
         table.tableHeading(format);
         this._addTableRows(table, format);
         table.tableEnd();
+        table.sort('Date', 'Desc');
         if (this.controls.download === 1) {
             var ele = document.createElement('p');
             tag.appendChild(ele);
             ele.textContent = "* To be able to download GPX Routes, you need to log on to our web site.";
         }
-
-
     };
     this._addTableRows = function (table, format) {
         for (var index = 0; index < this.routes.length; ++index) {
@@ -283,7 +282,7 @@ ra.display.gpxFolder = function (options, data) {
         }
         var td = table.tableRowItem(this.displayGPXName(route), format[i]);
         td.addEventListener("click", function (e) {
-            var tag=e.target;
+            var tag = e.target;
             var id = tag.getAttribute('data-route-id');
             _this.updateGPXid(id);
         });

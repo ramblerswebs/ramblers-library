@@ -106,3 +106,13 @@ div.paginatedList div.pagination.bottom{
         margin-right: auto;
     }
 }
+@media only screen and (max-width: 860px){ /* tablet */
+    .notTablet{
+        display:none;
+    }
+}
+@media only screen and (max-width: 650px){ /* mobile */
+    .notMobile{
+        display:none;
+    }
+}
