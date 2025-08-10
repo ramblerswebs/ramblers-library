@@ -27,7 +27,7 @@ class RGpxsymbolsDisplay {
                 }
             }
             closedir($handle);
-            asort($items,SORT_NATURAL);
+            asort($items, SORT_NATURAL);
             echo "<div class='gpximages' >";
             foreach ($items as $item) {
                 $this->displayImage($folder, $item);
@@ -46,5 +46,4 @@ class RGpxsymbolsDisplay {
         echo "<span class='gpximagetitle' >" . $name . "</span>";
         echo "</div>";
     }
-
 }
