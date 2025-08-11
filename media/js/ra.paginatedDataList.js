@@ -61,12 +61,12 @@ ra.paginatedTable = function (tag, userOptions = null) {
     this.list = new cvList(this.elements.tbody);
 
     var pag = this.list.createPagination(this.cvListOptions);
-    pag.addPaginationDisplay(this.elements.items1, 'Item {startItem} to {endItem} of {itemsNumber}');
-    pag.addPaginationDisplay(this.elements.pagination1, '{paginationButtons}');
-    pag.addPaginationDisplay(this.elements.itemsSelect1, '{itemsPerPage}');
-    pag.addPaginationDisplay(this.elements.items2, 'Item {startItem} to {endItem} of {itemsNumber}');
-    pag.addPaginationDisplay(this.elements.pagination2, '{paginationButtons}');
-    pag.addPaginationDisplay(this.elements.itemsSelect2, '{itemsPerPage}');
+    pag.addPaginationDisplayText(this.elements.items1, 'Item {startItem} to {endItem} of {itemsNumber}');
+    pag.addPaginationDisplayButton(this.elements.pagination1, 'paginationButtons');
+    pag.addPaginationDisplayButton(this.elements.itemsSelect1, 'itemsPerPage');
+    pag.addPaginationDisplayText(this.elements.items2, 'Item {startItem} to {endItem} of {itemsNumber}');
+    pag.addPaginationDisplayButton(this.elements.pagination2, 'paginationButtons');
+    pag.addPaginationDisplayButton(this.elements.itemsSelect2, 'itemsPerPage');
     var self = this;
     this.elements.tbody.addEventListener("cvList-after-display", function (e) {
         self._hideBlankColumns(self.elements.table);
@@ -84,7 +84,7 @@ ra.paginatedTable = function (tag, userOptions = null) {
             }
         });
     };
-    this.createFilters = function (format) {
+    this._createFilters = function (format) {
         format.forEach(item => {
             if ('field' in item) {
                 var field = item.field;
@@ -98,27 +98,33 @@ ra.paginatedTable = function (tag, userOptions = null) {
 //        "title": "Running No",
 //        "options": {
 //            "align": "right"
+//            "view": "notTablet" or "notMobile"
 //        },
 //        "field": {
 //            "type": "number",
 //            "filter": false,
 //            "sort": true
-//        }
+//        },
+//        view: 'notTablet' or 'notMobile'
 //    }, {...}
 //    ];
     this.tableHeading = function (format) {
         this.format = format;
         this._createFields(format);
-        this.createFilters(format);
+        this._createFilters(format);
         var row = document.createElement("tr");
         this.noColumns = 0;
         format.forEach(item => {
             this.noColumns += 1;
             var th = document.createElement("th");
+            th.innerText = item.title;
             row.appendChild(th);
             if ('options' in item) {
                 if ('align' in item.options) {
                     th.classList.add(item.options.align);
+                }
+                if ('view' in item.options) {
+                    th.classList.add(item.options.view);
                 }
             }
             if ('field' in item) {
@@ -127,9 +133,6 @@ ra.paginatedTable = function (tag, userOptions = null) {
                     field.addSortArrows(th);
                 }
             }
-            var h = document.createElement("span");
-            h.innerHTML = item.title;
-            th.appendChild(h);
         });
         this.elements.thead.appendChild(row);
     };
@@ -151,6 +154,9 @@ ra.paginatedTable = function (tag, userOptions = null) {
                 if ('align' in options) {
                     td.classList.add(options.align);
                 }
+                if ('view' in item.options) {
+                    td.classList.add(item.options.view);
+                }
             }
         }
         return td;
@@ -169,7 +175,6 @@ ra.paginatedTable = function (tag, userOptions = null) {
         } else {
             this.list.addItem(this.row);
         }
-
         this.row = null;
     };
     this.tableEnd = function () {
@@ -177,6 +182,21 @@ ra.paginatedTable = function (tag, userOptions = null) {
         if (this.list.getNumberItems() < 20) {
             this.elements.rapagination1.style.display = 'none';
             this.elements.rapagination2.style.display = 'none';
+        }
+    };
+    this.sort = function (param, order) {
+        var field = this.fields[param];
+        if (field) {
+            switch (order) {
+                case 'Asc':
+                    field.sort(1);
+                    break;
+                case 'Desc':
+                    field.sort(-1);
+                    break;
+                default:
+                    alert('order error');
+            }
         }
     };
     this.getPrintAll = function () {
@@ -285,12 +305,12 @@ ra.paginatedList = function (tag, userOptions = null) {
 
     this.list = new cvList(this.elements.content);
     var pag = this.list.createPagination(this.cvListOptions);
-    pag.addPaginationDisplay(this.elements.items1, 'Items {startItem} to {endItem} of {itemsNumber}');
-    pag.addPaginationDisplay(this.elements.pagination1, '{paginationButtons}');
-    pag.addPaginationDisplay(this.elements.itemsSelect1, '{itemsPerPage}');
-    pag.addPaginationDisplay(this.elements.items2, 'Items {startItem} to {endItem} of {itemsNumber}');
-    pag.addPaginationDisplay(this.elements.pagination2, '{paginationButtons}');
-    pag.addPaginationDisplay(this.elements.itemsSelect2, '{itemsPerPage}');
+    pag.addPaginationDisplayText(this.elements.items1, 'Items {startItem} to {endItem} of {itemsNumber}');
+    pag.addPaginationDisplayButton(this.elements.pagination1, 'paginationButtons');
+    pag.addPaginationDisplayButton(this.elements.itemsSelect1, 'itemsPerPage');
+    pag.addPaginationDisplayText(this.elements.items2, 'Items {startItem} to {endItem} of {itemsNumber}');
+    pag.addPaginationDisplayButton(this.elements.pagination2, 'paginationButtons');
+    pag.addPaginationDisplayButton(this.elements.itemsSelect2, 'itemsPerPage');
     this.elements.content.addEventListener('cvList-reportPagination', function (e) {
         let ev = new Event("reportPagination");
         ev.cvList = e.cvList;

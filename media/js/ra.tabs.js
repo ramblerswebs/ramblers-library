@@ -25,7 +25,7 @@ ra.tabs = function (tag, options) {
 
     var defaultOptions = {tabClass: 'myclass',
         style: {side: 'left', // left or right
-            vert: 'above',
+            vert: 'above', // 'above', 'middle' or 'below'
             size: 'normal'}, // normal, medium or small
         tabs: {id0: {title: "one"},
             id10: {title: "two"},

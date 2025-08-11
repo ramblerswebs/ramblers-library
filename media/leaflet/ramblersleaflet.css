@@ -432,9 +432,9 @@ div.ra.tabs.walksDisplay span.walkdetail{
 .clearBoth {
     clear:both;
 }
-
-
-
+div.leaflet-top.leaflet-right{
+    margin-top: 20px;
+}
 
 /* Map Settings */
 div[data-container="help"] iframe{
