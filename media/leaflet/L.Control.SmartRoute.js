@@ -80,7 +80,7 @@ L.Control.SmartRoute = L.Control.extend({
         this.pending = true;
         var self = this;
         let request = new XMLHttpRequest();
-        request.open('POST', "https://api.openrouteservice.org/v2/directions/foot-hiking/geojson");
+        request.open('POST', "https://api.heigit.org/openrouteservice/v2/directions/foot-hiking/geojson");
         request.setRequestHeader('Accept', 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8');
         request.setRequestHeader('Content-Type', 'application/json');
         request.setRequestHeader('Authorization', this.options._routingKey);
